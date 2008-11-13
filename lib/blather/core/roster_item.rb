@@ -28,7 +28,7 @@ module Blather
 
     VALID_SUBSCRIPTION_TYPES = [:both, :from, :none, :remove, :to].freeze
     def subscription=(sub)
-      raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if
+      raise ArgumentError, "Invalid Type (#{sub}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if
         sub && !VALID_SUBSCRIPTION_TYPES.include?(sub = sub.to_sym)
       @subscription = sub ? sub : :none
     end
