@@ -38,7 +38,7 @@ module Blather
     end
 
     def ask=(ask)
-      raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if ask && (ask = ask.to_sym) != :subscribe
+      raise ArgumentError, "Invalid Type (#{ask}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if ask && (ask = ask.to_sym) != :subscribe
       @ask = ask ? ask : nil
     end
 
