@@ -15,7 +15,7 @@ module Blather
       stanza.items.each do |i|
         case i.subscription
         when :remove then @items.delete(key(i.jid))
-        else @items[key(i.jid)] = RosterItem.new(@stream, i)
+        else @items[key(i.jid)] = RosterItem.new(i)
         end
       end
     end
@@ -27,7 +27,7 @@ module Blather
 
     def push(elem)
       jid = elem.respond_to?(:jid) ? elem.jid : JID.new(elem)
-      @items[key(jid)] = node = RosterItem.new(@stream, elem)
+      @items[key(jid)] = node = RosterItem.new(elem)
 
       @stream.send_data node.to_stanza(:set)
     end
@@ -35,7 +35,7 @@ module Blather
 
     def delete(jid)
       @items.delete key(jid)
-      @stream.send_data Iq::Roster.new(:set, Iq::RosterItem.new(jid, nil, :remove))
+      @stream.send_data Iq::Roster.new(:set, Iq::Roster::RosterItem.new(jid, nil, :remove))
     end
     alias_method :remove, :delete
 

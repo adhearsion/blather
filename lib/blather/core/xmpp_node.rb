@@ -90,6 +90,11 @@ module Blather
     def to_s
       super.gsub(">\n<", '><')
     end
+
+  protected
+    def find(what, nslist = nil)
+      (self.doc ? super(what, nslist) : select { |i| i.name == what})
+    end
   end #XMPPNode
 
 end

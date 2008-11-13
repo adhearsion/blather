@@ -33,7 +33,7 @@ module Blather
       end
 
       def priority=(priority)
-        raise ArgumentError, 'Priority must be between -128 and +127' if priority && (-128..127).include?(priority.to_i)
+        raise ArgumentError, 'Priority must be between -128 and +127' if priority && !(-128..127).include?(priority.to_i)
 
         remove_child :priority
         self << XMPPNode.new('priority', priority) if priority

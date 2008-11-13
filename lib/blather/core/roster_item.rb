@@ -8,14 +8,13 @@ module Blather
     attr_accessor :name,
                   :groups
 
-    def initialize(stream, item)
-      @stream = stream
+    def initialize(item)
       @statuses = []
 
       if item.is_a?(JID)
-        self.jid = item
+        self.jid = item.stripped
       elsif item.is_a?(XMPPNode)
-        self.jid          = JID.new(item['jid'])
+        self.jid          = JID.new(item['jid']).stripped
         self.name         = item['name']
         self.subscription = item['subscription']
         self.ask          = item['ask']
@@ -24,11 +23,14 @@ module Blather
     end
 
     def jid=(jid)
-      @jid = jid.stripped
+      @jid = JID.new(jid).stripped
     end
 
+    VALID_SUBSCRIPTION_TYPES = [:both, :from, :none, :remove, :to].freeze
     def subscription=(sub)
-      @subscription = sub ? sub.to_sym : :none
+      raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if
+        sub && !VALID_SUBSCRIPTION_TYPES.include?(sub = sub.to_sym)
+      @subscription = sub ? sub : :none
     end
 
     def subscription
@@ -36,7 +38,8 @@ module Blather
     end
 
     def ask=(ask)
-      @ask = ask ? ask.to_sym : nil
+      raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if ask && (ask = ask.to_sym) != :subscribe
+      @ask = ask ? ask : nil
     end
 
     def status=(presence)
@@ -46,8 +49,7 @@ module Blather
     end
 
     def status(resource = nil)
-      top = resource ? @statuses.detect { |s| s.jid.resoure == resource } : nil
-      top || @statuses.first
+      top = resource ? @statuses.detect { |s| s.from.resource == resource } : @statuses.first
     end
 
     def to_stanza(type = nil)
