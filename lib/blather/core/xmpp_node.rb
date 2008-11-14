@@ -21,20 +21,23 @@ module Blather
     end
 
     def self.register(name, xmlns = nil)
-      self.name = name
+      self.name = name.to_s
       self.xmlns = xmlns
       @@registrations[[name, xmlns]] = self
     end
 
     def self.class_from_registration(name, xmlns)
-      name = name.to_sym
+      name = name.to_s
       @@registrations[[name, xmlns]] || @@registrations[[name, nil]]
     end
 
     def self.import(node)
       klass = class_from_registration(node.element_name, node.xmlns)
-      node = klass.import(node) if klass
-      node
+      if klass && klass != self
+        klass.import(node)
+      else
+        new(node.element_name).inherit(node)
+      end
     end
 
     def to_stanza
@@ -52,11 +55,12 @@ module Blather
 
     def remove_child(name, ns = nil)
       name = name.to_s
-      self.each { |n| n.remove! or break if n.element_name == name && (!ns || n.xmlns == ns) }
+      self.each { |n| n.remove! if n.element_name == name && (!ns || n.xmlns == ns) }
     end
 
     def remove_children(name)
-      remove_child name, true
+      name = name.to_s
+      self.find(name).each { |n| n.remove! }
     end
 
     def content_from(name)
@@ -64,15 +68,13 @@ module Blather
       (child = self.detect { |n| n.element_name == name }) ? child.content : nil
     end
 
-    def copy(deep)
-      elem = self.class.new(self.element_name)
-      elem.inherit self
-      elem
+    def copy(deep = true)
+      self.class.new(self.element_name).inherit(self)
     end
 
     def inherit(stanza)
       inherit_attrs stanza.attributes
-      stanza.children.each    { |c| self << c.copy(true) }
+      stanza.children.each { |c| self << c.copy(true) }
       self
     end
 
@@ -81,19 +83,12 @@ module Blather
       self
     end
 
-    def inherit_xml(xml)
-      inherit_attrs xml.attributes
-      xml.each { |c| self << XMPPNode.new_from_xml(c) }
-      self
-    end
-
     def to_s
       super.gsub(">\n<", '><')
     end
 
-  protected
     def find(what, nslist = nil)
-      (self.doc ? super(what, nslist) : select { |i| i.name == what})
+      (self.doc ? super(what, nslist) : select { |i| i.element_name == what})
     end
   end #XMPPNode
 
