@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), *%w[.. lib blather])
 require 'rubygems'
 require 'minitest/spec'
-require 'minitest/mock'
+require 'mocha'
 
 module MiniTest
   if MINI_DIR =~ %r{^./}
@@ -29,18 +29,6 @@ module MiniTest
       refute_equal(init_val, new_val, msg) if args.empty?
     end
   end
-
-  class Mock
-    def verify_calls
-      @expected_calls.each_key do |name|
-        expected = @expected_calls[name]
-        msg = "expected #{name}, #{expected.inspect}"
-        raise MockExpectationError, msg unless
-          @actual_calls.has_key? name
-      end
-      true
-    end
-  end
 end
 
 class Object
@@ -51,30 +39,9 @@ class Object
   end
 end
 
+require 'mocha/expectation_error'
+
 include Blather
 include MiniTest
-
-def stream(reset = false)
-  @stream = (!@stream || reset) ? Mock.new.expect(:send_data, nil, [1]) : @stream
-end
-
-def stanza(reset = false)
-  @stanza = if (!@stanza || reset)
-    items = []; 4.times { |n| items << JID.new("n@d/#{n}r") }
-    Mock.new.expect(:items, items)
-  else
-    @stanza
-  end
-end
-
-def roster(reset = false)
-  @roster ||= (!@roster || reset) ? Roster.new(stream, stanza) : @roster
-end
-
-def reset_helpers
-  stanza true
-  stream true
-  roster true
-end
 
 Unit.autorun

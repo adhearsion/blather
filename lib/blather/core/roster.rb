@@ -6,12 +6,10 @@ module Blather
     def initialize(stream, stanza = nil)
       @stream = stream
       @items = {}
-      stanza.items.each { |i| push i } if stanza
+      stanza.items.each { |i| push i, false } if stanza
     end
 
     def process(stanza)
-      return unless stanza.is_a?(Iq::Roster)
-
       stanza.items.each do |i|
         case i.subscription
         when :remove then @items.delete(key(i.jid))
@@ -25,11 +23,11 @@ module Blather
       self
     end
 
-    def push(elem)
+    def push(elem, send = true)
       jid = elem.respond_to?(:jid) ? elem.jid : JID.new(elem)
       @items[key(jid)] = node = RosterItem.new(elem)
 
-      @stream.send_data node.to_stanza(:set)
+      @stream.send_data(node.to_stanza(:set)) if send
     end
     alias_method :add, :push
 
