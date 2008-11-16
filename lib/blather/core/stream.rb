@@ -3,18 +3,18 @@ module Blather
 
     # Connect to the server
     def self.start(client, jid, pass, host = nil, port = 5222)
+      jid = JID.new jid
       host ||= jid.domain
 
       EM.connect host, port, self, client, jid, pass
     end
 
     def initialize(client, jid, pass)
-      super
+      super()
 
       @client = client
-      @client.jid = jid
 
-      @jid = jid
+      self.jid = jid
       @pass = pass
 
       @to = @jid.domain
@@ -84,6 +84,13 @@ module Blather
       @state == :ready
     end
 
+    def jid=(new_jid)
+      puts "NEW JID: #{new_jid}"
+      new_jid = JID.new new_jid
+      @client.jid = new_jid
+      @jid = new_jid
+    end
+
   private
     def dispatch
       __send__ @state
@@ -150,7 +157,7 @@ module Blather
     def bind_resource
       unless @resource
         @resource = Resource.new self, @jid
-        @resource.success { |jid| puts "RESOURCE: SUCCESS"; @resource = nil; @jid = jid; @state = :features; dispatch }
+        @resource.success { |jid| puts "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
         @resource.failure { puts "RESOURCE: FAILURE"; stop }
         @node = @features.shift
       end

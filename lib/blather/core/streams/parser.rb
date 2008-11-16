@@ -51,13 +51,13 @@ module Blather
       end
 
       def on_end_element(elem)
-        puts "END ELEM: #{elem}" if @@debug
+        puts "END ELEM: (#{@current.parent}) #{elem}" if @@debug
         if @current.parent?
           @current = @current.parent
 
         else
-          @receiver.receive @current
-          @current = nil
+          c, @current = @current, nil
+          @receiver.receive c
 
         end
       end

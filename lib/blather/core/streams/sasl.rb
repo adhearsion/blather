@@ -17,11 +17,11 @@ module Blather
       end
 
       def set_mechanism
-        mod = case @node.child.content
+        mod = case (mechanism = @node.first.content)
         when 'DIGEST-MD5' then DigestMD5
         when 'PLAIN'      then Plain
         when 'ANONYMOUS'  then Anonymous
-        else raise "Unknown SASL mechanism #{mechanism}"
+        else raise "Unknown SASL mechanism (#{mechanism})"
         end
 
         extend mod
@@ -108,7 +108,9 @@ module Blather
             puts "CHALLENGE RESPOSNE: #{@response.inspect}"
             puts "CH RESP TXT: #{@response.map { |k,v| "#{k}=#{v}" } * ','}"
 
-            node.content = base64_encode(@response.map { |k,v| "#{k}=#{v}" } * ',')
+            # order is mostly to simplify testing
+            order = [:nonce, :charset, :username, :realm, :cnonce, :nc, :qop, :'digest-uri']
+            node.content = base64_encode(order.map { |k| v = @response[k]; "#{k}=#{v}" } * ',')
           end
 
           @stream.send node
@@ -117,13 +119,13 @@ module Blather
 
       module Plain
         def authenticate
-          @stream.send auth('PLAIN', base64_encode("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
+          @stream.send auth_node('PLAIN', base64_encode("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
         end
       end #Plain
 
       module Anonymous
         def authenticate
-          @stream.send auth('ANONYMOUS', base64_encode(@jid.node))
+          @stream.send auth_node('ANONYMOUS', base64_encode(@jid.node))
         end
       end #Anonymous
 

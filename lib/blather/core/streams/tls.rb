@@ -20,7 +20,6 @@ module Blather
       end
 
       def receive(node)
-        puts "TLS: #{node.name}"
         @callbacks[node.element_name].call if @callbacks[node.element_name]
       end
     end

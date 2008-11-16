@@ -35,6 +35,7 @@ module Blather
       end
 
       def result
+        puts "RESOURE NODE #{@node}"
         if @id == @node['id']
           @jid = JID.new @node.child.child.content
           @callbacks[:success].call(@jid) if @callbacks[:success]
