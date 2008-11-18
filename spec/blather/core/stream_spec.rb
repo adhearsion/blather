@@ -2,16 +2,12 @@ require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
 describe 'Blather::Stream' do
   class MockStream; include Stream; end
-  def mock_stream(start = true, &block)
+  def mock_stream(&block)
     @client = mock()
     @client.stubs(:jid=)
     stream = MockStream.new @client, JID.new('n@d/r'), 'pass'
 
     stream.expects(:send_data).at_least(1).with &block
-    if start
-      stream.connection_completed
-      stream.receive_data '<stream:stream>'
-    end
     stream
   end
 
@@ -44,7 +40,7 @@ describe 'Blather::Stream' do
   end
 
   it 'starts the stream once the connection is complete' do
-    s = mock_stream(false) { |d| d =~ /stream:stream/ }
+    s = mock_stream { |d| d =~ /stream:stream/ }
     s.connection_completed
   end
 
@@ -57,7 +53,8 @@ describe 'Blather::Stream' do
       else false
       end
     end
-    @stream.receive_data "<stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+    @stream.connection_completed
+    @stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
 
   it 'connects via SASL MD5 when asked' do
