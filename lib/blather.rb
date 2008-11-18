@@ -40,4 +40,13 @@ module Blather
     EM.run { Stream.start client, JID.new(jid), password, host, port }
   end
   module_function :run
+
+  MAJOR = 0
+  MINOR = 1
+  VERSION = [MAJOR, MINOR]*'.'
+
+  def version
+    VERSION
+  end
+  module_function :version
 end
