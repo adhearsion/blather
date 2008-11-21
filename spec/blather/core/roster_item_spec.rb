@@ -9,7 +9,7 @@ describe 'Blather::RosterItem' do
 
   it 'initializes with an Iq::RosterItem' do
     jid = 'n@d/r'
-    i = RosterItem.new Iq::Roster::RosterItem.new(jid)
+    i = RosterItem.new Stanza::Iq::Roster::RosterItem.new(jid)
     i.jid.must_equal JID.new(jid).stripped
   end
 
@@ -48,7 +48,7 @@ describe 'Blather::RosterItem' do
     jid = JID.new('n@d/r')
     i = RosterItem.new jid
     s = i.to_stanza
-    s.must_be_kind_of Iq::Roster
+    s.must_be_kind_of Stanza::Iq::Roster
     s.items.first.jid.must_equal jid.stripped
   end
 
@@ -66,11 +66,11 @@ describe 'Blather::RosterItem' do
     @jid = JID.new('n@d/r')
     @i = RosterItem.new @jid
 
-    @p = Presence::Status.new(:away)
+    @p = Stanza::Presence::Status.new(:away)
     @p.from = 'n@d/a'
     @p.priority = 0
 
-    @p2 = Presence::Status.new(:dnd)
+    @p2 = Stanza::Presence::Status.new(:dnd)
     @p2.from = 'n@d/b'
     @p2.priority = -1
 

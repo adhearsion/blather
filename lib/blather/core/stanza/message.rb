@@ -1,4 +1,5 @@
 module Blather
+class Stanza
 
   class Message < Stanza
     register :message
@@ -49,4 +50,5 @@ module Blather
     end
   end
 
+end #Stanza
 end

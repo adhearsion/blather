@@ -1,0 +1,3 @@
+= Blather
+
+An evented XMPP library

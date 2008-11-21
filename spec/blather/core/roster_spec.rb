@@ -23,7 +23,7 @@ describe 'Blather::Roster' do
   end
 
   it 'processes @stanzas with add requests' do
-    s = Iq::Roster::RosterItem.new('a@b/c').to_stanza
+    s = Stanza::Iq::Roster::RosterItem.new('a@b/c').to_stanza
     proc { @roster.process(s) }.must_change('@roster.items', :length, :by => 1)
   end
 

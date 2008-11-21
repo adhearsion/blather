@@ -22,12 +22,12 @@ module Blather
       end
 
       def bind
-        binder = XML::Node.new('bind')
-        binder['xmlns'] = 'urn:ietf:params:xml:ns:xmpp-bind'
+        binder = XMPPNode.new('bind')
+        binder.xmlns = 'urn:ietf:params:xml:ns:xmpp-bind'
 
-        binder << XML::Node.new('resource', @jid.resource) if @jid.resource
+        binder << XMPPNode.new('resource', @jid.resource) if @jid.resource
 
-        response = Iq.new :set
+        response = Stanza::Iq.new :set
         @id = response.id
         response << binder
 

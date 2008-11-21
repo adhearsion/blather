@@ -1,4 +1,6 @@
 module Blather
+class Stanza
+
   class Iq < Stanza
     register :iq
 
@@ -18,4 +20,6 @@ module Blather
       elem
     end
   end
+
+end #Stanza
 end

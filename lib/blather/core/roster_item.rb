@@ -53,8 +53,8 @@ module Blather
     end
 
     def to_stanza(type = nil)
-      r = Iq::Roster.new type
-      n = Iq::Roster::RosterItem.new jid, name, subscription, ask
+      r = Stanza::Iq::Roster.new type
+      n = Stanza::Iq::Roster::RosterItem.new jid, name, subscription, ask
       r.query << n
       n.groups = groups
       r

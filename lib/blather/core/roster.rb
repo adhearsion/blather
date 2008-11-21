@@ -33,7 +33,7 @@ module Blather
 
     def delete(jid)
       @items.delete key(jid)
-      @stream.send_data Iq::Roster.new(:set, Iq::Roster::RosterItem.new(jid, nil, :remove))
+      @stream.send_data Stanza::Iq::Roster.new(:set, Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove))
     end
     alias_method :remove, :delete
 

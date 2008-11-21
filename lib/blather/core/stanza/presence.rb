@@ -1,4 +1,6 @@
 module Blather
+class Stanza
+
   class Presence < Stanza
     register :presence
 
@@ -18,4 +20,6 @@ module Blather
     end
 
   end
+
+end #Stanza
 end

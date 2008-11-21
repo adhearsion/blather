@@ -16,21 +16,20 @@ $:.unshift File.dirname(__FILE__)
   blather/core/xmpp_node
 
   blather/core/stanza
-  blather/core/stanzas/error
-  blather/core/stanzas/iq
-  blather/core/stanzas/iqs/query
-  blather/core/stanzas/iqs/queries/roster
-  blather/core/stanzas/message
-  blather/core/stanzas/presence
-  blather/core/stanzas/presences/status
-  blather/core/stanzas/presences/subscription
+  blather/core/stanza/iq
+  blather/core/stanza/iq/query
+  blather/core/stanza/iq/roster
+  blather/core/stanza/message
+  blather/core/stanza/presence
+  blather/core/stanza/presence/status
+  blather/core/stanza/presence/subscription
 
   blather/core/stream
-  blather/core/streams/parser
-  blather/core/streams/resource
-  blather/core/streams/sasl
-  blather/core/streams/session
-  blather/core/streams/tls
+  blather/core/stream/parser
+  blather/core/stream/resource
+  blather/core/stream/sasl
+  blather/core/stream/session
+  blather/core/stream/tls
 ].each { |r| require r }
 
 XML::Parser.indent_tree_output = false

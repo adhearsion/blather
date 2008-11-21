@@ -22,9 +22,9 @@ module Blather
       end
 
       def session
-        response = Iq.new :set
+        response = Stanza::Iq.new :set
         response.to = @to
-        sess = XML::Node.new 'session'
+        sess = XMPPNode.new 'session'
         sess['xmlns'] = 'urn:ietf:params:xml:ns:xmpp-session'
         response << sess
         @stream.send response
