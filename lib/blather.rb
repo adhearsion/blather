@@ -5,6 +5,7 @@ $:.unshift File.dirname(__FILE__)
   xml/libxml
   eventmachine
   digest/md5
+  logger
 
   blather/callback
 
@@ -35,6 +36,8 @@ $:.unshift File.dirname(__FILE__)
 XML::Parser.indent_tree_output = false
 
 module Blather
+  LOG = Logger.new STDOUT
+
   def run(jid, password, client, host = nil, port = 5222)
     EM.run { Stream.start client, JID.new(jid), password, host, port }
   end

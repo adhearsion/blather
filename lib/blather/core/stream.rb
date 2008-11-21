@@ -1,4 +1,5 @@
 module Blather
+
   module Stream
 
     # Connect to the server
@@ -45,8 +46,8 @@ module Blather
     end
 
     def receive(node)
-      puts "\n"+('-'*30)+"\n"
-      puts "RECEIVING (#{node.element_name}) #{node}"
+      LOG.debug "\n"+('-'*30)+"\n"
+      LOG.debug "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
       case @node.element_name
@@ -72,7 +73,7 @@ module Blather
 
     def send(stanza)
       #TODO Queue if not ready
-      puts "SENDING: (#{caller[1]}) #{stanza}"
+      LOG.debug "SENDING: (#{caller[1]}) #{stanza}"
       send_data stanza.to_s
     end
 
@@ -85,7 +86,7 @@ module Blather
     end
 
     def jid=(new_jid)
-      puts "NEW JID: #{new_jid}"
+      LOG.debug "NEW JID: #{new_jid}"
       new_jid = JID.new new_jid
       @client.jid = new_jid
       @jid = new_jid
@@ -122,7 +123,7 @@ module Blather
 
     def features
       feature = @features.first
-      puts "FEATURE: #{feature}"
+      LOG.debug "FEATURE: #{feature}"
       @state = case feature ? feature['xmlns'] : nil
       when 'urn:ietf:params:xml:ns:xmpp-tls'      then :establish_tls
       when 'urn:ietf:params:xml:ns:xmpp-sasl'     then :authenticate_sasl
@@ -137,8 +138,8 @@ module Blather
     def establish_tls
       unless @tls
         @tls = TLS.new self
-        @tls.success { puts "TLS: SUCCESS"; @tls = nil; start }
-        @tls.failure { puts "TLS: FAILURE"; stop }
+        @tls.success { LOG.debug "TLS: SUCCESS"; @tls = nil; start }
+        @tls.failure { LOG.debug "TLS: FAILURE"; stop }
         @node = @features.shift
       end
       @tls.receive @node
@@ -147,8 +148,8 @@ module Blather
     def authenticate_sasl
       unless @sasl
         @sasl = SASL.new(self, @jid, @pass)
-        @sasl.success { puts "SASL SUCCESS"; @sasl = nil; start }
-        @sasl.failure { puts "SASL FAIL"; stop }
+        @sasl.success { LOG.debug "SASL SUCCESS"; @sasl = nil; start }
+        @sasl.failure { LOG.debug "SASL FAIL"; stop }
         @node = @features.shift
       end
       @sasl.receive @node
@@ -157,8 +158,8 @@ module Blather
     def bind_resource
       unless @resource
         @resource = Resource.new self, @jid
-        @resource.success { |jid| puts "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
-        @resource.failure { puts "RESOURCE: FAILURE"; stop }
+        @resource.success { |jid| LOG.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
+        @resource.failure { LOG.debug "RESOURCE: FAILURE"; stop }
         @node = @features.shift
       end
       @resource.receive @node
@@ -167,11 +168,12 @@ module Blather
     def establish_session
       unless @session
         @session = Session.new self, @to
-        @session.success { puts "SESSION: SUCCESS"; @session = nil; @client.stream_started(self); @state = :features; dispatch }
-        @session.failure { puts "SESSION: FAILURE"; stop }
+        @session.success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.stream_started(self); @state = :features; dispatch }
+        @session.failure { LOG.debug "SESSION: FAILURE"; stop }
         @node = @features.shift
       end
       @session.receive @node
     end
   end
+
 end

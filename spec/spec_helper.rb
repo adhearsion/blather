@@ -44,4 +44,6 @@ require 'mocha/expectation_error'
 include Blather
 include MiniTest
 
+LOG.level = Logger::INFO
+
 Unit.autorun

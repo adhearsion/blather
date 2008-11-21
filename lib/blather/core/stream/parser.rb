@@ -16,7 +16,7 @@ module Blather
       end
 
       def parse(string)
-        puts "PARSING: #{string}" if @@debug
+        LOG.debug "PARSING: #{string}" if @@debug
         if string == '</stream:stream>'
           @receiver.receive XMPPNode.new('stream:end')
         else
@@ -26,7 +26,7 @@ module Blather
       end
 
       def on_start_element(elem, attrs)
-        puts "START ELEM: (#{[elem, attrs].inspect})" if @@debug
+        LOG.debug "START ELEM: (#{[elem, attrs].inspect})" if @@debug
         e = XMPPNode.new elem
         attrs.each { |n,v| e[n] = v }
 
@@ -41,17 +41,17 @@ module Blather
       end
 
       def on_characters(chars = '')
-        puts "CHARS: #{chars}" if @@debug
+        LOG.debug "CHARS: #{chars}" if @@debug
         @current << XML::Node.new_text(chars) if @current
       end
 
       def on_cdata_block(block)
-        puts "CDATA: #{block}" if @@debug
+        LOG.debug "CDATA: #{block}" if @@debug
         @current << XML::Node.new_cdata(block) if @current
       end
 
       def on_end_element(elem)
-        puts "END ELEM: (#{@current.parent}) #{elem}" if @@debug
+        LOG.debug "END ELEM: (#{@current.parent}) #{elem}" if @@debug
         if @current.parent?
           @current = @current.parent
 

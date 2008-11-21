@@ -152,7 +152,6 @@ describe 'Blather::Stream' do
         true
 
       when :started
-        puts "VAL: #{val}"
         val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS">bg==</auth>')
         state = :auth_sent
         stream.receive_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>"
