@@ -1,6 +1,8 @@
 module Blather
   module Stream
     class Parser
+      STREAM_REGEX = %r{(/)?stream:stream}.freeze
+
       @@debug = false
       def self.debug; @@debug; end
       def self.debug=(debug); @@debug = debug; end
@@ -17,9 +19,11 @@ module Blather
 
       def parse(string)
         LOG.debug "PARSING: #{string}" if @@debug
-        if string == '</stream:stream>'
+        if string =~ STREAM_REGEX && $1
           @receiver.receive XMPPNode.new('stream:end')
         else
+          string << "</stream:stream>" if string =~ STREAM_REGEX && !$1
+
           @parser.string = string
           @parser.parse
         end
@@ -51,7 +55,9 @@ module Blather
       end
 
       def on_end_element(elem)
-        LOG.debug "END ELEM: (#{@current.parent}) #{elem}" if @@debug
+        return if elem =~ STREAM_REGEX
+
+        LOG.debug "END ELEM: (#{@current}) #{elem}" if @@debug
         if @current.parent?
           @current = @current.parent
 
