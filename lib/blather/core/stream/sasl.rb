@@ -42,12 +42,12 @@ module Stream
     end
 
   protected
-    def base64_encode(str)
+    def b64(str)
       [str].pack('m').gsub(/\s/,'')
     end
 
     def auth_node(mechanism, content = nil)
-      node = XML::Node.new 'auth', content
+      node = XMPPNode.new 'auth', content
       node['xmlns'] = SASL_NS
       node['mechanism'] = mechanism
       node
@@ -78,17 +78,13 @@ module Stream
       end
 
       def generate_response
-        def d(s); Digest::MD5.digest(s);    end
-        def h(s); Digest::MD5.hexdigest(s); end
-
-        a1_d  = d("#{@response[:username]}:#{@response[:realm]}:#{@pass}")
-        a1    = "#{a1_d}:#{@response[:nonce]}:#{@response[:cnonce]}"
-        a2    = "AUTHENTICATE:#{@response[:'digest-uri']}"
-        h("#{h(a1)}:#{@response[:nonce]}:00000001:#{@response[:cnonce]}:#{@response[:qop]}:#{h(a2)}")
+        a1 = "#{d("#{@response[:username]}:#{@response[:realm]}:#{@pass}")}:#{@response[:nonce]}:#{@response[:cnonce]}"
+        a2 = "AUTHENTICATE:#{@response[:'digest-uri']}"
+        h("#{h(a1)}:#{@response[:nonce]}:#{@response[:nc]}:#{@response[:cnonce]}:#{@response[:qop]}:#{h(a2)}")
       end
 
       def respond
-        node = XML::Node.new 'response'
+        node = XMPPNode.new 'response'
         node['xmlns'] = SASL_NS
 
         unless @initial_response_sent
@@ -98,7 +94,7 @@ module Stream
             :charset      => 'utf-8',
             :username     => @jid.node,
             :realm        => @realm || @jid.domain,
-            :cnonce       => Digest::MD5.hexdigest(Time.new.to_f.to_s),
+            :cnonce       => h(Time.new.to_f.to_s),
             :nc           => '00000001',
             :qop          => 'auth',
             :'digest-uri' => "xmpp/#{@jid.domain}",
@@ -109,24 +105,27 @@ module Stream
           LOG.debug "CHALLENGE RESPOSNE: #{@response.inspect}"
           LOG.debug "CH RESP TXT: #{@response.map { |k,v| "#{k}=#{v}" } * ','}"
 
-          # order is mostly to simplify testing
+          # order is to simplify testing
           order = [:nonce, :charset, :username, :realm, :cnonce, :nc, :qop, :'digest-uri']
-          node.content = base64_encode(order.map { |k| v = @response[k]; "#{k}=#{v}" } * ',')
+          node.content = b64(order.map { |k| v = @response[k]; "#{k}=#{v}" } * ',')
         end
 
         @stream.send node
       end
+
+      def d(s); Digest::MD5.digest(s);    end
+      def h(s); Digest::MD5.hexdigest(s); end
     end #DigestMD5
 
     module Plain
       def authenticate
-        @stream.send auth_node('PLAIN', base64_encode("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
+        @stream.send auth_node('PLAIN', b64("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
       end
     end #Plain
 
     module Anonymous
       def authenticate
-        @stream.send auth_node('ANONYMOUS', base64_encode(@jid.node))
+        @stream.send auth_node('ANONYMOUS', b64(@jid.node))
       end
     end #Anonymous
 
