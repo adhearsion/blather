@@ -1,7 +1,7 @@
-module Blather
-module Stream
+module Blather # :nodoc:
+module Stream # :nodoc:
 
-  class Resource
+  class Resource # :nodoc:
     def initialize(stream, jid)
       @stream = stream
       @jid = jid

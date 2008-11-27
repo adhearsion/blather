@@ -19,6 +19,6 @@ module Blather
     end
 
     # Stanza errors
-    class StanzaError < StandardError; end
+    class StanzaError < BlatherError; end
       class ArgumentError < StanzaError; end
 end

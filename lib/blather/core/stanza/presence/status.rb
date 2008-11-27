@@ -3,6 +3,8 @@ class Stanza
 class Presence
 
   class Status < Presence
+    VALID_STATES = [:away, :chat, :dnd, :xa]
+
     include Comparable
 
     register :status
@@ -14,12 +16,15 @@ class Presence
       elem
     end
 
+    ##
+    # Ensures type is nil or :unavailable
     def type=(type)
       raise ArgumentError, "Invalid type (#{type}). Must be nil or unavailable" if type && type.to_sym != :unavailable
       super
     end
 
-    VALID_STATES = [:away, :chat, :dnd, :xa].freeze
+    ##
+    # Ensure state is one of :away, :chat, :dnd, :xa or nil
     def state=(state)
       state = state.to_sym if state
       state = nil if state == :available
@@ -29,10 +34,14 @@ class Presence
       self << XMPPNode.new('show', state) if state
     end
 
+    ##
+    # return:: :available if state is nil
     def state
       (type || content_from(:show) || :available).to_sym
     end
 
+    ##
+    # Ensure priority is between -128 and 127
     def priority=(priority)
       raise ArgumentError, 'Priority must be between -128 and +127' if priority && !(-128..127).include?(priority.to_i)
 
@@ -53,6 +62,9 @@ class Presence
       content_from :status
     end
 
+    ##
+    # Compare status based on priority
+    # raises an error if the JIDs aren't the same
     def <=>(o)
       raise "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}" unless self.from.stripped == o.from.stripped
       self.priority <=> o.priority
@@ -62,4 +74,4 @@ class Presence
 
 end #Presence
 end #Stanza
-end
+end #Blather

@@ -1,6 +1,8 @@
 module Blather
 class Stanza
 
+  ##
+  # Base Iq stanza
   class Iq < Stanza
     register :iq
 

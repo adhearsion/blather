@@ -1,12 +1,12 @@
 module Blather
 class Stanza
 
+  ##
+  # Base Message stanza
   class Message < Stanza
-    register :message
+    VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal]
 
-    def self.generate_thread_id
-      Digest::MD5.hexdigest(Time.new.to_f.to_s)
-    end
+    register :message
 
     def self.new(to = nil, type = nil, body = nil)
       elem = super()
@@ -16,7 +16,8 @@ class Stanza
       elem
     end
 
-    VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal]
+    ##
+    # Ensures type is :chat, :error, :groupchat, :headline or :normal
     def type=(type)
       raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
       super
@@ -24,7 +25,7 @@ class Stanza
 
     def body=(body)
       remove_child :body
-      self << XML::Node.new('body', body) if body
+      self << XMPPNode.new('body', body) if body
     end
 
     def body
@@ -33,7 +34,7 @@ class Stanza
 
     def subject=(subject)
       remove_child :subject
-      self << XML::Node.new('subject', subject) if subject
+      self << XMPPNode.new('subject', subject) if subject
     end
 
     def subject
@@ -42,7 +43,7 @@ class Stanza
 
     def thread=(thread)
       remove_child :thread
-      self << XML::Node.new('body', body) if body
+      self << XMPPNode.new('body', body) if body
     end
 
     def thread

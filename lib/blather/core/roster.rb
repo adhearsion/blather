@@ -1,5 +1,8 @@
 module Blather
 
+  ##
+  # Local Roster 
+  # Takes care of adding/removing JIDs through the stream
   class Roster
     include Enumerable
 
@@ -9,6 +12,9 @@ module Blather
       stanza.items.each { |i| push i, false } if stanza
     end
 
+    ##
+    # Process any incoming stanzas adn either add or remove the
+    # corresponding RosterItem
     def process(stanza)
       stanza.items.each do |i|
         case i.subscription
@@ -18,11 +24,18 @@ module Blather
       end
     end
 
+    ##
+    # Pushes a JID into the roster
+    # then returns self to allow for chaining
     def <<(elem)
       push elem
       self
     end
 
+    ##
+    # Push a JID into the roster
+    # Will send the new item to the server
+    # unless overridden by calling #push(elem, false)
     def push(elem, send = true)
       jid = elem.respond_to?(:jid) ? elem.jid : JID.new(elem)
       @items[key(jid)] = node = RosterItem.new(elem)
@@ -31,20 +44,29 @@ module Blather
     end
     alias_method :add, :push
 
+    ##
+    # Remove a JID from the roster
+    # Sends a remove query stanza to the server
     def delete(jid)
       @items.delete key(jid)
       @stream.send_data Stanza::Iq::Roster.new(:set, Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove))
     end
     alias_method :remove, :delete
 
+    ##
+    # Get a RosterItem by JID
     def [](jid)
       items[key(jid)]
     end
 
+    ##
+    # Iterate over all RosterItems
     def each(&block)
       items.each &block
     end
 
+    ##
+    # Returns a duplicate of all RosterItems
     def items
       @items.dup
     end

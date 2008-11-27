@@ -10,7 +10,7 @@ module Blather
       EM.connect host, port, self, client, jid, pass
     end
 
-    def initialize(client, jid, pass)
+    def initialize(client, jid, pass) # :nodoc:
       super()
 
       @client = client
@@ -27,25 +27,25 @@ module Blather
       @parser = Parser.new self
     end
 
-    def connection_completed
+    def connection_completed # :nodoc:
 #      @keepalive = EM::Timer.new(60) { send_data ' ' }
       @state = :stopped
       dispatch
     end
 
-    def receive_data(data)
+    def receive_data(data) # :nodoc:
       @parser.parse data
 
     rescue => e
       @client.respond_to?(:rescue) ? @client.rescue(e) : raise(e)
     end
 
-    def unbind
+    def unbind # :nodoc:
 #      @keepalive.cancel
       @state == :stopped
     end
 
-    def receive(node)
+    def receive(node) # :nodoc:
       LOG.debug "\n"+('-'*30)+"\n"
       LOG.debug "RECEIVING (#{node.element_name}) #{node}"
       @node = node
@@ -71,6 +71,8 @@ module Blather
       end
     end
 
+    ##
+    # Send data over the wire
     def send(stanza)
       #TODO Queue if not ready
       LOG.debug "SENDING: (#{caller[1]}) #{stanza}"
@@ -85,7 +87,7 @@ module Blather
       @state == :ready
     end
 
-    def jid=(new_jid)
+    def jid=(new_jid) # :nodoc:
       LOG.debug "NEW JID: #{new_jid}"
       new_jid = JID.new new_jid
       @client.jid = new_jid

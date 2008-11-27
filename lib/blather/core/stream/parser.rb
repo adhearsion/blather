@@ -1,72 +1,74 @@
-module Blather
-  module Stream
-    class Parser
-      STREAM_REGEX = %r{(/)?stream:stream}.freeze
+module Blather # :nodoc:
+module Stream # :nodoc:
 
-      @@debug = false
-      def self.debug; @@debug; end
-      def self.debug=(debug); @@debug = debug; end
+  class Parser # :nodoc:
+    STREAM_REGEX = %r{(/)?stream:stream}.freeze
 
-      include XML::SaxParser::Callbacks
+    @@debug = false
+    def self.debug; @@debug; end
+    def self.debug=(debug); @@debug = debug; end
 
-      def initialize(receiver)
-        @receiver = receiver
-        @current = nil
+    include XML::SaxParser::Callbacks
 
-        @parser = XML::SaxParser.new
-        @parser.callbacks = self
-      end
+    def initialize(receiver)
+      @receiver = receiver
+      @current = nil
 
-      def parse(string)
-        LOG.debug "PARSING: #{string}" if @@debug
-        if string =~ STREAM_REGEX && $1
-          @receiver.receive XMPPNode.new('stream:end')
-        else
-          string << "</stream:stream>" if string =~ STREAM_REGEX && !$1
+      @parser = XML::SaxParser.new
+      @parser.callbacks = self
+    end
 
-          @parser.string = string
-          @parser.parse
-        end
-      end
+    def parse(string)
+      LOG.debug "PARSING: #{string}" if @@debug
+      if string =~ STREAM_REGEX && $1
+        @receiver.receive XMPPNode.new('stream:end')
+      else
+        string << "</stream:stream>" if string =~ STREAM_REGEX && !$1
 
-      def on_start_element(elem, attrs)
-        LOG.debug "START ELEM: (#{[elem, attrs].inspect})" if @@debug
-        e = XMPPNode.new elem
-        attrs.each { |n,v| e[n] = v }
-
-        if elem == 'stream:stream'
-          @receiver.receive e
-
-        elsif !@receiver.stopped?
-          @current << e if @current
-          @current = e
-
-        end
-      end
-
-      def on_characters(chars = '')
-        LOG.debug "CHARS: #{chars}" if @@debug
-        @current << XML::Node.new_text(chars) if @current
-      end
-
-      def on_cdata_block(block)
-        LOG.debug "CDATA: #{block}" if @@debug
-        @current << XML::Node.new_cdata(block) if @current
-      end
-
-      def on_end_element(elem)
-        return if elem =~ STREAM_REGEX
-
-        LOG.debug "END ELEM: (#{@current}) #{elem}" if @@debug
-        if @current.parent?
-          @current = @current.parent
-
-        else
-          c, @current = @current, nil
-          @receiver.receive c
-
-        end
+        @parser.string = string
+        @parser.parse
       end
     end
-  end
-end
+
+    def on_start_element(elem, attrs)
+      LOG.debug "START ELEM: (#{[elem, attrs].inspect})" if @@debug
+      e = XMPPNode.new elem
+      attrs.each { |n,v| e[n] = v }
+
+      if elem == 'stream:stream'
+        @receiver.receive e
+
+      elsif !@receiver.stopped?
+        @current << e if @current
+        @current = e
+
+      end
+    end
+
+    def on_characters(chars = '')
+      LOG.debug "CHARS: #{chars}" if @@debug
+      @current << XML::Node.new_text(chars) if @current
+    end
+
+    def on_cdata_block(block)
+      LOG.debug "CDATA: #{block}" if @@debug
+      @current << XML::Node.new_cdata(block) if @current
+    end
+
+    def on_end_element(elem)
+      return if elem =~ STREAM_REGEX
+
+      LOG.debug "END ELEM: (#{@current}) #{elem}" if @@debug
+      if @current.parent?
+        @current = @current.parent
+
+      else
+        c, @current = @current, nil
+        @receiver.receive c
+
+      end
+    end
+  end #Parser
+
+end #Stream
+end #Blather

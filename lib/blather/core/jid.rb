@@ -1,13 +1,7 @@
-# =XMPP4R - XMPP Library for Ruby
-# License:: Ruby's license (see the LICENSE file) or GNU GPL, at your option.
-# Website::http://home.gna.org/xmpp4r/
-
 module Blather
+
   ##
-  # The JID class represents a Jabber Identifier as described by
-  # RFC3920 section 3.1.
-  #
-  # Note that you can use JIDs also for Sorting, Hash keys, ...
+  # This is a simple modification of the JID class from XMPP4R
   class JID
     include Comparable
 
@@ -70,7 +64,7 @@ module Blather
       s = @domain
       s = "#{@node}@#{s}" if @node
       s = "#{s}/#{@resource}" if @resource
-      return s
+      s
     end
 
     ##
@@ -97,9 +91,11 @@ module Blather
       to_s <=> o.to_s
     end
 
-    # Test id jid is strepped
+    ##
+    # Test if JID is stripped
     def stripped?
       @resource.nil?
     end
   end
+
 end

@@ -21,26 +21,36 @@ class Presence
       super JID.new(to).stripped
     end
 
+    ##
+    # Create an approve stanza
     def approve!
       self.type = :subscribed
       morph_to_reply
     end
 
+    ##
+    # Create a refuse stanza
     def refuse!
       self.type = :unsubscribed
       morph_to_reply
     end
 
+    ##
+    # Create an unsubscribe stanza
     def unsubscribe!
       self.type = :unsubscribe
       morph_to_reply
     end
 
+    ##
+    # Create a cancel stanza
     def cancel!
       self.type = :unsubscribed
       morph_to_reply
     end
 
+    ##
+    # Create a request stanza
     def request!
       self.type = :subscribe
       morph_to_reply

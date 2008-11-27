@@ -1,7 +1,7 @@
-module Blather
-module Stream
+module Blather # :nodoc:
+module Stream # :nodoc:
 
-  class SASL
+  class SASL # :nodoc:
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
     def initialize(stream, jid, pass = nil)
@@ -53,7 +53,7 @@ module Stream
       node
     end
 
-    module DigestMD5
+    module DigestMD5 # :nodoc:
       def self.extended(obj)
         obj.instance_eval { @callbacks['challenge'] = proc { decode_challenge; respond } }
       end
@@ -117,13 +117,13 @@ module Stream
       def h(s); Digest::MD5.hexdigest(s); end
     end #DigestMD5
 
-    module Plain
+    module Plain # :nodoc:
       def authenticate
         @stream.send auth_node('PLAIN', b64("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
       end
     end #Plain
 
-    module Anonymous
+    module Anonymous # :nodoc:
       def authenticate
         @stream.send auth_node('ANONYMOUS', b64(@jid.node))
       end

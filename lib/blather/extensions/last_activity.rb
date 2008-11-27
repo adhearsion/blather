@@ -1,7 +1,7 @@
 module Blather
-  module Extensions
+  module Extensions #:nodoc:
 
-    module LastActivity
+    module LastActivity #:nodoc:
       def self.included(base)
         base.class_eval do
           @@last_activity = Time.now
@@ -23,7 +23,7 @@ module Blather
       end
     end #LastActivity
 
-    class LastActivityStanza < Query
+    class LastActivityStanza < Query #:nodoc:
       register :last_activity, nil, 'jabber:iq:last'
 
       def self.new(type = :get, seconds = nil)
@@ -53,5 +53,3 @@ module Blather
     end #LastActivityStanza
   end
 end
-
-Blather::Client.__send__ :include, Blather::Extensions::LastActivity

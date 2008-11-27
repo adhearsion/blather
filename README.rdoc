@@ -1,3 +1,78 @@
 = Blather
 
 An evented XMPP library
+
+== Features
+
+* evented architecture
+* uses libxml
+* simplified starting point
+
+== Project Pages
+
+GitHub:: https://github.com/sprsquish/blather
+
+RubyForge:: http://rubyforge.org/projects/squishtech/
+
+Lighthouse:: http://squishtech.lighthouseapp.com/projects/20652-blather
+
+== Author
+
+Jeff Smick <sprsquish@gmail.com>
+
+= Usage
+
+== Installation
+
+  sudo gem install blather
+
+== Example
+
+See the /examples directory for more advanced examples.
+
+This will auto-accept any subscription requests and echo back any messages or presence notifications.
+
+  require 'lib/blather/client'
+
+  class Echo < Blather::Client
+    # Auto-approve subscription requests
+    def receive_subscription(s)
+      send_data(s.approve!) and true if s.request?
+    end
+
+    # Echo presence
+    def receive_status(status)
+      set_status(status.state, status.message, status.from) if roster[status.from]
+    end
+
+    # Echo message
+    def receive_message(message)
+      send_data(message.reply) if message.type == :chat
+    end
+  end
+
+  Blather.run 'echo@jabber.local', 'echo', Echo.new
+  
+
+= License
+
+Copyright (c) 2008 Jeff Smick
+ 
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+ 
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+ 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

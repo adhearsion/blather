@@ -36,19 +36,11 @@ $:.unshift File.dirname(__FILE__)
 XML::Parser.indent_tree_output = false
 
 module Blather
+  VERSION = '0.1'
   LOG = Logger.new STDOUT
 
   def run(jid, password, client, host = nil, port = 5222)
     EM.run { Stream.start client, JID.new(jid), password, host, port }
   end
   module_function :run
-
-  MAJOR = 0
-  MINOR = 1
-  VERSION = [MAJOR, MINOR]*'.'
-
-  def version
-    VERSION
-  end
-  module_function :version
 end

@@ -1,7 +1,7 @@
 module Blather
-  module Extensions
+  module Extensions #:nodoc:
 
-    module Version
+    module Version #:nodoc:
       def self.included(base)
         base.class_eval do
           @@version = {}
@@ -27,7 +27,7 @@ module Blather
       end
     end #Version
 
-    class VersionStanza < Iq
+    class VersionStanza < Iq #:nodoc:
       def self.new(type = 'result', ver = {})
         elem = super(type)
 

@@ -1,7 +1,8 @@
-module LibXML
-  module XML
+module LibXML # :nodoc:
+  module XML # :nodoc:
 
     class Attributes
+      # Helper method for removing attributes
       def remove(name)
         name = name.to_s
         self.each { |a| a.remove! or break if a.name == name }
@@ -11,6 +12,7 @@ module LibXML
   end #XML
 end #LibXML
 
+## Thanks to ActiveSupport for everything below this line
 class Class # :nodoc:
   def class_inheritable_reader(*syms)
     syms.each do |sym|
@@ -123,7 +125,7 @@ class Class # :nodoc:
     alias inherited inherited_with_inheritable_attributes
 end #Class
 
-class Object
+class Object # :nodoc:
   def duplicable?; true; end
 end
 
