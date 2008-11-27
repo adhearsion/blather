@@ -12,5 +12,7 @@ Echoe.new('blather') do |p|
 
   p.runtime_dependencies = ['eventmachine', 'libxml >=1.0.11']
   p.rdoc_options += %w[-S -T hanna --main README.rdoc --exclude autotest]
+
   p.test_pattern = 'spec/**/*_spec.rb'
+  p.rcov_options = ['--exclude \/Library\/Ruby\/Gems,spec\/', '--xrefs']
 end
