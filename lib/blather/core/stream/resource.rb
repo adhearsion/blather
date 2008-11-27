@@ -37,7 +37,7 @@ module Stream
     def result
       LOG.debug "RESOURE NODE #{@node}"
       if @id == @node['id']
-        @jid = JID.new @node.child.child.content
+        @jid = JID.new @node.find_first('bind').content_from(:jid)
         @callbacks[:success].call(@jid) if @callbacks[:success]
       end
     end
