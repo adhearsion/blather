@@ -44,17 +44,53 @@ describe 'Blather::Stream' do
     s.connection_completed
   end
 
-  it 'starts TLS when asked' do
+  it 'stops when sent </stream:stream>' do
     state = nil
-    @stream = mock_stream do |val|
-      case
-      when state.nil? && val =~ /stream:stream/   then state = :started
-      when state == :started && val =~ /starttls/ then true
-      else false
+    stream = mock_stream do |val|
+      case state
+      when nil
+        val.must_match(/stream:stream/)
+        state = :started
+
+      when :started
+        stream.stopped?.wont_equal true
+        state = :stopped
+        stream.receive_data "</stream:stream>"
+        true
+
+      when :stopped
+        stream.stopped?.must_equal true
+        val.must_equal "</stream:stream>"
+        true
+
+      else
+        false
+
       end
     end
-    @stream.connection_completed
-    @stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+    stream.connection_completed
+    stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+  end
+
+  it 'starts TLS when asked' do
+    state = nil
+    stream = mock_stream do |val|
+      case state
+      when nil
+        val.must_match(/stream:stream/)
+        state = :started
+
+      when :started
+        val.must_match(/starttls/)
+        true
+
+      else
+        false
+
+      end
+    end
+    stream.connection_completed
+    stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
 
   it 'connects via SASL MD5 when asked' do

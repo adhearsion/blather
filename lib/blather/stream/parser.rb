@@ -50,11 +50,6 @@ module Stream # :nodoc:
       @current << XML::Node.new_text(chars) if @current
     end
 
-    def on_cdata_block(block)
-      LOG.debug "CDATA: #{block}" if @@debug
-      @current << XML::Node.new_cdata(block) if @current
-    end
-
     def on_end_element(elem)
       return if elem =~ STREAM_REGEX
 
