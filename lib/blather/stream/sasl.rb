@@ -2,6 +2,7 @@ module Blather # :nodoc:
 module Stream # :nodoc:
 
   class SASL # :nodoc:
+    class UnknownMechanism < StreamError; end
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
     def initialize(stream, jid, pass = nil)
@@ -9,20 +10,22 @@ module Stream # :nodoc:
       @jid = jid
       @pass = pass
       @callbacks = {}
+      @mechanism = 0
+      @mechanisms = []
 
       init_callbacks
     end
 
     def init_callbacks
-      @callbacks['mechanisms'] = proc { set_mechanism; authenticate }
+      @callbacks['mechanisms'] = proc { @mechanisms = @node.children; set_mechanism; authenticate }
     end
 
     def set_mechanism
-      mod = case (mechanism = @node.first.content)
+      mod = case (mechanism = @mechanisms[@mechanism].content)
       when 'DIGEST-MD5' then DigestMD5
       when 'PLAIN'      then Plain
       when 'ANONYMOUS'  then Anonymous
-      else raise "Unknown SASL mechanism (#{mechanism})"
+      else raise UnknownMechanism, "Unknown SASL mechanism (#{mechanism})"
       end
 
       extend mod
@@ -30,7 +33,12 @@ module Stream # :nodoc:
 
     def receive(node)
       @node = node
-      @callbacks[@node.element_name].call if @callbacks[@node.element_name]
+      if @node.element_name == 'failure' && @mechanisms[@mechanism += 1]
+        set_mechanism
+        authenticate
+      else
+        @callbacks[@node.element_name].call if @callbacks[@node.element_name]
+      end
     end
 
     def success(&callback)
@@ -106,7 +114,7 @@ module Stream # :nodoc:
           LOG.debug "CH RESP TXT: #{@response.map { |k,v| "#{k}=#{v}" } * ','}"
 
           # order is to simplify testing
-          order = [:nonce, :charset, :username, :realm, :cnonce, :nc, :qop, :'digest-uri']
+          order = [:nonce, :charset, :username, :realm, :cnonce, :nc, :qop, :'digest-uri', :response]
           node.content = b64(order.map { |k| v = @response[k]; "#{k}=#{v}" } * ',')
         end
 
