@@ -9,6 +9,12 @@ class Stanza
     register :presence
 
     ##
+    # Ensure element_name is "presence" for all subclasses
+    def self.new
+      super :presence
+    end
+
+    ##
     # Creates a class based on the presence type
     # either a Status or Subscription object is created based
     # on the type attribute.
