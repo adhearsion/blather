@@ -101,7 +101,7 @@ module Blather
     ##
     # returns:: a symbol of the type
     def type
-      self['type'].to_sym if self['type']
+      self['type'].to_sym unless self['type'].nil? || self['type'].empty?
     end
 
   end

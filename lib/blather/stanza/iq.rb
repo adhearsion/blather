@@ -13,10 +13,10 @@ class Stanza
       (klass || self).new(node['type']).inherit(node)
     end
 
-    def self.new(type = :get, to = nil, id = nil)
+    def self.new(type = nil, to = nil, id = nil)
       elem = super :iq
       elem.xmlns = nil
-      elem.type = type
+      elem.type = type || :get
       elem.to = to
       elem.id = id if id
       elem
