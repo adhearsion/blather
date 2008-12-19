@@ -37,6 +37,11 @@ describe 'Blather::Stanza::Message' do
 
   it 'ensures type is one of Stanza::Message::VALID_TYPES' do
     lambda { Stanza::Message.new nil, nil, :invalid_type_name }.must_raise(Blather::ArgumentError)
+
+    Stanza::Message::VALID_TYPES.each do |valid_type|
+      msg = Stanza::Message.new nil, nil, valid_type
+      msg.type.must_equal valid_type
+    end
   end
 
   Stanza::Message::VALID_TYPES.each do |valid_type|

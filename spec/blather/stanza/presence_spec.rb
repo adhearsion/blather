@@ -8,6 +8,11 @@ describe 'Blather::Stanza::Presence' do
   it 'ensures type is one of Stanza::Presence::VALID_TYPES' do
     presence = Stanza::Presence.new
     lambda { presence.type = :invalid_type_name }.must_raise(Blather::ArgumentError)
+
+    Stanza::Presence::VALID_TYPES.each do |valid_type|
+      presence.type = valid_type
+      presence.type.must_equal valid_type
+    end
   end
 
   Stanza::Presence::VALID_TYPES.each do |valid_type|
