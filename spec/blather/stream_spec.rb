@@ -170,6 +170,90 @@ describe 'Blather::Stream' do
     stream.connection_completed
   end
 
+  it 'tried each possible mechanism until it fails completely' do
+    state = nil
+    client = mock()
+    client.stubs(:jid=)
+    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+
+    stream.expects(:send_data).times(5).with do |val|
+      case state
+      when nil
+        val.must_match(/stream:stream/)
+        state = :started
+        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        true
+
+      when :started
+        val.must_match(/mechanism="DIGEST-MD5"/)
+        state = :failed_md5
+        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
+        true
+
+      when :failed_md5
+        val.must_match(/mechanism="PLAIN"/)
+        state = :failed_plain
+        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
+        true
+
+      when :failed_plain
+        val.must_match(/mechanism="ANONYMOUS"/)
+        state = :failed_anon
+        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
+        true
+
+      when :failed_anon
+        val.must_match(/\/stream:stream/)
+        state = :complete
+        true
+
+      else
+        false
+
+      end
+    end
+    stream.connection_completed
+  end
+
+  it 'tries each mechanism until it succeeds' do
+    state = nil
+    client = mock()
+    client.stubs(:jid=)
+    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+
+    stream.expects(:send_data).times(4).with do |val|
+      case state
+      when nil
+        val.must_match(/stream:stream/)
+        state = :started
+        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        true
+
+      when :started
+        val.must_match(/mechanism="DIGEST-MD5"/)
+        state = :failed_md5
+        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
+        true
+
+      when :failed_md5
+        val.must_match(/mechanism="PLAIN"/)
+        state = :plain_sent
+        stream.receive_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>"
+        true
+
+      when :plain_sent
+        val.must_match(/stream:stream/)
+        state = :complete
+        true
+
+      else
+        false
+
+      end
+    end
+    stream.connection_completed
+  end
+
   it 'will bind to a resource set by the server' do
     state = nil
     class Client; attr_accessor :jid; end
