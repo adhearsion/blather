@@ -5,7 +5,7 @@ class Iq
   class Roster < Query
     register :roster, nil, 'jabber:iq:roster'
 
-    def self.new(type, item = nil)
+    def self.new(type = :get, item = nil)
       elem = super(type)
       elem.query << item
       elem
