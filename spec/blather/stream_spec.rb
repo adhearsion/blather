@@ -254,6 +254,28 @@ describe 'Blather::Stream' do
     stream.connection_completed
   end
 
+  it 'raises an exception when an unknown mechanism is sent' do
+    state = nil
+    client = mock()
+    client.stubs(:jid=)
+    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+
+    stream.expects(:send_data).times(2).with do |val|
+      if !state
+        state = :started
+        val.must_match(/stream:stream/)
+        lambda do
+          stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
+        end.must_raise(Stream::SASL::UnknownMechanism)
+
+      else
+        val.must_match(/failure(.*)invalid\-mechanism/)
+
+      end
+    end
+    stream.connection_completed
+  end
+
   it 'will bind to a resource set by the server' do
     state = nil
     class Client; attr_accessor :jid; end

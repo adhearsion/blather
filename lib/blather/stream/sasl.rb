@@ -2,7 +2,8 @@ module Blather # :nodoc:
 module Stream # :nodoc:
 
   class SASL # :nodoc:
-    class UnknownMechanism < StreamError; end
+    class UnknownMechanism < BlatherError; end
+
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
     def initialize(stream, jid, pass = nil)
@@ -25,7 +26,9 @@ module Stream # :nodoc:
       when 'DIGEST-MD5' then DigestMD5
       when 'PLAIN'      then Plain
       when 'ANONYMOUS'  then Anonymous
-      else raise UnknownMechanism, "Unknown SASL mechanism (#{mechanism})"
+      else
+        @stream.send "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><invalid-mechanism/></failure>"
+        raise UnknownMechanism, "Unknown SASL mechanism (#{mechanism})"
       end
 
       extend mod
