@@ -47,7 +47,7 @@ class Stanza
 
     def thread=(thread)
       remove_child :thread
-      self << XMPPNode.new('body', body) if body
+      self << XMPPNode.new('thread', thread) if thread
     end
 
     def thread
