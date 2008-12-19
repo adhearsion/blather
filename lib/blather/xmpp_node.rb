@@ -35,7 +35,7 @@ module Blather
     def self.register(name, xmlns = nil)
       self.name = name.to_s
       self.xmlns = xmlns
-      @@registrations[[name, xmlns]] = self
+      @@registrations[[self.name, self.xmlns]] = self
     end
 
     ##

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
 
 describe 'Blather::Stanza' do
   it 'provides .next_id helper for generating new IDs' do

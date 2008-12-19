@@ -7,30 +7,28 @@ $:.unshift File.dirname(__FILE__)
   digest/md5
   logger
 
-  blather/callback
+  blather/errors
+  blather/jid
+  blather/roster
+  blather/roster_item
+  blather/sugar
+  blather/xmpp_node
 
-  blather/core/errors
-  blather/core/jid
-  blather/core/roster
-  blather/core/roster_item
-  blather/core/sugar
-  blather/core/xmpp_node
+  blather/stanza
+  blather/stanza/iq
+  blather/stanza/iq/query
+  blather/stanza/iq/roster
+  blather/stanza/message
+  blather/stanza/presence
+  blather/stanza/presence/status
+  blather/stanza/presence/subscription
 
-  blather/core/stanza
-  blather/core/stanza/iq
-  blather/core/stanza/iq/query
-  blather/core/stanza/iq/roster
-  blather/core/stanza/message
-  blather/core/stanza/presence
-  blather/core/stanza/presence/status
-  blather/core/stanza/presence/subscription
-
-  blather/core/stream
-  blather/core/stream/parser
-  blather/core/stream/resource
-  blather/core/stream/sasl
-  blather/core/stream/session
-  blather/core/stream/tls
+  blather/stream
+  blather/stream/parser
+  blather/stream/resource
+  blather/stream/sasl
+  blather/stream/session
+  blather/stream/tls
 ].each { |r| require r }
 
 XML::Parser.indent_tree_output = false
