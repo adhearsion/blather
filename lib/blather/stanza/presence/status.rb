@@ -42,15 +42,15 @@ class Presence
 
     ##
     # Ensure priority is between -128 and 127
-    def priority=(priority)
-      raise ArgumentError, 'Priority must be between -128 and +127' if priority && !(-128..127).include?(priority.to_i)
+    def priority=(new_priority)
+      raise ArgumentError, 'Priority must be between -128 and +127' if new_priority && !(-128..127).include?(new_priority.to_i)
 
       remove_child :priority
-      self << XMPPNode.new('priority', priority) if priority
+      self << XMPPNode.new('priority', new_priority) if new_priority
     end
 
     def priority
-      @priority ||= content_from(:priority).to_i
+      content_from(:priority).to_i
     end
 
     def message=(msg)
@@ -66,7 +66,9 @@ class Presence
     # Compare status based on priority
     # raises an error if the JIDs aren't the same
     def <=>(o)
-      raise "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}" unless self.from.stripped == o.from.stripped
+      unless self.from && o.from && self.from.stripped == o.from.stripped
+        raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
+      end
       self.priority <=> o.priority
     end
 

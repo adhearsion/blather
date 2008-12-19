@@ -7,8 +7,6 @@ module Blather
   class XMPPNode < XML::Node
     @@registrations = {}
 
-    alias_method :element_name, :name
-
     class_inheritable_accessor  :xmlns,
                                 :name
 
