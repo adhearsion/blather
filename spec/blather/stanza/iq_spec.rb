@@ -5,5 +5,7 @@ describe 'Blather::Stanza::Iq' do
     XMPPNode.class_from_registration(:iq, nil).must_equal Stanza::Iq
   end
 
-  
+  it 'creates a new Iq stanza defaulted as a get' do
+    Stanza::Iq.new.type.must_equal :get
+  end
 end
