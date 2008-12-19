@@ -346,6 +346,7 @@ describe 'Blather::Stream' do
     client.stubs(:jid=)
     stream = MockStream.new client, JID.new('n@d/r'), 'pass'
 
+    client.expects(:stream_started)
     stream.expects(:send_data).times(2).with do |val|
       case state
       when nil
@@ -357,6 +358,7 @@ describe 'Blather::Stream' do
       when :started
         val.must_match('<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"/></iq>')
         state = :completed
+        stream.receive_data "<iq from='d' type='result' id='#{val[/id="([^"]+)"/,1]}'/>"
         true
 
       else
