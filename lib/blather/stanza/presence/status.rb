@@ -7,7 +7,7 @@ class Presence
 
     include Comparable
 
-    register :status
+    register :status, :status
 
     def self.new(state = nil, message = nil)
       elem = super()

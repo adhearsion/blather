@@ -22,6 +22,10 @@ class Stanza
       klass.new.inherit(node)
     end
 
+    VALID_TYPES.each do |valid_type|
+      define_method("#{valid_type}?") { self.type == valid_type }
+    end
+
     ##
     # Ensures type is one of :unavailable, :subscribe, :subscribed, :unsubscribe, :unsubscribed, :probe or :error
     def type=(type)

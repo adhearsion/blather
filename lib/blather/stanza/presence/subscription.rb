@@ -3,7 +3,7 @@ class Stanza
 class Presence
 
   class Subscription < Presence
-    register :subscription
+    register :subscription, :subscription
 
     def self.new(to = nil, type = nil)
       elem = super()
