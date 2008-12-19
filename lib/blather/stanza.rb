@@ -2,13 +2,7 @@ module Blather
   ##
   # Base XMPP Stanza
   class Stanza < XMPPNode
-    @@registered_callbacks = []
-
-    def self.registered_callbacks
-      @@registered_callbacks
-    end
-
-    class_inheritable_array :callback_heirarchy
+    class_inheritable_array :handler_heirarchy
 
     ##
     # Registers a callback onto the callback heirarchy stack
@@ -17,13 +11,11 @@ module Blather
     # that inherits Stanza can register a callback for itself
     # which is added to a list and iterated over when looking for
     # a callback to use
-    def self.register(callback_type, name = nil, xmlns = nil)
-      @@registered_callbacks << callback_type
+    def self.register(type, name = nil, xmlns = nil)
+      self.handler_heirarchy ||= []
+      self.handler_heirarchy.unshift type
 
-      self.callback_heirarchy ||= []
-      self.callback_heirarchy.unshift callback_type
-
-      name = name || self.name || callback_type
+      name = name || self.name || type
       super name, xmlns
     end
 
