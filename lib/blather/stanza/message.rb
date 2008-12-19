@@ -16,6 +16,10 @@ class Stanza
       elem
     end
 
+    VALID_TYPES.each do |valid_type|
+      define_method("#{valid_type}?") { self.type == valid_type }
+    end
+
     ##
     # Ensures type is :chat, :error, :groupchat, :headline or :normal
     def type=(type)
