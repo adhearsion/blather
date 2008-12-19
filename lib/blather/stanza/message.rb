@@ -8,7 +8,7 @@ class Stanza
 
     register :message
 
-    def self.new(to = nil, type = nil, body = nil)
+    def self.new(to = nil, body = nil, type = :chat)
       elem = super()
       elem.to = to
       elem.type = type
