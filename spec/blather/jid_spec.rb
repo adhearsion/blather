@@ -75,4 +75,19 @@ describe 'Blather::JID' do
     JID.new('n', 'd', 'r').to_s.must_equal 'n@d/r'
     JID.new('n', 'd').to_s.must_equal 'n@d'
   end
+
+  it 'falls back to basic ruby if idn gem is not present' do
+    JID.const_set 'USE_STRINGPREP', false
+    jid = JID.new 'AB#$cdE@&^FE'
+    jid.node.must_equal 'ab#$cde'
+    jid.domain.must_equal '&^fe'
+  end
+
+  it 'provides a #stripped? helper' do
+    jid = JID.new 'a@b/c'
+    jid.must_respond_to :stripped?
+    jid.stripped?.wont_equal true
+    jid.strip!
+    jid.stripped?.must_equal true
+  end
 end
