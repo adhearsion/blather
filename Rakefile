@@ -5,6 +5,7 @@ require 'hanna/rdoctask'
 Echoe.new('blather') do |p|
   p.author = 'Jeff Smick'
   p.email = 'sprsquish@gmail.com'
+  p.url = 'http://github.com/sprsquish/blather/tree/master'
 
   p.project = 'squishtech'
   p.version = Blather::VERSION
