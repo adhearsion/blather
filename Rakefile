@@ -10,7 +10,7 @@ Echoe.new('blather') do |p|
   p.version = Blather::VERSION
   p.summary = 'An evented XMPP library written on EventMachine and libxml-ruby'
 
-  p.runtime_dependencies = ['eventmachine', 'libxml >=1.0.11']
+  p.runtime_dependencies = ['eventmachine', 'libxml >=0.9.2']
   p.rdoc_options += %w[-S -T hanna --main README.rdoc --exclude autotest]
 
   p.test_pattern = 'spec/**/*_spec.rb'
