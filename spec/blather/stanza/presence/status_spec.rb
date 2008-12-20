@@ -88,5 +88,15 @@ describe 'Blather::Stanza::Presence::Status' do
     status2.priority = 1
     (status1 <=> status2).must_equal 0
   end
+
+  it 'raises an argument error if compared to a status with a different JID' do
+    status1 = Stanza::Presence::Status.new
+    status1.from = 'a@b/c'
+
+    status2 = Stanza::Presence::Status.new
+    status2.from = 'd@e/f'
+
+    lambda { status1 <=> status2 }.must_raise(Blather::ArgumentError)
+  end
 end
 
