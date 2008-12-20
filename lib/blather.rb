@@ -35,7 +35,6 @@ $:.unshift File.dirname(__FILE__)
 XML.indent_tree_output = false
 
 module Blather
-  VERSION = '0.2'
   LOG = Logger.new(STDOUT)
 
   class Client
