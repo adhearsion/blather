@@ -46,7 +46,11 @@ This will auto-accept any subscription requests and echo back any chat messages.
     write(m.reply) if m.chat? && m.body
   end
   
-  
+= TODO (in order)
+
+* Service Discovery (XEP-0030: http://xmpp.org/extensions/xep-0030.html)
+* PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)
+* ??
 
 = License
 
