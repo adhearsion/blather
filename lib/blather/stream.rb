@@ -42,7 +42,7 @@ module Blather
 
     def unbind # :nodoc:
 #      @keepalive.cancel
-      @state == :stopped
+      @state = :stopped
     end
 
     def receive(node) # :nodoc:

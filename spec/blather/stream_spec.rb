@@ -44,6 +44,31 @@ describe 'Blather::Stream' do
     s.connection_completed
   end
 
+  it 'sends stanzas to the client when the stream is ready' do
+    client = mock()
+    client.stubs(:jid=)
+    client.expects(:call)
+    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+
+    stream.expects(:send_data).with do |val|
+      val.must_match(/stream:stream/)
+      stream.receive_data "<stream:stream><message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+    end
+    stream.connection_completed
+  end
+
+  it 'puts itself in the stopped state when unbound' do
+    stream = mock_stream do |val|
+      val.must_match(/stream:stream/)
+      stream.receive_data "<stream:stream>"
+
+      stream.stopped?.wont_equal true
+      stream.unbind
+      stream.stopped?.must_equal true
+    end
+    stream.connection_completed
+  end
+
   it 'stops when sent </stream:stream>' do
     state = nil
     stream = mock_stream do |val|
@@ -71,6 +96,36 @@ describe 'Blather::Stream' do
     stream.connection_completed
     stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
+
+  it 'raises an error when it receives stream:error' do
+    lambda do
+       state = nil
+       stream = mock_stream do |val|
+         case state
+         when nil
+           val.must_match(/stream:stream/)
+           state = :started
+
+         when :started
+           stream.stopped?.wont_equal true
+           state = :stopped
+           stream.receive_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>"
+           true
+
+         when :stopped
+           stream.stopped?.must_equal true
+           val.must_equal "</stream:stream>"
+           true
+
+         else
+           false
+
+         end
+       end
+       stream.connection_completed
+       stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+     end.must_raise(StreamError)
+   end
 
   it 'starts TLS when asked' do
     state = nil
