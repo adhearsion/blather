@@ -5,9 +5,9 @@ class Iq
   class Roster < Query
     register :roster, nil, 'jabber:iq:roster'
 
-    def self.new(type = :get, item = nil)
+    def self.new(type = nil, item = nil)
       elem = super(type)
-      elem.query << item
+      elem.query << item if item
       elem
     end
 
@@ -21,7 +21,7 @@ class Iq
     end
 
     def items
-      @items ||= query.find('item')#.map { |g| RosterItem.new g }
+      query.find('item')#.map { |g| RosterItem.new g }
     end
 
     class RosterItem < XMPPNode
