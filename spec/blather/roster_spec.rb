@@ -40,6 +40,16 @@ describe 'Blather::Roster' do
     @roster[jid].wont_be_nil
   end
 
+  it 'aliases #<< to #push and returns self to allow for chaining' do
+    jid = 'a@b/c'
+    item = RosterItem.new(JID.new(jid))
+    jid2 = 'd@e/f'
+    item2 = RosterItem.new(JID.new(jid2))
+    proc { @roster << item << item2 }.must_change('@roster.items', :length, :by => 2)
+    @roster[jid].wont_be_nil
+    @roster[jid2].wont_be_nil
+  end
+
   it 'sends a @roster addition over the wire' do
     stream = mock()
     stream.expects(:send_data)
