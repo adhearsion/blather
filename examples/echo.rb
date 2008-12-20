@@ -9,5 +9,5 @@ end
 
 # Echo back what was said
 handle :message do |m|
-  write(m.reply) if m.chat?
+  write(m.reply) if m.chat? && m.body
 end

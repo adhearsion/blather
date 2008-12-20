@@ -30,28 +30,22 @@ Jeff Smick <sprsquish@gmail.com>
 
 See the /examples directory for more advanced examples.
 
-This will auto-accept any subscription requests and echo back any messages or presence notifications.
+This will auto-accept any subscription requests and echo back any chat messages.
 
-  require 'lib/blather/client'
+  %w[rubygems blather].each { |r| require r }
 
-  class Echo < Blather::Client
-    # Auto-approve subscription requests
-    def receive_subscription(s)
-      send_data(s.approve!) and true if s.request?
-    end
+  setup 'echo@jabber.local', 'echo'
 
-    # Echo presence
-    def receive_status(status)
-      set_status(status.state, status.message, status.from) if roster[status.from]
-    end
-
-    # Echo message
-    def receive_message(message)
-      send_data(message.reply) if message.type == :chat
-    end
+  # Auto approve subscription requests
+  handle :subscription do |s|
+    write(s.approve!) if s.request?
   end
 
-  Blather.run 'echo@jabber.local', 'echo', Echo.new
+  # Echo back what was said
+  handle :message do |m|
+    write(m.reply) if m.chat? && m.body
+  end
+  
   
 
 = License
