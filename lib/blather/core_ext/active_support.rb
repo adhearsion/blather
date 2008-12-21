@@ -1,22 +1,9 @@
-module LibXML # :nodoc:
-  module XML # :nodoc:
+# Thanks to Rails ActiveSupport for everything in this file
 
-    class Node
-      alias_method :element_name, :name
-    end
-
-    class Attributes
-      # Helper method for removing attributes
-      def remove(name)
-        name = name.to_s
-        self.each { |a| a.remove! or break if a.name == name }
-      end
-    end #Attributes
-
-  end #XML
-end #LibXML
-
-## Thanks to ActiveSupport for everything below this line
+# Allows attributes to be shared within an inheritance hierarchy, but where each descendant gets a copy of
+# their parents' attributes, instead of just a pointer to the same. This means that the child can add elements
+# to, for example, an array without those additions being shared with either their parent, siblings, or
+# children, which is unlike the regular class-level attributes that are shared across the entire hierarchy.
 class Class # :nodoc:
   def class_inheritable_reader(*syms)
     syms.each do |sym|

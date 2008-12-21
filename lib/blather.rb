@@ -1,5 +1,6 @@
 $:.unshift File.dirname(__FILE__)
 
+# Require the necessary files
 %w[
   rubygems
   xml/libxml
@@ -7,11 +8,13 @@ $:.unshift File.dirname(__FILE__)
   digest/md5
   logger
 
+  blather/core_ext/active_support
+  blather/core_ext/libxml
+
   blather/errors
   blather/jid
   blather/roster
   blather/roster_item
-  blather/sugar
   blather/xmpp_node
 
   blather/stanza
