@@ -2,6 +2,8 @@ module Blather
   ##
   # Base XMPP Stanza
   class Stanza < XMPPNode
+    @@last_id = 0
+
     class_inheritable_array :handler_heirarchy
 
     ##
@@ -22,7 +24,6 @@ module Blather
     ##
     # Helper method that creates a unique ID for stanzas
     def self.next_id
-      @@last_id ||= 0
       @@last_id += 1
       'blather%04x' % @@last_id
     end
