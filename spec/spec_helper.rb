@@ -33,9 +33,7 @@ end
 
 class Object
   def must_change *args, &block
-    return MiniTest::Spec.current.assert_change(*args, &self)     if Proc === self
-    return MiniTest::Spec.current.assert_change(args.first, self) if args.size == 1
-    return MiniTest::Spec.current.assert_change(self, *args)
+    return MiniTest::Spec.current.assert_change(*args, &self)
   end
 end
 
