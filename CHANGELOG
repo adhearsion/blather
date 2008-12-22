@@ -1,3 +1,5 @@
+v0.2.1 Upgrade to libxml 0.9.7
+
 v0.2 Overhaul the DSL to look more like Sinatra
 
 v0.1 Initial release (birth!)
