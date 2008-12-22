@@ -9,11 +9,10 @@ class Presence
 
     register :status, :status
 
-    def self.new(state = nil, message = nil)
-      elem = super()
-      elem.state = state
-      elem.message = message
-      elem
+    def initialize(state = nil, message = nil)
+      super()
+      self.state = state
+      self.message = message
     end
 
     ##

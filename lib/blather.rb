@@ -39,6 +39,8 @@ XML.indent_tree_output = false
 
 module Blather
   LOG = Logger.new(STDOUT)
+  Stream::Parser.debug = true
+#  LOG.level = Logger::INFO
 
   class Client
     attr_accessor :jid,

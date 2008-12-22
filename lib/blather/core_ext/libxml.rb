@@ -8,8 +8,13 @@ module LibXML # :nodoc:
     class Attributes
       # Helper method for removing attributes
       def remove(name)
-        name = name.to_s
-        self.each { |a| a.remove! or break if a.name == name }
+        attribute = get_attribute(name.to_s)
+        attribute.remove! if attribute
+      end
+
+      alias_method :old_hash_set, :[]=
+      def []=(name, val)
+        val.nil? ? remove(name.to_s) : old_hash_set(name.to_s, val.to_s)
       end
     end #Attributes
 

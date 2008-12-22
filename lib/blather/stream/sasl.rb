@@ -18,7 +18,11 @@ module Stream # :nodoc:
     end
 
     def init_callbacks
-      @callbacks['mechanisms'] = proc { @mechanisms = @node.children; set_mechanism; authenticate }
+      @callbacks['mechanisms'] = proc {
+        @mechanisms = @node.children
+        set_mechanism
+        authenticate
+      }
     end
 
     def set_mechanism

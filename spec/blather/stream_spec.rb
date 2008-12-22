@@ -52,7 +52,7 @@ describe 'Blather::Stream' do
 
     stream.expects(:send_data).with do |val|
       val.must_match(/stream:stream/)
-      stream.receive_data "<stream:stream><message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+      stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
     end
     stream.connection_completed
   end
@@ -60,7 +60,7 @@ describe 'Blather::Stream' do
   it 'puts itself in the stopped state when unbound' do
     stream = mock_stream do |val|
       val.must_match(/stream:stream/)
-      stream.receive_data "<stream:stream>"
+      stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
 
       stream.stopped?.wont_equal true
       stream.unbind
@@ -94,7 +94,7 @@ describe 'Blather::Stream' do
       end
     end
     stream.connection_completed
-    stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+    stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
 
   it 'raises an error when it receives stream:error' do
@@ -123,7 +123,7 @@ describe 'Blather::Stream' do
          end
        end
        stream.connection_completed
-       stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+       stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
      end.must_raise(StreamError)
    end
 
@@ -145,7 +145,7 @@ describe 'Blather::Stream' do
       end
     end
     stream.connection_completed
-    stream.receive_data "<stream:stream><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+    stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
 
   it 'connects via SASL MD5 when asked' do
@@ -161,7 +161,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism></mechanisms></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism></mechanisms></stream:features>"
         true
 
       when :started
@@ -206,7 +206,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
         true
 
       when :started
@@ -239,7 +239,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
         true
 
       when :started
@@ -272,7 +272,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
         true
 
       when :started
@@ -317,7 +317,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
         true
 
       when :started
@@ -356,7 +356,7 @@ describe 'Blather::Stream' do
         state = :started
         val.must_match(/stream:stream/)
         lambda do
-          stream.receive_data "<stream:stream><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
+          stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
         end.must_raise(Stream::SASL::UnknownMechanism)
 
       else
@@ -380,11 +380,11 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
         true
 
       when :started
-        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"\s*/>})
+        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/>})
         val =~ %r{<iq[^>]+id="([^"]+)"}
         state = :complete
         stream.receive_data "<iq type='result' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{jid}/server_resource</jid></bind></iq>"
@@ -412,7 +412,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
         true
 
       when :started
@@ -443,7 +443,7 @@ describe 'Blather::Stream' do
       when nil
         val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<stream:stream><stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></stream:features>"
+        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></stream:features>"
         true
 
       when :started

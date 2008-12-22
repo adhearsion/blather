@@ -5,10 +5,9 @@ class Iq
   class Roster < Query
     register :roster, nil, 'jabber:iq:roster'
 
-    def self.new(type = nil, item = nil)
-      elem = super(type)
-      elem.query << item if item
-      elem
+    def initialize(type = nil, item = nil)
+      super(type)
+      query << item if item
     end
 
     def inherit(node)
@@ -25,53 +24,48 @@ class Iq
     end
 
     class RosterItem < XMPPNode
-      def self.new(jid = nil, name = nil, subscription = nil, ask = nil)
-        elem = super('item')
+      def initialize(jid = nil, name = nil, subscription = nil, ask = nil)
+        super('item')
         if jid.is_a?(XML::Node)
-          elem.inherit jid
+          self.inherit jid
         else
-          elem.jid = jid
-          elem.name = name
-          elem.subscription = subscription
-          elem.ask = ask
+          self.jid = jid
+          self.name = name
+          self.subscription = subscription
+          self.ask = ask
         end
-        elem
       end
 
       def jid
-        (j = self['jid']) ? JID.new(j) : nil
+        (j = attributes['jid']) ? JID.new(j) : nil
       end
 
       def jid=(jid)
-        attributes.remove :jid
-        self['jid'] = jid.to_s if jid
+        attributes['jid'] = jid
       end
 
       def name
-        self['name']
+        attributes['name']
       end
 
       def name=(name)
-        attributes.remove :name
-        self['name'] = name if name
+        attributes['name'] = name
       end
 
       def subscription
-        self['subscription'].to_sym if self['subscription']
+        attributes['subscription'].to_sym if attributes['subscription']
       end
 
       def subscription=(subscription)
-        attributes.remove :subscription
-        self['subscription'] = subscription.to_s if subscription
+        attributes['subscription'] = subscription
       end
 
       def ask
-        self['ask'].to_sym if self['ask']
+        attributes['ask'].to_sym if attributes['ask']
       end
 
       def ask=(ask)
-        attributes.remove :ask
-        self['ask'] = ask if ask
+        attributes['ask'] = ask
       end
 
       def groups
@@ -82,7 +76,7 @@ class Iq
         find('group').each { |g| g.remove! }
         @groups = nil
 
-        grps.uniq.each { |g| add_node XML::Node.new('group', g.to_s) } if grps
+        grps.uniq.each { |g| add_node XMPPNode.new('group', g.to_s) } if grps
       end
 
       def to_stanza

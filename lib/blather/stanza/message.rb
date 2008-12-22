@@ -8,12 +8,11 @@ class Stanza
 
     register :message
 
-    def self.new(to = nil, body = nil, type = :chat)
-      elem = super()
-      elem.to = to
-      elem.type = type
-      elem.body = body
-      elem
+    def initialize(to = nil, body = nil, type = :chat)
+      super()
+      self.to = to
+      self.type = type
+      self.body = body
     end
 
     VALID_TYPES.each do |valid_type|

@@ -2,6 +2,9 @@ module Blather
   # Main error class
   class BlatherError < StandardError; end
 
+    #Parse Errors
+    class ParseError < BlatherError; end
+
     # Stream errors
     class StreamError < BlatherError
       attr_accessor :type, :text

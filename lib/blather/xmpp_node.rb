@@ -11,20 +11,6 @@ module Blather
                                 :name
 
     ##
-    # Automatically sets the namespace registered by the subclass
-    def self.new(name = nil, content = nil)
-      name ||= self.name
-
-      args = []
-      args << name.to_s if name
-      args << content if content
-
-      elem = super *args
-      elem.xmlns = xmlns
-      elem
-    end
-
-    ##
     # Lets a subclass register itself
     #
     # This registers a namespace that is used when looking
@@ -57,18 +43,27 @@ module Blather
     end
 
     ##
+    # Automatically sets the namespace registered by the subclass
+    def initialize(name = nil, content = nil)
+      name ||= self.class.name
+      content = content.to_s if content
+
+      super name.to_s, content
+      self.xmlns = self.class.xmlns
+    end
+
+    ##
     # Quickway of turning itself into a proper object
     def to_stanza
       self.class.import self
     end
 
     def xmlns=(ns)
-      attributes.remove :xmlns
-      self['xmlns'] = ns if ns
+      attributes['xmlns'] = ns
     end
 
     def xmlns
-      self['xmlns']
+      attributes['xmlns']
     end
 
     ##

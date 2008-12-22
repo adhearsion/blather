@@ -36,15 +36,17 @@ module Blather
     end
 
     ##
-    # Creates a new Stanza with the name given
-    # then attaches an ID and document (to enable searching)
-    def self.new(elem_name = nil)
-      elem = super
-      elem.id = next_id
-      XML::Document.new.root = elem
-      elem
+    # Automatically set the stanza's ID
+    # and attach it to a document so XPath searching works
+    def initialize(name = nil)
+      super
+      XML::Document.new.root = self
+      self.name = name.to_s if name
+      self.id = self.class.next_id
     end
 
+    ##
+    # Helper method to ask the object if it's an error
     def error?
       self.type == :error
     end
@@ -64,45 +66,41 @@ module Blather
     end
 
     def id=(id)
-      attributes.remove :id
-      self['id'] = id if id
+      attributes['id'] = id
     end
 
     def id
-      self['id']
+      attributes['id']
     end
 
     def to=(to)
-      attributes.remove :to
-      self['to'] = to.to_s if to
+      attributes['to'] = to
     end
 
     ##
     # returns:: JID created from the "to" value of the stanza
     def to
-      JID.new(self['to']) if self['to']
+      JID.new(attributes['to']) if attributes['to']
     end
 
     def from=(from)
-      attributes.remove :from
-      self['from'] = from.to_s if from
+      attributes['from'] = from
     end
 
     ##
     # returns:: JID created from the "from" value of the stanza
     def from
-      JID.new(self['from']) if self['from']
+      JID.new(attributes['from']) if attributes['from']
     end
 
     def type=(type)
-      attributes.remove :type
-      self['type'] = type.to_s
+      attributes['type'] = type
     end
 
     ##
     # returns:: a symbol of the type
     def type
-      self['type'].to_sym unless self['type'].nil? || self['type'].empty?
+      attributes['type'].to_sym unless attributes['type'].blank?
     end
 
   end

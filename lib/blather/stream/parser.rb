@@ -3,6 +3,7 @@ module Stream # :nodoc:
 
   class Parser # :nodoc:
     STREAM_REGEX = %r{(/)?stream:stream}.freeze
+    ERROR_REGEX = /^<(stream:[a-z]+)/.freeze
 
     @@debug = false
     def self.debug; @@debug; end
@@ -15,6 +16,7 @@ module Stream # :nodoc:
       @current = nil
 
       @parser = XML::SaxParser.new
+      @parser.io = StringIO.new
       @parser.callbacks = self
     end
 
@@ -24,16 +26,19 @@ module Stream # :nodoc:
         @receiver.receive XMPPNode.new('stream:end')
       else
         string << "</stream:stream>" if string =~ STREAM_REGEX && !$1
+        string.gsub!(ERROR_REGEX, "<\\1 xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'")
 
         @parser.string = string
         @parser.parse
       end
     end
 
-    def on_start_element(elem, attrs)
-      LOG.debug "START ELEM: (#{[elem, attrs].inspect})" if @@debug
+    NON_ATTRS = [nil, 'stream'].freeze
+    def on_start_element_ns(elem, attrs, prefix, uri, namespaces)
+      LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :ns => namespaces}.inspect})" if @@debug
+      elem = "#{"#{prefix}:" if prefix}#{elem}"
       e = XMPPNode.new elem
-      attrs.each { |n,v| e[n] = v }
+      attrs.each { |n,v| n = "xmlns#{":#{n}" if n}" if NON_ATTRS.include?(n); e.attributes[n] = v }
 
       if elem == 'stream:stream'
         @receiver.receive e
@@ -50,10 +55,12 @@ module Stream # :nodoc:
       @current << XML::Node.new_text(chars) if @current
     end
 
-    def on_end_element(elem)
+    def on_end_element_ns(elem, prefix, uri)
+      LOG.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri, :current => @current}.inspect}" if @@debug
+
+      elem = "#{"#{prefix}:" if prefix}#{elem}"
       return if elem =~ STREAM_REGEX
 
-      LOG.debug "END ELEM: (#{@current}) #{elem}" if @@debug
       if @current.parent?
         @current = @current.parent
 
@@ -61,6 +68,10 @@ module Stream # :nodoc:
         c, @current = @current, nil
         @receiver.receive c
 
+      end
+
+      def on_error(msg)
+        raise Blather::ParseError, msg.to_s
       end
     end
   end #Parser
