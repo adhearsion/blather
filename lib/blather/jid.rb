@@ -5,24 +5,23 @@ module Blather
   class JID
     include Comparable
 
-    PATTERN = /^(?:([^@]*)@)??([^@\/]*)(?:\/(.*?))?$/
+    PATTERN = /^(?:([^@]*)@)??([^@\/]*)(?:\/(.*?))?$/.freeze
 
-    begin
-      require 'idn'
-      USE_STRINGPREP = true
-    rescue LoadError
-      USE_STRINGPREP = false
-    end
-
+    ##
     # Get the JID's node
     attr_reader :node
 
+    ##
     # Get the JID's domain
     attr_reader :domain
 
+    ##
     # Get the JID's resource
     attr_reader :resource
 
+    ##
+    # If a JID is passed in just return it. 
+    # No need to copy out all the values
     def self.new(node, domain = nil, resource = nil)
       node.is_a?(JID) ? node : super
     end
@@ -39,14 +38,8 @@ module Blather
         @node, @domain, @resource = @node.to_s.scan(PATTERN).first
       end
 
-      if USE_STRINGPREP
-        @node = IDN::Stringprep.nodeprep(@node)             if @node
-        @domain = IDN::Stringprep.nameprep(@domain)         if @domain
-        @resource = IDN::Stringprep.resourceprep(@resource) if @resource
-      else
-        @node.downcase!   if @node
-        @domain.downcase! if @domain
-      end
+      @node.downcase!   if @node
+      @domain.downcase! if @domain
 
       raise ArgumentError, 'Node too long'      if (@node || '').length > 1023
       raise ArgumentError, 'Domain too long'    if (@domain || '').length > 1023
