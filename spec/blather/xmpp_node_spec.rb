@@ -53,9 +53,9 @@ describe 'Blather::XMPPNode' do
     n << XMPPNode.new('bar')
     n << XMPPNode.new('bar')
 
-    n.find('bar').size.must_equal 2
+    n.find(:bar).size.must_equal 2
     n.remove_child 'bar'
-    n.find('bar').size.must_equal 1
+    n.find(:bar).size.must_equal 1
   end
 
   it 'will remove a child with a specific xmlns' do
@@ -65,10 +65,10 @@ describe 'Blather::XMPPNode' do
     c.xmlns = 'foo:bar'
     n << c
 
-    n.find('bar').size.must_equal 2
+    n.find(:bar).size.must_equal 2
     n.remove_child 'bar', 'foo:bar'
-    n.find('bar').size.must_equal 1
-    n.find('bar').first.xmlns.must_be_nil
+    n.find(:bar).size.must_equal 1
+    n.find(:bar).first.xmlns.must_be_nil
   end
 
   it 'will remove all child elements' do
@@ -76,9 +76,9 @@ describe 'Blather::XMPPNode' do
     n << XMPPNode.new('bar')
     n << XMPPNode.new('bar')
 
-    n.find('bar').size.must_equal 2
+    n.find(:bar).size.must_equal 2
     n.remove_children 'bar'
-    n.find('bar').size.must_equal 0
+    n.find(:bar).size.must_equal 0
   end
 
   it 'provides a helper to grab content from a child' do
@@ -122,10 +122,10 @@ describe 'Blather::XMPPNode' do
   it 'overrides #find to find without xpath' do
     n = XMPPNode.new 'foo'
     n << XMPPNode.new('bar', 'baz')
-    n.find('bar').must_be_kind_of Array
+    n.find(:bar).must_be_kind_of Array
 
     XML::Document.new.root = n
-    n.find('bar').must_be_kind_of XML::XPath::Object
+    n.find(:bar).must_be_kind_of XML::XPath::Object
   end
 
   it 'can find using a symbol' do

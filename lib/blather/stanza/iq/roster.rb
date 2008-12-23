@@ -6,24 +6,27 @@ class Iq
     register :roster, nil, 'jabber:iq:roster'
 
     def initialize(type = nil, item = nil)
-      super(type)
+      super type
       query << item if item
     end
 
     def inherit(node)
+      # remove the current set of nodes
       items.each { |i| i.remove! }
       super
+      # transmogrify nodes into RosterItems
       items.each { |i| query << RosterItem.new(i); i.remove! }
       self
     end
 
     def items
-      query.find('item')#.map { |g| RosterItem.new g }
+      query.find(:item)#.map { |g| RosterItem.new g }
     end
 
     class RosterItem < XMPPNode
       def initialize(jid = nil, name = nil, subscription = nil, ask = nil)
-        super('item')
+        super :item
+
         if jid.is_a?(XML::Node)
           self.inherit jid
         else
@@ -67,14 +70,14 @@ class Iq
       end
 
       def groups
-        @groups ||= find('group').map { |g| g.content }
+        @groups ||= find(:group).map { |g| g.content }
       end
 
       def groups=(grps)
-        find('group').each { |g| g.remove! }
+        find(:group).each { |g| g.remove! }
         @groups = nil
 
-        grps.uniq.each { |g| add_node XMPPNode.new('group', g.to_s) } if grps
+        grps.uniq.each { |g| add_node XMPPNode.new(:group, g) } if grps
       end
 
       def to_stanza

@@ -16,7 +16,6 @@ class Iq
     # Kill the query node before running inherit
     def inherit(node)
       query.remove!
-      @query = nil
       super
     end
 
