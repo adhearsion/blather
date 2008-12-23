@@ -39,8 +39,9 @@ class Iq
     ##
     # A query reply should have type set to "result"
     def reply!
-      self.type = :result
       super
+      self.type = :result
+      self
     end
   end #Query
 
