@@ -59,11 +59,11 @@ module Blather
     end
 
     def xmlns=(ns)
-      attributes['xmlns'] = ns
+      attributes[:xmlns] = ns
     end
 
     def xmlns
-      attributes['xmlns']
+      attributes[:xmlns]
     end
 
     ##
@@ -104,7 +104,7 @@ module Blather
     ##
     # Inherit only <tt>stanza</tt>'s attributes
     def inherit_attrs(attrs)
-      attrs.each  { |a| self[a.name] = a.value }
+      attrs.each  { |a| attributes[a.name] = a.value }
       self
     end
 

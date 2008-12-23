@@ -12,10 +12,8 @@ class Iq
 
     def inherit(node)
       items.each { |i| i.remove! }
-      @items = nil
       super
       items.each { |i| query << RosterItem.new(i); i.remove! }
-      @items = nil
       self
     end
 
@@ -37,35 +35,35 @@ class Iq
       end
 
       def jid
-        (j = attributes['jid']) ? JID.new(j) : nil
+        (j = attributes[:jid]) ? JID.new(j) : nil
       end
 
       def jid=(jid)
-        attributes['jid'] = jid
+        attributes[:jid] = jid
       end
 
       def name
-        attributes['name']
+        attributes[:name]
       end
 
       def name=(name)
-        attributes['name'] = name
+        attributes[:name] = name
       end
 
       def subscription
-        attributes['subscription'].to_sym if attributes['subscription']
+        attributes[:subscription].to_sym if attributes[:subscription]
       end
 
       def subscription=(subscription)
-        attributes['subscription'] = subscription
+        attributes[:subscription] = subscription
       end
 
       def ask
-        attributes['ask'].to_sym if attributes['ask']
+        attributes[:ask].to_sym if attributes[:ask]
       end
 
       def ask=(ask)
-        attributes['ask'] = ask
+        attributes[:ask] = ask
       end
 
       def groups

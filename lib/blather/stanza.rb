@@ -66,41 +66,41 @@ module Blather
     end
 
     def id=(id)
-      attributes['id'] = id
+      attributes[:id] = id
     end
 
     def id
-      attributes['id']
+      attributes[:id]
     end
 
     def to=(to)
-      attributes['to'] = to
+      attributes[:to] = to
     end
 
     ##
     # returns:: JID created from the "to" value of the stanza
     def to
-      JID.new(attributes['to']) if attributes['to']
+      JID.new(attributes[:to]) if attributes[:to]
     end
 
     def from=(from)
-      attributes['from'] = from
+      attributes[:from] = from
     end
 
     ##
     # returns:: JID created from the "from" value of the stanza
     def from
-      JID.new(attributes['from']) if attributes['from']
+      JID.new(attributes[:from]) if attributes[:from]
     end
 
     def type=(type)
-      attributes['type'] = type
+      attributes[:type] = type
     end
 
     ##
     # returns:: a symbol of the type
     def type
-      attributes['type'].to_sym unless attributes['type'].blank?
+      attributes[:type].to_sym unless attributes[:type].blank?
     end
 
   end
