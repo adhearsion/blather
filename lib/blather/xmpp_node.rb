@@ -118,7 +118,8 @@ module Blather
     ##
     # Override #find to work when a node isn't attached to a document
     def find(what, nslist = nil)
-      (self.doc ? super(what, nslist) : select { |i| i.element_name == what})
+      what = what.to_s
+      (self.doc ? super(what, nslist) : select { |i| i.element_name == what })
     end
   end #XMPPNode
 

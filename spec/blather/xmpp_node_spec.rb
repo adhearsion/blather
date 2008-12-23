@@ -127,4 +127,10 @@ describe 'Blather::XMPPNode' do
     XML::Document.new.root = n
     n.find('bar').must_be_kind_of XML::XPath::Object
   end
+
+  it 'can find using a symbol' do
+    n = XMPPNode.new 'foo'
+    n << XMPPNode.new('bar', 'baz')
+    n.find(:bar).first.to_s.must_equal "<bar>baz</bar>"
+  end
 end
