@@ -1,14 +1,26 @@
 require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
 
 describe 'Blather::Stream' do
-  class MockStream; include Stream; end
-  def mock_stream(&block)
-    @client = mock()
-    @client.stubs(:jid=)
-    stream = MockStream.new @client, JID.new('n@d/r'), 'pass'
+  class MockServer; end
+  module ServerMock
+    def receive_data(data)
+      @server ||= MockServer.new
+      @server.receive_data data, self
+    end
+  end
 
-    stream.expects(:send_data).at_least(1).with &block
-    stream
+  def mocked_server(times = nil, &block)
+    @client ||= mock()
+    @client.stubs(:jid=) unless @client.respond_to?(:jid=)
+
+    MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
+    EventMachine::run {
+      # Mocked server
+      EventMachine::start_server '127.0.0.1', 12345, ServerMock
+
+      # Stream connection
+      EM.connect('127.0.0.1', 12345, Stream, @client, @jid || JID.new('n@d/r'), 'pass') { |c| @stream = c }
+    }
   end
 
   it 'can be started' do
@@ -40,423 +52,387 @@ describe 'Blather::Stream' do
   end
 
   it 'starts the stream once the connection is complete' do
-    s = mock_stream { |d| d =~ /stream:stream/ }
-    s.connection_completed
+    mocked_server(1) { |val, _| EM.stop; val.must_match(/stream:stream/) }
   end
 
   it 'sends stanzas to the client when the stream is ready' do
-    client = mock()
-    client.stubs(:jid=)
-    client.expects(:call)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+    @client = mock()
+    @client.expects(:call).with { |n| EM.stop; n.kind_of?(Stanza::Message) }
 
-    stream.expects(:send_data).with do |val|
+    mocked_server(1) do |val, server|
       val.must_match(/stream:stream/)
-      stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+      server.send_data "<?xml version='1.0' ?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
     end
-    stream.connection_completed
   end
 
-  it 'puts itself in the stopped state when unbound' do
-    stream = mock_stream do |val|
-      val.must_match(/stream:stream/)
-      stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+  it 'puts itself in the stopped state when stopped' do
+    started = false
+    mocked_server(2) do |val, server|
+      if !started
+        started = true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
 
-      stream.stopped?.wont_equal true
-      stream.unbind
-      stream.stopped?.must_equal true
+      else
+        EM.stop
+        @stream.stopped?.must_equal false
+        @stream.unbind
+        @stream.stopped?.must_equal true
+
+      end
     end
-    stream.connection_completed
   end
 
   it 'stops when sent </stream:stream>' do
     state = nil
-    stream = mock_stream do |val|
+    mocked_server(3) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0' xml:lang='en'>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        stream.stopped?.wont_equal true
         state = :stopped
-        stream.receive_data "</stream:stream>"
-        true
+        server.send_data '</stream:stream>'
+        @stream.stopped?.must_equal false
 
       when :stopped
-        stream.stopped?.must_equal true
-        val.must_equal "</stream:stream>"
-        true
+        EM.stop
+        @stream.stopped?.must_equal true
+        val.must_equal '</stream:stream>'
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
-    stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
 
   it 'raises an error when it receives stream:error' do
     lambda do
        state = nil
-       stream = mock_stream do |val|
+       mocked_server(3) do |val, server|
          case state
          when nil
-           val.must_match(/stream:stream/)
            state = :started
+           server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>"
+           server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+           val.must_match(/stream:stream/)
 
          when :started
-           stream.stopped?.wont_equal true
            state = :stopped
-           stream.receive_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>"
-           true
+           server.send_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams' /></stream:error>"
 
          when :stopped
-           stream.stopped?.must_equal true
+           EM.stop
            val.must_equal "</stream:stream>"
-           true
 
          else
+           EM.stop
            false
 
          end
        end
-       stream.connection_completed
-       stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
      end.must_raise(StreamError)
    end
 
   it 'starts TLS when asked' do
     state = nil
-    stream = mock_stream do |val|
+    mocked_server(2) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
+        EM.stop
         val.must_match(/starttls/)
-        true
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
-    stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
   end
 
   it 'connects via SASL MD5 when asked' do
     Time.any_instance.stubs(:to_f).returns(1.1)
-
     state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
 
-    stream.expects(:send_data).times(5).with do |val|
+    mocked_server(5) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism></mechanisms></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_match(/auth.*DIGEST\-MD5/)
         state = :auth_sent
-        stream.receive_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>cmVhbG09InNvbWVyZWFsbSIsbm9uY2U9Ik9BNk1HOXRFUUdtMmhoIixxb3A9ImF1dGgiLGNoYXJzZXQ9dXRmLTgsYWxnb3JpdGhtPW1kNS1zZXNzCg==</challenge>"
-        true
+        server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>cmVhbG09InNvbWVyZWFsbSIsbm9uY2U9Ik9BNk1HOXRFUUdtMmhoIixxb3A9ImF1dGgiLGNoYXJzZXQ9dXRmLTgsYWxnb3JpdGhtPW1kNS1zZXNzCg==</challenge>"
+        val.must_match(/auth.*DIGEST\-MD5/)
 
       when :auth_sent
-        val.must_equal('<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl">bm9uY2U9Ik9BNk1HOXRFUUdtMmhoIixjaGFyc2V0PXV0Zi04LHVzZXJuYW1lPSJuIixyZWFsbT0ic29tZXJlYWxtIixjbm9uY2U9Ijc3N2Q0NWJiYmNkZjUwZDQ5YzQyYzcwYWQ3YWNmNWZlIixuYz0wMDAwMDAwMSxxb3A9YXV0aCxkaWdlc3QtdXJpPSJ4bXBwL2QiLHJlc3BvbnNlPTZiNTlhY2Q1ZWJmZjhjZTA0NTYzMGFiMDU2Zjg3MTdm</response>')
         state = :response1_sent
-        stream.receive_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>cnNwYXV0aD1lYTQwZjYwMzM1YzQyN2I1NTI3Yjg0ZGJhYmNkZmZmZAo=</challenge>"
-        true
+        server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>cnNwYXV0aD1lYTQwZjYwMzM1YzQyN2I1NTI3Yjg0ZGJhYmNkZmZmZAo=</challenge>"
+        val.must_equal('<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl">bm9uY2U9Ik9BNk1HOXRFUUdtMmhoIixjaGFyc2V0PXV0Zi04LHVzZXJuYW1lPSJuIixyZWFsbT0ic29tZXJlYWxtIixjbm9uY2U9Ijc3N2Q0NWJiYmNkZjUwZDQ5YzQyYzcwYWQ3YWNmNWZlIixuYz0wMDAwMDAwMSxxb3A9YXV0aCxkaWdlc3QtdXJpPSJ4bXBwL2QiLHJlc3BvbnNlPTZiNTlhY2Q1ZWJmZjhjZTA0NTYzMGFiMDU2Zjg3MTdm</response>')
 
       when :response1_sent
-        val.must_equal('<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl"/>')
         state = :response2_sent
-        stream.receive_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>"
-        true
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.must_match(%r{<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl"\s?/>})
 
       when :response2_sent
-        val.must_match(/stream:stream/)
+        EM.stop
         state = :complete
-        true
+        val.must_match(/stream:stream/)
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'will connect via SSL PLAIN when asked' do
     state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
-
-    stream.expects(:send_data).times(3).with do |val|
+    mocked_server(3) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
         state = :auth_sent
-        stream.receive_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>"
-        true
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
 
       when :auth_sent
-        val.must_match(/stream:stream/)
+        EM.stop
         state = :complete
-        true
+        val.must_match(/stream:stream/)
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'will connect via SSL ANONYMOUS when asked' do
     state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
 
-    stream.expects(:send_data).times(3).with do |val|
+    mocked_server(3) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS">bg==</auth>')
         state = :auth_sent
-        stream.receive_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>"
-        true
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS">bg==</auth>')
 
       when :auth_sent
-        val.must_match(/stream:stream/)
+        EM.stop
         state = :complete
-        true
+        val.must_match(/stream:stream/)
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'tried each possible mechanism until it fails completely' do
     state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
 
-    stream.expects(:send_data).times(5).with do |val|
+    mocked_server(5) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_match(/mechanism="DIGEST-MD5"/)
         state = :failed_md5
-        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
-        true
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized /></failure>"
+        val.must_match(/mechanism="DIGEST-MD5"/)
 
       when :failed_md5
-        val.must_match(/mechanism="PLAIN"/)
         state = :failed_plain
-        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
-        true
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized /></failure>"
+        val.must_match(/mechanism="PLAIN"/)
 
       when :failed_plain
-        val.must_match(/mechanism="ANONYMOUS"/)
         state = :failed_anon
-        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
-        true
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized /></failure>"
+        val.must_match(/mechanism="ANONYMOUS"/)
 
       when :failed_anon
-        val.must_match(/\/stream:stream/)
+        EM.stop
         state = :complete
-        true
+        val.must_match(/\/stream:stream/)
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'tries each mechanism until it succeeds' do
     state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
-
-    stream.expects(:send_data).times(4).with do |val|
+    mocked_server(4) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_match(/mechanism="DIGEST-MD5"/)
         state = :failed_md5
-        stream.receive_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized/></failure>"
-        true
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized /></failure>"
+        val.must_match(/mechanism="DIGEST-MD5"/)
 
       when :failed_md5
-        val.must_match(/mechanism="PLAIN"/)
         state = :plain_sent
-        stream.receive_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>"
-        true
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.must_match(/mechanism="PLAIN"/)
 
       when :plain_sent
+        EM.stop
         val.must_match(/stream:stream/)
-        state = :complete
-        true
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'raises an exception when an unknown mechanism is sent' do
-    state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+    started = false
+    lambda do
+      mocked_server(2) do |val, server|
+        if !started
+          started = true
+          server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
+          val.must_match(/stream:stream/)
 
-    stream.expects(:send_data).times(2).with do |val|
-      if !state
-        state = :started
-        val.must_match(/stream:stream/)
-        lambda do
-          stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
-        end.must_raise(Stream::SASL::UnknownMechanism)
+        else
+          EM.stop
+          val.must_match(/failure(.*)invalid\-mechanism/)
 
-      else
-        val.must_match(/failure(.*)invalid\-mechanism/)
-
+        end
       end
-    end
-    stream.connection_completed
+    end.must_raise(Stream::SASL::UnknownMechanism)
   end
 
   it 'will bind to a resource set by the server' do
     state = nil
     class Client; attr_accessor :jid; end
-    client = Client.new
+    @client = Client.new
+    @jid = JID.new('n@d')
 
-    jid = JID.new('n@d')
-    stream = MockStream.new client, jid, 'pass'
-
-    stream.expects(:send_data).times(2).with do |val|
+    mocked_server(3) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/>})
-        val =~ %r{<iq[^>]+id="([^"]+)"}
         state = :complete
-        stream.receive_data "<iq type='result' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{jid}/server_resource</jid></bind></iq>"
-        client.jid.must_equal JID.new('n@d/server_resource')
-        true
+        val =~ %r{<iq[^>]+id="([^"]+)"}
+        server.send_data "<iq type='result' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{@jid}/server_resource</jid></bind></iq>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"\s?/>})
+
+      when :complete
+        EM.stop
+        @client.jid.must_equal JID.new('n@d/server_resource')
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'will bind to a resource set by the client' do
     state = nil
     class Client; attr_accessor :jid; end
-    client = Client.new
+    @client = Client.new
+    @jid = JID.new('n@d/r')
 
-    jid = JID.new('n@d/r')
-    stream = MockStream.new client, jid, 'pass'
-
-    stream.expects(:send_data).times(2).with do |val|
+    mocked_server(3) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
-        val =~ %r{<iq[^>]+id="([^"]+)"}
         state = :complete
-        stream.receive_data "<iq type='result' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{jid}</jid></bind></iq>"
-        client.jid.must_equal JID.new('n@d/r')
-        true
+        val =~ %r{<iq[^>]+id="([^"]+)"}
+        server.send_data "<iq type='result' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{@jid}</jid></bind></iq>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
+
+      when :complete
+        EM.stop
+        @client.jid.must_equal JID.new('n@d/r')
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 
   it 'will establish a session if requested' do
     state = nil
-    client = mock()
-    client.stubs(:jid=)
-    stream = MockStream.new client, JID.new('n@d/r'), 'pass'
+    @client = mock()
+    @client.expects(:stream_started)
 
-    client.expects(:stream_started)
-    stream.expects(:send_data).times(2).with do |val|
+    mocked_server(3) do |val, server|
       case state
       when nil
-        val.must_match(/stream:stream/)
         state = :started
-        stream.receive_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></stream:features>"
-        true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /></stream:features>"
+        val.must_match(/stream:stream/)
 
       when :started
-        val.must_match('<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"/></iq>')
         state = :completed
-        stream.receive_data "<iq from='d' type='result' id='#{val[/id="([^"]+)"/,1]}'/>"
+        server.send_data "<iq from='d' type='result' id='#{val[/id="([^"]+)"/,1]}' />"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(%r{<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"\s?/></iq>})
+
+      when :completed
+        EM.stop
         true
 
       else
+        EM.stop
         false
 
       end
     end
-    stream.connection_completed
   end
 end

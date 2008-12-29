@@ -13,6 +13,7 @@ module Blather
     def initialize(client, jid, pass) # :nodoc:
       super()
 
+      @error = nil
       @client = client
 
       self.jid = jid
@@ -23,8 +24,6 @@ module Blather
       @lang = 'en'
       @version = '1.0'
       @namespace = 'jabber:client'
-
-      @parser = Parser.new self
     end
 
     def connection_completed # :nodoc:
@@ -34,6 +33,8 @@ module Blather
     end
 
     def receive_data(data) # :nodoc:
+      LOG.debug "\n"+('-'*30)+"\n"
+      LOG.debug "<< #{data}"
       @parser.parse data
 
     rescue => e
@@ -42,11 +43,11 @@ module Blather
 
     def unbind # :nodoc:
 #      @keepalive.cancel
+      raise @error if @error
       @state = :stopped
     end
 
     def receive(node) # :nodoc:
-      LOG.debug "\n"+('-'*30)+"\n"
       LOG.debug "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
@@ -55,7 +56,7 @@ module Blather
         @state = :ready if @state == :stopped
 
       when 'stream:end'
-        @state = :stopped
+        stop
 
       when 'stream:features'
         @features = @node.children
@@ -63,7 +64,9 @@ module Blather
         dispatch
 
       when 'stream:error'
-        raise StreamError.new(@node)
+        @error = StreamError.new(@node)
+        stop
+        @state = :error
 
       else
         dispatch
@@ -100,7 +103,8 @@ module Blather
     end
 
     def start
-      send <<-STREAM
+      @parser = Parser.new self
+      start_stream = <<-STREAM
         <stream:stream
           to='#{@to}'
           xmlns='#{@namespace}'
@@ -109,9 +113,11 @@ module Blather
           xml:lang='#{@lang}'
         >
       STREAM
+      send start_stream.gsub(/\s+/, ' ')
     end
 
     def stop
+      @state = :stopped
       send '</stream:stream>'
     end
 
@@ -155,6 +161,9 @@ module Blather
         @node = @features.shift
       end
       @sasl.receive @node
+    rescue SASL::UnknownMechanism => e
+      @error = e
+      stop
     end
 
     def bind_resource

@@ -1,0 +1,148 @@
+= LibXML Ruby
+
+== Overview
+The libxml gem provides Ruby language bindings for GNOME's Libxml2
+XML toolkit. It is free software, released under the MIT License.
+
+We think libxml-ruby is the best XML library for Ruby because:
+
+* Speed - Its much faster than REXML and Hpricot
+* Features - It provides an amazing number of featues
+* Conformance - It passes all 1800+ tests from the OASIS XML Tests Suite
+
+== Requirements
+libxml-ruby requires Ruby 1.8.4 or higher.  It is dependent on 
+the following libraries to function properly:
+
+* libm      (math routines: very standard)
+* libz      (zlib)
+* libiconv
+* libxml2
+
+If you are running Linux or Unix you'll need a C compiler so the
+extension can be compiled when it is installed.  If you are running
+Windows, then install the Windows specific RubyGem which
+includes an already built extension.
+
+== INSTALLATION
+The easiest way to install libxml-ruby is via Ruby Gems.  To install:
+
+<tt>gem install libxml-ruby</tt>
+
+If you are running Windows, make sure to install the Win32 RubyGem
+which includes an already built binary file.  The binary is built
+against libxml2 version 2.7.2 and iconv version 1.11.  Both of these
+are also included as pre-built binaries, and should be put either in
+the libxml/lib directory or on the Windows path.  Due to a bug
+in ruby-gems, you cannot install the gem to a path that contains
+spaces (see http://rubyforge.org/tracker/?func=detail&aid=23003&group_id=126&atid=577).
+
+The Windows binaries are built with MingW and include libxml-ruby, 
+libxml2 and iconv.  The gem also includes a Microsoft VC++ 2008
+solution.  If you wish to run a debug version of libxml-ruby on
+Windows, then it is highly recommended you use VC++.
+
+== Getting Started
+Using libxml is easy. First decide what parser you want to use.
+Generally you'll want to use the LibXML::XML::Parser which provides a tree based API.
+For larger documents that don't fit into memory, or if you prefer an input based API,
+then use LibXML::XML::Reader. If you are parsing HTML files, then use LibXML::XML::HTMLParser.
+Finally, if you are masochistic, then use the LibXML::XML::SaxParser, which provides a callback API.
+
+Once you choose a parser, then choose a datasource and its
+encoding.  Libxml can parse files, strings, URIs and IO stream.
+For more information, see LibXML::XML::Input.
+
+== Advanced Functionality
+Beyond the basics of parsing and processing XML and HTML documents,
+lLibxml provides a wealth of additional functionality.
+
+Most commonly, you'll want to use its LibXML::XML::XPath support, which makes
+it easy to search for data inside and XML document.  Although not as
+popular, LibXML::XML::XPointer provides another API for finding data inside
+an XML document.
+
+Often times you'll need to validate data before processing it. For example,
+if you accept user generated content submitted over the Web, you'll
+want to first verify it does not contain malicious code such as embedded scripts.
+This can be done using libxml's powerful set of validators:
+
+* DTDs (LibXML::XML::Dtd)
+* Relax Schemas (LibXML::XML::RelaxNG)
+* XML Schema (LibXML::XML::Schema)
+
+Finally, if you'd like to use XSL Transformations to process data,
+then also install the libxslt gem which is available at
+http://rubyforge.org/projects/libxsl/.
+
+== Usage
+For in-depth information about using libxml-ruby please refer
+to its online Rdoc documentation.
+
+All libxml classes are in the LibXML::XML module. The easiest
+way to use libxml is to require 'xml'.  This will mixin
+the LibXML module into the global namespace, allowing you to
+write code like this:
+
+  require 'xml'
+  document = XML::Document.new
+
+However, when creating an application or library you plan to
+redistribute, it is best to not add the LibXML module to the global
+namespace, in which case you can either write your code like this:
+
+  require 'libxml'
+  document = LibXML::XML::Document.new
+
+or, more conveniently, utilize a proper namespace for you own work
+and include LibXML into it. For example:
+
+  require 'libxml'
+
+  mdoule MyApplication
+    include LibXML
+
+    class MyClass
+      def some_method
+        document = XML::Document.new
+      end
+    end
+  end
+
+For simplicity's sake, the documentation uses the xml module in its examples.
+
+== Performance
+In addition to being feature rich and conformation, the main reason
+people use libxml-ruby is for performance.  Here are the results 
+of a couple simple benchmarks recently blogged about on the
+Web (you can find them in the benchmark directory of the 
+libxml distribution).
+
+From http://depixelate.com/2008/4/23/ruby-xml-parsing-benchmarks
+
+               user     system      total        real
+ libxml    0.032000   0.000000   0.032000 (  0.031000)
+ Hpricot   0.640000   0.031000   0.671000 (  0.890000)
+ REXML     1.813000   0.047000   1.860000 (  2.031000)
+
+From https://svn.concord.org/svn/projects/trunk/common/ruby/xml_benchmarks/
+
+               user     system      total        real
+ libxml    0.641000   0.031000   0.672000 (  0.672000)
+ hpricot   5.359000   0.062000   5.421000 (  5.516000)
+ rexml    22.859000   0.047000  22.906000 ( 23.203000) 
+
+
+== DOCUMENTATION
+For more information please refer to the documentation.
+
+RDoc comments are included - run 'rake doc' to generate documentation.
+You can find the latest documentation at:
+
+* http://libxml.rubyforge.org/rdoc/
+
+If you have any questions, please send email to libxml-devel@rubyforge.org.
+
+== License
+See LICENSE for license information.
+

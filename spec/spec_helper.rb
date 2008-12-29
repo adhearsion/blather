@@ -4,12 +4,7 @@ require 'minitest/spec'
 require 'mocha'
 
 module MiniTest
-  if MINI_DIR =~ %r{^./}
-    require 'pathname'
-    path = Pathname.new(MINI_DIR).realpath
-#    remove_const 'MINI_DIR'
-#    const_set 'MINI_DIR', path.to_s
-  end
+  require 'pathname' if MINI_DIR =~ %r{^./}
 
   module Assertions
     def assert_change(obj, method, args = {}, msg = nil)

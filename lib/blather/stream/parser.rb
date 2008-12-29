@@ -5,7 +5,7 @@ module Stream # :nodoc:
     STREAM_REGEX = %r{(/)?stream:stream}.freeze
     ERROR_REGEX = /^<(stream:[a-z]+)/.freeze
 
-    @@debug = false
+    @@debug = !false
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
 
@@ -15,22 +15,12 @@ module Stream # :nodoc:
       @receiver = receiver
       @current = nil
 
-      @parser = XML::SaxParser.new
-      @parser.io = StringIO.new
-      @parser.callbacks = self
+      @parser = XML::SaxPushParser.new self
     end
 
     def parse(string)
-      LOG.debug "PARSING: #{string}" if @@debug
-      if string =~ STREAM_REGEX && $1
-        @receiver.receive XMPPNode.new('stream:end')
-      else
-        string << "</stream:stream>" if string =~ STREAM_REGEX && !$1
-        string.gsub!(ERROR_REGEX, "<\\1 xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'")
-
-        @parser.string = string
-        @parser.parse
-      end
+      LOG.debug "PARSING: (#{string})" if @@debug
+      @parser.receive(string) #unless string.blank?
     end
 
     NON_ATTRS = [nil, 'stream'].freeze
@@ -58,10 +48,10 @@ module Stream # :nodoc:
     def on_end_element_ns(elem, prefix, uri)
       LOG.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri, :current => @current}.inspect}" if @@debug
 
-      elem = "#{"#{prefix}:" if prefix}#{elem}"
-      return if elem =~ STREAM_REGEX
+      if !@current && "#{prefix}:#{elem}" =~ STREAM_REGEX
+        @receiver.receive XMPPNode.new('stream:end')
 
-      if @current.parent?
+      elsif @current.parent?
         @current = @current.parent
 
       else
@@ -69,10 +59,10 @@ module Stream # :nodoc:
         @receiver.receive c
 
       end
+    end
 
-      def on_error(msg)
-        raise Blather::ParseError, msg.to_s
-      end
+    def on_error(msg)
+      raise Blather::ParseError, msg.to_s
     end
   end #Parser
 
