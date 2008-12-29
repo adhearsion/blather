@@ -3,3 +3,4 @@ Manifest
 doc
 coverage
 *.bundle
+mkmf.log
