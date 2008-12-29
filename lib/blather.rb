@@ -1,4 +1,5 @@
 $:.unshift File.dirname(__FILE__)
+$:.unshift File.join(File.dirname(__FILE__), *%w[vendor libxml lib])
 
 # Require the necessary files
 %w[
