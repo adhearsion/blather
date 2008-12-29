@@ -50,7 +50,7 @@ module Blather #:nodoc:
 
     def call(stanza)
       stanza.handler_heirarchy.each do |type|
-        break if call_handler_for(type, stanza) && stanza.type == :iq
+        break if call_handler_for(type, stanza) && (stanza.is_a?(BlatherError) || stanza.type == :iq)
       end
     end
 
@@ -63,6 +63,10 @@ module Blather #:nodoc:
 
   protected
     def setup_initial_handlers
+      register_handler :error do |err|
+        raise err
+      end
+
       register_handler :iq do |iq|
         write(Stanza::Error.new_from(iq, 'service-unavailable', 'cancel').reply!) if [:set, :get].include?(iq.type)
       end

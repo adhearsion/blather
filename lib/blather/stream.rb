@@ -210,7 +210,7 @@ module Blather
       unless @sasl
         @sasl = SASL.new(self, @jid, @pass)
         @sasl.success { LOG.debug "SASL SUCCESS"; @sasl = nil; start }
-        @sasl.failure { LOG.debug "SASL FAIL"; stop }
+        @sasl.failure { |e| LOG.debug "SASL FAIL"; @error = e; stop }
         @node = @features.shift
       end
       @sasl.receive @node

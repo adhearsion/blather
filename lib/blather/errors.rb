@@ -1,27 +1,44 @@
 module Blather
   # Main error class
-  class BlatherError < StandardError; end
+  class BlatherError < StandardError
+    class_inheritable_array :handler_heirarchy
+    self.handler_heirarchy ||= []
+    self.handler_heirarchy << :error
+  end
 
     #Parse Errors
-    class ParseError < BlatherError; end
+    class ParseError < BlatherError
+      self.handler_heirarchy ||= []
+      self.handler_heirarchy.unshift :parse_error
+    end
 
     # Stream errors
     class StreamError < BlatherError
+      self.handler_heirarchy ||= []
+      self.handler_heirarchy.unshift :stream_error
+
       attr_accessor :type, :text
 
       def initialize(node)
-        @type = node.detect { |n| n.name != 'text' && n['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-streams' }
-        @text = node.detect { |n| n.name == 'text' }
+        @type = node.find_first 'descendant::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-streams'
+        @text = node.find_first 'descendant::text', 'urn:ietf:params:xml:ns:xmpp-streams'
 
-        @extra = node.detect { |n| n['xmlns'] != 'urn:ietf:params:xml:ns:xmpp-streams' }
+        @extra = node.find('descendant::*[@xmlns!="urn:ietf:params:xml:ns:xmpp-streams"]').map { |n| n.element_name }
       end
 
       def to_s
-        "Stream Error (#{type.name}) #{"[#{@extra.name}]" if @extra}: #{text.content if text}"
+        "Stream Error (#{@type.element_name}): #{@text.content if text}"
       end
     end
 
     # Stanza errors
-    class StanzaError < BlatherError; end
-      class ArgumentError < StanzaError; end
+    class StanzaError < BlatherError
+      handler_heirarchy ||= []
+      handler_heirarchy.unshift :stanza_error
+    end
+
+      class ArgumentError < StanzaError
+        handler_heirarchy ||= []
+        handler_heirarchy.unshift :argument_error
+      end
 end

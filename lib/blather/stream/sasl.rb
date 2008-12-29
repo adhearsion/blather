@@ -2,7 +2,10 @@ module Blather # :nodoc:
 module Stream # :nodoc:
 
   class SASL # :nodoc:
-    class UnknownMechanism < BlatherError; end
+    class UnknownMechanism < BlatherError
+      handler_heirarchy ||= []
+      handler_heirarchy << :unknown_mechanism
+    end
 
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
@@ -20,8 +23,7 @@ module Stream # :nodoc:
     def init_callbacks
       @callbacks['mechanisms'] = proc {
         @mechanisms = @node.children
-        set_mechanism
-        authenticate
+        authenticate if set_mechanism
       }
     end
 
@@ -32,17 +34,23 @@ module Stream # :nodoc:
       when 'ANONYMOUS'  then Anonymous
       else
         @stream.send "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><invalid-mechanism/></failure>"
-        raise UnknownMechanism, "Unknown SASL mechanism (#{mechanism})"
+        @callbacks['failure'].call UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
+        return false
       end
 
       extend mod
+      true
     end
 
     def receive(node)
       @node = node
-      if @node.element_name == 'failure' && @mechanisms[@mechanism += 1]
-        set_mechanism
-        authenticate
+      if @node.element_name == 'failure'
+        if @mechanisms[@mechanism += 1]
+          set_mechanism
+          authenticate
+        else
+          @callbacks['failure'].call(@node)
+        end
       else
         @callbacks[@node.element_name].call if @callbacks[@node.element_name]
       end
