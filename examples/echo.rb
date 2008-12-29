@@ -1,4 +1,4 @@
-%w[rubygems lib/blather].each { |r| require r }
+%w[rubygems lib/blather/client].each { |r| require r }
 
 setup 'echo@jabber.local', 'echo'
 

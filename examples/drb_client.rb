@@ -1,4 +1,4 @@
-%w[rubygems lib/blather drb/drb].each { |r| require r }
+%w[rubygems lib/blather/client drb/drb].each { |r| require r }
 
 setup 'drb_client@jabber.local', 'drb_client'
 
