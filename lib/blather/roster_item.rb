@@ -17,6 +17,7 @@ module Blather
     # item:: can be a JID, String (a@b) or a Stanza
     def initialize(item)
       @statuses = []
+      @groups = []
 
       case item
       when JID
