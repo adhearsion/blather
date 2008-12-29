@@ -1,3 +1,9 @@
+/**
+ * Taken from the libxml-devel group: http://groups.google.com/group/libxml-devel/browse_thread/thread/11725b3865003b3b
+ * Originally written by Kirill A. Shutemov
+ * Modifications by Jeff Smick
+ */
+
 #include "ruby_libxml.h"
 #include "ruby_xml_sax_push_parser.h"
 
