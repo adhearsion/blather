@@ -97,7 +97,7 @@ end #Blather
 def setup(jid, password, host = nil, port = 5222)
   at_exit do
     trap(:INT) { EM.stop }
-    EM.run { Blather::Stream.start Blather.client, Blather::JID.new(jid), password, host, port }
+    EM.run { Blather::Stream.start Blather.client, jid, password, host, port }
   end
 end
 
@@ -131,4 +131,10 @@ end
 #   say [jid], [msg]
 def say(to, msg)
   Blather.client.write Blather::Stanza::Message.new(to, msg)
+end
+
+##
+# Wrapper to grab the current JID
+def jid
+  Blather.client.jid
 end
