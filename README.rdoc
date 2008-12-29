@@ -32,7 +32,7 @@ See the /examples directory for more advanced examples.
 
 This will auto-accept any subscription requests and echo back any chat messages.
 
-  %w[rubygems blather].each { |r| require r }
+  %w[rubygems blather/client].each { |r| require r }
 
   setup 'echo@jabber.local', 'echo'
 
