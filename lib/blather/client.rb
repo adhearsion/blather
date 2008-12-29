@@ -12,13 +12,14 @@ module Blather #:nodoc:
       @state = :initializing
 
       @status = Stanza::Presence::Status.new
-      @handlers = Hash.new { |h,k| h[k] = [] }
+      @handlers = {}
       @roster = Roster.new self
 
       setup_initial_handlers
     end
 
     def register_handler(type, &handler)
+      @handlers[type] ||= []
       @handlers[type] << handler
     end
 
