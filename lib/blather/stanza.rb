@@ -13,12 +13,12 @@ module Blather
     # that inherits Stanza can register a callback for itself
     # which is added to a list and iterated over when looking for
     # a callback to use
-    def self.register(type, name = nil, xmlns = nil)
+    def self.register(type, name = nil, ns = nil)
       self.handler_heirarchy ||= []
       self.handler_heirarchy.unshift type
 
       name = name || self.name || type
-      super name, xmlns
+      super name, ns
     end
 
     ##

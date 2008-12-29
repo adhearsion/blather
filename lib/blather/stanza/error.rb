@@ -7,11 +7,11 @@ class Stanza
     def self.new_from(stanza, defined_condition, type, text = nil)
       err = XMPPNode.new(defined_condition)
       err['type'] = type
-      err.xmlns = 'urn:ietf:params:xml:ns:xmpp-stanzas'
+      err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
 
       if text
         text = XMPPNode.new('text', text)
-        text.xmlns = 'urn:ietf:params:xml:ns:xmpp-stanzas'
+        text.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
         err << text
       end
 

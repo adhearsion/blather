@@ -112,33 +112,33 @@ describe 'Blather::Stream' do
     end
   end
 
-  it 'raises an error when it receives stream:error' do
-    lambda do
-       state = nil
-       mocked_server(3) do |val, server|
-         case state
-         when nil
-           state = :started
-           server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>"
-           server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
-           val.must_match(/stream:stream/)
+  it 'sends client an error on stream:error' do
+    @client = mock()
+    @client.expects(:call).with { |v| v.must_be_kind_of(StreamError) }
+    state = nil
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
 
-         when :started
-           state = :stopped
-           server.send_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams' /></stream:error>"
+      when :started
+        state = :stopped
+        server.send_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams' /></stream:error>"
 
-         when :stopped
-           EM.stop
-           val.must_equal "</stream:stream>"
+      when :stopped
+        EM.stop
+        val.must_equal "</stream:stream>"
 
-         else
-           EM.stop
-           false
+      else
+        EM.stop
+        false
 
-         end
-       end
-     end.must_raise(StreamError)
-   end
+      end
+    end
+  end
 
   it 'starts TLS when asked' do
     state = nil
@@ -257,6 +257,11 @@ describe 'Blather::Stream' do
 
   it 'tried each possible mechanism until it fails completely' do
     state = nil
+    @client = mock()
+    @client.expects(:call).with do |n|
+      n.must_be_kind_of(XMPPNode)
+      n.element_name.must_equal 'failure'
+    end
 
     mocked_server(5) do |val, server|
       case state
@@ -324,22 +329,22 @@ describe 'Blather::Stream' do
     end
   end
 
-  it 'raises an exception when an unknown mechanism is sent' do
+  it 'sends client an error when an unknown mechanism is sent' do
+    @client = mock()
+    @client.expects(:call).with { |v| v.must_be_kind_of(Stream::SASL::UnknownMechanism) }
     started = false
-    lambda do
-      mocked_server(2) do |val, server|
-        if !started
-          started = true
-          server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
-          val.must_match(/stream:stream/)
+    mocked_server(2) do |val, server|
+      if !started
+        started = true
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
 
-        else
-          EM.stop
-          val.must_match(/failure(.*)invalid\-mechanism/)
+      else
+        EM.stop
+        val.must_match(/failure(.*)invalid\-mechanism/)
 
-        end
       end
-    end.must_raise(Stream::SASL::UnknownMechanism)
+    end
   end
 
   it 'will bind to a resource set by the server' do

@@ -9,7 +9,7 @@ class Iq
     # Ensure the namespace is set to the query node
     def initialize(type = nil)
       super
-      query.xmlns = self.class.xmlns
+      query.namespace = self.class.ns
     end
 
     ##

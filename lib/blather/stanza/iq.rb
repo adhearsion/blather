@@ -9,13 +9,13 @@ class Stanza
     def self.import(node)
       raise "Import missmatch #{[node.element_name, self.name].inspect}" if node.element_name != self.name.to_s
       klass = nil
-      node.each { |e| break if klass = class_from_registration(e.element_name, e.xmlns) }
+      node.each { |e| break if klass = class_from_registration(e.element_name, e.namespace) }
       (klass || self).new(node['type']).inherit(node)
     end
 
     def initialize(type = nil, to = nil, id = nil)
       super :iq
-      self.xmlns = nil
+      self.namespace = nil
       self.type = type || :get
       self.to = to
       self.id = id if id

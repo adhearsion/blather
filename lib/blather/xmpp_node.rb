@@ -7,7 +7,7 @@ module Blather
   class XMPPNode < XML::Node
     @@registrations = {}
 
-    class_inheritable_accessor  :xmlns,
+    class_inheritable_accessor  :ns,
                                 :name
 
     ##
@@ -16,10 +16,10 @@ module Blather
     # This registers a namespace that is used when looking
     # up the class name of the object to instantiate when a new
     # stanza is received
-    def self.register(name, xmlns = nil)
+    def self.register(name, ns = nil)
       self.name = name.to_s
-      self.xmlns = xmlns
-      @@registrations[[self.name, self.xmlns]] = self
+      self.ns = ns
+      @@registrations[[self.name, self.ns]] = self
     end
 
     ##
@@ -34,7 +34,7 @@ module Blather
     # of that class and imports all the <tt>node</tt>'s attributes
     # and children into it.
     def self.import(node)
-      klass = class_from_registration(node.element_name, node.xmlns)
+      klass = class_from_registration(node.element_name, node.namespace)
       if klass && klass != self
         klass.import(node)
       else
@@ -49,7 +49,7 @@ module Blather
       content = content.to_s if content
 
       super name.to_s, content
-      self.xmlns = self.class.xmlns
+      self.namespace = self.class.ns
     end
 
     ##
@@ -58,19 +58,22 @@ module Blather
       self.class.import self
     end
 
-    def xmlns=(ns)
-      attributes[:xmlns] = ns
+    def namespace=(ns)
+      if ns
+        ns = {nil => ns} unless ns.is_a?(Hash)
+        ns.each { |p,n| XML::Namespace.new self, p, n }
+      end
     end
 
-    def xmlns
-      attributes[:xmlns]
+    def namespace(prefix = nil)
+      (ns = namespaces.find_by_prefix(prefix)) ? ns.href : nil
     end
 
     ##
     # Remove a child with the name and (optionally) namespace given
     def remove_child(name, ns = nil)
       name = name.to_s
-      self.each { |n| n.remove! if n.element_name == name && (!ns || n.xmlns == ns) }
+      self.each { |n| n.remove! if n.element_name == name && (!ns || n.namespace == ns) }
     end
 
     ##

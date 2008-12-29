@@ -23,7 +23,7 @@ module Stream # :nodoc:
 
     def bind
       binder = XMPPNode.new('bind')
-      binder.xmlns = 'urn:ietf:params:xml:ns:xmpp-bind'
+      binder.namespace = 'urn:ietf:params:xml:ns:xmpp-bind'
 
       binder << XMPPNode.new('resource', @jid.resource) if @jid.resource
 

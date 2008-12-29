@@ -5,7 +5,7 @@ module Stream # :nodoc:
     STREAM_REGEX = %r{(/)?stream:stream}.freeze
     ERROR_REGEX = /^<(stream:[a-z]+)/.freeze
 
-    @@debug = !false
+    @@debug = false
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
 
@@ -25,10 +25,11 @@ module Stream # :nodoc:
 
     NON_ATTRS = [nil, 'stream'].freeze
     def on_start_element_ns(elem, attrs, prefix, uri, namespaces)
-      LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :ns => namespaces}.inspect})" if @@debug
+      LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
       elem = "#{"#{prefix}:" if prefix}#{elem}"
       e = XMPPNode.new elem
-      attrs.each { |n,v| n = "xmlns#{":#{n}" if n}" if NON_ATTRS.include?(n); e.attributes[n] = v }
+      XML::Namespace.new e, prefix, uri
+      attrs.each { |k,v| e.attributes[k] = v if k }
 
       if elem == 'stream:stream'
         @receiver.receive e
@@ -46,7 +47,7 @@ module Stream # :nodoc:
     end
 
     def on_end_element_ns(elem, prefix, uri)
-      LOG.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri, :current => @current}.inspect}" if @@debug
+      LOG.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if !@current && "#{prefix}:#{elem}" =~ STREAM_REGEX
         @receiver.receive XMPPNode.new('stream:end')
@@ -56,6 +57,7 @@ module Stream # :nodoc:
 
       else
         c, @current = @current, nil
+        XML::Document.new.root = c
         @receiver.receive c
 
       end

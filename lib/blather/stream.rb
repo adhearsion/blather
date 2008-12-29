@@ -179,7 +179,7 @@ module Blather
     def features
       feature = @features.first
       LOG.debug "FEATURE: #{feature}"
-      @state = case feature ? feature['xmlns'] : nil
+      @state = case feature ? feature.namespaces.default.href : nil
       when 'urn:ietf:params:xml:ns:xmpp-tls'      then :establish_tls
       when 'urn:ietf:params:xml:ns:xmpp-sasl'     then :authenticate_sasl
       when 'urn:ietf:params:xml:ns:xmpp-bind'     then :bind_resource

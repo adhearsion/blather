@@ -14,21 +14,21 @@ describe 'Blather::XMPPNode' do
 
   it 'sets the namespace on creation' do
     class Foo < XMPPNode; end
-    Foo.xmlns = 'foo'
-    Foo.new('foo').xmlns.must_equal 'foo'
+    Foo.ns = 'foo'
+    Foo.new('foo').namespace.must_equal 'foo'
   end
 
   it 'registers sub classes' do
     class Foo < XMPPNode; register 'foo', 'foo:bar'; end
     Foo.name.must_equal 'foo'
-    Foo.xmlns.must_equal 'foo:bar'
+    Foo.ns.must_equal 'foo:bar'
     XMPPNode.class_from_registration('foo', 'foo:bar').must_equal Foo
   end
 
   it 'imports another node' do
     class Foo < XMPPNode; register 'foo', 'foo:bar'; end
     n = XMPPNode.new('foo')
-    n.xmlns = 'foo:bar'
+    n.namespace = 'foo:bar'
     XMPPNode.import(n).must_be_kind_of Foo
   end
 
@@ -38,14 +38,12 @@ describe 'Blather::XMPPNode' do
     n.to_stanza.must_be_kind_of Foo
   end
 
-  it 'provides "attr_accessor" for xmlns' do
+  it 'provides "attr_accessor" for namespace' do
     n = XMPPNode.new('foo')
-    n.xmlns.must_be_nil
-    n['xmlns'].must_be_nil
+    n.namespace.must_be_nil
 
-    n.xmlns = 'foo:bar'
-    n.xmlns.must_equal 'foo:bar'
-    n['xmlns'].must_equal 'foo:bar'
+    n.namespace = 'foo:bar'
+    n.namespace.must_equal 'foo:bar'
   end
 
   it 'will remove a child element' do
@@ -62,13 +60,13 @@ describe 'Blather::XMPPNode' do
     n = XMPPNode.new 'foo'
     n << XMPPNode.new('bar')
     c = XMPPNode.new('bar')
-    c.xmlns = 'foo:bar'
+    c.namespace = 'foo:bar'
     n << c
 
     n.find(:bar).size.must_equal 2
     n.remove_child 'bar', 'foo:bar'
     n.find(:bar).size.must_equal 1
-    n.find(:bar).first.xmlns.must_be_nil
+    n.find(:bar).first.namespace.must_be_nil
   end
 
   it 'will remove all child elements' do
