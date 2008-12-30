@@ -80,6 +80,10 @@ module Blather
       LOG.debug "\n"+('-'*30)+"\n"
       LOG.debug "<< #{data}"
       @parser.parse data
+
+    rescue ParseError => e
+      @error = e
+      stop
     end
 
     ##
