@@ -71,4 +71,15 @@ describe 'Blather::Stanza::Presence::Subscription' do
     sub.type = :subscribe
     sub.request?.must_equal true
   end
+
+  it "will inherit only another node's attributes" do
+    inheritable = XMPPNode.new 'foo'
+    inheritable.attributes[:bar] = 'baz'
+
+    sub = Stanza::Presence::Subscription.new
+    sub.must_respond_to :inherit
+
+    sub.inherit inheritable
+    sub.attributes[:bar].must_equal 'baz'
+  end
 end
