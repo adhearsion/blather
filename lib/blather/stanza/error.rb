@@ -21,7 +21,7 @@ class Stanza
         err << text
       end
 
-      elem = new.inherit stanza#.copy(true)
+      elem = new(stanza.element_name).inherit stanza
       elem.type = :error
       elem.error_type = type
       elem << err

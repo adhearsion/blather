@@ -37,6 +37,7 @@ describe 'Blather::Stanza::Error' do
   it 'includes the original staza data' do
     query = Stanza::Iq::Query.new
     err = Stanza::Error.new_from(query, 'service-unavailable', 'cancel')
+    err.element_name.must_equal query.element_name
     err.find_first('//query').wont_be_nil
   end
 
