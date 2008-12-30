@@ -20,14 +20,15 @@ module Blather
     attr_accessor :type, :text
 
     def initialize(node)
-      @type = node.find_first 'descendant::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-streams'
+      @type = node.find_first('descendant::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-streams').element_name
       @text = node.find_first 'descendant::text', 'urn:ietf:params:xml:ns:xmpp-streams'
+      @text = @text.content if @text
 
       @extra = node.find('descendant::*[@xmlns!="urn:ietf:params:xml:ns:xmpp-streams"]').map { |n| n.element_name }
     end
 
     def to_s
-      "Stream Error (#{@type.element_name}): #{@text.content if text}"
+      "Stream Error (#{self.type}): #{self.text}"
     end
   end
 

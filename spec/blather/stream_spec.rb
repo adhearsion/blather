@@ -150,7 +150,13 @@ describe 'Blather::Stream' do
 
   it 'sends client an error on stream:error' do
     @client = mock()
-    @client.expects(:call).with { |v| v.must_be_kind_of(StreamError) }
+    @client.expects(:call).with do |v|
+      v.must_be_kind_of(StreamError)
+      v.type.must_equal 'conflict'
+      v.text.must_equal 'Already signed in'
+      v.to_s.must_equal "Stream Error (#{v.type}): #{v.text}"
+    end
+
     state = nil
     mocked_server(3) do |val, server|
       case state
@@ -162,7 +168,8 @@ describe 'Blather::Stream' do
 
       when :started
         state = :stopped
-        server.send_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams' /></stream:error>"
+        server.send_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams' />"
+        server.send_data "<text xmlns='urn:ietf:params:xml:ns:xmpp-streams'>Already signed in</text></stream:error>"
 
       when :stopped
         EM.stop
