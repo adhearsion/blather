@@ -25,10 +25,10 @@ module Blather
       when String
         self.jid = JID.new(item).stripped
       when XMPPNode
-        self.jid          = JID.new(item['jid']).stripped
-        self.name         = item['name']
-        self.subscription = item['subscription']
-        self.ask          = item['ask']
+        self.jid          = JID.new(item[:jid]).stripped
+        self.name         = item[:name]
+        self.subscription = item[:subscription]
+        self.ask          = item[:ask]
         item.groups.each { |g| self.groups << g }
       end
     end

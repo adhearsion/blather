@@ -12,7 +12,7 @@ Echoe.new('blather') do |p|
   p.extensions = %w[lib/vendor/libxml/ext/libxml/extconf.rb]
 
   p.runtime_dependencies = ['eventmachine']
-  p.rdoc_options += %w[-S -T hanna --main README.rdoc --exclude autotest]
+  p.rdoc_options += %w[-S -T hanna --main README.rdoc --exclude autotest --exclude vendor]
 
   p.test_pattern = 'spec/**/*_spec.rb'
   p.rcov_options = ['--exclude \/Library\/Ruby\/Gems,spec\/', '--xrefs']

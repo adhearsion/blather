@@ -10,13 +10,13 @@ class Stanza
       err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
 
       if text
-        text = XMPPNode.new('text', text)
+        text = XMPPNode.new(:text, text)
         text.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
         err << text
       end
 
       elem = stanza.copy(true)
-      elem.type = 'error'
+      elem.type = :error
       elem << err
 
       elem

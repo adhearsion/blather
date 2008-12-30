@@ -12,12 +12,12 @@ module LibXML # :nodoc:
         attribute.remove! if attribute
       end
 
-      alias_method :old_hash_set, :[]=
+      alias_method :old_hash_set, :[]= # :nodoc:
       def []=(name, val)
         val.nil? ? remove(name.to_s) : old_hash_set(name.to_s, val.to_s)
       end
 
-      alias_method :old_hash_get, :[]
+      alias_method :old_hash_get, :[] # :nodoc:
       def [](name)
         old_hash_get name.to_s
       end
