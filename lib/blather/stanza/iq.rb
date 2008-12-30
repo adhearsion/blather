@@ -15,7 +15,6 @@ class Stanza
 
     def initialize(type = nil, to = nil, id = nil)
       super :iq
-      self.namespace = nil
       self.type = type || :get
       self.to = to
       self.id = id if id

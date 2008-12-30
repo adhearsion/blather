@@ -23,7 +23,9 @@ class Iq
     # Query node accessor
     # This will ensure there actually is a query node
     def query
-      (self << (q = XMPPNode.new('query'))) unless q = find_first('query')
+      q = find_first('query')
+      q = find_first('//query_ns:query', :query_ns => self.class.ns) if !q && self.class.ns
+      (self << (q = XMPPNode.new('query'))) unless q
       q
     end
 

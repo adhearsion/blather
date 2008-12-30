@@ -28,7 +28,7 @@ module Stream # :nodoc:
       LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
       elem = "#{"#{prefix}:" if prefix}#{elem}"
       e = XMPPNode.new elem
-      XML::Namespace.new e, prefix, uri
+      XML::Namespace.new(e, prefix, uri)
       attrs.each { |k,v| e.attributes[k] = v if k }
 
       if elem == 'stream:stream'

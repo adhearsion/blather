@@ -27,7 +27,9 @@ class Iq
     ##
     # Roster items
     def items
-      query.find(:item)
+      items = query.find('item')
+      items = query.find('query_ns:item', :query_ns => self.class.ns) if items.empty?
+      items.map { |i| RosterItem.new(i) }
     end
 
     class RosterItem < XMPPNode
@@ -101,17 +103,15 @@ class Iq
       ##
       # The groups roster item belongs to
       def groups
-        @groups ||= find(:group).map { |g| g.content }
+        find(:group).map { |g| g.content }
       end
 
       ##
       # Set the roster item's groups
       # must be an array
-      def groups=(grps)
+      def groups=(new_groups)
         find(:group).each { |g| g.remove! }
-        @groups = nil
-
-        grps.uniq.each { |g| add_node XMPPNode.new(:group, g) } if grps
+        new_groups.uniq.each { |g| self << XMPPNode.new(:group, g) } if new_groups
       end
 
       ##

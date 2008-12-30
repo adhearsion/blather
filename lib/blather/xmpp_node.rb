@@ -5,6 +5,8 @@ module Blather
   # All XML classes subclass XMPPNode
   # it allows the addition of helpers
   class XMPPNode < XML::Node
+    BASE_NAMES = %w[presence message iq].freeze
+
     @@registrations = {}
 
     class_inheritable_accessor  :ns,
@@ -49,7 +51,7 @@ module Blather
       content = content.to_s if content
 
       super name.to_s, content
-      self.namespace = self.class.ns
+      self.namespace = self.class.ns unless BASE_NAMES.include?(name.to_s)
     end
 
     ##
