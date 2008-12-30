@@ -57,11 +57,15 @@ describe 'Blather::Stream' do
 
   it 'sends stanzas to the client when the stream is ready' do
     @client = mock()
-    @client.expects(:call).with { |n| EM.stop; n.kind_of?(Stanza::Message) }
+    @client.expects(:call).with do |n|
+      EM.stop
+      n.kind_of?(Stanza::Message) && @stream.ready?.must_equal(true)
+    end
 
     mocked_server(1) do |val, server|
       val.must_match(/stream:stream/)
-      server.send_data "<?xml version='1.0' ?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+      server.send_data "<?xml version='1.0' ?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+      server.send_data "<message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
     end
   end
 
@@ -79,6 +83,38 @@ describe 'Blather::Stream' do
         @stream.stopped?.must_equal false
         @stream.unbind
         @stream.stopped?.must_equal true
+
+      end
+    end
+  end
+
+  it 'will be in the negotiating state during feature negotiations' do
+    state = nil
+    @client = mock()
+    @client.stubs(:stream_started)
+    @client.expects(:call).with do |n|
+      EM.stop
+      state.must_equal(:negotiated) && @stream.negotiating?.must_equal(false)
+    end
+
+    mocked_server(2) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /></stream:features>"
+        true
+
+      when :started
+        state = :negotiated
+        @stream.negotiating?.must_equal(true)
+        server.send_data "<iq from='d' type='result' id='#{val[/id="([^"]+)"/,1]}' />"
+        server.send_data "<message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+        true
+
+      else
+        EM.stop
+        false
 
       end
     end
@@ -336,7 +372,8 @@ describe 'Blather::Stream' do
     mocked_server(2) do |val, server|
       if !started
         started = true
-        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
         val.must_match(/stream:stream/)
 
       else
@@ -420,7 +457,8 @@ describe 'Blather::Stream' do
       case state
       when nil
         state = :started
-        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /></stream:features>"
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /></stream:features>"
         val.must_match(/stream:stream/)
 
       when :started

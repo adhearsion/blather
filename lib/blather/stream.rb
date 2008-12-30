@@ -218,9 +218,6 @@ module Blather
         @node = @features.shift
       end
       @sasl.receive @node
-    rescue SASL::UnknownMechanism => e
-      @error = e
-      stop
     end
 
     ##

@@ -4,3 +4,4 @@ doc
 coverage
 *.bundle
 mkmf.log
+*.o
