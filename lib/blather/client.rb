@@ -68,7 +68,7 @@ module Blather #:nodoc:
       end
 
       register_handler :iq do |iq|
-        write(Stanza::Error.new_from(iq, 'service-unavailable', 'cancel').reply!) if [:set, :get].include?(iq.type)
+        write(Stanza::Error.new_from(iq, 'service-unavailable', :cancel).reply!) if [:set, :get].include?(iq.type)
       end
 
       register_handler :status do |status|
