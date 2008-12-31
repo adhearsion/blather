@@ -1,17 +1,28 @@
-%w[rubygems lib/blather/client].each { |r| require r }
+#!/usr/bin/env ruby
 
-setup 'echo@jabber.local/blather', 'echo'
+$:.unshift File.join(File.dirname(__FILE__), %w[.. lib])
+require 'blather/client'
 
-handle :ready do
-  puts "Echo server started for #{jid}"
+if ARGV.length != 2
+  puts "Run with ./echo.rb user@server/resource password"
+  exit 1
 end
 
-# Auto approve subscription requests
-handle :subscription do |s|
-  write(s.approve!) if s.request?
+setup ARGV[0], ARGV[1]
+
+handle :ready do
+  puts "Connected ! send messages to #{jid.stripped}."
 end
 
 # Echo back what was said
 handle :message do |m|
-  write(m.reply) if m.chat? && m.body
+  if m.chat? && m.body
+    if m.body == 'exit'
+      say m.from, 'Exiting ...'
+      EM.stop
+    else
+      m.body = "You sent: #{m.body}"
+      write m.reply!
+    end
+  end
 end
