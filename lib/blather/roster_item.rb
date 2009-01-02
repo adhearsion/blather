@@ -31,6 +31,8 @@ module Blather
         self.ask          = item[:ask]
         item.groups.each { |g| self.groups << g }
       end
+
+      @groups = [nil] if @groups.empty?
     end
 
     ##
