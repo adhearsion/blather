@@ -63,19 +63,19 @@ describe 'Blather::RosterItem' do
   end
 
   def setup_item_with_presences
-    jid = JID.new('n@d/r')
-    i = RosterItem.new jid
+    @jid = JID.new('n@d/r')
+    @i = RosterItem.new @jid
 
-    p = Stanza::Presence::Status.new(:away)
-    p.from = 'n@d/a'
-    p.priority = 0
+    @p = Stanza::Presence::Status.new(:away)
+    @p.from = 'n@d/a'
+    @p.priority = 0
 
-    p2 = Stanza::Presence::Status.new(:dnd)
-    p2.from = 'n@d/b'
-    p2.priority = -1
+    @p2 = Stanza::Presence::Status.new(:dnd)
+    @p2.from = 'n@d/b'
+    @p2.priority = -1
 
-    i.status = p
-    i.status = p2
+    @i.status = @p
+    @i.status = @p2
   end
 
   it 'initializes groups to [nil] if the item is not part of a group' do
