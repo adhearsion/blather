@@ -201,11 +201,14 @@ module Blather
     def establish_tls
       unless @tls
         @tls = TLS.new self
-        @tls.success { LOG.debug "TLS: SUCCESS"; @tls = nil; start }
-        @tls.failure { LOG.debug "TLS: FAILURE"; stop }
+        # on success destroy the TLS object and restart the stream
+        @tls.on_success { LOG.debug "TLS: SUCCESS"; @tls = nil; start }
+        # on failure stop the stream
+        @tls.on_failure { LOG.debug "TLS: FAILURE"; stop }
+
         @node = @features.shift
       end
-      @tls.receive @node
+      @tls.handle @node
     end
 
     ##
