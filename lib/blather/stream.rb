@@ -216,11 +216,14 @@ module Blather
     def authenticate_sasl
       unless @sasl
         @sasl = SASL.new(self, @jid, @pass)
-        @sasl.success { LOG.debug "SASL SUCCESS"; @sasl = nil; start }
-        @sasl.failure { |e| LOG.debug "SASL FAIL"; @error = e; stop }
+        # on success destroy the SASL object and restart the stream
+        @sasl.on_success { LOG.debug "SASL SUCCESS"; @sasl = nil; start }
+        # on failure set the error and stop the stream
+        @sasl.on_failure { |e| LOG.debug "SASL FAIL"; @error = e; stop }
+
         @node = @features.shift
       end
-      @sasl.receive @node
+      @sasl.handle @node
     end
 
     ##

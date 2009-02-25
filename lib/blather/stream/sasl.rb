@@ -7,34 +7,28 @@ module Stream # :nodoc:
       handler_heirarchy << :unknown_mechanism
     end
 
-    SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
+    SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'.freeze
+
+    def on_success(&block); @success = block; end
+    def on_failure(&block); @failure = block; end
 
     def initialize(stream, jid, pass = nil)
       @stream = stream
       @jid = jid
       @pass = pass
-      @callbacks = {}
-      @mechanism = 0
+      @mechanism_idx = 0
       @mechanisms = []
-
-      init_callbacks
-    end
-
-    def init_callbacks
-      @callbacks['mechanisms'] = proc {
-        @mechanisms = @node.children
-        authenticate if set_mechanism
-      }
     end
 
     def set_mechanism
-      mod = case (mechanism = @mechanisms[@mechanism].content)
+      mod = case (mechanism = @mechanisms[@mechanism_idx].content)
       when 'DIGEST-MD5' then DigestMD5
       when 'PLAIN'      then Plain
       when 'ANONYMOUS'  then Anonymous
       else
+        # Send a failure node and kill the stream
         @stream.send "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><invalid-mechanism/></failure>"
-        @callbacks['failure'].call UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
+        failure UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
         return false
       end
 
@@ -42,33 +36,36 @@ module Stream # :nodoc:
       true
     end
 
-    def receive(node)
+    ##
+    # Handle incoming nodes
+    # 
+    def handle(node)
       @node = node
       if @node.element_name == 'failure'
-        if @mechanisms[@mechanism += 1]
+        if @mechanisms[@mechanism_idx += 1]
           set_mechanism
           authenticate
         else
-          @callbacks['failure'].call(@node)
+          failure @node
         end
       else
-        @callbacks[@node.element_name].call if @callbacks[@node.element_name]
+        if self.respond_to?(@node.element_name, true)
+          self.__send__(@node.element_name)
+        else
+          failure
+        end
       end
     end
 
-    def success(&callback)
-      @callbacks['success'] = callback
-    end
-
-    def failure(&callback)
-      @callbacks['failure'] = callback
-    end
-
   protected
+    ##
+    # Base64 Encoder
     def b64(str)
       [str].pack('m').gsub(/\s/,'')
     end
 
+    ##
+    # Builds a standard auth node
     def auth_node(mechanism, content = nil)
       node = XMPPNode.new 'auth', content
       node['xmlns'] = SASL_NS
@@ -76,16 +73,41 @@ module Stream # :nodoc:
       node
     end
 
-    module DigestMD5 # :nodoc:
-      def self.extended(obj)
-        obj.instance_eval { @callbacks['challenge'] = proc { decode_challenge; respond } }
-      end
+    def success
+      @success.call
+    end
 
+    def failure(err = nil)
+      @failure.call err
+    end
+
+    ##
+    # Respond to the <mechanisms> node sent by the server
+    def mechanisms
+      @mechanisms = @node.children
+      authenticate if set_mechanism
+    end
+
+    ##
+    # Digest MD5 authentication
+    module DigestMD5 # :nodoc:
+      ##
+      # Lets the server know we're going to try DigestMD5 authentication
       def authenticate
         @stream.send auth_node('DIGEST-MD5')
       end
 
+      ##
+      # Receive the challenge command.
+      def challenge
+        decode_challenge
+        respond
+      end
+
     private
+      ##
+      # Decodes digest strings 'foo=bar,baz="faz"'
+      # into {'foo' => 'bar', 'baz' => 'faz'}
       def decode_challenge
         text = @node.content.unpack('m').first
         res = {}
@@ -100,12 +122,16 @@ module Stream # :nodoc:
         @realm ||= res['realm']
       end
 
+      ##
+      # Builds the properly encoded challenge response
       def generate_response
         a1 = "#{d("#{@response[:username]}:#{@response[:realm]}:#{@pass}")}:#{@response[:nonce]}:#{@response[:cnonce]}"
         a2 = "AUTHENTICATE:#{@response[:'digest-uri']}"
         h("#{h(a1)}:#{@response[:nonce]}:#{@response[:nc]}:#{@response[:cnonce]}:#{@response[:qop]}:#{h(a2)}")
       end
 
+      ##
+      # Send challenge response
       def respond
         node = XMPPNode.new 'response'
         node['xmlns'] = SASL_NS
@@ -129,6 +155,7 @@ module Stream # :nodoc:
           LOG.debug "CH RESP TXT: #{@response.map { |k,v| "#{k}=#{v}" } * ','}"
 
           # order is to simplify testing
+          # Ruby 1.9 eliminates the need for this with ordered hashes
           order = [:nonce, :charset, :username, :realm, :cnonce, :nc, :qop, :'digest-uri', :response]
           node.content = b64(order.map { |k| v = @response[k]; "#{k}=#{v}" } * ',')
         end
