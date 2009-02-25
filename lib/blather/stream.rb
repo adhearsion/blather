@@ -246,11 +246,15 @@ module Blather
     def establish_session
       unless @session
         @session = Session.new self, @to
-        @session.success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.stream_started(self); @state = :features; dispatch }
-        @session.failure { LOG.debug "SESSION: FAILURE"; stop }
+        # on success destroy the session object, let the client know the stream has been started
+        # then continue the features dispatch process
+        @session.on_success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.stream_started(self); @state = :features; dispatch }
+        # on failure end the stream
+        @session.on_failure { LOG.debug "SESSION: FAILURE"; stop }
+
         @node = @features.shift
       end
-      @session.receive @node
+      @session.handle @node
     end
   end
 

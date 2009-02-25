@@ -2,25 +2,25 @@ module Blather # :nodoc:
 module Stream # :nodoc:
 
   class Session # :nodoc:
+    def on_success(&block); @success = block; end
+    def on_failure(&block); @failure = block; end
+
     def initialize(stream, to)
       @stream = stream
       @to = to
-      @callbacks = {}
     end
 
-    def success(&callback)
-      @callbacks[:success] = callback
-    end
-
-    def failure(&callback)
-      @callbacks[:failure] = callback
-    end
-
-    def receive(node)
+    def handle(node)
       @node = node
-      __send__(@node.element_name == 'iq' ? @node['type'] : @node.element_name)
+      method = @node.element_name == 'iq' ? @node['type'] : @node.element_name
+      if self.respond_to?(method, true)
+        self.__send__(method)
+      else
+        failure
+      end
     end
 
+  private
     def session
       response = Stanza::Iq.new :set
       response.to = @to
@@ -31,11 +31,19 @@ module Stream # :nodoc:
     end
 
     def result
-      @callbacks[:success].call(@jid) if @callbacks[:success]
+      success
     end
 
     def error
-      @callbacks[:failure].call if @callbacks[:failure]
+      failure
+    end
+
+    def success
+      @success.call
+    end
+
+    def failure
+      @failure.call
     end
   end
 
