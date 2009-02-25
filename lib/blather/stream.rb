@@ -231,11 +231,14 @@ module Blather
     def bind_resource
       unless @resource
         @resource = Resource.new self, @jid
-        @resource.success { |jid| LOG.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
-        @resource.failure { LOG.debug "RESOURCE: FAILURE"; stop }
+        # on success destroy the Resource object, set the jid, continue along the features dispatch process
+        @resource.on_success { |jid| LOG.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
+        # on failure end the stream
+        @resource.on_failure { LOG.debug "RESOURCE: FAILURE"; stop }
+
         @node = @features.shift
       end
-      @resource.receive @node
+      @resource.handle @node
     end
 
     ##
