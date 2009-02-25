@@ -29,6 +29,7 @@ $:.unshift File.join(File.dirname(__FILE__), *%w[vendor libxml lib])
   blather/stanza/presence/subscription
 
   blather/stream
+  blather/stream/stream_handler
   blather/stream/parser
   blather/stream/resource
   blather/stream/sasl

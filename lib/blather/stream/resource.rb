@@ -1,34 +1,13 @@
 module Blather # :nodoc:
 module Stream # :nodoc:
 
-  class Resource # :nodoc:
-    def on_success(&block); @success = block; end
-    def on_failure(&block); @failure = block; end
-
+  class Resource < StreamHandler # :nodoc:
     def initialize(stream, jid)
-      @stream = stream
+      super stream
       @jid = jid
     end
 
-    def handle(node)
-      @node = node
-      method = @node.element_name == 'iq' ? @node['type'] : @node.element_name
-      if self.respond_to?(method, true)
-        self.__send__(method)
-      else
-        failure
-      end
-    end
-
   private
-    def success(jid)
-      @success.call jid
-    end
-
-    def failure
-      @failure.call
-    end
-
     ##
     # Respond to the bind request
     # If @jid has a resource set already request it from the server
@@ -56,12 +35,6 @@ module Stream # :nodoc:
         @jid = JID.new @node.find_first('bind/jid').content
         success @jid
       end
-    end
-
-    ##
-    # Handle error response from the server
-    def error
-      failure
     end
   end #Resource
 

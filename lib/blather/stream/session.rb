@@ -1,26 +1,15 @@
 module Blather # :nodoc:
 module Stream # :nodoc:
 
-  class Session # :nodoc:
-    def on_success(&block); @success = block; end
-    def on_failure(&block); @failure = block; end
-
+  class Session < StreamHandler # :nodoc:
     def initialize(stream, to)
-      @stream = stream
+      super stream
       @to = to
     end
 
-    def handle(node)
-      @node = node
-      method = @node.element_name == 'iq' ? @node['type'] : @node.element_name
-      if self.respond_to?(method, true)
-        self.__send__(method)
-      else
-        failure
-      end
-    end
-
   private
+    ##
+    # Send a start session command
     def session
       response = Stanza::Iq.new :set
       response.to = @to
@@ -30,20 +19,10 @@ module Stream # :nodoc:
       @stream.send response
     end
 
+    ##
+    # The server should respond with a <result> node if all is well
     def result
       success
-    end
-
-    def error
-      failure
-    end
-
-    def success
-      @success.call
-    end
-
-    def failure
-      @failure.call
     end
   end
 

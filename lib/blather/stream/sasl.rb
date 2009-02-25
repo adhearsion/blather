@@ -1,7 +1,7 @@
 module Blather # :nodoc:
 module Stream # :nodoc:
 
-  class SASL # :nodoc:
+  class SASL < StreamHandler # :nodoc:
     class UnknownMechanism < BlatherError
       handler_heirarchy ||= []
       handler_heirarchy << :unknown_mechanism
@@ -9,11 +9,8 @@ module Stream # :nodoc:
 
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'.freeze
 
-    def on_success(&block); @success = block; end
-    def on_failure(&block); @failure = block; end
-
     def initialize(stream, jid, pass = nil)
-      @stream = stream
+      super stream
       @jid = jid
       @pass = pass
       @mechanism_idx = 0
@@ -38,22 +35,18 @@ module Stream # :nodoc:
 
     ##
     # Handle incoming nodes
-    # 
+    # Cycle through possible mechanisms until we either
+    # run out of them or none work
     def handle(node)
-      @node = node
-      if @node.element_name == 'failure'
+      if node.element_name == 'failure'
         if @mechanisms[@mechanism_idx += 1]
           set_mechanism
           authenticate
         else
-          failure @node
+          failure node
         end
       else
-        if self.respond_to?(@node.element_name, true)
-          self.__send__(@node.element_name)
-        else
-          failure
-        end
+        super
       end
     end
 
@@ -71,14 +64,6 @@ module Stream # :nodoc:
       node['xmlns'] = SASL_NS
       node['mechanism'] = mechanism
       node
-    end
-
-    def success
-      @success.call
-    end
-
-    def failure(err = nil)
-      @failure.call err
     end
 
     ##
