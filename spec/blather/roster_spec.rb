@@ -19,24 +19,24 @@ describe 'Blather::Roster' do
   it 'processes @stanzas with remove requests' do
     s = @roster['n@d/0r']
     s.subscription = :remove
-    proc { @roster.process(s.to_stanza) }.must_change('@roster.items', :length, :by => -1)
+    proc { @roster.process(s.to_stanza) }.must_change('@roster.items.length', :by => -1)
   end
 
   it 'processes @stanzas with add requests' do
     s = Stanza::Iq::Roster::RosterItem.new('a@b/c').to_stanza
-    proc { @roster.process(s) }.must_change('@roster.items', :length, :by => 1)
+    proc { @roster.process(s) }.must_change('@roster.items.length', :by => 1)
   end
 
   it 'allows a jid to be pushed' do
     jid = 'a@b/c'
-    proc { @roster.push(jid) }.must_change('@roster.items', :length, :by => 1)
+    proc { @roster.push(jid) }.must_change('@roster.items.length', :by => 1)
     @roster[jid].wont_be_nil
   end
 
   it 'allows an item to be pushed' do
     jid = 'a@b/c'
     item = RosterItem.new(JID.new(jid))
-    proc { @roster.push(item) }.must_change('@roster.items', :length, :by => 1)
+    proc { @roster.push(item) }.must_change('@roster.items.length', :by => 1)
     @roster[jid].wont_be_nil
   end
 
@@ -45,7 +45,7 @@ describe 'Blather::Roster' do
     item = RosterItem.new(JID.new(jid))
     jid2 = 'd@e/f'
     item2 = RosterItem.new(JID.new(jid2))
-    proc { @roster << item << item2 }.must_change('@roster.items', :length, :by => 2)
+    proc { @roster << item << item2 }.must_change('@roster.items.length', :by => 2)
     @roster[jid].wont_be_nil
     @roster[jid2].wont_be_nil
   end
@@ -58,7 +58,7 @@ describe 'Blather::Roster' do
   end
 
   it 'removes a JID' do
-    proc { @roster.delete 'n@d' }.must_change('@roster.items', :length, :by => -1)
+    proc { @roster.delete 'n@d' }.must_change('@roster.items.length', :by => -1)
   end
 
   it 'sends a @roster removal over the wire' do

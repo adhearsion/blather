@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
 
 describe 'Blather::Stanza' do
   it 'provides .next_id helper for generating new IDs' do
-    proc { Stanza.next_id }.must_change 'Stanza', :next_id
+    proc { Stanza.next_id }.must_change 'Stanza.next_id'
   end
 
   it 'can import a node' do
