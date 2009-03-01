@@ -20,6 +20,12 @@ class StreamError < BlatherError
   end
 
   ##
+  # Retreive an error class from a given name
+  def self.class_from_registration(err_name)
+    @@registrations[err_name.to_s] || self
+  end
+
+  ##
   # Factory method for instantiating the proper class
   # for the error
   def self.import(node)
@@ -29,7 +35,7 @@ class StreamError < BlatherError
 
     extras = node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }
 
-    (@@registrations[name] || self).new text, extras
+    class_from_registration(name).new text, extras
   end
 
   ##
