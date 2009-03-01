@@ -5,7 +5,7 @@ def stanza_error_node(type = 'cancel', error = 'internal-server-error', msg = ni
   XML::Document.new.root = node
 
   error_node = XMPPNode.new('error')
-  error_node['type'] = type
+  error_node['type'] = type.to_s
   
   err = XMPPNode.new(error)
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
@@ -100,7 +100,7 @@ describe 'Blather::StanzaError' do
     end
   end
 
-  describe 'each XMPP stream error type' do
+  describe 'each XMPP stanza error type' do
     %w[ bad-request
         conflict
         feature-not-implemented
@@ -125,9 +125,14 @@ describe 'Blather::StanzaError' do
         unexpected-request
       ].each do |error_type|
         it "provides a class for #{error_type}" do
-          e = StanzaError.import stanza_error_node('cancel', error_type)
+          e = StanzaError.import stanza_error_node(:cancel, error_type)
           klass = error_type.gsub(/^\w/) { |v| v.upcase }.gsub(/\-(\w)/) { |v| v.delete('-').upcase }
           e.must_be_instance_of eval("StanzaError::#{klass}")
+        end
+
+        it "registers #{error_type} in the handler heirarchy" do
+          e = StanzaError.import stanza_error_node(:cancel, error_type)
+          e.handler_heirarchy.must_equal ["stanza_#{error_type.gsub('-','_').gsub('_error','')}_error".to_sym, :stanza_error, :error]
         end
       end
   end

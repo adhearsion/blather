@@ -21,6 +21,8 @@ class StanzaError < BlatherError
     @@registrations[err_name] = self
   end
 
+  ##
+  # Retreive an error class from a given name
   def self.class_from_registration(err_name)
     @@registrations[err_name.to_s] || self
   end
@@ -149,7 +151,7 @@ class StanzaError < BlatherError
   # the server could not process the stanza because of a misconfiguration or an otherwise-undefined internal server error;
   # the associated error type SHOULD be "wait".
   class InternalServerError < StanzaError
-    register :stanza_internal_server_errror, 'internal-server-error'
+    register :stanza_internal_server_error, 'internal-server-error'
   end
 
   ##
@@ -195,7 +197,7 @@ class StanzaError < BlatherError
   # return this error if doing so would provide information about the intended recipient's network availability to an entity that
   # is not authorized to know such information).
   class RecipientUnavailable < StanzaError
-    register :recipient_unavailable_error, 'recipient-unavailable'
+    register :stanza_recipient_unavailable_error, 'recipient-unavailable'
   end
 
   ##
@@ -227,7 +229,7 @@ class StanzaError < BlatherError
   ##
   # the server or recipient lacks the system resources necessary to service the request; the associated error type SHOULD be "wait".
   class ResourceConstraint < StanzaError
-    register :stanza_resource_contraint_error, 'resource-constraint'
+    register :stanza_resource_constraint_error, 'resource-constraint'
   end
 
   ##
@@ -253,7 +255,7 @@ class StanzaError < BlatherError
   # the recipient or server understood the request but was not expecting it at this time (e.g., the request was out of order);
   # the associated error type SHOULD be "wait".
   class UnexpectedRequest < StanzaError
-    register :unexpected_request_error, 'unexpected-request'
+    register :stanza_unexpected_request_error, 'unexpected-request'
   end
 end #StanzaError
 
