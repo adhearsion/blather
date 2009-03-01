@@ -209,6 +209,33 @@ describe 'Blather::Stream' do
     end
   end
 
+  it 'will fail if TLS negotiation fails' do
+    state = nil
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :tls
+        @stream.expects(:start_tls).never
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-tls'/></stream:stream>"
+        val.must_match(/starttls/)
+
+      when :tls
+        EM.stop
+        val.must_equal "</stream:stream>"
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
   it 'connects via SASL MD5 when asked' do
     Time.any_instance.stubs(:to_f).returns(1.1)
     state = nil

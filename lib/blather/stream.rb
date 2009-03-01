@@ -159,8 +159,10 @@ module Blather
     ##
     # Stop the stream
     def stop
-      @state = :stopped
-      send '</stream:stream>'
+      unless @state == :stopped
+        @state = :stopped
+        send '</stream:stream>'
+      end
     end
 
     ##
