@@ -184,7 +184,7 @@ describe 'Blather::Stream' do
 
   it 'starts TLS when asked' do
     state = nil
-    mocked_server(2) do |val, server|
+    mocked_server(3) do |val, server|
       case state
       when nil
         state = :started
@@ -192,8 +192,14 @@ describe 'Blather::Stream' do
         val.must_match(/stream:stream/)
 
       when :started
-        EM.stop
+        state = :tls
+        @stream.expects(:start_tls)
+        server.send_data "<proceed xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>"
         val.must_match(/starttls/)
+
+      when :tls
+        EM.stop
+        true
 
       else
         EM.stop
