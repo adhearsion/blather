@@ -26,7 +26,7 @@ module Blather
     def send(stanza)
       #TODO Queue if not ready
       LOG.debug "SENDING: (#{caller[1]}) #{stanza}"
-      send_data stanza.to_s
+      send_data stanza.respond_to?(:to_xml) ? stanza.to_xml : stanza.to_s
     end
 
     ##
@@ -81,7 +81,7 @@ module Blather
       LOG.debug "<< #{data}"
       @parser.parse data
 
-    rescue ParseError => e
+    rescue StreamError::ParseError => e
       @error = e
       stop
     end
@@ -113,7 +113,7 @@ module Blather
         dispatch
 
       when 'stream:error'
-        @error = StreamError.new(@node)
+        @error = StreamError.import @node
         stop
         @state = :error
 

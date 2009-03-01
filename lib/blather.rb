@@ -13,13 +13,14 @@ $:.unshift File.join(File.dirname(__FILE__), *%w[vendor libxml lib])
   blather/core_ext/libxml
 
   blather/errors
+  blather/errors/stanza_error
+  blather/errors/stream_error
   blather/jid
   blather/roster
   blather/roster_item
   blather/xmpp_node
 
   blather/stanza
-  blather/stanza/error
   blather/stanza/iq
   blather/stanza/iq/query
   blather/stanza/iq/roster

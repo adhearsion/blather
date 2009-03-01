@@ -64,7 +64,7 @@ module Stream # :nodoc:
     end
 
     def on_error(msg)
-      raise Blather::ParseError, msg.to_s
+      raise StreamError::ParseError, msg.to_s
     end
   end #Parser
 

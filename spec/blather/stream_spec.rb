@@ -151,10 +151,9 @@ describe 'Blather::Stream' do
   it 'sends client an error on stream:error' do
     @client = mock()
     @client.expects(:call).with do |v|
-      v.must_be_kind_of(StreamError)
-      v.type.must_equal 'conflict'
+      v.must_be_instance_of(StreamError::Conflict)
       v.text.must_equal 'Already signed in'
-      v.to_s.must_equal "Stream Error (#{v.type}): #{v.text}"
+      v.to_s.must_equal "Stream Error (conflict): #{v.text}"
     end
 
     state = nil
@@ -488,7 +487,7 @@ describe 'Blather::Stream' do
 
   it 'sends client an error on parse error' do
     @client = mock()
-    @client.expects(:call).with { |v| v.must_be_kind_of(ParseError) }
+    @client.expects(:call).with { |v| v.must_be_kind_of(StreamError::ParseError) }
     state = nil
     mocked_server(3) do |val, server|
       case state

@@ -114,10 +114,10 @@ module Blather
     end
 
     ##
-    # Turn itself into a string and remove all whitespace between nodes
-    def to_s
+    # Turn itself into an XML string and remove all whitespace between nodes
+    def to_xml
       # TODO: Fix this for HTML nodes (and any other that might require whitespace)
-      super.gsub(">\n<", '><')
+      to_s.gsub(">\n<", '><')
     end
 
     ##

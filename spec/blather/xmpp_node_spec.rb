@@ -111,10 +111,10 @@ describe 'Blather::XMPPNode' do
     n['foo'].must_equal 'bar'
   end
 
-  it 'cuts line breaks out of #to_s' do
+  it 'cuts line breaks out of #to_xml' do
     n = XMPPNode.new 'foo'
     n << XMPPNode.new('bar', 'baz')
-    n.to_s.scan(">\n<").size.must_equal 0
+    n.to_xml.scan(">\n<").size.must_equal 0
   end
 
   it 'overrides #find to find without xpath' do

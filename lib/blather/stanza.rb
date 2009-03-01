@@ -103,5 +103,13 @@ module Blather
       attributes[:type].to_sym unless attributes[:type].blank?
     end
 
+    ##
+    # Transform the stanza into a stanza error
+    # <tt>err_name_or_class</tt> can be the name of the error or the error class to use
+    # <tt>type</tt>, <tt>text</tt>, <tt>extras</tt> are the same as for StanzaError#new
+    def as_error(err_name_or_class, type, text = nil, extras = [])
+      klass = (err_name_or_class.is_a?(Class) ? err_name_or_class : StanzaError.class_from_registration(err_name_or_class))
+      klass.new self, type, text, extras
+    end
   end
 end
