@@ -90,12 +90,6 @@ class StreamError < BlatherError
   alias_method :to_s, :inspect # :nodoc:
 
   ##
-  # Something bad happened while parsing the incoming stream
-  class ParseError < BlatherError
-    register :parse_error
-  end
-
-  ##
   # The entity has sent XML that cannot be processed; this error MAY be used instead of the more specific XML-related errors,
   # such as <bad-namespace-prefix/>, <invalid-xml/>, <restricted-xml/>, <unsupported-encoding/>, and <xml-not-well-formed/>,
   # although the more specific errors are preferred.

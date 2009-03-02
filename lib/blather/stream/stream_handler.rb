@@ -15,7 +15,7 @@ module Stream # :nodoc:
       if self.respond_to?(method, true)
         self.__send__ method
       else
-        failure
+        @failure.call UnknownResponse.new(@node)
       end
     end
 

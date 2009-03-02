@@ -211,6 +211,8 @@ describe 'Blather::Stream' do
 
   it 'will fail if TLS negotiation fails' do
     state = nil
+    @client = mock()
+    @client.expects(:call).with { |v| v.must_be_kind_of TLSFailure }
     mocked_server(3) do |val, server|
       case state
       when nil
@@ -222,6 +224,38 @@ describe 'Blather::Stream' do
         state = :tls
         @stream.expects(:start_tls).never
         server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-tls'/></stream:stream>"
+        val.must_match(/starttls/)
+
+      when :tls
+        EM.stop
+        val.must_equal "</stream:stream>"
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'will fail if a bad node comes through TLS negotiations' do
+    state = nil
+    @client = mock()
+    @client.expects(:call).with do |v|
+      v.must_be_kind_of UnknownResponse
+      v.node.element_name.must_equal 'foo-bar'
+    end
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :tls
+        @stream.expects(:start_tls).never
+        server.send_data "<foo-bar xmlns='urn:ietf:params:xml:ns:xmpp-tls'/></stream:stream>"
         val.must_match(/starttls/)
 
       when :tls
@@ -463,6 +497,38 @@ describe 'Blather::Stream' do
     end
   end
 
+  it 'fails when an unkown node comes through during SASL negotiation' do
+    @client = mock()
+    @client.expects(:call).with do |n|
+      n.must_be_instance_of UnknownResponse
+      n.node.element_name.must_equal 'foo-bar'
+    end
+    state = nil
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :auth_sent
+        server.send_data "<foo-bar />"
+        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+
+      when :auth_sent
+        EM.stop
+        state = :complete
+        val.must_match(/\/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
   it 'will bind to a resource set by the server' do
     state = nil
     class Client; attr_accessor :jid; end
@@ -527,6 +593,69 @@ describe 'Blather::Stream' do
     end
   end
 
+  it 'will return an error if resource binding errors out' do
+    state = nil
+    @client = mock()
+    @client.expects(:call).with do |n|
+      n.must_be_instance_of StanzaError::BadRequest
+    end
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :complete
+        val =~ %r{<iq[^>]+id="([^"]+)"}
+        server.send_data "<iq type='error' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>r</resource></bind><error type='modify'><bad-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
+        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
+
+      when :complete
+        EM.stop
+        val.must_match(/\/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'will return an error if an unkown node comes through during resouce binding' do
+    state = nil
+    @client = mock()
+    @client.expects(:call).with do |n|
+      n.must_be_instance_of UnknownResponse
+      n.node.element_name.must_equal 'foo-bar'
+    end
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :complete
+        val =~ %r{<iq[^>]+id="([^"]+)"}
+        server.send_data "<foo-bar />"
+        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
+
+      when :complete
+        EM.stop
+        val.must_match(/\/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
   it 'will establish a session if requested' do
     state = nil
     @client = mock()
@@ -558,9 +687,75 @@ describe 'Blather::Stream' do
     end
   end
 
+  it 'will return an error if session establishment errors out' do
+    state = nil
+    @client = mock()
+    @client.expects(:call).with do |n|
+      n.must_be_instance_of StanzaError::InternalServerError
+    end
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :completed
+        server.send_data "<iq from='d' type='error' id='#{val[/id="([^"]+)"/,1]}'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/><error type='wait'><internal-server-error xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
+        val.must_match(%r{<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"\s?/></iq>})
+
+      when :completed
+        EM.stop
+        val.must_match(/\/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'will return an error if an unknown node come through during session establishment' do
+    state = nil
+    @client = mock()
+    @client.expects(:call).with do |n|
+      n.must_be_instance_of UnknownResponse
+      n.node.element_name.must_equal 'foo-bar'
+    end
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :completed
+        server.send_data '<foo-bar />'
+        val.must_match(%r{<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"\s?/></iq>})
+
+      when :completed
+        EM.stop
+        val.must_match(/\/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
   it 'sends client an error on parse error' do
     @client = mock()
-    @client.expects(:call).with { |v| v.must_be_kind_of(StreamError::ParseError) }
+    @client.expects(:call).with do |v|
+      v.must_be_kind_of ParseError
+      v.message.must_match(/generate\-parse\-error/)
+    end
     state = nil
     mocked_server(3) do |val, server|
       case state

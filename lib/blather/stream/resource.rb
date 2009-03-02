@@ -36,6 +36,12 @@ module Stream # :nodoc:
         success @jid
       end
     end
+
+    ##
+    # Server returned an error
+    def error
+      failure StanzaError.import(@node)
+    end
   end #Resource
 
 end #Stream

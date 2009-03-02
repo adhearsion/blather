@@ -21,6 +21,12 @@ module Stream # :nodoc:
       @stream.start_tls
       success
     end
+
+    ##
+    # Negotiations failed
+    def failure
+      super StreamError::TLSFailure.new
+    end
   end #TLS
 
 end #Stream

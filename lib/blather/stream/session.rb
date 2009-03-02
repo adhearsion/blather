@@ -24,6 +24,12 @@ module Stream # :nodoc:
     def result
       success
     end
+
+    ##
+    # Server returned an error.
+    def error
+      failure StanzaError.import(@node)
+    end
   end
 
 end

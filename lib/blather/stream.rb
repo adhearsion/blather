@@ -206,7 +206,7 @@ module Blather
         # on success destroy the TLS object and restart the stream
         @tls.on_success { LOG.debug "TLS: SUCCESS"; @tls = nil; start }
         # on failure stop the stream
-        @tls.on_failure { LOG.debug "TLS: FAILURE"; stop }
+        @tls.on_failure { |err| LOG.debug "TLS: FAILURE"; @error = err; stop }
 
         @node = @features.shift
       end
@@ -221,7 +221,7 @@ module Blather
         # on success destroy the SASL object and restart the stream
         @sasl.on_success { LOG.debug "SASL SUCCESS"; @sasl = nil; start }
         # on failure set the error and stop the stream
-        @sasl.on_failure { |e| LOG.debug "SASL FAIL"; @error = e; stop }
+        @sasl.on_failure { |err| LOG.debug "SASL FAIL"; @error = err; stop }
 
         @node = @features.shift
       end
@@ -236,7 +236,7 @@ module Blather
         # on success destroy the Resource object, set the jid, continue along the features dispatch process
         @resource.on_success { |jid| LOG.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
         # on failure end the stream
-        @resource.on_failure { LOG.debug "RESOURCE: FAILURE"; stop }
+        @resource.on_failure { |err| LOG.debug "RESOURCE: FAILURE"; @error = err; stop }
 
         @node = @features.shift
       end
@@ -252,7 +252,7 @@ module Blather
         # then continue the features dispatch process
         @session.on_success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.stream_started(self); @state = :features; dispatch }
         # on failure end the stream
-        @session.on_failure { LOG.debug "SESSION: FAILURE"; stop }
+        @session.on_failure { |err| LOG.debug "SESSION: FAILURE"; @error = err; stop }
 
         @node = @features.shift
       end
