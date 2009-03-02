@@ -334,8 +334,8 @@ describe 'Blather::Stream' do
     state = nil
     @client = mock()
     @client.expects(:call).with do |n|
-      n.must_be_kind_of(XMPPNode)
-      n.element_name.must_equal 'failure'
+      n.must_be_kind_of(SASLError)
+      n.must_be_instance_of SASLError::NotAuthorized
     end
 
     mocked_server(5) do |val, server|
@@ -419,6 +419,46 @@ describe 'Blather::Stream' do
         EM.stop
         val.must_match(/failure(.*)invalid\-mechanism/)
 
+      end
+    end
+  end
+
+  %w[ aborted
+      incorrect-encoding
+      invalid-authzid
+      invalid-mechanism
+      mechanism-too-weak
+      not-authorized
+      temporary-auth-failure
+  ].each do |error_type|
+    it "fails on #{error_type}" do
+      @client = mock()
+      @client.expects(:call).with do |n|
+        n.must_be_instance_of SASLError.class_from_registration(error_type)
+      end
+      state = nil
+      mocked_server(3) do |val, server|
+        case state
+        when nil
+          state = :started
+          server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+          val.must_match(/stream:stream/)
+
+        when :started
+          state = :auth_sent
+          server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><#{error_type} /></failure>"
+          val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+
+        when :auth_sent
+          EM.stop
+          state = :complete
+          val.must_match(/\/stream:stream/)
+
+        else
+          EM.stop
+          false
+
+        end
       end
     end
   end

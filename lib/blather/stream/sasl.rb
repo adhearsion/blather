@@ -25,7 +25,7 @@ module Stream # :nodoc:
       else
         # Send a failure node and kill the stream
         @stream.send "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><invalid-mechanism/></failure>"
-        failure UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
+        @failure.call UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
         return false
       end
 
@@ -51,6 +51,10 @@ module Stream # :nodoc:
     end
 
   protected
+    def failure(node = nil)
+      @failure.call SASLError.import(node)
+    end
+
     ##
     # Base64 Encoder
     def b64(str)
@@ -163,7 +167,6 @@ module Stream # :nodoc:
         @stream.send auth_node('ANONYMOUS', b64(@jid.node))
       end
     end #Anonymous
-
   end #SASL
 
 end #Stream
