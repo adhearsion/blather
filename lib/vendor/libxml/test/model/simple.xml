@@ -1,7 +1,0 @@
-<root>
-<foo>123</foo>
-<bar x='1' y='2'>
-  <fuga>test1</fuga>
-  <fuga>test2</fuga>
-</bar>
-</root>

@@ -1,10 +1,8 @@
 $:.unshift File.dirname(__FILE__)
-$:.unshift File.join(File.dirname(__FILE__), *%w[vendor libxml lib])
 
 # Require the necessary files
 %w[
   rubygems
-  vendor/libxml/lib/xml
   eventmachine
   digest/md5
   logger
