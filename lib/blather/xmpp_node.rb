@@ -75,7 +75,7 @@ module Blather
     # Remove a child with the name and (optionally) namespace given
     def remove_child(name, ns = nil)
       name = name.to_s
-      self.each { |n| n.remove! if n.element_name == name && (!ns || n.namespace == ns) }
+      self.detect { |n| n.remove! if n.element_name == name && (!ns || n.namespace == ns) }
     end
 
     ##

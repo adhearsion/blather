@@ -5,7 +5,7 @@ module Stream # :nodoc:
     STREAM_REGEX = %r{(/)?stream:stream}.freeze
     ERROR_REGEX = /^<(stream:[a-z]+)/.freeze
 
-    @@debug = false
+    @@debug = !false
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
 
@@ -14,16 +14,14 @@ module Stream # :nodoc:
     def initialize(receiver)
       @receiver = receiver
       @current = nil
-
       @parser = XML::SaxPushParser.new self
     end
 
-    def parse(string)
+    def receive_data(string)
       LOG.debug "PARSING: (#{string})" if @@debug
-      @parser.receive(string) #unless string.blank?
+      @parser.receive string
     end
 
-    NON_ATTRS = [nil, 'stream'].freeze
     def on_start_element_ns(elem, attrs, prefix, uri, namespaces)
       LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
       elem = "#{"#{prefix}:" if prefix}#{elem}"

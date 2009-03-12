@@ -1,9 +1,12 @@
 $:.unshift File.dirname(__FILE__)
+$:.unshift File.join(File.dirname(__FILE__), '..')
 
 # Require the necessary files
 %w[
   rubygems
   eventmachine
+  ext/push_parser
+  xml/libxml
   digest/md5
   logger
 

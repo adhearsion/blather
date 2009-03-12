@@ -5,3 +5,4 @@ coverage
 *.bundle
 mkmf.log
 *.o
+Makefile

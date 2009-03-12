@@ -79,7 +79,7 @@ module Blather
     def receive_data(data) # :nodoc:
       LOG.debug "\n"+('-'*30)+"\n"
       LOG.debug "<< #{data}"
-      @parser.parse data
+      @parser.receive_data data
 
     rescue StreamError::ParseError => e
       @error = e
