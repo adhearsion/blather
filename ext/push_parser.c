@@ -1,3 +1,7 @@
+/*
+ * Most of this was ripped from libxml-ruby's SAX handler
+ */
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <ruby.h>
@@ -104,9 +108,6 @@ static void push_parser_start_element_ns_callback (
     {
       VALUE attrName = rb_str_new2((const char*)xattributes[i+0]);
       VALUE attrValue = rb_str_new((const char*)xattributes[i+3], xattributes[i+4] - xattributes[i+3]);
-      /* VALUE attrPrefix = xattributes[i+1] ? rb_str_new2(xattributes[i+1]) : Qnil;
-         VALUE attrURI = xattributes[i+2] ? rb_str_new2(xattributes[i+2]) : Qnil; */
-
       rb_hash_aset(attributes, attrName, attrValue);
     }
   }
@@ -165,7 +166,6 @@ static void push_parser_structured_error_callback (
   if (handler != Qnil)
     rb_funcall (handler, rb_intern("on_error"), 1, rb_str_new2((const char*)xerror->message));
 }
-
 
 xmlSAXHandler saxHandler = {
   0, //internalSubset
