@@ -56,49 +56,11 @@ class Iq
       def jid
         (j = attributes[:jid]) ? JID.new(j) : nil
       end
+      attribute_writer :jid
 
-      ##
-      # Set the roster item's JID
-      def jid=(jid)
-        attributes[:jid] = jid
-      end
+      attribute_accessor :name, :to_sym => false
 
-      ##
-      # Roster item's name
-      def name
-        attributes[:name]
-      end
-
-      ##
-      # Set the roster item's name
-      def name=(name)
-        attributes[:name] = name
-      end
-
-      ##
-      # Roster item's subscription
-      # returned as a symbol
-      def subscription
-        attributes[:subscription].to_sym if attributes[:subscription]
-      end
-
-      ##
-      # Set the roster item's subscription
-      def subscription=(subscription)
-        attributes[:subscription] = subscription
-      end
-
-      ##
-      # Roster item's subscription sub-state
-      def ask
-        attributes[:ask].to_sym if attributes[:ask]
-      end
-
-      ##
-      # Set the roster item's subscription sub-state
-      def ask=(ask)
-        attributes[:ask] = ask
-      end
+      attribute_accessor :subscription, :ask
 
       ##
       # The groups roster item belongs to

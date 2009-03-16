@@ -103,29 +103,20 @@ describe 'Blather::Stanza::Iq::Roster::RosterItem' do
     i.jid.must_equal JID.new('n@d/r')
   end
 
-  it 'has an "attr_accessor" for name' do
+  it 'has a name attribute' do
     i = Stanza::Iq::Roster::RosterItem.new
-    i.must_respond_to :name
-    i.name.must_be_nil
-    i.must_respond_to :name=
     i.name = 'name'
     i.name.must_equal 'name'
   end
 
-  it 'has an "attr_accessor" for subscription' do
+  it 'has a subscription attribute' do
     i = Stanza::Iq::Roster::RosterItem.new
-    i.must_respond_to :subscription
-    i.subscription.must_be_nil
-    i.must_respond_to :subscription=
     i.subscription = :both
     i.subscription.must_equal :both
   end
 
-  it 'has an "attr_accessor" for ask' do
+  it 'has an ask attribute' do
     i = Stanza::Iq::Roster::RosterItem.new
-    i.must_respond_to :ask
-    i.ask.must_be_nil
-    i.must_respond_to :ask=
     i.ask = :subscribe
     i.ask.must_equal :subscribe
   end
