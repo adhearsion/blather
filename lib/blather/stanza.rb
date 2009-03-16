@@ -65,26 +65,14 @@ module Blather
       self
     end
 
-    def id=(id)
-      attributes[:id] = id
-    end
+    attribute_accessor :id, :to_sym => false
 
-    def id
-      attributes[:id]
-    end
-
-    def to=(to)
-      attributes[:to] = to
-    end
+    attribute_writer :to, :from
 
     ##
     # returns:: JID created from the "to" value of the stanza
     def to
       JID.new(attributes[:to]) if attributes[:to]
-    end
-
-    def from=(from)
-      attributes[:from] = from
     end
 
     ##
@@ -93,15 +81,7 @@ module Blather
       JID.new(attributes[:from]) if attributes[:from]
     end
 
-    def type=(type)
-      attributes[:type] = type
-    end
-
-    ##
-    # returns:: a symbol of the type
-    def type
-      attributes[:type].to_sym unless attributes[:type].blank?
-    end
+    attribute_accessor :type
 
     ##
     # Transform the stanza into a stanza error
