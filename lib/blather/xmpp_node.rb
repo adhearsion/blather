@@ -45,6 +45,72 @@ module Blather
     end
 
     ##
+    # Provides an attribute reader helper. Default behavior is to
+    # conver the values of the attribute into a symbol. This can
+    # be turned off by passing <tt>:to_sym => false</tt>
+    #
+    #   class Node
+    #     attribute_reader :type
+    #     attribute_reader :name, :to_sym => false
+    #   end
+    #
+    #   n = Node.new
+    #   n.attributes[:type] = 'foo'
+    #   n.type == :foo
+    #   n.attributes[:name] = 'bar'
+    #   n.name == 'bar'
+    def self.attribute_reader(*syms)
+      opts = syms.last.is_a?(Hash) ? syms.pop : {}
+      syms.flatten.each do |sym|
+        class_eval(<<-END, __FILE__, __LINE__)
+          def #{sym}
+            attributes[:#{sym}]#{".to_sym unless attributes[:#{sym}].blank?" unless opts[:to_sym] == false}
+          end
+        END
+      end
+    end
+
+    ##
+    # Provides an attribute writer helper.
+    #
+    #   class Node
+    #     attribute_writer :type
+    #   end
+    #
+    #   n = Node.new
+    #   n.type = 'foo'
+    #   n.attributes[:type] == 'foo'
+    def self.attribute_writer(*syms)
+      syms.flatten.each do |sym|
+        next if sym.is_a?(Hash)
+        class_eval(<<-END, __FILE__, __LINE__)
+          def #{sym}=(value)
+            attributes[:#{sym}] = value
+          end
+        END
+      end
+    end
+
+    ##
+    # Provides an attribute accessor helper combining
+    # <tt>attribute_reader</tt> and <tt>attribute_writer</tt>
+    #
+    #   class Node
+    #     attribute_accessor :type
+    #     attribute_accessor :name, :to_sym => false
+    #   end
+    #
+    #   n = Node.new
+    #   n.type = 'foo'
+    #   n.type == :foo
+    #   n.name = 'bar'
+    #   n.name == 'bar'
+    def self.attribute_accessor(*syms)
+      attribute_reader *syms
+      attribute_writer *syms
+    end
+
+    ##
     # Automatically sets the namespace registered by the subclass
     def initialize(name = nil, content = nil)
       name ||= self.class.name

@@ -32,6 +32,55 @@ describe 'Blather::XMPPNode' do
     XMPPNode.import(n).must_be_kind_of Foo
   end
 
+  it 'provides an attribute_reader' do
+    class Foo < XMPPNode
+      attribute_reader :foo
+    end
+    f = Foo.new
+    f.must_respond_to :foo
+    f.foo.must_be_nil
+    f.attributes[:foo] = 'bar'
+    f.foo.must_equal :bar
+  end
+
+  it 'provides an attribute_reader and not convert to syms' do
+    class Foo < XMPPNode
+      attribute_reader :foo, :to_sym => false
+    end
+    f = Foo.new
+    f.must_respond_to :foo
+    f.foo.must_be_nil
+    f.attributes[:foo] = 'bar'
+    f.foo.must_equal 'bar'
+  end
+
+  it 'provides an attribute_writer' do
+    class Foo < XMPPNode
+      attribute_writer :foo
+    end
+    f = Foo.new
+    f.attributes[:foo].must_be_nil
+    f.foo = 'bar'
+    f.attributes[:foo].must_equal 'bar'
+  end
+
+  it 'provides an attribute_accessor' do
+    class Foo < XMPPNode
+      attribute_accessor :foo
+      attribute_accessor :bar, :to_sym => false
+    end
+    f = Foo.new
+    f.must_respond_to :foo
+    f.foo.must_be_nil
+    f.foo = 'bar'
+    f.foo.must_equal :bar
+
+    f.must_respond_to :bar
+    f.bar.must_be_nil
+    f.bar = 'baz'
+    f.bar.must_equal 'baz'
+  end
+
   it 'can convert itself into a stanza' do
     class Foo < XMPPNode; register 'foo'; end
     n = XMPPNode.new('foo')
