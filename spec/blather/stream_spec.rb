@@ -11,6 +11,7 @@ describe 'Blather::Stream' do
 
   def mocked_server(times = nil, &block)
     @client ||= mock()
+    @client.stubs(:stopped) unless @client.respond_to?(:stopped)
     @client.stubs(:jid=) unless @client.respond_to?(:jid=)
 
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
@@ -64,12 +65,15 @@ describe 'Blather::Stream' do
 
     mocked_server(1) do |val, server|
       val.must_match(/stream:stream/)
-      server.send_data "<?xml version='1.0' ?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+      server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       server.send_data "<message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
     end
   end
 
-  it 'puts itself in the stopped state when stopped' do
+  it 'puts itself in the stopped state and calls @client.stopped when stopped' do
+    @client = mock()
+    @client.expects(:stopped).at_least_once
+
     started = false
     mocked_server(2) do |val, server|
       if !started

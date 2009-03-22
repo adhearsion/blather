@@ -81,7 +81,7 @@ module Blather
       LOG.debug "<< #{data}"
       @parser.receive_data data
 
-    rescue StreamError::ParseError => e
+    rescue ParseError => e
       @error = e
       stop
     end
@@ -92,6 +92,7 @@ module Blather
 #      @keepalive.cancel
       @state = :stopped
       @client.call @error if @error
+      @client.stopped
     end
 
     ##

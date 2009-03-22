@@ -10,19 +10,13 @@ end
 
 setup ARGV[0], ARGV[1]
 
-handle :ready do
-  puts "Connected ! send messages to #{jid.stripped}."
+when_ready { puts "Connected ! send messages to #{jid.stripped}." }
+
+message :chat?, :body => 'exit' do |m|
+  say m.from, 'Exiting ...'
+  shutdown || true
 end
 
-# Echo back what was said
-handle :message do |m|
-  if m.chat? && m.body
-    if m.body == 'exit'
-      say m.from, 'Exiting ...'
-      EM.stop
-    else
-      m.body = "You sent: #{m.body}"
-      write m.reply!
-    end
-  end
+message :chat?, :body do |m|
+  say m.from, "You sent: #{m.body}"
 end

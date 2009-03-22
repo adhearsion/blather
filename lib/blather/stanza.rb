@@ -3,6 +3,7 @@ module Blather
   # Base XMPP Stanza
   class Stanza < XMPPNode
     @@last_id = 0
+    @@handler_list = []
 
     class_inheritable_array :handler_heirarchy
 
@@ -14,11 +15,16 @@ module Blather
     # which is added to a list and iterated over when looking for
     # a callback to use
     def self.register(type, name = nil, ns = nil)
+      @@handler_list << type
       self.handler_heirarchy ||= []
       self.handler_heirarchy.unshift type
 
       name = name || self.name || type
       super name, ns
+    end
+
+    def self.handler_list
+      @@handler_list
     end
 
     ##

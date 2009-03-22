@@ -32,29 +32,72 @@ See the /examples directory for more advanced examples.
 
 This will auto-accept any subscription requests and echo back any chat messages.
 
-  %w[rubygems blather/client].each { |r| require r }
+  require 'rubygems'
+  require 'blather/client'
 
   setup 'echo@jabber.local', 'echo'
 
   # Auto approve subscription requests
-  handle :subscription do |s|
-    write(s.approve!) if s.request?
+  subscription :request? do |s|
+    write s.approve!
   end
 
   # Echo back what was said
-  handle :message do |m|
-    write(m.reply) if m.chat? && m.body
+  message :chat?, :body do |m|
+    write m.reply
   end
-  
+
+== Handlers
+
+Setup handlers by calling their names as methods.
+
+  # Will only be called for messages where #chat? responds positively
+  # and #body == 'exit'
+  message :chat?, :body => 'exit'
+
+=== Handler Guards
+
+Guards act like AND statements. Each condition must be met if the handler is to be used.
+
+  # Equivalent to saying (stanza.chat? && stanza.body)
+  message :chat?, :body
+
+There are 5 different types of guards:
+
+  # Symbol
+  #   Checks for a non-false reply to calling the symbol on the stanza
+  #   Equivalent to stanza.chat?
+  message :chat?
+
+  # Hash with string (:body => 'exit')
+  #   Calls the key on the stanza and checks for equality
+  #   Equivalent to stanza.body == 'exit'
+  message :body => 'exit'
+
+  # Hash with regular expression (:body => /exit/)
+  #   Calls the key on the stanza and checks for a match
+  #   Equivalent to stanza.body.match /exit/
+  message :body => /exit/
+
+  # Proc
+  #   Calls the proc passing in the stanza
+  #   Checks that the ID is modulo 3
+  message proc { |m| m.id % 3 == 0 }
+
+  # Array
+  #   Use arrays with the previous types effectively turns the guard into
+  #   an OR statement.
+  #   Equivalent to stanza.body == 'foo' || stanza.body == 'baz'
+  message [{:body => 'foo'}, {:body => 'baz'}]
+
 = TODO
 
 * Cleanup API
-** Add lambda callback ability to Iq stanzas
+* Add lambda callback ability to Iq stanzas
 * Better Documentation
 * Service Discovery (XEP-0030: http://xmpp.org/extensions/xep-0030.html)
 * PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)
-* More examples
-** Re-write XMPP4R examples into Blather
+* More examples (Re-write XMPP4R examples into Blather)
 
 = License
 
