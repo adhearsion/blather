@@ -1,5 +1,10 @@
 require 'echoe'
 
+begin
+  require 'hanna'
+rescue LoadError
+end
+
 desc 'Build extensions'
 task :build => :extensions
 task :extension => :build
