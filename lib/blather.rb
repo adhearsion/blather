@@ -26,6 +26,9 @@ $:.unshift File.join(File.dirname(__FILE__), '..')
   blather/stanza/iq
   blather/stanza/iq/query
   blather/stanza/iq/roster
+  blather/stanza/iq/disco
+  blather/stanza/iq/discos/disco_info
+  blather/stanza/iq/discos/disco_items
   blather/stanza/message
   blather/stanza/presence
   blather/stanza/presence/status

@@ -124,6 +124,7 @@ end
 
 class Array #:nodoc:
   alias_method :blank?, :empty?
+  def extract_options!; last.is_a?(::Hash) ? pop : {}; end
 end
 
 class Hash #:nodoc:

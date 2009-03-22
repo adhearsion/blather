@@ -2,6 +2,7 @@ require File.join(File.dirname(__FILE__), *%w[.. lib blather])
 require 'rubygems'
 require 'minitest/spec'
 require 'mocha'
+require 'mocha/expectation_error'
 
 module MiniTest
   require 'pathname' if MINI_DIR =~ %r{^./}
@@ -31,8 +32,6 @@ class Object
     return MiniTest::Spec.current.assert_change(*args, &self)
   end
 end
-
-require 'mocha/expectation_error'
 
 include Blather
 include MiniTest
