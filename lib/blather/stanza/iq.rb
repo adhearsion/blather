@@ -4,6 +4,8 @@ class Stanza
   ##
   # Base Iq stanza
   class Iq < Stanza
+    VALID_TYPES = [:get, :set, :result, :error]
+
     register :iq
 
     def self.import(node)
@@ -18,6 +20,17 @@ class Stanza
       self.type = type || :get
       self.to = to
       self.id = id if id
+    end
+
+    VALID_TYPES.each do |valid_type|
+      define_method("#{valid_type}?") { self.type == valid_type }
+    end
+
+    ##
+    # Ensures type is :get, :set, :result or :error
+    def type=(type)
+      raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
+      super
     end
   end
 

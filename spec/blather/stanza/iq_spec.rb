@@ -22,4 +22,19 @@ describe 'Blather::Stanza::Iq' do
     n << XMPPNode.new('query')
     Stanza::Iq.import(n).must_be_kind_of Stanza::Iq::Query
   end
+
+  it 'ensures type is one of Stanza::Iq::VALID_TYPES' do
+    lambda { Stanza::Iq.new :invalid_type_name }.must_raise(Blather::ArgumentError)
+
+    Stanza::Iq::VALID_TYPES.each do |valid_type|
+      n = Stanza::Iq.new valid_type
+      n.type.must_equal valid_type
+    end
+  end
+
+  Stanza::Iq::VALID_TYPES.each do |valid_type|
+    it "provides a helper (#{valid_type}?) for type #{valid_type}" do
+      Stanza::Iq.new.must_respond_to :"#{valid_type}?"
+    end
+  end
 end
