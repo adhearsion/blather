@@ -3,45 +3,53 @@
  */
 
 #include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <ruby.h>
 
 xmlSAXHandler saxHandler;
 
-static VALUE push_parser_initialize (
+static VALUE
+push_parser_raise_error (
+  xmlErrorPtr error)
+{
+  rb_raise(rb_eStandardError, "%s", rb_str_new2((const char*)error->message));
+  return Qnil;
+}
+
+static VALUE
+push_parser_initialize (
   VALUE self,
   VALUE handler)
 {
   xmlParserCtxtPtr ctxt;
   ctxt = xmlCreatePushParserCtxt(&saxHandler, (void *)handler, NULL, 0, NULL);
   
-  if (!ctxt) {
-    rxml_raise(&xmlLastError);
-    return Qnil;
-  }
+  if (!ctxt)
+    return push_parser_raise_error(&xmlLastError);
 
   ctxt->sax2 = 1;
-  rb_iv_set(self, "@__libxml_parser", Data_Wrap_Struct(rb_cData, NULL, xmlFreeParserCtxt, ctxt));
+
+  rb_iv_set(self, "@__libxml_push_parser", Data_Wrap_Struct(rb_cData, 0, xmlFreeParserCtxt, ctxt));
 
   return self;
 }
 
-static VALUE push_parser_close (
+static VALUE
+push_parser_close (
   VALUE self)
 {
   xmlParserCtxtPtr ctxt;
-  Data_Get_Struct(rb_iv_get(self, "@__libxml_parser"), xmlParserCtxt, ctxt);
+  Data_Get_Struct(rb_iv_get(self, "@__libxml_push_parser"), xmlParserCtxt, ctxt);
   
   if (xmlParseChunk(ctxt, "", 0, 1)) {
-    rxml_raise(&xmlLastError);
-    return Qfalse;
+    return push_parser_raise_error(&xmlLastError);
   }
   else {
     return Qtrue;
   }
 }
 
-static VALUE push_parser_receive (
+static VALUE
+push_parser_receive (
   VALUE self,
   VALUE chunk)
 {
@@ -49,7 +57,7 @@ static VALUE push_parser_receive (
   int length = RSTRING_LEN(chunk);
 
   xmlParserCtxtPtr ctxt;
-  Data_Get_Struct(rb_iv_get(self, "@__libxml_parser"), xmlParserCtxt, ctxt);
+  Data_Get_Struct(rb_iv_get(self, "@__libxml_push_parser"), xmlParserCtxt, ctxt);
 
   // Chunk through in 4KB chunks so as not to overwhelm the buffers
   int i;
@@ -60,111 +68,117 @@ static VALUE push_parser_receive (
   if ((i -= length) > 0)
     xmlParseChunk(ctxt, data+(length-i), i, 0);
 
-  return (VALUE)ctxt->myDoc;
+  return self;
 }
 
 /*********
  CALLBACKS
 **********/
-static void push_parser_start_document_callback (
-  void *ctxt)
+static void
+push_parser_start_document_callback (
+  void *ctx)
 {
-  VALUE handler = (VALUE) ctxt;
+  VALUE handler = (VALUE) ctx;
   if (handler != Qnil)
     rb_funcall (handler, rb_intern("on_start_document"), 0);
 }
 
-static void push_parser_end_document_callback (
-  void *ctxt)
+static void
+push_parser_end_document_callback (
+  void *ctx)
 {
-  VALUE handler = (VALUE) ctxt;
+  VALUE handler = (VALUE) ctx;
   if (handler != Qnil)
     rb_funcall (handler, rb_intern("on_end_document"), 0);
 }
 
-static void push_parser_start_element_ns_callback (
-  void * ctxt,
-  const xmlChar * xlocalname, 
-  const xmlChar * xprefix, 
-  const xmlChar * xURI, 
-  int nb_namespaces, 
-  const xmlChar ** xnamespaces, 
-  int nb_attributes, 
-  int nb_defaulted, 
-  const xmlChar ** xattributes)
+static void
+push_parser_start_element_ns_callback (
+  void * ctx,
+  const xmlChar * localname,
+  const xmlChar * prefix,
+  const xmlChar * URI,
+  int nb_namespaces,
+  const xmlChar ** namespaces,
+  int nb_attributes,
+  int nb_defaulted,
+  const xmlChar ** attributes)
 {
-  VALUE handler = (VALUE) ctxt;
+  VALUE handler = (VALUE) ctx;
   if (handler == Qnil)
     return;
 
-  VALUE attributes = rb_hash_new();
-  VALUE namespaces = rb_hash_new();
+  VALUE attrHash = rb_hash_new();
+  VALUE nsHash = rb_hash_new();
 
-  if (xattributes)
+  if (attributes)
   {
     /* Each attribute is an array of [localname, prefix, URI, value, end] */
     int i;
-    for (i = 0;i < nb_attributes * 5; i+=5) 
+    for (i = 0; i < nb_attributes * 5; i += 5)
     {
-      VALUE attrName = rb_str_new2((const char*)xattributes[i+0]);
-      VALUE attrValue = rb_str_new((const char*)xattributes[i+3], xattributes[i+4] - xattributes[i+3]);
-      rb_hash_aset(attributes, attrName, attrValue);
+      rb_hash_aset( attrHash,
+                    rb_str_new2((const char*)attributes[i+0]),
+                    rb_str_new((const char*)attributes[i+3], attributes[i+4] - attributes[i+3]));
     }
   }
 
-  if (xnamespaces)
+  if (namespaces)
   {
     int i;
-    for (i = 0;i < nb_namespaces * 2; i+=2) 
+    for (i = 0; i < nb_namespaces * 2; i += 2)
     {
-      VALUE nsPrefix = xnamespaces[i+0] ? rb_str_new2((const char*)xnamespaces[i+0]) : Qnil;
-      VALUE nsURI = xnamespaces[i+1] ? rb_str_new2((const char*)xnamespaces[i+1]) : Qnil;
-      rb_hash_aset(namespaces, nsPrefix, nsURI);
+      rb_hash_aset( nsHash,
+                    namespaces[i+0] ? rb_str_new2((const char*)namespaces[i+0]) : Qnil,
+                    namespaces[i+1] ? rb_str_new2((const char*)namespaces[i+1]) : Qnil);
     }
   }
 
   rb_funcall(handler, rb_intern("on_start_element_ns"), 5, 
-             rb_str_new2((const char*)xlocalname),
-             attributes,
-             xprefix ? rb_str_new2((const char*)xprefix) : Qnil,
-             xURI ? rb_str_new2((const char*)xURI) : Qnil,
-             namespaces);
+             rb_str_new2((const char*)localname),
+             attrHash,
+             prefix ? rb_str_new2((const char*)prefix) : Qnil,
+             URI ? rb_str_new2((const char*)URI) : Qnil,
+             nsHash);
 }
 
-static void push_parser_end_element_ns_callback (
-  void * ctxt,
-  const xmlChar * xlocalname, 
-  const xmlChar * xprefix, 
-  const xmlChar * xURI)
+static void
+push_parser_end_element_ns_callback (
+  void * ctx,
+  const xmlChar * localname,
+  const xmlChar * prefix,
+  const xmlChar * URI)
 {
-  VALUE handler = (VALUE) ctxt;
+  VALUE handler = (VALUE) ctx;
   if (handler == Qnil)
     return;
 
   rb_funcall(handler, rb_intern("on_end_element_ns"), 3, 
-             rb_str_new2((const char*)xlocalname),
-             xprefix ? rb_str_new2((const char*)xprefix) : Qnil,
-             xURI ? rb_str_new2((const char*)xURI) : Qnil);
+             rb_str_new2((const char*)localname),
+             prefix ? rb_str_new2((const char*)prefix) : Qnil,
+             URI ? rb_str_new2((const char*)URI) : Qnil);
 }
 
 
-static void push_parser_characters_callback (
-  void *ctxt,
+static void
+push_parser_characters_callback (
+  void *ctx,
   const char *chars,
   int len)
 {
-  VALUE handler = (VALUE) ctxt;
+  VALUE handler = (VALUE) ctx;
   if (handler != Qnil)
     rb_funcall (handler, rb_intern("on_characters"), 1, rb_str_new(chars, len));
 }
 
-static void push_parser_structured_error_callback (
-  void *ctxt,
-  xmlErrorPtr xerror)
+static void
+push_parser_structured_error_callback (
+  void *ctx,
+  xmlErrorPtr error)
 {
-  VALUE handler = (VALUE) ctxt;
+  VALUE handler = (VALUE) ctx;
   if (handler != Qnil)
-    rb_funcall (handler, rb_intern("on_error"), 1, rb_str_new2((const char*)xerror->message));
+    rb_funcall (handler, rb_intern("on_error"), 1, rb_str_new2((const char*)error->message));
 }
 
 xmlSAXHandler saxHandler = {
@@ -189,9 +203,9 @@ xmlSAXHandler saxHandler = {
   0, //ignorableWhitespace
   0, //processingInstruction
   0, //comment
-  (warningSAXFunc) push_parser_structured_error_callback,
+  0, //warning
   (errorSAXFunc) push_parser_structured_error_callback,
-  (fatalErrorSAXFunc) push_parser_structured_error_callback,
+  0, //fatalError
   0, //getParameterEntity
   0, //cdataBlock
   0, //externalSubset
@@ -202,7 +216,8 @@ xmlSAXHandler saxHandler = {
   (xmlStructuredErrorFunc) push_parser_structured_error_callback
 };
 
-void Init_push_parser()
+void
+Init_push_parser()
 {
   /* SaxPushParser */
   VALUE mLibXML = rb_define_module("LibXML");

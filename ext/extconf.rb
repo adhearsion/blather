@@ -18,11 +18,7 @@ when 'mswin32', 'mingw32', 'bccwin32'
   flags << "-GR"
 
   dir_config('xml2')
-  unless have_library('xml2') and
-	  have_header('libxml/parser.h') and
-	  have_header('libxml/tree.h')
-    exit
-  end
+  exit unless have_library('xml2') && have_header('libxml/parser.h')
 
 when /solaris/
   unless have_library('pthread') and
@@ -36,11 +32,7 @@ when /solaris/
   flags << '-D BUILD_FOR_RUBY'
 
   dir_config('xml2')
-  unless have_library('xml2') and
-	  find_header('libxml/parser.h', '/usr/include/libxml2') and
-	  find_header('libxml/tree.h', '/usr/include/libxml2')
-    exit
-  end
+  exit unless have_library('xml2') && find_header('libxml/parser.h', '/usr/include/libxml2')
 
   # on Unix we need a g++ link, not gcc.
   #CONFIG['LDSHARED'] = "$(CXX) -shared"
@@ -50,11 +42,7 @@ when /darwin/
   flags << '-DBUILD_FOR_RUBY'
 
   dir_config('xml2')
-  unless have_library('xml2') and
-	  find_header('libxml/parser.h', '/usr/include/libxml2') and
-	  find_header('libxml/tree.h', '/usr/include/libxml2')
-    exit
-  end
+  exit unless have_library('xml2') && find_header('libxml/parser.h', '/usr/include/libxml2')
   # on Unix we need a g++ link, not gcc.
   #CONFIG['LDSHARED'] = "$(CXX) " + CONFIG['LDSHARED'].split[1..-1].join(' ')
 
@@ -67,11 +55,7 @@ else
   flags << '-DBUILD_FOR_RUBY'
 
   dir_config('xml2')
-  unless have_library('xml2') and
-	  find_header('libxml/parser.h', '/usr/include/libxml2') and
-	  find_header('libxml/tree.h', '/usr/include/libxml2')
-      exit
-  end
+  exit unless have_library('xml2') && find_header('libxml/parser.h', '/usr/include/libxml2')
   # on Unix we need a g++ link, not gcc.
   #CONFIG['LDSHARED'] = "$(CXX) -shared"
 end
