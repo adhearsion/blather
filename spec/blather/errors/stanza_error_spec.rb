@@ -96,7 +96,14 @@ describe 'Blather::StanzaError' do
 
     it 'can be turned into xml' do
       @err.must_respond_to :to_xml
-      @err.to_xml.must_equal "<message id=\"#{@err.original.id}\" to=\"error@jabber.local\" type=\"error\">\n<body>test message</body>\n<error>\n<internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"/>\n<text xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\">the server has experienced a misconfiguration</text>\n<extra-error xmlns=\"blather:stanza:error\">Blather Error</extra-error>\n</error>\n</message>"
+      control = "<body>test message</body>\n<error>\n<internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"/>\n<text xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\">the server has experienced a misconfiguration</text>\n<extra-error xmlns=\"blather:stanza:error\">Blather Error</extra-error>\n</error>\n</message>".split("\n")
+      test = @err.to_xml.split("\n")
+      test_msg = test.shift
+      test.must_equal control
+
+      test_msg.must_match(/<message[^>]*id="#{@err.original.id}"/)
+      test_msg.must_match(/<message[^>]*to="error@jabber\.local"/)
+      test_msg.must_match(/<message[^>]*type="error"/)
     end
   end
 
