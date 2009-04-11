@@ -161,7 +161,9 @@ module Blather
     ##
     # Create a copy
     def copy(deep = true)
-      self.class.new(self.element_name).inherit(self)
+      copy = self.class.new.inherit(self)
+      copy.element_name = self.element_name
+      copy
     end
 
     ##
