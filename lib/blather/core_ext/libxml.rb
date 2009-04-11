@@ -3,6 +3,7 @@ module LibXML # :nodoc:
 
     class Node
       alias_method :element_name, :name
+      alias_method :element_name=, :name=
     end
 
     class Attributes

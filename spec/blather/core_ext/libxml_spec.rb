@@ -6,6 +6,14 @@ describe 'LibXML::XML::Node' do
     node.must_respond_to :element_name
     node.element_name.must_equal node.name
   end
+
+  it 'aliases #name= to #element_name=' do
+    node = LibXML::XML::Node.new 'foo'
+    node.must_respond_to :element_name=
+    node.element_name.must_equal node.name
+    node.element_name = 'bar'
+    node.element_name.must_equal 'bar'
+  end
 end
 
 describe 'LibXML::XML::Attributes' do
