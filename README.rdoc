@@ -14,8 +14,6 @@ GitHub:: https://github.com/sprsquish/blather
 
 RubyForge:: http://rubyforge.org/projects/squishtech/
 
-Lighthouse:: http://squishtech.lighthouseapp.com/projects/20652-blather
-
 == Author
 
 Jeff Smick <sprsquish@gmail.com>
