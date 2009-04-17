@@ -76,7 +76,7 @@ class StanzaError < BlatherError
   ##
   # Creates an XML node from the error
   def to_node
-    node = self.original.copy
+    node = self.original.reply
 
     error_node = XMPPNode.new 'error'
     err = XMPPNode.new(self.err_name)

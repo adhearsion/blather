@@ -102,7 +102,7 @@ describe 'Blather::StanzaError' do
       test.must_equal control
 
       test_msg.must_match(/<message[^>]*id="#{@err.original.id}"/)
-      test_msg.must_match(/<message[^>]*to="error@jabber\.local"/)
+      test_msg.must_match(/<message[^>]*from="error@jabber\.local"/)
       test_msg.must_match(/<message[^>]*type="error"/)
     end
   end
