@@ -1,5 +1,3 @@
-$:.unshift File.dirname(__FILE__)
-
 require File.join(File.dirname(__FILE__), *%w[.. blather])
 
 module Blather #:nodoc:
@@ -16,6 +14,21 @@ module Blather #:nodoc:
       @roster = Roster.new self
 
       setup_initial_handlers
+    end
+
+    def setup(jid, password, host = nil, port = 5222)
+      @setup = [jid, password, host, port]
+      self
+    end
+
+    def setup?
+      @setup.is_a?(Array)
+    end
+
+    def run
+      raise 'Not setup!' unless @setup.is_a?(Array)
+      trap(:INT) { EM.stop }
+      EM.run { Blather::Stream.start Blather.client, *@setup }
     end
 
     def register_handler(type, *guards, &handler)
@@ -126,7 +139,6 @@ module Blather #:nodoc:
     @client ||= Client.new
   end
   module_function :client
-
 end #Blather
 
 ##
@@ -134,10 +146,7 @@ end #Blather
 #   setup [node@domain/resource], [password], [host], [port]
 # host and port are optional defaulting to the domain in the JID and 5222 respectively
 def setup(jid, password, host = nil, port = 5222)
-  at_exit do
-    trap(:INT) { EM.stop }
-    EM.run { Blather::Stream.start Blather.client, jid, password, host, port }
-  end
+  at_exit { Blather.client.setup(jid, password, host, port).run }
 end
 
 ##
@@ -200,5 +209,16 @@ def method_missing(method, *args, &block)
     handle method, *args, &block
   else
     super
+  end
+end
+
+
+at_exit do
+  unless Blather.client.setup?
+    if ARGV.length < 2
+      puts "Run with #{$0} user@server/resource password [host] [port]"
+    else
+      Blather.client.setup(*ARGV).run
+    end
   end
 end
