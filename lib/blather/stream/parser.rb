@@ -1,5 +1,5 @@
 module Blather # :nodoc:
-module Stream # :nodoc:
+class Stream # :nodoc:
 
   class Parser # :nodoc:
     STREAM_REGEX = %r{(/)?stream:stream}.freeze

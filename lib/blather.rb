@@ -35,6 +35,8 @@ $:.unshift File.join(File.dirname(__FILE__), '..')
   blather/stanza/presence/subscription
 
   blather/stream
+  blather/stream/client
+  blather/stream/component
   blather/stream/stream_handler
   blather/stream/parser
   blather/stream/resource

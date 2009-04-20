@@ -1,5 +1,5 @@
 module Blather # :nodoc:
-module Stream # :nodoc:
+class Stream # :nodoc:
 
   class Resource < StreamHandler # :nodoc:
     def initialize(stream, jid)

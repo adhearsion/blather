@@ -1,5 +1,5 @@
 module Blather # :nodoc:
-module Stream # :nodoc:
+class Stream # :nodoc:
 
   class StreamHandler # :nodoc:
     def on_success(&block); @success = block; end

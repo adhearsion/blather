@@ -16,19 +16,27 @@ module Blather #:nodoc:
       setup_initial_handlers
     end
 
-    def setup(jid, password, host = nil, port = 5222)
-      @setup = [jid, password, host, port]
+    def setup_client(jid, password, host = nil, port = 5222)
+      @setup = [host, port, jid, password]
+      self
+    end
+
+    def setup_component(jid, secret, host, port)
+      @setup = [host, port, jid, secret]
       self
     end
 
     def setup?
-      @setup.is_a?(Array)
+      @setup.is_a?(Array) && !@setup.empty?
     end
 
     def run
       raise 'Not setup!' unless @setup.is_a?(Array)
       trap(:INT) { EM.stop }
-      EM.run { Blather::Stream.start Blather.client, *@setup }
+      EM.run {
+        klass = @setup.length == 4 ? Blather::Stream::Client : Blather::Stream::Component
+        klass.start Blather.client, *@setup
+      }
     end
 
     def register_handler(type, *guards, &handler)
@@ -50,15 +58,21 @@ module Blather #:nodoc:
       write status
     end
 
-    def write(data)
-      @stream.send(data) if @stream
+    def write(stanza)
+      stanza.from ||= jid if stanza.respond_to?(:from)
+      @stream.send(stanza) if @stream
     end
 
     def stream_started(stream)
       @stream = stream
 
       #retreive roster
-      write Stanza::Iq::Roster.new
+      if @stream.is_a?(Stream::Component)
+        @state = :ready
+        call_handler_for :ready, nil
+      else
+        write Stanza::Iq::Roster.new
+      end
     end
 
     def stop
@@ -143,10 +157,14 @@ end #Blather
 
 ##
 # Prepare server settings
-#   setup [node@domain/resource], [password], [host], [port]
+#   setup_client [node@domain/resource], [password], [host], [port]
 # host and port are optional defaulting to the domain in the JID and 5222 respectively
-def setup(jid, password, host = nil, port = 5222)
-  at_exit { Blather.client.setup(jid, password, host, port).run }
+def setup_client(jid, password, host = nil, port = 5222)
+  at_exit { Blather.client.setup_client(jid, password, host, port).run }
+end
+
+def setup_component(jid, secret, host, port)
+  at_exit { Blather.client.setup_component(jid, secret, host, port).run }
 end
 
 ##

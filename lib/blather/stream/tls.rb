@@ -1,5 +1,5 @@
 module Blather # :nodoc:
-module Stream # :nodoc:
+class Stream # :nodoc:
 
   # TLS negotiation invovles 3 node types:
   #   * starttls  -- Server asking for TLS to be started

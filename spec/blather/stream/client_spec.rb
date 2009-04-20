@@ -1,6 +1,6 @@
-require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
-describe 'Blather::Stream' do
+describe 'Blather::Stream::Client' do
   class MockServer; end
   module ServerMock
     def receive_data(data)
@@ -20,7 +20,7 @@ describe 'Blather::Stream' do
       EventMachine::start_server '127.0.0.1', 12345, ServerMock
 
       # Stream connection
-      EM.connect('127.0.0.1', 12345, Stream, @client, @jid || JID.new('n@d/r'), 'pass') { |c| @stream = c }
+      EM.connect('127.0.0.1', 12345, Stream::Client, @client, @jid || JID.new('n@d/r'), 'pass') { |c| @stream = c }
     }
   end
 
@@ -35,7 +35,7 @@ describe 'Blather::Stream' do
       parms[4] == JID.new('n@d/r')
     end
 
-    Stream.start *(params)
+    Stream::Client.start *(params)
   end
 
   it 'can figure out the host to use based on the jid' do
@@ -49,7 +49,7 @@ describe 'Blather::Stream' do
       parms[4] == JID.new('n@d/r')
     end
 
-    Stream.start client, 'n@d/r', 'pass'
+    Stream::Client.start client, 'n@d/r', 'pass'
   end
 
   it 'starts the stream once the connection is complete' do

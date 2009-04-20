@@ -1,5 +1,5 @@
 module Blather # :nodoc:
-module Stream # :nodoc:
+class Stream # :nodoc:
 
   class Session < StreamHandler # :nodoc:
     def initialize(stream, to)

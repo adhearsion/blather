@@ -1,10 +1,6 @@
 module Blather
 
-  module Stream
-    LANG = 'en'
-    VERSION = '1.0'
-    NAMESPACE = 'jabber:client'
-
+  class Stream < EventMachine::Connection
     ##
     # Start the stream between client and server
     #   [client] must be an object that will respond to #call and #jid=
@@ -77,7 +73,7 @@ module Blather
     ##
     # Called by EM with data from the wire
     def receive_data(data) # :nodoc:
-      LOG.debug "\n"+('-'*30)+"\n"
+      LOG.debug "\n#{'-'*30}\n"
       LOG.debug "<< #{data}"
       @parser.receive_data data
 
@@ -132,7 +128,7 @@ module Blather
       @client.jid = @jid
     end
 
-  private
+  protected
     ##
     # Dispatch based on current state
     def dispatch
@@ -144,17 +140,6 @@ module Blather
     #   Each time the stream is started or re-started we need to kill off the old
     #   parser so as not to confuse it
     def start
-      @parser = Parser.new self
-      start_stream = <<-STREAM
-        <stream:stream
-          to='#{@to}'
-          xmlns='#{NAMESPACE}'
-          xmlns:stream='http://etherx.jabber.org/streams'
-          version='#{VERSION}'
-          xml:lang='#{LANG}'
-        >
-      STREAM
-      send start_stream.gsub(/\s+/, ' ')
     end
 
     ##
