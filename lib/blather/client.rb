@@ -201,6 +201,17 @@ def jid
 end
 
 ##
+#
+def discover(what, who, where, &callback)
+  stanza = Blather::Stanza.class_from_registration(:query, "http://jabber.org/protocol/disco##{what}").new
+  stanza.to = who
+  stanza.node = where
+
+  Blather.client.temporary_handler stanza.id, &callback
+  write stanza
+end
+
+##
 # Checks to see if the method is part of the handlers list.
 # If so it creates a handler, otherwise it'll pass it back
 # to Ruby's method_missing handler
