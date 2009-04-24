@@ -27,7 +27,7 @@ describe 'Blather::Stanza::Iq::DiscoItems' do
   end
 
   it 'has a node attribute' do
-    n = Blather::Stanza::Iq::DiscoItems.new nil, [], 'music'
+    n = Blather::Stanza::Iq::DiscoItems.new nil, 'music', []
     n.node.must_equal 'music'
     n.node = :foo
     n.node.must_equal 'foo'
@@ -51,7 +51,7 @@ describe 'Blather::Stanza::Iq::DiscoItems items' do
     control = [ Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name]),
                 Stanza::Iq::DiscoItems::Item.new(*%w[baz@foo/bar node1 name1])]
 
-    di = Stanza::Iq::DiscoItems.new nil, items
+    di = Stanza::Iq::DiscoItems.new nil, nil, items
     di.items.size.must_equal 2
     di.items.each { |i| control.include?(i).must_equal true }
   end
@@ -60,7 +60,7 @@ describe 'Blather::Stanza::Iq::DiscoItems items' do
     control = [ Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name]),
                 Stanza::Iq::DiscoItems::Item.new(*%w[baz@foo/bar node1 name1])]
 
-    di = Stanza::Iq::DiscoItems.new nil, control
+    di = Stanza::Iq::DiscoItems.new nil, nil, control
     di.items.size.must_equal 2
     di.items.each { |i| control.include?(i).must_equal true }
   end
@@ -68,7 +68,7 @@ describe 'Blather::Stanza::Iq::DiscoItems items' do
   it 'takes a single hash as identity' do
     control = [Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name])]
 
-    di = Stanza::Iq::DiscoItems.new nil, {:jid => 'foo@bar/baz', :node => 'node', :name => 'name'}
+    di = Stanza::Iq::DiscoItems.new nil, nil, {:jid => 'foo@bar/baz', :node => 'node', :name => 'name'}
     di.items.size.must_equal 1
     di.items.each { |i| control.include?(i).must_equal true }
   end
@@ -76,7 +76,7 @@ describe 'Blather::Stanza::Iq::DiscoItems items' do
   it 'takes a single identity object as identity' do
     control = [Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name])]
 
-    di = Stanza::Iq::DiscoItems.new nil, control.first
+    di = Stanza::Iq::DiscoItems.new nil, nil, control.first
     di.items.size.must_equal 1
     di.items.each { |i| control.include?(i).must_equal true }
   end
@@ -90,7 +90,7 @@ describe 'Blather::Stanza::Iq::DiscoItems items' do
     control = [ Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name]),
                 Stanza::Iq::DiscoItems::Item.new(*%w[baz@foo/bar node1 name1])]
 
-    di = Stanza::Iq::DiscoItems.new nil, items
+    di = Stanza::Iq::DiscoItems.new nil, nil, items
     di.items.size.must_equal 2
     di.items.each { |i| control.include?(i).must_equal true }
   end
