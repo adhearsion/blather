@@ -26,7 +26,7 @@ describe 'Blather::Stream::Component' do
 
   it 'can be started' do
     client = mock()
-    params = [client, 'host', 1234, 'comp.id', 'secret']
+    params = [client, 'comp.id', 'secret', 'host', 1234]
     EM.expects(:connect).with do |*parms|
       parms[0] == 'host'    &&
       parms[1] == 1234      &&

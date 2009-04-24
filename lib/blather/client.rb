@@ -16,13 +16,8 @@ module Blather #:nodoc:
       setup_initial_handlers
     end
 
-    def setup_client(jid, password, host = nil, port = 5222)
-      @setup = [host, port, jid, password]
-      self
-    end
-
-    def setup_component(jid, secret, host, port)
-      @setup = [host, port, jid, secret]
+    def setup(jid, password, host = nil, port = 5222)
+      @setup = [JID.new(jid), password, host, port]
       self
     end
 
@@ -34,7 +29,7 @@ module Blather #:nodoc:
       raise 'Not setup!' unless @setup.is_a?(Array)
       trap(:INT) { EM.stop }
       EM.run {
-        klass = @setup.length == 4 ? Blather::Stream::Client : Blather::Stream::Component
+        klass = @setup[2].node ? Blather::Stream::Client : Blather::Stream::Component
         klass.start Blather.client, *@setup
       }
     end

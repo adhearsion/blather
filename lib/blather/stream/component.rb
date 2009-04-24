@@ -4,13 +4,6 @@ class Stream
   class Component < Stream
     NAMESPACE = 'jabber:component:accept'
 
-    def self.start(client, host, port, jid, secret)
-      jid = JID.new jid
-      host ||= jid.domain
-
-      EM.connect host, port, self, client, jid, secret
-    end
-
     def receive(node) # :nodoc:
       if node.element_name == 'handshake'
         @client.stream_started(self)
