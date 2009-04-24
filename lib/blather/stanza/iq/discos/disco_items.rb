@@ -5,10 +5,9 @@ class Iq
   class DiscoItems < Disco
     register :disco_items, nil, 'http://jabber.org/protocol/disco#items'
 
-    def initialize(type = nil, items = [], node = nil)
+    def initialize(type = nil, node = nil, items = [])
       super type
       self.node = node
-
       [items].flatten.each do |item|
         query << (item.is_a?(Item) ? item : Item.new(item[:jid], item[:node], item[:name]))
       end
@@ -18,6 +17,14 @@ class Iq
       items = query.find('item')
       items = query.find('query_ns:item', :query_ns => self.class.ns) if items.empty?
       items.map { |i| Item.new i }
+    end
+
+    def node=(node)
+      query.attributes[:node] = node
+    end
+
+    def node
+      query.attributes[:node]
     end
 
     class Item < XMPPNode

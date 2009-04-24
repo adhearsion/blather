@@ -11,6 +11,7 @@ module Blather #:nodoc:
 
       @status = Stanza::Presence::Status.new
       @handlers = {}
+      @tmp_handlers = {}
       @roster = Roster.new self
 
       setup_initial_handlers
@@ -32,6 +33,9 @@ module Blather #:nodoc:
         klass = @setup[2].node ? Blather::Stream::Client : Blather::Stream::Component
         klass.start Blather.client, *@setup
       }
+
+    def temporary_handler(id, &handler)
+      @tmp_handlers[id] = handler
     end
 
     def register_handler(type, *guards, &handler)
@@ -79,8 +83,12 @@ module Blather #:nodoc:
     end
 
     def call(stanza)
-      stanza.handler_heirarchy.each do |type|
-        break if call_handler_for(type, stanza) && (stanza.is_a?(BlatherError) || stanza.type == :iq)
+      if handler = @tmp_handlers.delete(stanza.id)
+        handler.call stanza
+      else
+        stanza.handler_heirarchy.each do |type|
+          break if call_handler_for(type, stanza) && (stanza.is_a?(BlatherError) || stanza.type == :iq)
+        end
       end
     end
 
@@ -211,6 +219,17 @@ end
 # Wrapper to grab the current JID
 def jid
   Blather.client.jid
+end
+
+##
+#
+def discover(what, who, where, &callback)
+  stanza = Blather::Stanza.class_from_registration(:query, "http://jabber.org/protocol/disco##{what}").new
+  stanza.to = who
+  stanza.node = where
+
+  Blather.client.temporary_handler stanza.id, &callback
+  write stanza
 end
 
 ##
