@@ -13,9 +13,14 @@ module Blather #:nodoc:
 
       @status = Stanza::Presence::Status.new
       @handlers = {}
+      @tmp_handlers = {}
       @roster = Roster.new self
 
       setup_initial_handlers
+    end
+
+    def temporary_handler(id, &handler)
+      @tmp_handlers[id] = handler
     end
 
     def register_handler(type, *guards, &handler)
@@ -57,8 +62,12 @@ module Blather #:nodoc:
     end
 
     def call(stanza)
-      stanza.handler_heirarchy.each do |type|
-        break if call_handler_for(type, stanza) && (stanza.is_a?(BlatherError) || stanza.type == :iq)
+      if handler = @tmp_handlers.delete(stanza.id)
+        handler.call stanza
+      else
+        stanza.handler_heirarchy.each do |type|
+          break if call_handler_for(type, stanza) && (stanza.is_a?(BlatherError) || stanza.type == :iq)
+        end
       end
     end
 
