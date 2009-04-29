@@ -71,6 +71,15 @@ module Blather
       @items.dup
     end
 
+    ##
+    # A hash of items keyed by group
+    def grouped
+      self.inject(Hash.new{|h,k|h[k]=[]}) do |hash, item|
+        item[1].groups.each { |group| hash[group] << item[1] }
+        hash
+      end
+    end
+
   private
     def self.key(jid)
       JID.new(jid).stripped.to_s
