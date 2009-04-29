@@ -19,6 +19,13 @@ describe 'Blather::Stanza::Iq::Query' do
     query.children.detect { |n| n.element_name == 'query' }.wont_be_nil
   end
 
+  [:get, :set, :result, :error].each do |type|
+    it "can be set as \"#{type}\"" do
+      query = Stanza::Iq::Query.new type
+      query.type.must_equal type
+    end
+  end
+
   it 'sets type to "result" on reply' do
     query = Stanza::Iq::Query.new
     query.type.must_equal :get

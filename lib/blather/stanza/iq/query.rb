@@ -8,7 +8,7 @@ class Iq
     ##
     # Ensure the namespace is set to the query node
     def initialize(type = nil)
-      super()
+      super
       query.namespace = self.class.ns
     end
 
