@@ -1,6 +1,5 @@
 module Blather
 class Stanza
-class Iq
 
   ##
   # DiscoInfo object ()
@@ -8,8 +7,10 @@ class Iq
   class DiscoInfo < Disco
     register :disco_info, nil, 'http://jabber.org/protocol/disco#info'
 
-    def initialize(type = nil, identities = [], features = [], node = nil)
+    def initialize(type = nil, node = nil, identities = [], features = [])
       super type
+
+      self.node = node
 
       [identities].flatten.each do |id|
         query << (id.is_a?(Identity) ? id : Identity.new(id[:name], id[:type], id[:category]))
@@ -18,8 +19,6 @@ class Iq
       [features].flatten.each do |feature|
         query << (feature.is_a?(Feature) ? feature : Feature.new(feature))
       end
-
-      self.node = node
     end
 
     ##
@@ -81,6 +80,5 @@ class Iq
     end
   end
 
-end #Iq
 end #Stanza
 end #Blather

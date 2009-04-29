@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. .. spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
 
 def disco_info_xml
   <<-XML
@@ -24,7 +24,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo' do
   end
 
   it 'has a node attribute' do
-    n = Blather::Stanza::Iq::DiscoInfo.new nil, [], [], 'music'
+    n = Blather::Stanza::Iq::DiscoInfo.new nil, 'music', [], []
     n.node.must_equal 'music'
     n.node = :foo
     n.node.must_equal 'foo'
@@ -55,7 +55,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
     control = [ Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category]),
                 Stanza::Iq::DiscoInfo::Identity.new(*%w[name1 type1 category1])]
 
-    di = Stanza::Iq::DiscoInfo.new nil, ids
+    di = Stanza::Iq::DiscoInfo.new nil, nil, ids
     di.identities.size.must_equal 2
     di.identities.each { |i| control.include?(i).must_equal true }
   end
@@ -64,7 +64,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
     control = [ Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category]),
                 Stanza::Iq::DiscoInfo::Identity.new(*%w[name1 type1 category1])]
 
-    di = Stanza::Iq::DiscoInfo.new nil, control
+    di = Stanza::Iq::DiscoInfo.new nil, nil, control
     di.identities.size.must_equal 2
     di.identities.each { |i| control.include?(i).must_equal true }
   end
@@ -72,7 +72,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
   it 'takes a single hash as identity' do
     control = [Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
 
-    di = Stanza::Iq::DiscoInfo.new nil, {:name => 'name', :type => 'type', :category => 'category'}
+    di = Stanza::Iq::DiscoInfo.new nil, nil, {:name => 'name', :type => 'type', :category => 'category'}
     di.identities.size.must_equal 1
     di.identities.each { |i| control.include?(i).must_equal true }
   end
@@ -80,7 +80,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
   it 'takes a single identity object as identity' do
     control = [Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
 
-    di = Stanza::Iq::DiscoInfo.new nil, control.first
+    di = Stanza::Iq::DiscoInfo.new nil, nil, control.first
     di.identities.size.must_equal 1
     di.identities.each { |i| control.include?(i).must_equal true }
   end
@@ -94,7 +94,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
     control = [ Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category]),
                 Stanza::Iq::DiscoInfo::Identity.new(*%w[name1 type1 category1])]
 
-    di = Stanza::Iq::DiscoInfo.new nil, ids
+    di = Stanza::Iq::DiscoInfo.new nil, nil, ids
     di.identities.size.must_equal 2
     di.identities.each { |i| control.include?(i).must_equal true }
   end
@@ -105,7 +105,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
     features = %w[feature1 feature2 feature3]
     control = features.map { |f| Stanza::Iq::DiscoInfo::Feature.new f }
 
-    di = Stanza::Iq::DiscoInfo.new nil, [], features
+    di = Stanza::Iq::DiscoInfo.new nil, nil, [], features
     di.features.size.must_equal 3
     di.features.each { |f| control.include?(f).must_equal true }
   end
@@ -114,7 +114,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
     features = %w[feature1 feature2 feature3]
     control = features.map { |f| Stanza::Iq::DiscoInfo::Feature.new f }
 
-    di = Stanza::Iq::DiscoInfo.new nil, [], control
+    di = Stanza::Iq::DiscoInfo.new nil, nil, [], control
     di.features.size.must_equal 3
     di.features.each { |f| control.include?(f).must_equal true }
   end
@@ -122,7 +122,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
   it 'takes a single string' do
     control = [Stanza::Iq::DiscoInfo::Feature.new('feature1')]
 
-    di = Stanza::Iq::DiscoInfo.new nil, [], 'feature1'
+    di = Stanza::Iq::DiscoInfo.new nil, nil, [], 'feature1'
     di.features.size.must_equal 1
     di.features.each { |f| control.include?(f).must_equal true }
   end
@@ -130,7 +130,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
   it 'takes a single Feature object' do
     control = [Stanza::Iq::DiscoInfo::Feature.new('feature1')]
 
-    di = Stanza::Iq::DiscoInfo.new nil, [], control.first
+    di = Stanza::Iq::DiscoInfo.new nil, nil, [], control.first
     di.features.size.must_equal 1
     di.features.each { |f| control.include?(f).must_equal true }
   end
@@ -140,7 +140,7 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
     control = features.map { |f| Stanza::Iq::DiscoInfo::Feature.new f }
     features[1] = control[1]
 
-    di = Stanza::Iq::DiscoInfo.new nil, [], features
+    di = Stanza::Iq::DiscoInfo.new nil, nil, [], features
     di.features.size.must_equal 3
     di.features.each { |f| control.include?(f).must_equal true }
   end

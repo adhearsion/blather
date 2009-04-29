@@ -1,6 +1,5 @@
 module Blather
 class Stanza
-class Iq
 
   class DiscoItems < Disco
     register :disco_items, nil, 'http://jabber.org/protocol/disco#items'
@@ -56,6 +55,5 @@ class Iq
     end
   end
 
-end #Iq
 end #Stanza
 end #Blather

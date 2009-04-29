@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. .. spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
 
 def disco_items_xml
   <<-XML
