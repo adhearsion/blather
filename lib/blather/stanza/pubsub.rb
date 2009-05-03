@@ -15,10 +15,20 @@ class Stanza
       METHOD
     end
 
-    def self.items(node)
+    def self.items(host, path, list = [], max = nil)
       node = self.new :get
+      node.to = host
+
       items = XMPPNode.new 'items'
-      items.attributes[:node] = node
+      items.attributes[:node] = path
+      items.attributes[:max_items] = max
+
+      (list || []).each do |id|
+        item = XMPPNode.new 'item'
+        item.attributes[:id] = id
+        items << item
+      end
+
       node.pubsub << items
       node
     end
