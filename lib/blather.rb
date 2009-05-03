@@ -30,6 +30,7 @@
   blather/stanza/presence
   blather/stanza/presence/status
   blather/stanza/presence/subscription
+  blather/stanza/pubsub
 
   blather/stream
   blather/stream/client
