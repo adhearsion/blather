@@ -9,7 +9,7 @@ class Client
     end
 
     def subscriptions(&callback)
-      request Stanza::PubSub.subscriptions(@host), :subscriptions, callback
+      request Stanza::PubSub::Subscriptions.new(:get, @host), :subscriptions, callback
     end
 
     def nodes(path, &callback)

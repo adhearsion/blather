@@ -4,16 +4,6 @@ class Stanza
   class PubSub < Iq
     register :pubsub, :pubsub, 'http://jabber.org/protocol/pubsub'
 
-    %w[affiliations subscriptions].each do |type|
-      class_eval <<-METHOD
-        def self.#{type}(host)
-          node = Affiliations.new
-          node.to = host
-          node
-        end
-      METHOD
-    end
-
     def self.items(host, path, list = [], max = nil)
       node = self.new :get
       node.to = host
@@ -53,15 +43,6 @@ class Stanza
         self << p
       end
       p
-    end
-
-    def subscriptions
-      items = pubsub.find('//pubsub_ns:subscription', :pubsub_ns => self.class.ns)
-      items.inject({}) do |hash, item|
-        hash[item.attributes[:subscription].to_sym] ||= []
-        hash[item.attributes[:subscription].to_sym] << item.attributes[:node]
-        hash
-      end
     end
   end
 

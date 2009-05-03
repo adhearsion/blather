@@ -32,6 +32,7 @@
   blather/stanza/presence/subscription
   blather/stanza/pubsub
   blather/stanza/pubsub/affiliations
+  blather/stanza/pubsub/subscriptions
 
   blather/stream
   blather/stream/client
