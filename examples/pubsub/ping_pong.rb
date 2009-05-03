@@ -1,4 +1,4 @@
-setup 'echo@jabber.local', 'echo'
+setup 'ping-pong@jabber.local', 'ping-pong'
 
 pubsub.host = 'pubsub.jabber.local'
 
