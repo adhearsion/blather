@@ -6,8 +6,9 @@ class Stanza
 
     %w[affiliations subscriptions].each do |type|
       class_eval <<-METHOD
-        def self.#{type}
+        def self.#{type}(host)
           node = self.new :get
+          node.to = host
           node.pubsub << XMPPNode.new('#{type}')
           node
         end
