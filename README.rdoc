@@ -67,7 +67,7 @@ There are 5 different types of guards:
   #   Equivalent to stanza.chat?
   message :chat?
 
-  # Hash with string (:body => 'exit')
+  # Hash with value (:body => 'exit')
   #   Calls the key on the stanza and checks for equality
   #   Equivalent to stanza.body == 'exit'
   message :body => 'exit'
