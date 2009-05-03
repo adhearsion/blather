@@ -40,6 +40,13 @@ class Stanza
       pubsub.namespace = self.class.ns
     end
 
+    ##
+    # Kill the pubsub node before running inherit
+    def inherit(node)
+      pubsub.remove!
+      super
+    end
+
     def pubsub
       p = find_first('//pubsub_ns:pubsub', :pubsub_ns => self.class.ns)
       (self << (p = XMPPNode.new('pubsub'))) unless p
