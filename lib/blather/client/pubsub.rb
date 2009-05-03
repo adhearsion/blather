@@ -5,7 +5,7 @@ class Client
     attr_accessor :host
 
     def affiliations(&callback)
-      request Stanza::PubSub.affiliations(@host), :affiliates, callback
+      request Stanza::PubSub::Affiliations.new(:get, @host), :affiliates, callback
     end
 
     def subscriptions(&callback)

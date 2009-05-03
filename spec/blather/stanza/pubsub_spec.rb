@@ -19,15 +19,6 @@ describe 'Blather::Stanza::PubSub' do
     pubsub.children.detect { |n| n.element_name == 'pubsub' }.wont_be_nil
   end
 
-  it 'can create an affiliations request node' do
-    host = 'pubsub.jabber.local'
-
-    aff = Stanza::PubSub.affiliations host
-    aff.find('//pubsub/affiliations').size.must_equal 1
-    aff.type.must_equal :get
-    aff.to.must_equal JID.new(host)
-  end
-
   it 'can create an subscriptions request node' do
     host = 'pubsub.jabber.local'
 
@@ -66,36 +57,6 @@ describe 'Blather::Stanza::PubSub' do
     items = Stanza::PubSub.items host, node, nil, max
     items.find("//pubsub/items[@node=\"#{node}\" and @max_items=\"#{max}\"]").size.must_equal 1
     items.to.must_equal JID.new(host)
-  end
-
-  it 'can import an affiliates result node' do
-    node = XML::Document.string(<<-NODE).root
-      <iq type='result'
-          from='pubsub.shakespeare.lit'
-          to='francisco@denmark.lit'
-          id='affil1'>
-        <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-          <affiliations>
-            <affiliation node='node1' affiliation='owner'/>
-            <affiliation node='node2' affiliation='owner'/>
-            <affiliation node='node3' affiliation='publisher'/>
-            <affiliation node='node4' affiliation='outcast'/>
-            <affiliation node='node5' affiliation='member'/>
-            <affiliation node='node6' affiliation='none'/>
-          </affiliations>
-        </pubsub>
-      </iq>
-    NODE
-
-    pubsub = Stanza::PubSub.new.inherit node
-    pubsub.affiliations.size.must_equal 5
-    pubsub.affiliations.must_equal({
-      :owner => ['node1', 'node2'],
-      :publisher => ['node3'],
-      :outcast => ['node4'],
-      :member => ['node5'],
-      :none => ['node6']
-    })
   end
 
   it 'can import a subscriptions result node' do
