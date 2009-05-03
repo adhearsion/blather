@@ -46,6 +46,24 @@ class Stanza
       (self << (p = XMPPNode.new('pubsub'))) unless p
       p
     end
+
+    def affiliations
+      items = pubsub.find('//pubsub_ns:affiliation', :pubsub_ns => self.class.ns)
+      items.inject({}) do |hash, item|
+        hash[item.attributes[:affiliation].to_sym] ||= []
+        hash[item.attributes[:affiliation].to_sym] << item.attributes[:node]
+        hash
+      end
+    end
+
+    def subscriptions
+      items = pubsub.find('//pubsub_ns:subscription', :pubsub_ns => self.class.ns)
+      items.inject({}) do |hash, item|
+        hash[item.attributes[:subscription].to_sym] ||= []
+        hash[item.attributes[:subscription].to_sym] << item.attributes[:node]
+        hash
+      end
+    end
   end
 
 end #Stanza
