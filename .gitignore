@@ -6,3 +6,4 @@ coverage
 mkmf.log
 *.o
 Makefile
+rdoc
