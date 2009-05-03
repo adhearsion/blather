@@ -41,8 +41,7 @@ class Stanza
     end
 
     def pubsub
-      p = find_first('pubsub')
-      p = find_first('//pubsub_ns:pubsub', :pubsub_ns => self.class.ns) if !p && self.class.ns
+      p = find_first('//pubsub_ns:pubsub', :pubsub_ns => self.class.ns)
       (self << (p = XMPPNode.new('pubsub'))) unless p
       p
     end
