@@ -1,24 +1,5 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
-
-def affiliations_xml
-  <<-NODE
-    <iq type='result'
-        from='pubsub.shakespeare.lit'
-        to='francisco@denmark.lit'
-        id='affil1'>
-      <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-        <affiliations>
-          <affiliation node='node1' affiliation='owner'/>
-          <affiliation node='node2' affiliation='owner'/>
-          <affiliation node='node3' affiliation='publisher'/>
-          <affiliation node='node4' affiliation='outcast'/>
-          <affiliation node='node5' affiliation='member'/>
-          <affiliation node='node6' affiliation='none'/>
-        </affiliations>
-      </pubsub>
-    </iq>
-  NODE
-end
+require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
 
 describe 'Blather::Stanza::PubSub::Affiliations' do
   it 'registers itself' do
@@ -35,7 +16,7 @@ describe 'Blather::Stanza::PubSub::Affiliations' do
     affiliations.pubsub.remove_child :affiliations
     affiliations.pubsub.children.detect { |n| n.element_name == 'affiliations' }.must_be_nil
 
-    affiliations.list.wont_be_nil
+    affiliations.affiliations.wont_be_nil
     affiliations.pubsub.children.detect { |n| n.element_name == 'affiliations' }.wont_be_nil    
   end
 

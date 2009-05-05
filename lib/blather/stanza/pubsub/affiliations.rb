@@ -7,16 +7,13 @@ class PubSub
 
     include Enumerable
 
-    ##
-    # Ensure the namespace is set to the query node
     def initialize(type = nil, host = nil)
-      super type
-      self.to = host
+      super
       affiliations
     end
 
     ##
-    # Kill the pubsub node before running inherit
+    # Kill the affiliations node before running inherit
     def inherit(node)
       affiliations.remove!
       super
@@ -41,13 +38,11 @@ class PubSub
     end
 
     def list
-      @affiliation_list ||= begin
-        items = affiliations.find('//pubsub_ns:affiliation', :pubsub_ns => self.class.ns)
-        items.inject({}) do |hash, item|
-          hash[item.attributes[:affiliation].to_sym] ||= []
-          hash[item.attributes[:affiliation].to_sym] << item.attributes[:node]
-          hash
-        end
+      items = affiliations.find('//pubsub_ns:affiliation', :pubsub_ns => self.class.ns)
+      items.inject({}) do |hash, item|
+        hash[item.attributes[:affiliation].to_sym] ||= []
+        hash[item.attributes[:affiliation].to_sym] << item.attributes[:node]
+        hash
       end
     end
   end #Affiliations
