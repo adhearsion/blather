@@ -19,34 +19,8 @@ describe 'Blather::Stanza::PubSub' do
     pubsub.children.detect { |n| n.element_name == 'pubsub' }.wont_be_nil
   end
 
-  it 'can create an items request node to request all items' do
-    host = 'pubsub.jabber.local'
-    node = 'princely_musings'
-
-    items = Stanza::PubSub.items host, node
-    items.find("//pubsub/items[@node=\"#{node}\"]").size.must_equal 1
-    items.to.must_equal JID.new(host)
-  end
-
-  it 'can create an items request node to request some items' do
-    host = 'pubsub.jabber.local'
-    node = 'princely_musings'
-    items = %w[item1 item2]
-
-    items_xpath = items.map { |i| "@id=\"#{i}\"" } * ' or '
-
-    items = Stanza::PubSub.items host, node, items
-    items.find("//pubsub/items[@node=\"#{node}\"]/item[#{items_xpath}]").size.must_equal 2
-    items.to.must_equal JID.new(host)
-  end
-
-  it 'can create an items request node to request "max_number" of items' do
-    host = 'pubsub.jabber.local'
-    node = 'princely_musings'
-    max = 3
-
-    items = Stanza::PubSub.items host, node, nil, max
-    items.find("//pubsub/items[@node=\"#{node}\" and @max_items=\"#{max}\"]").size.must_equal 1
-    items.to.must_equal JID.new(host)
+  it 'sets the host if requested' do
+    aff = Stanza::PubSub.new :get, 'pubsub.jabber.local'
+    aff.to.must_equal JID.new('pubsub.jabber.local')
   end
 end
