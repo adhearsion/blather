@@ -7,3 +7,4 @@ mkmf.log
 *.o
 Makefile
 rdoc
+*.gem
