@@ -1,27 +1,27 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
 
 def roster_xml
-  <<-XML
-  <iq to='juliet@example.com/balcony' type='result' id='roster_1'>
-    <query xmlns='jabber:iq:roster'>
-      <item jid='romeo@example.net'
-            name='Romeo'
-            subscription='both'>
-        <group>Friends</group>
-      </item>
-      <item jid='mercutio@example.org'
-            name='Mercutio'
-            subscription='from'>
-        <group>Friends</group>
-      </item>
-      <item jid='benvolio@example.org'
-            name='Benvolio'
-            subscription='both'>
-        <group>Friends</group>
-      </item>
-    </query>
-  </iq>
-  XML
+<<-XML
+<iq to='juliet@example.com/balcony' type='result' id='roster_1'>
+  <query xmlns='jabber:iq:roster'>
+    <item jid='romeo@example.net'
+          name='Romeo'
+          subscription='both'>
+      <group>Friends</group>
+    </item>
+    <item jid='mercutio@example.org'
+          name='Mercutio'
+          subscription='from'>
+      <group>Friends</group>
+    </item>
+    <item jid='benvolio@example.org'
+          name='Benvolio'
+          subscription='both'>
+      <group>Friends</group>
+    </item>
+  </query>
+</iq>
+XML
 end
 
 describe 'Blather::Stanza::Iq::Roster' do

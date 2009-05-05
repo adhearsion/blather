@@ -27,8 +27,8 @@ class Iq
     ##
     # Roster items
     def items
-      items = query.find('item')
-      items = query.find('query_ns:item', :query_ns => self.class.ns) if items.empty?
+      items = query.find('//item', self.class.ns)
+      items = query.find('//query_ns:item', :query_ns => self.class.ns) if items.empty?
       items.map { |i| RosterItem.new(i) }
     end
 
