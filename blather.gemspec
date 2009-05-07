@@ -78,7 +78,6 @@ Gem::Specification.new do |s|
     "spec/blather/stanza/presence/status_spec.rb",
     "spec/blather/stanza/presence/subscription_spec.rb",
     "spec/blather/stanza/presence_spec.rb",
-    "spec/blather/stanza/pubsub/event_spec.rb",
     "spec/blather/stanza_spec.rb",
     "spec/blather/stream/client_spec.rb",
     "spec/blather/stream/component_spec.rb",
