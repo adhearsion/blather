@@ -10,14 +10,10 @@ class PubSub
     def self.request(host, path, list = [], max = nil)
       node = self.new :get, host
 
-      node.items.attributes[:node] = path
-      node.items.attributes[:max_items] = max
+      node.node = path
+      node.max_items = max
 
-      (list || []).each do |id|
-        item = XMPPNode.new 'item'
-        item.attributes[:id] = id
-        node.items << item
-      end
+      (list || []).each { |id| node.items_node << PubSubItem.new(id) }
 
       node
     end
@@ -30,27 +26,57 @@ class PubSub
     ##
     # Kill the items node before running inherit
     def inherit(node)
-      items.remove!
+      items_node.remove!
       super
     end
 
-    def [](id)
-      items[id]
+    def node
+      items_node.attributes[:node]
+    end
+
+    def node=(node)
+      items_node.attributes[:node] = node
+    end
+
+    def max_items
+      items_node.attributes[:max_items].to_i if items_node.attributes[:max_items]
+    end
+
+    def max_items=(max_items)
+      items_node.attributes[:max_items] = max_items
     end
 
     def each(&block)
       items.each &block
     end
 
-    def size
-      items.size
+    def items
+      items_node.map { |i| PubSubItem.new.inherit i }
     end
 
-    def items
-      items = pubsub.find_first('//items', self.class.ns)
-      items = pubsub.find_first('//pubsub_ns:items', :pubsub_ns => self.class.ns) unless items
-      (self.pubsub << (items = XMPPNode.new('items'))) unless items
-      items
+    def items_node
+      node = pubsub.find_first('//items', self.class.ns)
+      node = pubsub.find_first('//pubsub_ns:items', :pubsub_ns => self.class.ns) unless node
+      (self.pubsub << (node = XMPPNode.new('items'))) unless node
+      node
+    end
+
+    class PubSubItem < XMPPNode
+      def initialize(id = nil, payload = nil)
+        super 'item'
+        self.id = id
+        self.payload = payload
+      end
+
+      attribute_accessor :id, :to_sym => false
+
+      def payload=(payload = nil)
+        self.content = (payload ? payload : '')
+      end
+
+      def payload
+        content.empty? ? nil : content
+      end
     end
   end
 

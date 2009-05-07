@@ -25,6 +25,18 @@ describe 'Blather::Stanza::PubSub::Items' do
     aff.type.must_equal :get
   end
 
+  it 'ensures newly inherited items are PubSubItem objects' do
+    n = XML::Document.string items_all_nodes_xml
+    items = Stanza::PubSub::Items.new.inherit n.root
+    items.map { |i| i.class }.uniq.must_equal [Stanza::PubSub::Items::PubSubItem]
+  end
+
+  it 'will iterate over each item' do
+    n = XML::Document.string items_all_nodes_xml
+    items = Stanza::PubSub::Items.new.inherit n.root
+    items.each { |i| i.class.must_equal Stanza::PubSub::Items::PubSubItem }
+  end
+
   it 'can create an items request node to request all items' do
     host = 'pubsub.jabber.local'
     node = 'princely_musings'
@@ -32,6 +44,7 @@ describe 'Blather::Stanza::PubSub::Items' do
     items = Stanza::PubSub::Items.request host, node
     items.find("//pubsub/items[@node=\"#{node}\"]").size.must_equal 1
     items.to.must_equal JID.new(host)
+    items.node.must_equal node
   end
 
   it 'can create an items request node to request some items' do
@@ -44,6 +57,7 @@ describe 'Blather::Stanza::PubSub::Items' do
     items = Stanza::PubSub::Items.request host, node, items
     items.find("//pubsub/items[@node=\"#{node}\"]/item[#{items_xpath}]").size.must_equal 2
     items.to.must_equal JID.new(host)
+    items.node.must_equal node
   end
 
   it 'can create an items request node to request "max_number" of items' do
@@ -54,6 +68,36 @@ describe 'Blather::Stanza::PubSub::Items' do
     items = Stanza::PubSub::Items.request host, node, nil, max
     items.find("//pubsub/items[@node=\"#{node}\" and @max_items=\"#{max}\"]").size.must_equal 1
     items.to.must_equal JID.new(host)
+    items.node.must_equal node
+    items.max_items.must_equal max
   end
-  
+end
+
+describe 'Blather::Stanza::PubSub::Items::PubSubItem' do
+  it 'can be initialized with just an ID' do
+    id = 'foobarbaz'
+    item = Stanza::PubSub::Items::PubSubItem.new id
+    item.id.must_equal id
+  end
+
+  it 'can be initialized with a payload' do
+    payload = 'foobarbaz'
+    item = Stanza::PubSub::Items::PubSubItem.new 'foo', payload
+    item.payload.must_equal payload
+  end
+
+  it 'allows the payload to be set' do
+    item = Stanza::PubSub::Items::PubSubItem.new
+    item.payload.must_be_nil
+    item.payload = 'testing'
+    item.payload.must_equal 'testing'
+  end
+
+  it 'allows the payload to be unset' do
+    payload = 'foobarbaz'
+    item = Stanza::PubSub::Items::PubSubItem.new 'foo', payload
+    item.payload.must_equal payload
+    item.payload = nil
+    item.payload.must_be_nil
+  end
 end
