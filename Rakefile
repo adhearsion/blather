@@ -13,10 +13,12 @@ begin
 
     gem.rubyforge_project = 'squishtech'
 
-    gem.extensions = %w[ext/extconf.rb]
+    gem.extensions = ['Rakefile']
 
     gem.add_dependency 'eventmachine', '>= 0.12.6'
     gem.add_dependency 'libxml-ruby', '>= 1.1.3'
+
+    gem.files = FileList['examples/**/*', 'lib/**/*', 'ext/*'].to_a
 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
@@ -46,8 +48,6 @@ rescue LoadError
 end
 
 
-task :default => :test
-
 begin
   require 'hanna/rdoctask'
 
@@ -71,28 +71,40 @@ rescue LoadError
   end
 end
 
-desc 'Build extensions'
-task :build => :extensions
-task :extension => :build
+MAKE = ENV['MAKE'] || (RUBY_PLATFORM =~ /mswin/ ? 'nmake' : 'make')
 
-ext = Config::CONFIG["DLEXT"]
-task :extensions => ["ext/push_parser.#{ext}"]
-file "ext/push_parser.#{ext}" =>
-  ["Makefile"] + FileList["ext/*.{c,h}"].to_a do |t|
-  Dir.chdir("ext") { sh "make" }
-end
+namespace :ext do
+  ext_sources = FileList['ext/*.{rb,c}']
 
-namespace :extensions do
+  desc 'Compile the makefile'
+  file 'ext/Makefile' => ext_sources do
+    chdir('ext') { ruby 'extconf.rb' }
+  end
+
+  desc "make extension"
+  task :make => ext_sources + ['ext/Makefile'] do
+    chdir('ext') { sh MAKE }
+  end
+
+  desc 'Build push parser'
+  task :build => :make
+
   desc 'Clean extensions'
   task :clean do
-    Dir.chdir("ext") do
+    chdir 'ext' do
       sh "rm -f Makefile"
       sh "rm -f *.{o,so,bundle,log}"
     end
   end
 end
 
-file "Makefile" => %w[ext/extconf.rb] do
-  command = ["ruby"] + $:.map{|dir| "-I#{File.expand_path dir}"} + ["extconf.rb"]
-  Dir.chdir("ext") { sh(*command) }
+# If running under rubygems...
+__DIR__ ||= File.expand_path(File.dirname(__FILE__))
+if Gem.path.any? {|path| %r(^#{Regexp.escape path}) =~ __DIR__}
+  task :default => :gem_build
+else
+  task :default => ['ext:build', :test]
 end
+ 
+desc ":default build when running under rubygems."
+task :gem_build => 'ext:build'
