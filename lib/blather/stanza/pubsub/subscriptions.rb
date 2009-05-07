@@ -41,13 +41,11 @@ class PubSub
     end
 
     def list
-      @subscription_list ||= begin
-        items = subscriptions.find('//pubsub_ns:subscription', :pubsub_ns => self.class.ns)
-        items.inject({}) do |hash, item|
-          hash[item.attributes[:subscription].to_sym] ||= []
-          hash[item.attributes[:subscription].to_sym] << item.attributes[:node]
-          hash
-        end
+      items = subscriptions.find('//pubsub_ns:subscription', :pubsub_ns => self.class.ns)
+      items.inject({}) do |hash, item|
+        hash[item.attributes[:subscription].to_sym] ||= []
+        hash[item.attributes[:subscription].to_sym] << item.attributes[:node]
+        hash
       end
     end
   end #Subscriptions

@@ -1,22 +1,11 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
 
-def subscriptions_xml
-  <<-NODE
-    <iq type='result'
-        from='pubsub.shakespeare.lit'
-        to='francisco@denmark.lit'
-        id='affil1'>
-      <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-        <subscriptions>
-          <subscription node='node1' subscription='subscribed'/>
-          <subscription node='node2' subscription='subscribed'/>
-          <subscription node='node3' subscription='unconfigured'/>
-          <subscription node='node4' subscription='pending'/>
-          <subscription node='node5' subscription='none'/>
-        </subscriptions>
-      </pubsub>
-    </iq>
-  NODE
+def control_subscriptions
+  { :subscribed => ['node1', 'node2'],
+    :unconfigured => ['node3'],
+    :pending => ['node4'],
+    :none => ['node5'] }
 end
 
 describe 'Blather::Stanza::PubSub::Subscriptions' do
@@ -53,11 +42,22 @@ describe 'Blather::Stanza::PubSub::Subscriptions' do
 
     subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
     subscriptions.size.must_equal 4
-    subscriptions.list.must_equal({
-      :subscribed => ['node1', 'node2'],
-      :unconfigured => ['node3'],
-      :pending => ['node4'],
-      :none => ['node5']
-    })
+    subscriptions.list.must_equal control_subscriptions
+  end
+
+  it 'will iterate over each subscription' do
+    node = XML::Document.string(subscriptions_xml).root
+    subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
+    subscriptions.each do |type, nodes|
+      nodes.must_equal control_subscriptions[type]
+    end
+  end
+
+  it 'can be accessed via "[]"' do
+    node = XML::Document.string(subscriptions_xml).root
+    subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
+    [:subscribed, :unconfigured, :pending, :none].each do |type|
+      subscriptions[type].must_equal control_subscriptions[type]
+    end
   end
 end
