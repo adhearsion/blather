@@ -16,12 +16,8 @@ Gem::Specification.new do |s|
   s.files = [
     "examples/drb_client.rb",
     "examples/echo.rb",
-    "ext/Makefile",
     "ext/extconf.rb",
-    "ext/mkmf.log",
-    "ext/push_parser.bundle",
     "ext/push_parser.c",
-    "ext/push_parser.o",
     "lib/autotest/discover.rb",
     "lib/autotest/spec.rb",
     "lib/blather.rb",
