@@ -36,7 +36,11 @@ module Blather
     # of that class and imports all the <tt>node</tt>'s attributes
     # and children into it.
     def self.import(node)
-      klass = class_from_registration(node.element_name, node.namespace)
+      klass = nil
+      e = node.children[1]
+      node.children.each { |e| break if klass = class_from_registration(e.element_name, e.namespaces.default.to_s) }
+      klass ||= class_from_registration(node.element_name, node.namespace)
+
       if klass && klass != self
         klass.import(node)
       else
