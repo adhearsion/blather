@@ -29,5 +29,23 @@ class Stanza
     end
   end
 
+  class PubSubItem < XMPPNode
+    def initialize(id = nil, payload = nil)
+      super 'item'
+      self.id = id
+      self.payload = payload
+    end
+
+    attribute_accessor :id, :to_sym => false
+
+    def payload=(payload = nil)
+      self.content = (payload ? payload : '')
+    end
+
+    def payload
+      content.empty? ? nil : content
+    end
+  end
+
 end #Stanza
 end #Blather
