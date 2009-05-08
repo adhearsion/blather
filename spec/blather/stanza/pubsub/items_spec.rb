@@ -3,7 +3,13 @@ require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
 
 describe 'Blather::Stanza::PubSub::Items' do
   it 'registers itself' do
-    XMPPNode.class_from_registration(:pubsub_items, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub::Items
+    XMPPNode.class_from_registration(:items, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub::Items
+  end
+
+  it 'can be imported' do
+    node = XML::Document.string(items_all_nodes_xml).root
+    subscriptions = XMPPNode.import node
+    subscriptions.class.must_equal Stanza::PubSub::Items
   end
 
   it 'ensures an items node is present on create' do

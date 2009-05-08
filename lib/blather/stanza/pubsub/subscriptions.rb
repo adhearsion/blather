@@ -3,7 +3,7 @@ class Stanza
 class PubSub
 
   class Subscriptions < PubSub
-    register :pubsub_subscriptions, :pubsub_subscriptions, self.ns
+    register :pubsub_subscriptions, :subscriptions, self.ns
 
     include Enumerable
 

@@ -11,7 +11,13 @@ end
 
 describe 'Blather::Stanza::PubSub::Affiliations' do
   it 'registers itself' do
-    XMPPNode.class_from_registration(:pubsub_affiliations, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub::Affiliations
+    XMPPNode.class_from_registration(:affiliations, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub::Affiliations
+  end
+
+  it 'can be imported' do
+    node = XML::Document.string(affiliations_xml).root
+    subscriptions = XMPPNode.import node
+    subscriptions.class.must_equal Stanza::PubSub::Affiliations
   end
 
   it 'ensures an affiliations node is present on create' do

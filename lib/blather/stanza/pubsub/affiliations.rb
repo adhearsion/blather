@@ -3,7 +3,7 @@ class Stanza
 class PubSub
 
   class Affiliations < PubSub
-    register :pubsub_affiliations, :pubsub_affiliations, self.ns
+    register :pubsub_affiliations, :affiliations, self.ns
 
     include Enumerable
 

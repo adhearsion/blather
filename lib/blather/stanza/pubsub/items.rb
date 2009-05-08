@@ -3,7 +3,7 @@ class Stanza
 class PubSub
 
   class Items < PubSub
-    register :pubsub_items, :pubsub_items, self.ns
+    register :pubsub_items, :items, self.ns
 
     include Enumerable
 
