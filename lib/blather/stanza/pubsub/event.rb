@@ -19,6 +19,10 @@ class PubSub
       (self.pubsub << (node = XMPPNode.new('items'))) unless node
       node
     end
+
+    def subscription_ids
+      find('//hns:header[@name="SubID"]', :hns => 'http://jabber.org/protocol/shim').map { |n| n.content }
+    end
   end
 
 end #PubSub

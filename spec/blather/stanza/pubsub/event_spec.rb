@@ -25,8 +25,14 @@ describe 'Blather::Stanza::PubSub::Event' do
   end
 
   it 'can be imported' do
-    n = XML::Document.string event_with_payload_xml
+    n = XML::Document.string event_notification_xml
     event = XMPPNode.import n.root
     event.class.must_equal Stanza::PubSub::Event
+  end
+
+  it 'handles receiving subscription ids' do
+    n = XML::Document.string event_subids_xml
+    event = XMPPNode.import n.root
+    event.subscription_ids.must_equal ['123-abc', '004-yyy']
   end
 end

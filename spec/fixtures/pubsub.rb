@@ -214,3 +214,19 @@ def event_notification_xml
 </message>
 NODE
 end
+
+def event_subids_xml
+<<-NODE
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </items>
+  </event>
+  <headers xmlns='http://jabber.org/protocol/shim'>
+    <header name='SubID'>123-abc</header>
+    <header name='SubID'>004-yyy</header>
+  </headers>
+</message>
+NODE
+end
