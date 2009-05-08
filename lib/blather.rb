@@ -34,6 +34,7 @@
   blather/stanza/pubsub/affiliations
   blather/stanza/pubsub/subscriptions
   blather/stanza/pubsub/items
+  blather/stanza/pubsub/event
 
   blather/stream
   blather/stream/client

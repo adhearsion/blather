@@ -3,16 +3,21 @@ class Stanza
 class PubSub
 
   class Event < Message
-    register :pubsub_event, nil, 'http://jabber.org/protocol/pubsub#event'
+    register :pubsub_event, :event, 'http://jabber.org/protocol/pubsub#event'
 
-    def items
+    def node
+      items_node.attributes[:node]
     end
 
-    class Item
-      attribute_accessor :id, :node, :to_sym => false
+    def items
+      items_node.map { |i| PubSubItem.new.inherit i }
+    end
 
-      alias_method :payload, :content
-      alias_method :payload=, :content=
+    def items_node
+      node = find_first('//items', self.class.ns)
+      node = find_first('//pubsub_ns:items', :pubsub_ns => self.class.ns) unless node
+      (self.pubsub << (node = XMPPNode.new('items'))) unless node
+      node
     end
   end
 

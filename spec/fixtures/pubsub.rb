@@ -155,3 +155,62 @@ def affiliations_xml
 </iq>
 NODE
 end
+
+def subscriptions_xml
+<<-NODE
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='francisco@denmark.lit'
+    id='affil1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <subscriptions>
+      <subscription node='node1' subscription='subscribed'/>
+      <subscription node='node2' subscription='subscribed'/>
+      <subscription node='node3' subscription='unconfigured'/>
+      <subscription node='node4' subscription='pending'/>
+      <subscription node='node5' subscription='none'/>
+    </subscriptions>
+  </pubsub>
+</iq>
+NODE
+end
+
+def event_with_payload_xml
+<<-NODE
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'>
+        <entry xmlns='http://www.w3.org/2005/Atom'>
+          <title>Soliloquy</title>
+          <summary>
+To be, or not to be: that is the question:
+Whether 'tis nobler in the mind to suffer
+The slings and arrows of outrageous fortune,
+Or to take arms against a sea of troubles,
+And by opposing end them?
+          </summary>
+          <link rel='alternate' type='text/html'
+                href='http://denmark.lit/2003/12/13/atom03'/>
+          <id>tag:denmark.lit,2003:entry-32397</id>
+          <published>2003-12-13T18:30:02Z</published>
+          <updated>2003-12-13T18:30:02Z</updated>
+        </entry>
+      </item>
+    </items>
+  </event>
+</message>
+NODE
+end
+
+def event_notification_xml
+<<-NODE
+<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+  <event xmlns='http://jabber.org/protocol/pubsub#event'>
+    <items node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </items>
+  </event>
+</message>
+NODE
+end
