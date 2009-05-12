@@ -39,7 +39,7 @@ class Stream # :nodoc:
         XML::Document.new.root = e
         @receiver.receive e
 
-      else#if !@receiver.stopped?
+      elsif !@receiver.stopped?
         @current << e  if @current
         @current = e
 
