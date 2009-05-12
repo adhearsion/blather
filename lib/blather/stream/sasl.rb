@@ -18,19 +18,25 @@ class Stream # :nodoc:
     end
 
     def set_mechanism
-      mod = case (mechanism = @mechanisms[@mechanism_idx].content)
-      when 'DIGEST-MD5' then DigestMD5
-      when 'PLAIN'      then Plain
-      when 'ANONYMOUS'  then Anonymous
+      mod = if @jid.node == '' && @mechanisms.find { |m| m.content == 'ANONYMOUS' }
+        Anonymous
+      else
+        case (mechanism = @mechanisms[@mechanism_idx].content)
+        when 'DIGEST-MD5' then DigestMD5
+        when 'PLAIN'      then Plain
+        when 'ANONYMOUS'  then Anonymous
+        end
+      end
+
+      if mod
+        extend mod
+        true
       else
         # Send a failure node and kill the stream
         @stream.send "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><invalid-mechanism/></failure>"
         @failure.call UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
-        return false
+        false
       end
-
-      extend mod
-      true
     end
 
     ##
@@ -164,7 +170,7 @@ class Stream # :nodoc:
 
     module Anonymous # :nodoc:
       def authenticate
-        @stream.send auth_node('ANONYMOUS', b64(@jid.node))
+        @stream.send auth_node('ANONYMOUS')
       end
     end #Anonymous
   end #SASL

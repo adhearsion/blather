@@ -353,7 +353,7 @@ describe 'Blather::Stream::Client' do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS">bg==</auth>')
+        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>')
 
       when :auth_sent
         EM.stop
@@ -368,7 +368,36 @@ describe 'Blather::Stream::Client' do
     end
   end
 
-  it 'tried each possible mechanism until it fails completely' do
+  it 'connects via ANONYMOUS if the JID has a blank node' do
+    state = nil
+    @jid = JID.new '@d'
+
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism><mechanism>ANONYMOUS</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :auth_sent
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>')
+
+      when :auth_sent
+        EM.stop
+        state = :complete
+        val.must_match(/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'tries each possible mechanism until it fails completely' do
     state = nil
     @client = mock()
     @client.expects(:call).with do |n|
