@@ -34,19 +34,14 @@ describe 'Blather::StanzaError' do
     e.must_be_kind_of StanzaError
   end
 
-  it 'knows what class to instantiate' do
-    e = StanzaError.import stanza_error_node
-    e.must_be_instance_of StanzaError::InternalServerError
-  end
-
   describe 'valid types' do
     before { @original = Stanza::Message.new 'error@jabber.local', 'test message', :error }
 
     it 'ensures type is one of Stanza::Message::VALID_TYPES' do
-      lambda { StanzaError.new @original, :invalid_type_name }.must_raise(Blather::ArgumentError)
+      lambda { StanzaError.new @original, :gone, :invalid_type_name }.must_raise(Blather::ArgumentError)
 
       StanzaError::VALID_TYPES.each do |valid_type|
-        msg = StanzaError.new @original, valid_type
+        msg = StanzaError.new @original, :gone, valid_type
         msg.type.must_equal valid_type
       end
     end
@@ -65,9 +60,9 @@ describe 'Blather::StanzaError' do
       @err.type.must_equal @type.to_sym
     end
 
-    it 'provides a err_name attribute' do
-      @err.must_respond_to :err_name
-      @err.err_name.must_equal @err_name
+    it 'provides a name attribute' do
+      @err.must_respond_to :name
+      @err.name.must_equal @err_name.gsub('-','_').to_sym
     end
 
     it 'provides a text attribute' do
@@ -131,15 +126,9 @@ describe 'Blather::StanzaError' do
         undefined-condition
         unexpected-request
       ].each do |error_type|
-        it "provides a class for #{error_type}" do
+        it "handles the name for #{error_type}" do
           e = StanzaError.import stanza_error_node(:cancel, error_type)
-          klass = error_type.gsub(/^\w/) { |v| v.upcase }.gsub(/\-(\w)/) { |v| v.delete('-').upcase }
-          e.must_be_instance_of eval("StanzaError::#{klass}")
-        end
-
-        it "registers #{error_type} in the handler heirarchy" do
-          e = StanzaError.import stanza_error_node(:cancel, error_type)
-          e.handler_heirarchy.must_equal ["stanza_#{error_type.gsub('-','_').gsub('_error','')}_error".to_sym, :stanza_error, :error]
+          e.name.must_equal error_type.gsub('-','_').to_sym
         end
       end
   end

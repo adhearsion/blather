@@ -96,12 +96,6 @@ describe 'Blather::Stanza' do
   it 'can be converted into an error by error name' do
     s = Stanza.new('message')
     err = s.as_error 'internal-server-error', 'cancel'
-    err.must_be_instance_of StanzaError::InternalServerError
-  end
-
-  it 'can be converted into an error by error class' do
-    s = Stanza.new('message')
-    err = s.as_error StanzaError::InternalServerError, 'cancel'
-    err.must_be_instance_of StanzaError::InternalServerError
+    err.name.must_equal :internal_server_error
   end
 end

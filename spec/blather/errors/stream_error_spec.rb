@@ -29,11 +29,6 @@ describe 'Blather::StreamError' do
     e = StreamError.import stream_error_node
     e.must_be_kind_of StreamError
   end
-
-  it 'knows what class to instantiate' do
-    e = StreamError.import stream_error_node
-    e.must_be_instance_of StreamError::InternalServerError
-  end
 end
 
 describe 'Blather::StreamError when instantiated' do
@@ -44,8 +39,8 @@ describe 'Blather::StreamError when instantiated' do
   end
 
   it 'provides a err_name attribute' do
-    @err.must_respond_to :err_name
-    @err.err_name.must_equal @err_name
+    @err.must_respond_to :name
+    @err.name.must_equal @err_name.gsub('-','_').to_sym
   end
 
   it 'provides a text attribute' do
@@ -100,15 +95,9 @@ describe 'Each XMPP stream error type' do
       unsupported-version
       xml-not-well-formed
     ].each do |error_type|
-      it "provides a class for #{error_type}" do
+      it "handles the name for #{error_type}" do
         e = StreamError.import stream_error_node(error_type)
-        klass = error_type.gsub(/^\w/) { |v| v.upcase }.gsub(/\-(\w)/) { |v| v.delete('-').upcase }
-        e.must_be_instance_of eval("StreamError::#{klass}")
-      end
-
-      it "registers #{error_type} in the handler heirarchy" do
-        e = StreamError.import stream_error_node(error_type)
-        e.handler_heirarchy.must_equal ["stream_#{error_type.gsub('-','_').gsub('_error','')}_error".to_sym, :stream_error, :error]
+        e.name.must_equal error_type.gsub('-','_').to_sym
       end
     end
 end

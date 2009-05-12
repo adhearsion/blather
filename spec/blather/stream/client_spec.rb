@@ -155,7 +155,7 @@ describe 'Blather::Stream::Client' do
   it 'sends client an error on stream:error' do
     @client = mock()
     @client.expects(:call).with do |v|
-      v.must_be_instance_of(StreamError::Conflict)
+      v.name.must_equal :conflict
       v.text.must_equal 'Already signed in'
       v.to_s.must_equal "Stream Error (conflict): #{v.text}"
     end
@@ -373,7 +373,7 @@ describe 'Blather::Stream::Client' do
     @client = mock()
     @client.expects(:call).with do |n|
       n.must_be_kind_of(SASLError)
-      n.must_be_instance_of SASLError::NotAuthorized
+      n.name.must_equal :not_authorized
     end
 
     mocked_server(5) do |val, server|
@@ -472,7 +472,7 @@ describe 'Blather::Stream::Client' do
     it "fails on #{error_type}" do
       @client = mock()
       @client.expects(:call).with do |n|
-        n.must_be_instance_of SASLError.class_from_registration(error_type)
+        n.name.must_equal error_type.gsub('-','_').to_sym
       end
       state = nil
       mocked_server(3) do |val, server|
@@ -601,7 +601,7 @@ describe 'Blather::Stream::Client' do
     state = nil
     @client = mock()
     @client.expects(:call).with do |n|
-      n.must_be_instance_of StanzaError::BadRequest
+      n.name.must_equal :bad_request
     end
     mocked_server(3) do |val, server|
       case state
@@ -695,7 +695,7 @@ describe 'Blather::Stream::Client' do
     state = nil
     @client = mock()
     @client.expects(:call).with do |n|
-      n.must_be_instance_of StanzaError::InternalServerError
+      n.name.must_equal :internal_server_error
     end
     mocked_server(3) do |val, server|
       case state

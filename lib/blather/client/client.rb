@@ -121,7 +121,7 @@ module Blather #:nodoc:
       end
 
       register_handler :iq do |iq|
-        write(StanzaError::ServiceUnavailable.new(iq, :cancel).to_node) if [:set, :get].include?(iq.type)
+        write(StanzaError.new(iq, 'service-unavailable', :cancel).to_node) if [:set, :get].include?(iq.type)
       end
 
       register_handler :status do |status|
