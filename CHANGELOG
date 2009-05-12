@@ -1,3 +1,11 @@
+v0.2.3
+  Go back to using the master branch for gems (stupid mistake)  
+
+v0.2.2
+  Switch to Jeweler.
+  Move from custom libxml to just a custom push parser
+  Add guards to handlers
+
 v0.2.1 Upgrade to libxml 0.9.7
 
 v0.2 Overhaul the DSL to look more like Sinatra
