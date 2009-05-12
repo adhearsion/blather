@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. blather])
-require File.join(File.dirname(__FILE__), 'pubsub')
 
 module Blather #:nodoc:
 
