@@ -43,7 +43,6 @@ Gem::Specification.new do |s|
     "lib/blather/stanza/presence.rb",
     "lib/blather/stanza/presence/status.rb",
     "lib/blather/stanza/presence/subscription.rb",
-    "lib/blather/stanza/pubsub/subscriber.rb",
     "lib/blather/stream.rb",
     "lib/blather/stream/client.rb",
     "lib/blather/stream/component.rb",
@@ -62,9 +61,6 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.3}
   s.summary = %q{An evented XMPP library written on EventMachine and libxml-ruby}
   s.test_files = [
-    "spec/blather/client/client_spec.rb",
-    "spec/blather/client/dsl_spec.rb",
-    "spec/blather/client_spec.rb",
     "spec/blather/core_ext/libxml_spec.rb",
     "spec/blather/errors/sasl_error_spec.rb",
     "spec/blather/errors/stanza_error_spec.rb",
@@ -82,7 +78,6 @@ Gem::Specification.new do |s|
     "spec/blather/stanza/presence/status_spec.rb",
     "spec/blather/stanza/presence/subscription_spec.rb",
     "spec/blather/stanza/presence_spec.rb",
-    "spec/blather/stanza/pubsub/subscriber_spec.rb",
     "spec/blather/stanza_spec.rb",
     "spec/blather/stream/client_spec.rb",
     "spec/blather/stream/component_spec.rb",
