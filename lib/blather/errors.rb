@@ -9,6 +9,11 @@ module Blather
     def self.register(handler)
       self.handler_heirarchy.unshift handler
     end
+
+    # HACK!! until I can refactor the entire Error object model
+    def id
+      nil
+    end
   end
 
   ##
