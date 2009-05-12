@@ -1,3 +1,13 @@
+v0.3.0
+  Remove autotest discover.rb (created all sorts of conflicts)
+  Added Hash with Array guard
+  Added a hirrarchy printer to examples directory
+  Moved Disco to be in the Stanza namespace (staves off deeply namespaced classes)
+  Namespaced the DSL methods to Blather::DSL. These can be included in any object you like now. "require 'blather/client'" will still include them directly in Kernel to keep the simple one-file dsl
+  Stopped doing one class per error type. This created a giant hierarchy tree that was just unnecessary. The error name is now #name. Errors can be matched with a combination of handler and guard.
+  Fixed XML namespaces. Previous versions weren't actually adding the node to the namespace making xpath queries inconsistent at best.
+  Added support for anonymous authentication by providing a blank node on the jid ("@[host]")
+
 v0.2.3
   Go back to using the master branch for gems (stupid mistake)  
 

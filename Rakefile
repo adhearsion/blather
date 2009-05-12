@@ -18,7 +18,9 @@ begin
     gem.add_dependency 'eventmachine', '>= 0.12.6'
     gem.add_dependency 'libxml-ruby', '>= 1.1.3'
 
-    gem.files = FileList['examples/**/*', 'lib/**/*', 'ext/*'].to_a
+    gem.files = FileList['examples/**/*', 'lib/**/*', 'ext/*.{rb,c}'].to_a
+
+    gem.test_files = FileList['spec/**/*.rb']
 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

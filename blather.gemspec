@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2009-05-07}
+  s.date = %q{2009-05-12}
   s.email = %q{sprsquish@gmail.com}
   s.extensions = ["Rakefile"]
   s.extra_rdoc_files = [
@@ -16,12 +16,13 @@ Gem::Specification.new do |s|
   s.files = [
     "examples/drb_client.rb",
     "examples/echo.rb",
+    "examples/print_heirarchy.rb",
     "ext/extconf.rb",
     "ext/push_parser.c",
-    "lib/autotest/discover.rb",
-    "lib/autotest/spec.rb",
     "lib/blather.rb",
     "lib/blather/client.rb",
+    "lib/blather/client/client.rb",
+    "lib/blather/client/dsl.rb",
     "lib/blather/core_ext/active_support.rb",
     "lib/blather/core_ext/libxml.rb",
     "lib/blather/errors.rb",
@@ -32,16 +33,17 @@ Gem::Specification.new do |s|
     "lib/blather/roster.rb",
     "lib/blather/roster_item.rb",
     "lib/blather/stanza.rb",
+    "lib/blather/stanza/disco.rb",
+    "lib/blather/stanza/disco/disco_info.rb",
+    "lib/blather/stanza/disco/disco_items.rb",
     "lib/blather/stanza/iq.rb",
-    "lib/blather/stanza/iq/disco.rb",
-    "lib/blather/stanza/iq/discos/disco_info.rb",
-    "lib/blather/stanza/iq/discos/disco_items.rb",
     "lib/blather/stanza/iq/query.rb",
     "lib/blather/stanza/iq/roster.rb",
     "lib/blather/stanza/message.rb",
     "lib/blather/stanza/presence.rb",
     "lib/blather/stanza/presence/status.rb",
     "lib/blather/stanza/presence/subscription.rb",
+    "lib/blather/stanza/pubsub/subscriber.rb",
     "lib/blather/stream.rb",
     "lib/blather/stream/client.rb",
     "lib/blather/stream/component.rb",
@@ -53,14 +55,16 @@ Gem::Specification.new do |s|
     "lib/blather/stream/tls.rb",
     "lib/blather/xmpp_node.rb"
   ]
-  s.has_rdoc = true
   s.homepage = %q{http://github.com/sprsquish/blather}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{squishtech}
-  s.rubygems_version = %q{1.3.2}
+  s.rubygems_version = %q{1.3.3}
   s.summary = %q{An evented XMPP library written on EventMachine and libxml-ruby}
   s.test_files = [
+    "spec/blather/client/client_spec.rb",
+    "spec/blather/client/dsl_spec.rb",
+    "spec/blather/client_spec.rb",
     "spec/blather/core_ext/libxml_spec.rb",
     "spec/blather/errors/sasl_error_spec.rb",
     "spec/blather/errors/stanza_error_spec.rb",
@@ -69,8 +73,8 @@ Gem::Specification.new do |s|
     "spec/blather/jid_spec.rb",
     "spec/blather/roster_item_spec.rb",
     "spec/blather/roster_spec.rb",
-    "spec/blather/stanza/iq/discos/disco_info_spec.rb",
-    "spec/blather/stanza/iq/discos/disco_items_spec.rb",
+    "spec/blather/stanza/discos/disco_info_spec.rb",
+    "spec/blather/stanza/discos/disco_items_spec.rb",
     "spec/blather/stanza/iq/query_spec.rb",
     "spec/blather/stanza/iq/roster_spec.rb",
     "spec/blather/stanza/iq_spec.rb",
@@ -78,14 +82,12 @@ Gem::Specification.new do |s|
     "spec/blather/stanza/presence/status_spec.rb",
     "spec/blather/stanza/presence/subscription_spec.rb",
     "spec/blather/stanza/presence_spec.rb",
+    "spec/blather/stanza/pubsub/subscriber_spec.rb",
     "spec/blather/stanza_spec.rb",
     "spec/blather/stream/client_spec.rb",
     "spec/blather/stream/component_spec.rb",
     "spec/blather/xmpp_node_spec.rb",
-    "spec/build_safe.rb",
-    "spec/spec_helper.rb",
-    "examples/drb_client.rb",
-    "examples/echo.rb"
+    "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then
