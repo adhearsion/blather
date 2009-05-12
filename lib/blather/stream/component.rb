@@ -11,7 +11,7 @@ class Stream
         super
       end
 
-      if node.element_name == 'stream:stream'
+      if node.namespaces.find_by_href('http://etherx.jabber.org/streams') && node.find_first('/stream:stream[not(stream:error)]')
         send("<handshake>#{Digest::SHA1.hexdigest(@node['id']+@pass)}</handshake>")
       end
     end

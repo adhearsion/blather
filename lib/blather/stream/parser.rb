@@ -19,21 +19,28 @@ class Stream # :nodoc:
 
     def receive_data(string)
       LOG.debug "PARSING: (#{string})" if @@debug
+      @stream_error = string =~ /stream:error/
       @parser.receive string
     end
 
     def on_start_element_ns(elem, attrs, prefix, uri, namespaces)
       LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
-      elem = "#{"#{prefix}:" if prefix}#{elem}"
+
       e = XMPPNode.new elem
-      XML::Namespace.new(e, prefix, uri)
       attrs.each { |k,v| e.attributes[k] = v if k }
 
-      if elem == 'stream:stream'
+      if @current && (ns = @current.namespaces.find_by_href(uri))
+        e.namespace = ns
+      else
+        e.namespace = {prefix => uri}
+      end
+
+      if elem == 'stream' && !@stream_error
+        XML::Document.new.root = e
         @receiver.receive e
 
-      elsif !@receiver.stopped?
-        @current << e if @current
+      else#if !@receiver.stopped?
+        @current << e  if @current
         @current = e
 
       end

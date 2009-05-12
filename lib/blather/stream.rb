@@ -97,22 +97,22 @@ module Blather
       LOG.debug "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
+      if @node.find_first('//stream:error', :stream => 'http://etherx.jabber.org/streams')
+        handle_stream_error
+        return
+      end
+
       case @node.element_name
-      when 'stream:stream'
+      when 'stream'
         @state = :ready if @state == :stopped
 
       when 'stream:end'
         stop
 
-      when 'stream:features'
+      when 'features'
         @features = @node.children
         @state = :features
         dispatch
-
-      when 'stream:error'
-        @error = StreamError.import @node
-        stop
-        @state = :error
 
       else
         dispatch
@@ -163,6 +163,12 @@ module Blather
     #   Simply passes the stanza to the client
     def ready
       @client.call @node.to_stanza
+    end
+
+    def handle_stream_error
+      @error = StreamError.import @node
+      stop
+      @state = :error
     end
 
     ##

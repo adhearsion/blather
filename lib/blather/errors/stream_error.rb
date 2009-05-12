@@ -30,7 +30,7 @@ class StreamError < BlatherError
   # for the error
   def self.import(node)
     name = node.find_first('descendant::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-streams').element_name
-    text = node.find_first 'descendant::text', 'urn:ietf:params:xml:ns:xmpp-streams'
+    text = node.find_first '//err_ns:text', :err_ns => 'urn:ietf:params:xml:ns:xmpp-streams'
     text = text.content if text
 
     extras = node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }

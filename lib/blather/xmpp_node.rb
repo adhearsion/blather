@@ -126,10 +126,16 @@ module Blather
       self.class.import self
     end
 
-    def namespace=(ns)
-      if ns
-        ns = {nil => ns} unless ns.is_a?(Hash)
-        ns.each { |p,n| XML::Namespace.new self, p, n }
+    def namespace=(namespaces)
+      case namespaces
+      when XML::Namespace
+        self.namespaces.namespace = namespaces
+      when String
+        self.namespaces.namespace = XML::Namespace.new(self, nil, namespaces)
+      when Hash
+        namespaces.each do |p, n|
+          self.namespaces.namespace = XML::Namespace.new(self, p, n)
+        end
       end
     end
 

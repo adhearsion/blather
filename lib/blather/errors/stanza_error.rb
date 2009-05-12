@@ -34,11 +34,11 @@ class StanzaError < BlatherError
     original = node.copy
     original.remove_child 'error'
 
-    error_node = node.find_first 'child::error'
+    error_node = node.find_first '//*[local-name()="error"]'
 
     name = error_node.find_first('child::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-stanzas').element_name
     type = error_node['type']
-    text = node.find_first 'descendant::text', 'urn:ietf:params:xml:ns:xmpp-stanzas'
+    text = node.find_first '//err_ns:text', :err_ns => 'urn:ietf:params:xml:ns:xmpp-stanzas'
     text = text.content if text
 
     extras = error_node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }
