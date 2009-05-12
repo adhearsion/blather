@@ -145,11 +145,15 @@ module Blather #:nodoc:
           !guard.detect { |condition| !guarded?([condition], stanza) }
         when Hash
           # return FALSE unless any inequality is found
-          guard.find do |method, value|
-            if value.is_a?(Regexp)
-              !stanza.__send__(method).to_s.match(value)
+          guard.find do |method, test|
+            value = stanza.__send__(method)
+            case test
+            when Regexp
+              !value.to_s.match(test)
+            when Array
+              !test.include? value
             else
-              stanza.__send__(method) != value
+              test != value
             end
           end
         when Proc

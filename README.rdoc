@@ -77,6 +77,11 @@ There are 5 different types of guards:
   #   Equivalent to stanza.body.match /exit/
   message :body => /exit/
 
+  # Hash with array (:name => [:gone, :forbidden])
+  #   Calls the key on the stanza and check for inclusion in the array
+  #   Equivalent to [:gone, :forbidden].include?(stanza.name)
+  stanza_error :name => [:gone, :fobidden]
+
   # Proc
   #   Calls the proc passing in the stanza
   #   Checks that the ID is modulo 3
@@ -90,14 +95,11 @@ There are 5 different types of guards:
 
 = TODO
 
-* Cleanup API
-* Add lambda callback ability to Iq stanzas
 * Better Documentation
-* Service Discovery (XEP-0030: http://xmpp.org/extensions/xep-0030.html)
+* Add Disco the the DSL
 * PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)
 * More examples (Re-write XMPP4R examples into Blather)
 
 = License
 
 Please see LICENSE
-The LibXML-Ruby license can be found in its directory
