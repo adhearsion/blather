@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. lib blather])
+require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. lib blather]))
 require 'rubygems'
 require 'minitest/spec'
 require 'mocha'
