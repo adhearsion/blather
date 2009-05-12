@@ -96,6 +96,7 @@ There are 5 different types of guards:
 = TODO
 
 * Better Documentation
+* Add XPath guard that passes the result to the handler
 * Add Disco the the DSL
 * PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)
 * More examples (Re-write XMPP4R examples into Blather)
