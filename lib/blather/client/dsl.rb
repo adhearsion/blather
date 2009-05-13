@@ -50,7 +50,7 @@ module Blather
     # Write data to the stream
     # Anything that resonds to #to_s can be paseed to the stream
     def write(stanza)
-      client.write(stanza)
+      client.write stanza
     end
 
     ##
@@ -67,7 +67,9 @@ module Blather
     end
 
     ##
-    #
+    # Request items or info from an entity
+    #   discover (items|info), [jid], [node] do |response|
+    #   end
     def discover(what, who, where, &callback)
       stanza = Blather::Stanza.class_from_registration(:query, "http://jabber.org/protocol/disco##{what}").new
       stanza.to = who
@@ -75,12 +77,6 @@ module Blather
 
       client.temporary_handler stanza.id, &callback
       write stanza
-    end
-
-    ##
-    # PubSub proxy
-    def pubsub
-      client.pubsub
     end
 
     ##
