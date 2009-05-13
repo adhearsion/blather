@@ -14,16 +14,16 @@ describe 'Blather::Stanza::PubSub::Items' do
 
   it 'ensures an items node is present on create' do
     items = Stanza::PubSub::Items.new
-    items.pubsub.children.detect { |n| n.element_name == 'items' }.wont_be_nil
+    items.find_first('//pubsub_ns:pubsub/items', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'ensures an items node exists when calling #items' do
     items = Stanza::PubSub::Items.new
     items.pubsub.remove_child :items
-    items.pubsub.children.detect { |n| n.element_name == 'items' }.must_be_nil
+    items.find_first('//pubsub_ns:pubsub/items', :pubsub_ns => Stanza::PubSub.ns).must_be_nil
 
     items.items.wont_be_nil
-    items.pubsub.children.detect { |n| n.element_name == 'items' }.wont_be_nil    
+    items.find_first('//pubsub_ns:pubsub/items', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'defaults to a get node' do
@@ -48,7 +48,7 @@ describe 'Blather::Stanza::PubSub::Items' do
     node = 'princely_musings'
 
     items = Stanza::PubSub::Items.request host, node
-    items.find("//pubsub/items[@node=\"#{node}\"]").size.must_equal 1
+    items.find("//pubsub_ns:pubsub/items[@node=\"#{node}\"]", :pubsub_ns => Stanza::PubSub.ns).size.must_equal 1
     items.to.must_equal JID.new(host)
     items.node.must_equal node
   end
@@ -61,7 +61,7 @@ describe 'Blather::Stanza::PubSub::Items' do
     items_xpath = items.map { |i| "@id=\"#{i}\"" } * ' or '
 
     items = Stanza::PubSub::Items.request host, node, items
-    items.find("//pubsub/items[@node=\"#{node}\"]/item[#{items_xpath}]").size.must_equal 2
+    items.find("//pubsub_ns:pubsub/items[@node=\"#{node}\"]/item[#{items_xpath}]", :pubsub_ns => Stanza::PubSub.ns).size.must_equal 2
     items.to.must_equal JID.new(host)
     items.node.must_equal node
   end
@@ -72,7 +72,7 @@ describe 'Blather::Stanza::PubSub::Items' do
     max = 3
 
     items = Stanza::PubSub::Items.request host, node, nil, max
-    items.find("//pubsub/items[@node=\"#{node}\" and @max_items=\"#{max}\"]").size.must_equal 1
+    items.find("//pubsub_ns:pubsub/items[@node=\"#{node}\" and @max_items=\"#{max}\"]", :pubsub_ns => Stanza::PubSub.ns).size.must_equal 1
     items.to.must_equal JID.new(host)
     items.node.must_equal node
     items.max_items.must_equal max

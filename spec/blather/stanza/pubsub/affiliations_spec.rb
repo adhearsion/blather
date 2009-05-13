@@ -22,16 +22,16 @@ describe 'Blather::Stanza::PubSub::Affiliations' do
 
   it 'ensures an affiliations node is present on create' do
     affiliations = Stanza::PubSub::Affiliations.new
-    affiliations.pubsub.children.detect { |n| n.element_name == 'affiliations' }.wont_be_nil
+    affiliations.find_first('//pubsub_ns:pubsub/affiliations', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'ensures an affiliations node exists when calling #affiliations' do
     affiliations = Stanza::PubSub::Affiliations.new
     affiliations.pubsub.remove_child :affiliations
-    affiliations.pubsub.children.detect { |n| n.element_name == 'affiliations' }.must_be_nil
+    affiliations.find_first('//pubsub_ns:pubsub/affiliations', :pubsub_ns => Stanza::PubSub.ns).must_be_nil
 
     affiliations.affiliations.wont_be_nil
-    affiliations.pubsub.children.detect { |n| n.element_name == 'affiliations' }.wont_be_nil    
+    affiliations.find_first('//pubsub_ns:pubsub/affiliations', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'defaults to a get node' do

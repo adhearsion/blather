@@ -21,7 +21,7 @@ class PubSub
 
     def affiliations
       aff = pubsub.find_first('//pubsub_ns:affiliations', :pubsub_ns => self.class.ns)
-      (self.pubsub << (aff = XMPPNode.new('affiliations'))) unless aff
+      self.pubsub << (aff = XMPPNode.new('affiliations')) unless aff
       aff
     end
 
