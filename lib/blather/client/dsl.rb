@@ -13,7 +13,6 @@ module Blather
     # host and port are optional defaulting to the domain in the JID and 5222 respectively
     def setup(jid, password, host = nil, port = nil)
       client.setup(jid, password, host, port)
-      at_exit { client.run }
     end
 
     ##

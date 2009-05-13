@@ -45,6 +45,6 @@
 XML.indent_tree_output = false
 
 module Blather
-  LOG = Logger.new(STDOUT) unless const_defined?(:LOG)
+  LOG = Logger.new($stdout) unless const_defined?(:LOG)
   LOG.level = Logger::INFO
 end
