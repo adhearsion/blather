@@ -230,3 +230,37 @@ def event_subids_xml
 </message>
 NODE
 end
+
+def unsubscribe_xml
+<<-NODE
+<iq type='error'
+    from='pubsub.shakespeare.lit'
+    to='francisco@denmark.lit/barracks'
+    id='unsub1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     <unsubscribe node='princely_musings' jid='francisco@denmark.lit'/>
+  </pubsub>
+  <error type='modify'>
+    <bad-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+    <subid-required xmlns='http://jabber.org/protocol/pubsub#errors'/>
+  </error>
+</iq>
+NODE
+end
+
+def subscriber_xml
+<<-NODE
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='francisco@denmark.lit/barracks'
+    id='sub1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <subscription
+        node='princely_musings'
+        jid='francisco@denmark.lit'
+        subid='ba49252aaa4f5d320c24d3766f0bdcade78c78d3'
+        subscription='subscribed'/>
+  </pubsub>
+</iq>
+NODE
+end
