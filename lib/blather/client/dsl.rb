@@ -87,12 +87,12 @@ module Blather
     # Checks to see if the method is part of the handlers list.
     # If so it creates a handler, otherwise it'll pass it back
     # to Ruby's method_missing handler
-    def method_missing(method, *args, &block)
-      if Blather::Stanza.handler_list.include?(method)
-        handle method, *args, &block
-      else
-        super
-      end
+    Blather::Stanza.handler_list.each do |handler_name|
+      module_eval <<-METHOD, __FILE__, __LINE__
+        def #{handler_name}(*args, &callback)
+          handle :#{handler_name}, *args, &callback
+        end
+      METHOD
     end
   end #DSL
 end #Blather
