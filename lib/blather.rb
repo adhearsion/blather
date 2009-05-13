@@ -1,6 +1,3 @@
-$:.unshift File.dirname(__FILE__)
-$:.unshift File.join(File.dirname(__FILE__), '..')
-
 # Require the necessary files
 %w[
   rubygems
