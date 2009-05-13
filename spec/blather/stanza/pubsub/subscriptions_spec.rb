@@ -21,16 +21,16 @@ describe 'Blather::Stanza::PubSub::Subscriptions' do
 
   it 'ensures an subscriptions node is present on create' do
     subscriptions = Stanza::PubSub::Subscriptions.new
-    subscriptions.pubsub.children.detect { |n| n.element_name == 'subscriptions' }.wont_be_nil
+    subscriptions.find_first('//pubsub_ns:pubsub/subscriptions', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'ensures an subscriptions node exists when calling #subscriptions' do
     subscriptions = Stanza::PubSub::Subscriptions.new
     subscriptions.pubsub.remove_child :subscriptions
-    subscriptions.pubsub.children.detect { |n| n.element_name == 'subscriptions' }.must_be_nil
+    subscriptions.find_first('//pubsub_ns:pubsub/subscriptions', :pubsub_ns => Stanza::PubSub.ns).must_be_nil
 
     subscriptions.list.wont_be_nil
-    subscriptions.pubsub.children.detect { |n| n.element_name == 'subscriptions' }.wont_be_nil    
+    subscriptions.find_first('//pubsub_ns:pubsub/subscriptions', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'defaults to a get node' do

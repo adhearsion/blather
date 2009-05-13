@@ -1,9 +1,7 @@
 module Blather
 
 class SASLError < BlatherError
-  class_inheritable_accessor :err_name
-  @@registrations = {}
-
+  NAMESPACE = 'urn:ietf:params:xml:ns:xmpp-sasl'
   register :sasl_error
 
   def self.import(node)
@@ -16,7 +14,7 @@ class SASLError < BlatherError
   end
 
   def name
-    @node.children.first.element_name.gsub('-', '_').to_sym if @node
+    @node.doc.find_first('/err_ns:failure/*[1]', :err_ns => NAMESPACE).element_name.gsub('-', '_').to_sym if @node
   end
 end #SASLError
 

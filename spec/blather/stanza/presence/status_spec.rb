@@ -58,7 +58,7 @@ describe 'Blather::Stanza::Presence::Status' do
     status.priority.must_equal 0
 
     status.priority = 10
-    status.children.detect { |n| n.element_name == 'priority' }.wont_be_nil
+    status.find_first('/presence[priority="10"]').wont_be_nil
     status.priority.must_equal 10
   end
 
@@ -67,7 +67,7 @@ describe 'Blather::Stanza::Presence::Status' do
     status.message.must_be_nil
 
     status.message = 'new message'
-    status.children.detect { |n| n.element_name == 'status' }.wont_be_nil
+    status.find_first('/presence[status="new message"]').wont_be_nil
     status.message.must_equal 'new message'
   end
 

@@ -7,16 +7,16 @@ describe 'Blather::Stanza::PubSub' do
 
   it 'ensures a pubusb node is present on create' do
     pubsub = Stanza::PubSub.new
-    pubsub.children.detect { |n| n.element_name == 'pubsub' }.wont_be_nil
+    pubsub.find_first('/iq/pubsub_ns:pubsub', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'ensures a pubsub node exists when calling #pubsub' do
     pubsub = Stanza::PubSub.new
     pubsub.remove_child :pubsub
-    pubsub.children.detect { |n| n.element_name == 'pubsub' }.must_be_nil
+    pubsub.find_first('/iq/pubsub_ns:pubsub', :pubsub_ns => Stanza::PubSub.ns).must_be_nil
 
     pubsub.pubsub.wont_be_nil
-    pubsub.children.detect { |n| n.element_name == 'pubsub' }.wont_be_nil
+    pubsub.find_first('/iq/pubsub_ns:pubsub', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
   end
 
   it 'sets the host if requested' do

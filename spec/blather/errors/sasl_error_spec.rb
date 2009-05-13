@@ -2,7 +2,9 @@ require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
 def sasl_error_node(err_name = 'aborted')
   node = XMPPNode.new 'failure'
-  node.namespace = 'urn:ietf:params:xml:ns:xmpp-sasl'
+  node.namespace = SASLError::NAMESPACE
+
+  XML::Document.new.root = node
 
   node << XMPPNode.new(err_name)
   node
