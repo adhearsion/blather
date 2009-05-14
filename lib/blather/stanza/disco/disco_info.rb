@@ -52,13 +52,6 @@ class Stanza
           self.category = category
         end
       end
-
-      def eql?(other)
-        other.kind_of?(self.class) &&
-        other.name == self.name &&
-        other.type == self.type &&
-        other.category == self.category
-      end
     end
 
     class Feature < XMPPNode
@@ -71,11 +64,6 @@ class Stanza
         else
           self.var = var
         end
-      end
-
-      def eql?(other)
-        other.kind_of?(self.class) &&
-        other.var == self.var
       end
     end
   end

@@ -46,13 +46,6 @@ class Stanza
 
       attribute_accessor :node, :name, :to_sym => false      
     end
-
-    def eql?(other)
-      other.kind_of?(self.class) &&
-      other.jid == self.jid &&
-      other.node == self.node &&
-      other.name == self.name
-    end
   end
 
 end #Stanza
