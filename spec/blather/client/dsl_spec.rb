@@ -5,7 +5,7 @@ describe 'Blather::DSL' do
   before do
     @client = mock()
     @dsl = class MockDSL; include Blather::DSL; end.new
-    @dsl.stubs(:client).returns(@client)
+    Client.stubs(:new).returns(@client)
   end
 
   it 'wraps the setup' do
