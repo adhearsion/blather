@@ -3,8 +3,8 @@ require File.join(File.dirname(__FILE__), *%w[.. .. blather])
 module Blather #:nodoc:
 
   class Client #:nodoc:
-    attr_accessor :jid,
-                  :roster
+    attr_reader :jid,
+                :roster
 
     def initialize
       @state = :initializing
@@ -17,32 +17,8 @@ module Blather #:nodoc:
       setup_initial_handlers
     end
 
-    def setup?
-      @setup.is_a? Array
-    end
-
-    def setup(jid, password, host = nil, port = nil)
-      @setup = [JID.new(jid), password]
-      @setup << host if host
-      @setup << port if port
-      self
-    end
-
-    def run
-      raise 'not setup!' unless setup?
-      LOG.info "Starting..."
-      klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
-      klass.start self, *@setup
-      LOG.info "Exiting..."
-    end
-
-    def register_tmp_handler(id, &handler)
-      @tmp_handlers[id] = handler
-    end
-
-    def register_handler(type, *guards, &handler)
-      @handlers[type] ||= []
-      @handlers[type] << [guards, handler]
+    def jid=(new_jid)
+      @jid = JID.new new_jid
     end
 
     def status
@@ -59,44 +35,60 @@ module Blather #:nodoc:
       write status
     end
 
+    def setup?
+      @setup.is_a? Array
+    end
+
+    def setup(jid, password, host = nil, port = nil)
+      @setup = [JID.new(jid), password]
+      @setup << host if host
+      @setup << port if port
+      self
+    end
+
+    def run
+      raise 'not setup!' unless setup?
+      klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
+      @stream = klass.start self, *@setup
+    end
+
+    def register_tmp_handler(id, &handler)
+      @tmp_handlers[id] = handler
+    end
+
+    def register_handler(type, *guards, &handler)
+      check_guards guards
+      @handlers[type] ||= []
+      @handlers[type] << [guards, handler]
+    end
+
     def write(stanza)
       stanza.from ||= jid if stanza.respond_to?(:from)
       @stream.send(stanza) if @stream
     end
 
-    def write_with_handler(stanza, &hanlder)
+    def write_with_handler(stanza, &handler)
       register_tmp_handler stanza.id, &handler
       write stanza
     end
 
-    def stream_started(stream)
-      @stream = stream
-
-      #retreive roster
-      if @stream.is_a?(Stream::Component)
-        @state = :ready
-        call_handler_for :ready, nil
-      else
-        r = Stanza::Iq::Roster.new
-        register_tmp_handler r.id do |node|
-          roster.process node
-          @state = :ready
-          write @status
-          call_handler_for :ready, nil
-        end
-        write r
+    def post_init
+      case @stream
+      when Stream::Component  then ready!
+      when Stream::Client     then client_post_init
+      else                    raise "Don't know #{@stream.class} stream type. How the hell did this happen!?"
       end
     end
 
-    def stop
+    def close
       @stream.close_connection_after_writing
     end
 
-    def stopped
-      EM.stop
+    def unbind
+      EM.stop if EM.reactor_running?
     end
 
-    def call(stanza)
+    def receive_data(stanza)
       if handler = @tmp_handlers.delete(stanza.id)
         handler.call stanza
       else
@@ -106,21 +98,14 @@ module Blather #:nodoc:
       end
     end
 
-    def call_handler_for(type, stanza)
-      if @handlers[type]
-        @handlers[type].find { |guards, handler| handler.call(stanza) unless guarded?(guards, stanza) }
-        true
-      end
-    end
-
   protected
     def setup_initial_handlers
       register_handler :error do |err|
         raise err
       end
 
-      register_handler :iq do |iq|
-        write(StanzaError.new(iq, 'service-unavailable', :cancel).to_node) if [:set, :get].include?(iq.type)
+      register_handler :iq, :type => [:get, :set] do |iq|
+        write(StanzaError.new(iq, 'service-unavailable', :cancel).to_node)
       end
 
       register_handler :status do |status|
@@ -132,8 +117,30 @@ module Blather #:nodoc:
       end
     end
 
+    def ready!
+      @state = :ready
+      call_handler_for :ready, nil
+    end
+
+    def client_post_init
+      write_with_handler Stanza::Iq::Roster.new do |node|
+        roster.process node
+        write @status
+        ready!
+      end
+    end
+
+    def call_handler_for(type, stanza)
+      if @handlers[type]
+        @handlers[type].find { |guards, handler| handler.call(stanza) unless guarded?(guards, stanza) }
+        true
+      end
+    end
+
     ##
     # If any of the guards returns FALSE this returns true
+    # the logic is reversed to allow short circuiting
+    # (why would anyone want to loop over more values than necessary?)
     def guarded?(guards, stanza)
       guards.find do |guard|
         case guard
@@ -157,8 +164,16 @@ module Blather #:nodoc:
           end
         when Proc
           !guard.call(stanza)
-        else
-          raise "Bad guard: #{guard.inspect}"
+        end
+      end
+    end
+
+    def check_guards(guards)
+      guards.each do |guard|
+        case guard
+        when Array              then guard.each { |g| check_guards([g]) }
+        when Symbol, Proc, Hash then nil
+        else                    raise "Bad guard: #{guard.inspect}"
         end
       end
     end

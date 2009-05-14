@@ -27,7 +27,7 @@ describe 'Blather::DSL' do
   end
 
   it 'stops when shutdown is called' do
-    @client.expects(:stop)
+    @client.expects(:close)
     @dsl.shutdown
   end
 

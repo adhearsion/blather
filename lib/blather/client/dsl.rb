@@ -19,7 +19,7 @@ module Blather
     # Shutdown the connection.
     # Flushes the write buffer then stops EventMachine
     def shutdown
-      client.stop
+      client.close
     end
 
     ##

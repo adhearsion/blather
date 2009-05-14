@@ -11,7 +11,7 @@ describe 'Blather::Stream::Component' do
 
   def mocked_server(times = nil, &block)
     @client ||= mock()
-    @client.stubs(:stopped) unless @client.respond_to?(:stopped)
+    @client.stubs(:unbind) unless @client.respond_to?(:unbind)
     @client.stubs(:jid=) unless @client.respond_to?(:jid=)
 
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
@@ -60,8 +60,8 @@ describe 'Blather::Stream::Component' do
   end
 
   it 'sends stanzas to the client when the stream is ready' do
-    @client = mock(:stream_started)
-    @client.expects(:call).with do |n|
+    @client = mock(:post_init)
+    @client.expects(:receive_data).with do |n|
       EM.stop
       n.kind_of?(Stanza::Message) && @stream.ready?.must_equal(true)
     end

@@ -87,8 +87,8 @@ module Blather
     def unbind # :nodoc:
 #      @keepalive.cancel
       @state = :stopped
-      @client.call @error if @error
-      @client.stopped
+      @client.receive_data @error if @error
+      @client.unbind
     end
 
     ##
@@ -162,7 +162,7 @@ module Blather
     # Called when @state == :ready
     #   Simply passes the stanza to the client
     def ready
-      @client.call @node.to_stanza
+      @client.receive_data @node.to_stanza
     end
 
     def handle_stream_error
@@ -242,7 +242,7 @@ module Blather
         @session = Session.new self, @to
         # on success destroy the session object, let the client know the stream has been started
         # then continue the features dispatch process
-        @session.on_success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.stream_started(self); @state = :features; dispatch }
+        @session.on_success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.post_init; @state = :features; dispatch }
         # on failure end the stream
         @session.on_failure { |err| LOG.debug "SESSION: FAILURE"; @error = err; stop }
 

@@ -6,7 +6,7 @@ class Stream
 
     def receive(node) # :nodoc:
       if node.element_name == 'handshake'
-        @client.stream_started(self)
+        @client.post_init
       else
         super
       end

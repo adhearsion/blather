@@ -60,7 +60,7 @@ Guards act like AND statements. Each condition must be met if the handler is to 
   # Equivalent to saying (stanza.chat? && stanza.body)
   message :chat?, :body
 
-There are 5 different types of guards:
+The different types of guards are:
 
   # Symbol
   #   Checks for a non-false reply to calling the symbol on the stanza
