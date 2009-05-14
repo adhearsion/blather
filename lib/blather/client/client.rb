@@ -30,13 +30,9 @@ module Blather #:nodoc:
 
     def run
       raise 'not setup!' unless setup?
-      trap(:INT) { EM.stop }
-      trap(:TERM) { EM.stop }
       LOG.info "Starting..."
-      EM.run {
-        klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
-        klass.start self, *@setup
-      }
+      klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
+      klass.start self, *@setup
       LOG.info "Exiting..."
     end
 

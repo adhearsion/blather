@@ -64,7 +64,9 @@ at_exit do
       $stdout.reopen log
       $stderr.reopen $stdout
     end
-    client.run
+    trap(:INT) { EM.stop }
+    trap(:TERM) { EM.stop }
+    EM.run { client.run }
   end
 
   if options[:daemonize]
