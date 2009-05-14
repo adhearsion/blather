@@ -93,9 +93,24 @@ The different types of guards are:
   #   Equivalent to stanza.body == 'foo' || stanza.body == 'baz'
   message [{:body => 'foo'}, {:body => 'baz'}]
 
+== On the Command Line:
+
+Default usage is:
+
+  [blather_script] [options] node@domain.com/resource password [host] [port]
+
+Command line options:
+
+  -D, --debug                      Run in debug mode (you will see all XMPP communication)
+  -d, --daemonize                  Daemonize the process
+      --pid=[PID]                  Write the PID to this file
+      --log=[LOG]                  Write to the [LOG] file instead of stdout/stderr
+  -h, --help                       Show this message
+  -v, --version                    Show version
+
+
 = TODO
 
-* Better Documentation
 * Add XPath guard that passes the result to the handler
 * Add Disco the the DSL
 * PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)

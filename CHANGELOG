@@ -1,3 +1,18 @@
+v0.3.1
+  Small changes to the DSL due to handler collisions:
+    "status" -> "set_status"
+    "roster" -> "my_roster"
+  Small changes to the Blather::Client API to keep it feeling more like EM's API:
+    #stream_started -> #post_init
+    #call -> #receive_data
+    #stop -> #close
+    #stopped -> #unbind
+  Refactored some of the code internal to Blather::Client
+  Added command line option handler to default use method (see README)
+  require libxml-ruby >=1.1.2 (1.1.3 has an inconsistent malloc err on OS X 10.5)
+  complete specs
+  add single process ping-pong example
+
 v0.3.0
   Remove autotest discover.rb (created all sorts of conflicts)
   Added Hash with Array guard

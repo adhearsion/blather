@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{blather}
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2009-05-12}
+  s.date = %q{2009-05-14}
   s.email = %q{sprsquish@gmail.com}
   s.extensions = ["Rakefile"]
   s.extra_rdoc_files = [
@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.files = [
     "examples/drb_client.rb",
     "examples/echo.rb",
+    "examples/ping_pong.rb",
     "examples/print_heirarchy.rb",
     "ext/extconf.rb",
     "ext/push_parser.c",
@@ -61,6 +62,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.3}
   s.summary = %q{An evented XMPP library written on EventMachine and libxml-ruby}
   s.test_files = [
+    "spec/blather/client/client_spec.rb",
+    "spec/blather/client/dsl_spec.rb",
     "spec/blather/core_ext/libxml_spec.rb",
     "spec/blather/errors/sasl_error_spec.rb",
     "spec/blather/errors/stanza_error_spec.rb",
@@ -91,13 +94,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<eventmachine>, [">= 0.12.6"])
-      s.add_runtime_dependency(%q<libxml-ruby>, [">= 1.1.3"])
+      s.add_runtime_dependency(%q<libxml-ruby>, [">= 1.1.2"])
     else
       s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
-      s.add_dependency(%q<libxml-ruby>, [">= 1.1.3"])
+      s.add_dependency(%q<libxml-ruby>, [">= 1.1.2"])
     end
   else
     s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
-    s.add_dependency(%q<libxml-ruby>, [">= 1.1.3"])
+    s.add_dependency(%q<libxml-ruby>, [">= 1.1.2"])
   end
 end
