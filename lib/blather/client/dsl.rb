@@ -36,13 +36,13 @@ module Blather
 
     ##
     # Set current status
-    def status(state = nil, msg = nil)
+    def set_status(state = nil, msg = nil)
       client.status = state, msg
     end
 
     ##
     # Direct access to the roster
-    def roster
+    def my_roster
       client.roster
     end
 
