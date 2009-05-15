@@ -5,7 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = 'blather'
-    gem.summary = 'An evented XMPP library written on EventMachine and libxml-ruby'
+    gem.summary = 'Simpler XMPP'
+    gem.description = 'An evented XMPP library written on EventMachine and libxml-ruby'
 
     gem.email = 'sprsquish@gmail.com'
     gem.homepage = 'http://github.com/sprsquish/blather'
@@ -71,6 +72,32 @@ rescue LoadError
   task :rdoc do
     abort "Hanna is not available. In order to use the Hanna, you must: sudo gem install mislav-hanna"
   end
+end
+
+begin
+  require 'rake/contrib/sshpublisher'
+  namespace :rubyforge do
+    
+    desc "Release gem and RDoc documentation to RubyForge"
+    task :release => ["rubyforge:release:gem", "rubyforge:release:docs"]
+    
+    namespace :release do
+      desc "Publish RDoc to RubyForge."
+      task :docs => [:rdoc] do
+        config = YAML.load(
+            File.read(File.expand_path('~/.rubyforge/user-config.yml'))
+        )
+
+        host = "#{config['username']}@rubyforge.org"
+        remote_dir = "/var/www/gforge-projects/squishtech/blather"
+        local_dir = 'rdoc'
+
+        Rake::SshDirPublisher.new(host, remote_dir, local_dir).upload
+      end
+    end
+  end
+rescue LoadError
+  puts "Rake SshDirPublisher is unavailable or your rubyforge environment is not configured."
 end
 
 MAKE = ENV['MAKE'] || (RUBY_PLATFORM =~ /mswin/ ? 'nmake' : 'make')

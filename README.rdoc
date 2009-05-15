@@ -10,9 +10,15 @@ An evented XMPP library
 
 == Project Pages
 
+Blather:: https://sprsquish.github.com/blather
+
 GitHub:: https://github.com/sprsquish/blather
 
-RubyForge:: http://rubyforge.org/projects/squishtech/
+GitHub Docs:: http://docs.github.com/sprsquish/blather
+
+RubyForge:: http://rubyforge.org/projects/squishtech
+
+RDocs:: http://squishtech.rubyforge.org/blather/
 
 == Author
 
