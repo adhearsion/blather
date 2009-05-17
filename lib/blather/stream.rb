@@ -103,13 +103,13 @@ module Blather
       end
 
       case @node.element_name
-      when 'stream'
+      when 'stream:stream'
         @state = :ready if @state == :stopped
 
       when 'stream:end'
         stop
 
-      when 'features'
+      when 'stream:features'
         @features = @node.children
         @state = :features
         dispatch

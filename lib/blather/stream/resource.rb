@@ -32,7 +32,7 @@ class Stream # :nodoc:
       LOG.debug "RESOURE NODE #{@node}"
       # ensure this is a response to our original request
       if @id == @node['id']
-        @jid = JID.new @node.find_first('//bind_ns:bind/bind_ns:jid', :bind_ns => 'urn:ietf:params:xml:ns:xmpp-bind').content
+        @jid = JID.new @node.find_first('//bind_ns:bind/jid', :bind_ns => 'urn:ietf:params:xml:ns:xmpp-bind').content
         success @jid
       end
     end

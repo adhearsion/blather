@@ -1,60 +1,74 @@
+require 'nokogiri'
+
 module Blather # :nodoc:
 class Stream # :nodoc:
 
   class Parser # :nodoc:
-    STREAM_REGEX = %r{(/)?stream:stream}.freeze
-    ERROR_REGEX = /^<(stream:[a-z]+)/.freeze
 
     @@debug = !false
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
 
-    include XML::SaxParser::Callbacks
-
     def initialize(receiver)
       @receiver = receiver
       @current = nil
-      @parser = XML::SaxPushParser.new self
+      @parser = Nokogiri::XML::SAX::PushParser.new self
     end
 
     def receive_data(string)
       LOG.debug "PARSING: (#{string})" if @@debug
       @stream_error = string =~ /stream:error/
-      @parser.receive string
+      @parser.write string
+    rescue RuntimeError
+      if $!.message == "Couldn't parse chunk"
+        raise ParseError, $!.message
+      else
+        raise
+      end
     end
 
-    def on_start_element_ns(elem, attrs, prefix, uri, namespaces)
-      LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
+    def start_document
+    end
 
-      e = XMPPNode.new elem
-      attrs.each { |k,v| e.attributes[k] = v if k }
-
-      if @current && (ns = @current.namespaces.find_by_href(uri))
-        e.namespace = ns
-      else
-        e.namespace = {prefix => uri}
+    def start_element(elem, attributes_array)
+      e = XMPPNode.new(elem)
+      key = value = nil
+      attributes_array.each do |item|
+        if key
+          case key
+          when "xmlns"
+            e.namespaces.namespace = XML::Namespace.new(e, nil, item)
+          when /^xmlns:(.*)$/
+            e.namespaces.namespace = XML::Namespace.new(e, $1, item)
+          else
+            e[key] = item
+          end
+          key = nil
+        else
+          key = item
+        end
       end
+      LOG.debug "START ELEM: (#{elem.inspect}, #{attributes_array.inspect})" if @@debug
 
-      if elem == 'stream' && !@stream_error
+      if elem == 'stream:stream' && !@stream_error
         XML::Document.new.root = e
         @receiver.receive e
 
       elsif !@receiver.stopped?
         @current << e  if @current
         @current = e
-
       end
     end
 
-    def on_characters(chars = '')
+    def characters(chars = '')
       LOG.debug "CHARS: #{chars}" if @@debug
       @current << XML::Node.new_text(chars) if @current
     end
 
-    def on_end_element_ns(elem, prefix, uri)
-      LOG.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
+    def end_element(elem)
+      LOG.debug "END ELEM: #{elem.inspect}" if @@debug
 
-      if !@current && "#{prefix}:#{elem}" =~ STREAM_REGEX
+      if !@current && elem == "stream:stream"
         @receiver.receive XMPPNode.new('stream:end')
 
       elsif @current.parent?
@@ -68,8 +82,7 @@ class Stream # :nodoc:
       end
     end
 
-    def on_error(msg)
-      raise ParseError.new(msg.to_s)
+    def end_document
     end
   end #Parser
 
