@@ -25,7 +25,7 @@ class Stream # :nodoc:
     ##
     # Negotiations failed
     def failure
-      super StreamError::TLSFailure.new
+      super TLSFailure.new
     end
   end #TLS
 

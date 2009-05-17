@@ -36,7 +36,6 @@ class Object
   end
 end
 
-include Blather
 include MiniTest
 
 Unit.autorun

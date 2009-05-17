@@ -1,102 +1,103 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
 
-describe 'Blather::Stanza::Presence::Status' do
-  it 'registers itself' do
-    XMPPNode.class_from_registration(:status, nil).must_equal Stanza::Presence::Status
-  end
-
-  it 'can set state on creation' do
-    status = Stanza::Presence::Status.new :away
-    status.state.must_equal :away
-  end
-
-  it 'can set a message on creation' do
-    status = Stanza::Presence::Status.new nil, 'Say hello!'
-    status.message.must_equal 'Say hello!'
-  end
-
-  it 'ensures type is nil or :unavailable' do
-    status = Stanza::Presence::Status.new
-    lambda { status.type = :invalid_type_name }.must_raise(Blather::ArgumentError)
-
-    [nil, :unavailable].each do |valid_type|
-      status.type = valid_type
-      status.type.must_equal valid_type
+module Blather
+  describe 'Blather::Stanza::Presence::Status' do
+    it 'registers itself' do
+      XMPPNode.class_from_registration(:status, nil).must_equal Stanza::Presence::Status
     end
-  end
 
-  it 'ensures state is one of Presence::Status::VALID_STATES' do
-    status = Stanza::Presence::Status.new
-    lambda { status.state = :invalid_type_name }.must_raise(Blather::ArgumentError)
-
-    Stanza::Presence::Status::VALID_STATES.each do |valid_state|
-      status.state = valid_state
-      status.state.must_equal valid_state
+    it 'can set state on creation' do
+      status = Stanza::Presence::Status.new :away
+      status.state.must_equal :away
     end
-  end
 
-  it 'returns :available if state is nil' do
-    Stanza::Presence::Status.new.state.must_equal :available
-  end
+    it 'can set a message on creation' do
+      status = Stanza::Presence::Status.new nil, 'Say hello!'
+      status.message.must_equal 'Say hello!'
+    end
 
-  it 'returns :unavailable if type is :unavailable' do
-    status = Stanza::Presence::Status.new
-    status.type = :unavailable
-    status.state.must_equal :unavailable
-  end
+    it 'ensures type is nil or :unavailable' do
+      status = Stanza::Presence::Status.new
+      lambda { status.type = :invalid_type_name }.must_raise(Blather::ArgumentError)
 
-  it 'ensures priority is not greater than 127' do
-    lambda { Stanza::Presence::Status.new.priority = 128 }.must_raise(Blather::ArgumentError)
-  end
+      [nil, :unavailable].each do |valid_type|
+        status.type = valid_type
+        status.type.must_equal valid_type
+      end
+    end
 
-  it 'ensures priority is not less than -128' do
-    lambda { Stanza::Presence::Status.new.priority = -129 }.must_raise(Blather::ArgumentError)
-  end
+    it 'ensures state is one of Presence::Status::VALID_STATES' do
+      status = Stanza::Presence::Status.new
+      lambda { status.state = :invalid_type_name }.must_raise(Blather::ArgumentError)
 
-  it 'has "attr_accessor" for priority' do
-    status = Stanza::Presence::Status.new
-    status.priority.must_equal 0
+      Stanza::Presence::Status::VALID_STATES.each do |valid_state|
+        status.state = valid_state
+        status.state.must_equal valid_state
+      end
+    end
 
-    status.priority = 10
-    status.children.detect { |n| n.element_name == 'priority' }.wont_be_nil
-    status.priority.must_equal 10
-  end
+    it 'returns :available if state is nil' do
+      Stanza::Presence::Status.new.state.must_equal :available
+    end
 
-  it 'has "attr_accessor" for message' do
-    status = Stanza::Presence::Status.new
-    status.message.must_be_nil
+    it 'returns :unavailable if type is :unavailable' do
+      status = Stanza::Presence::Status.new
+      status.type = :unavailable
+      status.state.must_equal :unavailable
+    end
 
-    status.message = 'new message'
-    status.children.detect { |n| n.element_name == 'status' }.wont_be_nil
-    status.message.must_equal 'new message'
-  end
+    it 'ensures priority is not greater than 127' do
+      lambda { Stanza::Presence::Status.new.priority = 128 }.must_raise(Blather::ArgumentError)
+    end
 
-  it 'must be comparable by priority' do
-    jid = JID.new 'a@b/c'
+    it 'ensures priority is not less than -128' do
+      lambda { Stanza::Presence::Status.new.priority = -129 }.must_raise(Blather::ArgumentError)
+    end
 
-    status1 = Stanza::Presence::Status.new
-    status1.from = jid
+    it 'has "attr_accessor" for priority' do
+      status = Stanza::Presence::Status.new
+      status.priority.must_equal 0
 
-    status2 = Stanza::Presence::Status.new
-    status2.from = jid
+      status.priority = 10
+      status.children.detect { |n| n.element_name == 'priority' }.wont_be_nil
+      status.priority.must_equal 10
+    end
 
-    status1.priority = 1
-    status2.priority = -1
-    (status1 <=> status2).must_equal 1
-    (status2 <=> status1).must_equal -1
+    it 'has "attr_accessor" for message' do
+      status = Stanza::Presence::Status.new
+      status.message.must_be_nil
 
-    status2.priority = 1
-    (status1 <=> status2).must_equal 0
-  end
+      status.message = 'new message'
+      status.children.detect { |n| n.element_name == 'status' }.wont_be_nil
+      status.message.must_equal 'new message'
+    end
 
-  it 'raises an argument error if compared to a status with a different JID' do
-    status1 = Stanza::Presence::Status.new
-    status1.from = 'a@b/c'
+    it 'must be comparable by priority' do
+      jid = JID.new 'a@b/c'
 
-    status2 = Stanza::Presence::Status.new
-    status2.from = 'd@e/f'
+      status1 = Stanza::Presence::Status.new
+      status1.from = jid
 
-    lambda { status1 <=> status2 }.must_raise(Blather::ArgumentError)
+      status2 = Stanza::Presence::Status.new
+      status2.from = jid
+
+      status1.priority = 1
+      status2.priority = -1
+      (status1 <=> status2).must_equal 1
+      (status2 <=> status1).must_equal -1
+
+      status2.priority = 1
+      (status1 <=> status2).must_equal 0
+    end
+
+    it 'raises an argument error if compared to a status with a different JID' do
+      status1 = Stanza::Presence::Status.new
+      status1.from = 'a@b/c'
+
+      status2 = Stanza::Presence::Status.new
+      status2.from = 'd@e/f'
+
+      lambda { status1 <=> status2 }.must_raise(Blather::ArgumentError)
+    end
   end
 end
-
