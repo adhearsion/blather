@@ -59,14 +59,20 @@ push_parser_receive (
   xmlParserCtxtPtr ctxt;
   Data_Get_Struct(rb_iv_get(self, "@__libxml_push_parser"), xmlParserCtxt, ctxt);
 
-  // Chunk through in 4KB chunks so as not to overwhelm the buffers
   int i;
+  // Non-chunking version
+  for (i = 0; i < length; i++) {
+    xmlParseChunk (ctxt, data+i, 1, 0);
+  }
+
+  /* Chunk through in 4KB chunks so as not to overwhelm the buffers
   int chunkSize = length < 4096 ? length : 4096;
   for (i = 0; i < length; i += chunkSize) {
     xmlParseChunk(ctxt, data+i, chunkSize, 0);
   }
   if ((i -= length) > 0)
     xmlParseChunk(ctxt, data+(length-i), i, 0);
+  */
 
   return self;
 }
