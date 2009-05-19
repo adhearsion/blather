@@ -1,8 +1,8 @@
 # Require the necessary files
+require File.join(File.dirname(__FILE__), *%w[.. ext push_parser])
 %w[
   rubygems
   eventmachine
-  ext/push_parser
   xml/libxml
   digest/md5
   logger
