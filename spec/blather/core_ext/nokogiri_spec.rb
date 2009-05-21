@@ -42,4 +42,33 @@ describe 'Nokogiri::XML::Node' do
     attrs['foo'] = 'baz'
     attrs['foo'].must_equal 'baz'
   end
+
+  it 'allows symbols as the path in #xpath' do
+    node = Nokogiri::XML::Node.new('foo', @doc)
+    node.must_respond_to :find
+    @doc.root = node
+    @doc.xpath(:foo).first.wont_be_nil
+    @doc.xpath(:foo).first.must_equal @doc.xpath('/foo').first
+  end
+
+  it 'allows symbols as namespace names in #xpath' do
+    node = Nokogiri::XML::Node.new('foo', @doc)
+    node.namespace = node.add_namespace('bar', 'baz')
+    @doc.root = node
+    node.xpath('/bar:foo', :bar => 'baz').first.wont_be_nil
+  end
+
+  it 'aliases #xpath to #find' do
+    node = Nokogiri::XML::Node.new('foo', @doc)
+    node.must_respond_to :find
+    @doc.root = node
+    node.find('/foo').first.wont_be_nil
+  end
+
+  it 'has a helper function #find_first' do
+    node = Nokogiri::XML::Node.new('foo', @doc)
+    node.must_respond_to :find
+    @doc.root = node
+    node.find_first('/foo').must_equal node.find('/foo').first
+  end
 end
