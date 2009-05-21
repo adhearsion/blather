@@ -7,7 +7,7 @@
   logger
 
   blather/core_ext/active_support
-  blather/core_ext/libxml
+  blather/core_ext/nokogiri
 
   blather/errors
   blather/errors/sasl_error
@@ -40,8 +40,6 @@
   blather/stream/session
   blather/stream/tls
 ].each { |r| require r }
-
-XML.indent_tree_output = false
 
 module Blather
   LOG = Logger.new($stdout) unless const_defined?(:LOG)

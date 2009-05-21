@@ -4,7 +4,7 @@ module Blather
   # Base XML Node
   # All XML classes subclass XMPPNode
   # it allows the addition of helpers
-  class XMPPNode < XML::Node
+  class XMPPNode < Nokogiri::XML::Node
     BASE_NAMES = %w[presence message iq].freeze
 
     @@registrations = {}
