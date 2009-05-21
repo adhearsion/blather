@@ -2,8 +2,7 @@
 %w[
   rubygems
   eventmachine
-  ext/push_parser
-  xml/libxml
+  nokogiri
   digest/md5
   logger
 
