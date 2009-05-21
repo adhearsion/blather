@@ -9,8 +9,8 @@ module Blather
 
     @@registrations = {}
 
-    class_inheritable_accessor  :ns,
-                                :name
+    class_inheritable_accessor  :registered_ns,
+                                :registered_name
 
     ##
     # Lets a subclass register itself
@@ -19,9 +19,9 @@ module Blather
     # up the class name of the object to instantiate when a new
     # stanza is received
     def self.register(name, ns = nil)
-      self.name = name.to_s
-      self.ns = ns
-      @@registrations[[self.name, self.ns]] = self
+      self.registered_name = name.to_s
+      self.registered_ns = ns
+      @@registrations[[self.registered_name, self.registered_ns]] = self
     end
 
     ##
@@ -36,7 +36,7 @@ module Blather
     # of that class and imports all the <tt>node</tt>'s attributes
     # and children into it.
     def self.import(node)
-      klass = class_from_registration(node.element_name, node.namespace)
+      klass = class_from_registration(node.element_name, node.namespace_href)
       if klass && klass != self
         klass.import(node)
       else
@@ -64,7 +64,7 @@ module Blather
       syms.flatten.each do |sym|
         class_eval(<<-END, __FILE__, __LINE__)
           def #{sym}
-            attributes[:#{sym}]#{".to_sym unless attributes[:#{sym}].blank?" unless opts[:to_sym] == false}
+            self[:#{sym}]#{".to_sym unless self[:#{sym}].blank?" unless opts[:to_sym] == false}
           end
         END
       end
@@ -85,7 +85,7 @@ module Blather
         next if sym.is_a?(Hash)
         class_eval(<<-END, __FILE__, __LINE__)
           def #{sym}=(value)
-            attributes[:#{sym}] = value
+            self[:#{sym}] = value
           end
         END
       end
@@ -112,12 +112,12 @@ module Blather
 
     ##
     # Automatically sets the namespace registered by the subclass
-    def initialize(name = nil, content = nil)
-      name ||= self.class.name
-      content = content.to_s if content
+    def self.new(name = nil, doc = Nokogiri::XML::Document.new)
+      name ||= self.registered_name
 
-      super name.to_s, content
-      self.namespace = self.class.ns unless BASE_NAMES.include?(name.to_s)
+      node = super name.to_s, doc
+      node.namespace = self.registered_ns unless BASE_NAMES.include?(registered_name.to_s)
+      node
     end
 
     ##
@@ -128,33 +128,35 @@ module Blather
 
     def namespace=(namespaces)
       case namespaces
-      when XML::Namespace
-        self.namespaces.namespace = namespaces
+      when Nokogiri::XML::Namespace
+        self.namespace = namespaces
       when String
-        self.namespaces.namespace = XML::Namespace.new(self, nil, namespaces)
+        self.add_namespace nil, namespaces
       when Hash
+        if ns = namespaces.delete(nil)
+          self.add_namespace nil, ns
+        end
         namespaces.each do |p, n|
-          self.namespaces.namespace = XML::Namespace.new(self, p, n)
+          ns = self.add_namespace p, n
+          self.namespace = ns
         end
       end
     end
 
-    def namespace(prefix = nil)
-      (ns = namespaces.find_by_prefix(prefix)) ? ns.href : nil
+    def namespace_href
+      namespace.href if namespace
     end
 
     ##
     # Remove a child with the name and (optionally) namespace given
     def remove_child(name, ns = nil)
-      name = name.to_s
-      self.detect { |n| n.remove! if n.element_name == name && (!ns || n.namespace == ns) }
+      xpath(name, ns).first.remove
     end
 
     ##
     # Remove all children with a given name
     def remove_children(name)
-      name = name.to_s
-      self.find(name).each { |n| n.remove! }
+      xpath("./*[local-name()='#{name}']").remove
     end
 
     ##
@@ -164,41 +166,21 @@ module Blather
       (child = self.detect { |n| n.element_name == name }) ? child.content : nil
     end
 
-    ##
-    # Create a copy
-    def copy(deep = true)
-      copy = self.class.new.inherit(self)
-      copy.element_name = self.element_name
-      copy
-    end
+    alias_method :copy, :dup
 
     ##
     # Inherit all of <tt>stanza</tt>'s attributes and children
     def inherit(stanza)
       inherit_attrs stanza.attributes
-      stanza.children.each { |c| self << c.copy(true) }
+      stanza.children.each { |c| self << c.dup }
       self
     end
 
     ##
     # Inherit only <tt>stanza</tt>'s attributes
     def inherit_attrs(attrs)
-      attrs.each  { |a| attributes[a.name] = a.value }
+      attrs.each  { |name, value| self[name] = value }
       self
-    end
-
-    ##
-    # Turn itself into an XML string and remove all whitespace between nodes
-    def to_xml
-      # TODO: Fix this for HTML nodes (and any other that might require whitespace)
-      to_s.gsub(">\n<", '><')
-    end
-
-    ##
-    # Override #find to work when a node isn't attached to a document
-    def find(what, nslist = nil)
-      what = what.to_s
-      (self.doc ? super(what, nslist) : select { |i| i.element_name == what })
     end
   end #XMPPNode
 
