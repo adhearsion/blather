@@ -783,6 +783,38 @@ describe 'Blather::Stream::Client' do
     end
   end
 
+  it 'sends the client a warning on parse warning' do
+    @client = mock()
+    @client.expects(:receive_data).with do |v|
+      EM.stop
+      v.must_be_kind_of ParseWarning
+      v.message.must_match(/vcard\-temp/)
+    end
+    state = nil
+    mocked_server(2) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        server.send_data <<-XML
+          <iq xmlns="jabber:client" to="utterance.localhost" type="get" id="2590">
+            <vCard xmlns="vcard-temp" />
+          </iq>
+        XML
+        true
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
   it 'sends client an error on parse error' do
     @client = mock()
     @client.expects(:receive_data).with do |v|
@@ -804,7 +836,7 @@ describe 'Blather::Stream::Client' do
 
       when :parse_error
         EM.stop
-        val.must_equal "</stream:stream>"
+        val.must_equal "<stream:error><xml-not-well-formed xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error></stream:stream>"
 
       else
         EM.stop

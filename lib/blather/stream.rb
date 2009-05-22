@@ -77,8 +77,11 @@ module Blather
       LOG.debug "<< #{data}"
       @parser.receive_data data
 
+    rescue ParseWarning => e
+      @client.receive_data e
     rescue ParseError => e
       @error = e
+      send "<stream:error><xml-not-well-formed xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>"
       stop
     end
 

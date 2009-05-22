@@ -81,24 +81,6 @@ push_parser_receive (
  CALLBACKS
 **********/
 static void
-push_parser_start_document_callback (
-  void *ctx)
-{
-  VALUE handler = (VALUE) ctx;
-  if (handler != Qnil)
-    rb_funcall (handler, rb_intern("on_start_document"), 0);
-}
-
-static void
-push_parser_end_document_callback (
-  void *ctx)
-{
-  VALUE handler = (VALUE) ctx;
-  if (handler != Qnil)
-    rb_funcall (handler, rb_intern("on_end_document"), 0);
-}
-
-static void
 push_parser_start_element_ns_callback (
   void * ctx,
   const xmlChar * localname,
@@ -177,16 +159,6 @@ push_parser_characters_callback (
     rb_funcall (handler, rb_intern("on_characters"), 1, rb_str_new(chars, len));
 }
 
-static void
-push_parser_structured_error_callback (
-  void *ctx,
-  xmlErrorPtr error)
-{
-  VALUE handler = (VALUE) ctx;
-  if (handler != Qnil)
-    rb_funcall (handler, rb_intern("on_error"), 1, rb_str_new2((const char*)error->message));
-}
-
 xmlSAXHandler saxHandler = {
   0, //internalSubset
   0, //isStandalone
@@ -200,8 +172,8 @@ xmlSAXHandler saxHandler = {
   0, //elementDecl
   0, //unparsedEntityDecl
   0, //setDocumentLocator
-  (startDocumentSAXFunc) push_parser_start_document_callback,
-  (endDocumentSAXFunc) push_parser_end_document_callback,
+  0, //(startDocument)
+  0, //(endDocument)
   0, //startElement
   0, //endElement
   0, //reference
@@ -210,7 +182,7 @@ xmlSAXHandler saxHandler = {
   0, //processingInstruction
   0, //comment
   0, //warning
-  (errorSAXFunc) push_parser_structured_error_callback,
+  0, //error
   0, //fatalError
   0, //getParameterEntity
   0, //cdataBlock
@@ -219,7 +191,7 @@ xmlSAXHandler saxHandler = {
   0, //_private
   (startElementNsSAX2Func) push_parser_start_element_ns_callback,
   (endElementNsSAX2Func) push_parser_end_element_ns_callback,
-  (xmlStructuredErrorFunc) push_parser_structured_error_callback
+  0 // LibXML handles this globally
 };
 
 void

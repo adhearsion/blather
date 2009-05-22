@@ -9,8 +9,6 @@ class Stream # :nodoc:
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
 
-    include XML::SaxParser::Callbacks
-
     def initialize(receiver)
       @receiver = receiver
       @current = nil
@@ -68,8 +66,14 @@ class Stream # :nodoc:
       end
     end
 
-    def on_error(msg)
-      raise ParseError.new(msg.to_s)
+    def on_error(err)
+      err_klass = case err.level
+      when XML::Error::WARNING
+        ParseWarning
+      when XML::Error::ERROR, XML::Error::FATAL
+        ParseError
+      end
+      raise err_klass.new(err)
     end
   end #Parser
 
