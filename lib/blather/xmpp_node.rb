@@ -126,10 +126,11 @@ module Blather
       self.class.import self
     end
 
+    alias_method :nokogiri_namespace=, :namespace=
     def namespace=(namespaces)
       case namespaces
       when Nokogiri::XML::Namespace
-        self.namespace = namespaces
+        self.nokogiri_namespace = namespaces
       when String
         self.add_namespace nil, namespaces
       when Hash
@@ -138,7 +139,7 @@ module Blather
         end
         namespaces.each do |p, n|
           ns = self.add_namespace p, n
-          self.namespace = ns
+          self.nokogiri_namespace = ns
         end
       end
     end
