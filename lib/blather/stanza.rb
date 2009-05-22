@@ -44,11 +44,10 @@ module Blather
     ##
     # Automatically set the stanza's ID
     # and attach it to a document so XPath searching works
-    def initialize(name = nil)
-      super
-      XML::Document.new.root = self
-      self.name = name.to_s if name
-      self.id = self.class.next_id
+    def self.new(name = nil)
+      node = super
+      node.name = name.to_s if name
+      node
     end
 
     ##
@@ -61,7 +60,7 @@ module Blather
     # Copies itself then swaps from and to
     # then returns the new stanza
     def reply
-      self.copy(true).reply!
+      self.dup.reply!
     end
 
     ##
@@ -78,13 +77,13 @@ module Blather
     ##
     # returns:: JID created from the "to" value of the stanza
     def to
-      JID.new(attributes[:to]) if attributes[:to]
+      JID.new(self[:to]) if self[:to]
     end
 
     ##
     # returns:: JID created from the "from" value of the stanza
     def from
-      JID.new(attributes[:from]) if attributes[:from]
+      JID.new(self[:from]) if self[:from]
     end
 
     attribute_accessor :type

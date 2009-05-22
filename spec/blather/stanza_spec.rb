@@ -11,14 +11,6 @@ module Blather
       s.element_name.must_equal 'foo'
     end
 
-    it 'sets the ID when created' do
-      Stanza.new('message').id.wont_be_nil
-    end
-
-    it 'sets the document when created' do
-      Stanza.new('message').doc.wont_be_nil
-    end
-
     it 'provides an #error? helper' do
       s = Stanza.new('message')
       s.error?.must_equal false
@@ -50,48 +42,48 @@ module Blather
 
     it 'provides "attr_accessor" for id' do
       s = Stanza.new('message')
-      s.id.wont_be_nil
-      s['id'].wont_be_nil
-
-      s.id = nil
       s.id.must_be_nil
-      s['id'].must_be_nil
+      s[:id].must_be_nil
+
+      s.id = '123'
+      s.id.must_equal '123'
+      s[:id].must_equal '123'
     end
 
     it 'provides "attr_accessor" for to' do
       s = Stanza.new('message')
       s.to.must_be_nil
-      s['to'].must_be_nil
+      s[:to].must_be_nil
 
       s.to = JID.new('n@d/r')
       s.to.wont_be_nil
       s.to.must_be_kind_of JID
 
-      s['to'].wont_be_nil
-      s['to'].must_equal 'n@d/r'
+      s[:to].wont_be_nil
+      s[:to].must_equal 'n@d/r'
     end
 
     it 'provides "attr_accessor" for from' do
       s = Stanza.new('message')
       s.from.must_be_nil
-      s['from'].must_be_nil
+      s[:from].must_be_nil
 
       s.from = JID.new('n@d/r')
       s.from.wont_be_nil
       s.from.must_be_kind_of JID
 
-      s['from'].wont_be_nil
-      s['from'].must_equal 'n@d/r'
+      s[:from].wont_be_nil
+      s[:from].must_equal 'n@d/r'
     end
 
     it 'provides "attr_accessor" for type' do
       s = Stanza.new('message')
       s.type.must_be_nil
-      s['type'].must_be_nil
+      s[:type].must_be_nil
 
       s.type = 'testing'
       s.type.wont_be_nil
-      s['type'].wont_be_nil
+      s[:type].wont_be_nil
     end
 
     it 'can be converted into an error by error name' do
