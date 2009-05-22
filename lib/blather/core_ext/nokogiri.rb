@@ -8,7 +8,7 @@ module XML
     alias_method :attr_set, :[]=
     def []=(name, value)
       name = name.to_s
-      value.nil? ? remove_attribute(name) : attr_set(name, value)
+      value.nil? ? remove_attribute(name) : attr_set(name, value.to_s)
     end
 
     alias_method :attr_get, :[]

@@ -25,6 +25,15 @@ describe 'Nokogiri::XML::Node' do
     attrs[:foo].must_equal 'bar'
   end
 
+  it 'ensures a string is passed to the attribute setter' do
+    attrs = Nokogiri::XML::Node.new('foo', @doc)
+    attrs[:foo] = 1
+    attrs[:foo].must_equal '1'
+
+    attrs[:jid] = Blather::JID.new('n@d/r')
+    attrs[:jid].must_equal 'n@d/r'
+  end
+
   it 'removes an attribute when set to nil' do
     attrs = Nokogiri::XML::Node.new('foo', @doc)
     attrs['foo'] = 'bar'
