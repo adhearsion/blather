@@ -1,6 +1,7 @@
 module Blather
 
   class Stream < EventMachine::Connection
+    STREAM_NS = 'http://etherx.jabber.org/streams'
     ##
     # Start the stream between client and server
     #   [client] must be an object that will respond to #call and #jid=
@@ -103,7 +104,7 @@ module Blather
       end
 
       case @node.element_name
-      when 'stream:stream'
+      when 'stream'
         @state = :ready if @state == :stopped
 
       when 'stream:end'

@@ -64,7 +64,7 @@ module Blather
       @client = mock(:post_init)
       @client.expects(:receive_data).with do |n|
         EM.stop
-        n.kind_of?(Stanza::Message) && @stream.ready?.must_equal(true)
+        n.kind_of?(XMPPNode) && @stream.ready?.must_equal(true)
       end
 
       state = nil
