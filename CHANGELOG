@@ -1,3 +1,16 @@
+v0.3.4
+  Remove unneeded functions from the push parser.
+  Create a ParseWarning error that doesn't kill the stream.
+  When a parse error comes in the reply should let the other side know it screwed up before dying.
+  Add the LibXML::XML::Error node to the ParseError/ParseWarning objects.
+
+v0.3.3
+  Fix the load error related to not pushing Blather's dir into the load path
+
+v0.3.2
+  Switch the push parser from chunking to streaming.
+  Don't push Blather's dir into the load paths
+
 v0.3.1
   Small changes to the DSL due to handler collisions:
     "status" -> "set_status"
