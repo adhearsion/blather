@@ -30,7 +30,7 @@ module Blather
 
     it 'creates a Status object when importing a node with type == "unavailable"' do
       n = XMPPNode.new
-      n.attributes[:type] = :unavailable
+      n[:type] = :unavailable
       s = Stanza::Presence.import(n)
       s.must_be_kind_of Stanza::Presence::Status
       s.state.must_equal :unavailable
@@ -38,7 +38,7 @@ module Blather
 
     it 'creates a Subscription object when importing a node with type == "subscribe"' do
       n = XMPPNode.new
-      n.attributes[:type] = :subscribe
+      n[:type] = :subscribe
       s = Stanza::Presence.import(n)
       s.must_be_kind_of Stanza::Presence::Subscription
       s.type.must_equal :subscribe
@@ -46,7 +46,7 @@ module Blather
 
     it 'creates a Presence object when importing a node with type equal to something unkown' do
       n = XMPPNode.new
-      n.attributes[:type] = :foo
+      n[:type] = :foo
       s = Stanza::Presence.import(n)
       s.must_be_kind_of Stanza::Presence
       s.type.must_equal :foo

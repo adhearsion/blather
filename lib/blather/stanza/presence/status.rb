@@ -9,10 +9,11 @@ class Presence
 
     register :status, :status
 
-    def initialize(state = nil, message = nil)
-      super()
-      self.state = state
-      self.message = message
+    def self.new(state = nil, message = nil)
+      node = super()
+      node.state = state
+      node.message = message
+      node
     end
 
     ##
@@ -29,8 +30,7 @@ class Presence
       state = nil if state == :available
       raise ArgumentError, "Invalid Status (#{state}), use: #{VALID_STATES*' '}" if state && !VALID_STATES.include?(state)
 
-      remove_child :show
-      self << XMPPNode.new('show', state) if state
+      set_content_for :show, state
     end
 
     ##
@@ -43,23 +43,13 @@ class Presence
     # Ensure priority is between -128 and 127
     def priority=(new_priority)
       raise ArgumentError, 'Priority must be between -128 and +127' if new_priority && !(-128..127).include?(new_priority.to_i)
-
-      remove_child :priority
-      self << XMPPNode.new('priority', new_priority) if new_priority
+      set_content_for :priority, new_priority
+      
     end
 
-    def priority
-      content_from(:priority).to_i
-    end
+    content_attr_reader :priority, :to_i
 
-    def message=(msg)
-      remove_child :status
-      self << XMPPNode.new('status', msg) if msg
-    end
-
-    def message
-      content_from :status
-    end
+    content_attr_accessor :message, nil, :status
 
     ##
     # Compare status based on priority

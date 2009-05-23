@@ -5,10 +5,11 @@ class Presence
   class Subscription < Presence
     register :subscription, :subscription
 
-    def initialize(to = nil, type = nil)
-      super()
-      self.to = to
-      self.type = type
+    def self.new(to = nil, type = nil)
+      node = super()
+      node.to = to
+      node.type = type
+      node
     end
 
     def inherit(node)

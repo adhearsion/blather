@@ -75,13 +75,13 @@ module Blather
 
     it "will inherit only another node's attributes" do
       inheritable = XMPPNode.new 'foo'
-      inheritable.attributes[:bar] = 'baz'
+      inheritable[:bar] = 'baz'
 
       sub = Stanza::Presence::Subscription.new
       sub.must_respond_to :inherit
 
       sub.inherit inheritable
-      sub.attributes[:bar].must_equal 'baz'
+      sub[:bar].must_equal 'baz'
     end
   end
 end
