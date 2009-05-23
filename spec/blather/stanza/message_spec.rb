@@ -9,31 +9,31 @@ module Blather
     it 'provides "attr_accessor" for body' do
       s = Stanza::Message.new
       s.body.must_be_nil
-      s.detect { |n| n.element_name == 'body' }.must_be_nil
+      s.xpath('body').must_be_empty
 
       s.body = 'test message'
       s.body.wont_be_nil
-      s.detect { |n| n.element_name == 'body' }.wont_be_nil
+      s.xpath('body').wont_be_empty
     end
 
     it 'provides "attr_accessor" for subject' do
       s = Stanza::Message.new
       s.subject.must_be_nil
-      s.detect { |n| n.element_name == 'subject' }.must_be_nil
+      s.xpath('subject').must_be_empty
 
       s.subject = 'test subject'
       s.subject.wont_be_nil
-      s.detect { |n| n.element_name == 'subject' }.wont_be_nil
+      s.xpath('subject').wont_be_empty
     end
 
     it 'provides "attr_accessor" for thread' do
       s = Stanza::Message.new
       s.thread.must_be_nil
-      s.detect { |n| n.element_name == 'thread' }.must_be_nil
+      s.xpath('thread').must_be_empty
 
       s.thread = 1234
       s.thread.wont_be_nil
-      s.detect { |n| n.element_name == 'thread' }.wont_be_nil
+      s.xpath('thread').wont_be_empty
     end
 
     it 'ensures type is one of Stanza::Message::VALID_TYPES' do
