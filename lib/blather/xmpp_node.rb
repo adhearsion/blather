@@ -131,7 +131,7 @@ module Blather
     #   n.id == 1000
     def self.content_attr_reader(method, conversion = nil, node = nil)
       node ||= method
-      conversion = "val.#{conversion} if val" if conversion
+      conversion = "val.#{conversion} if val.respond_to?(:#{conversion})" if conversion
       class_eval(<<-END, __FILE__, __LINE__)
         def #{method}
           val = content_from :#{node}
