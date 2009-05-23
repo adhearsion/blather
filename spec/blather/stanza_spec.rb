@@ -6,6 +6,29 @@ module Blather
       proc { Blather::Stanza.next_id }.must_change 'Blather::Stanza.next_id'
     end
 
+    it 'provides a handler registration mechanism' do
+      class Registration < Stanza; register :handler_test, :handler, 'test:namespace'; end
+      Registration.handler_heirarchy.must_include :handler_test
+      Stanza.handler_list.must_include :handler_test
+    end
+
+    it 'can register based on handler' do
+      class RegisterHandler < Stanza; register :register_handler; end
+      Stanza.class_from_registration(:register_handler, nil).must_equal RegisterHandler
+    end
+
+    it 'can register based on given name' do
+      class RegisterName < Stanza; register :handler, :registered_name; end
+      Stanza.class_from_registration(:registered_name, nil).must_equal RegisterName
+    end
+
+    it 'can register subclass handlers' do
+      class SuperClassRegister < Stanza; register :super_class; end
+      class SubClassRegister < SuperClassRegister; register :sub_class; end
+      SuperClassRegister.handler_heirarchy.wont_include :sub_class
+      SubClassRegister.handler_heirarchy.must_include :super_class
+    end
+
     it 'can import a node' do
       s = Stanza.import XMPPNode.new('foo')
       s.element_name.must_equal 'foo'
