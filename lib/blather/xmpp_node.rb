@@ -55,16 +55,18 @@ module Blather
     #   end
     #
     #   n = Node.new
-    #   n.attributes[:type] = 'foo'
+    #   n[:type] = 'foo'
     #   n.type == :foo
-    #   n.attributes[:name] = 'bar'
+    #   n[:name] = 'bar'
     #   n.name == 'bar'
     def self.attribute_reader(*syms)
       opts = syms.last.is_a?(Hash) ? syms.pop : {}
+      convert_str = "val.#{opts[:call]} if val" if opts[:call]
       syms.flatten.each do |sym|
         class_eval(<<-END, __FILE__, __LINE__)
           def #{sym}
-            self[:#{sym}]#{".to_sym unless self[:#{sym}].blank?" unless opts[:to_sym] == false}
+            val = self[:#{sym}]
+            #{convert_str}
           end
         END
       end
@@ -79,7 +81,7 @@ module Blather
     #
     #   n = Node.new
     #   n.type = 'foo'
-    #   n.attributes[:type] == 'foo'
+    #   n[:type] == 'foo'
     def self.attribute_writer(*syms)
       syms.flatten.each do |sym|
         next if sym.is_a?(Hash)
@@ -108,6 +110,65 @@ module Blather
     def self.attribute_accessor(*syms)
       attribute_reader *syms
       attribute_writer *syms
+    end
+
+    ##
+    # Provides a content reader helper that returns the content of a node
+    # +method+ is the method to create
+    # +conversion+ is a method to call on the content before sending it back
+    # +node+ is the name of the content node (this defaults to the method name)
+    #
+    #   class Node
+    #     content_attr_reader :body
+    #     content_attr_reader :type, :to_sym
+    #     content_attr_reader :id, :to_i, :identity
+    #   end
+    #
+    #   n = Node.new 'foo'
+    #   n.to_s == "<foo><body>foobarbaz</body><type>error</type><identity>1000</identity></foo>"
+    #   n.body == 'foobarbaz'
+    #   n.type == :error
+    #   n.id == 1000
+    def self.content_attr_reader(method, conversion = nil, node = nil)
+      node ||= method
+      conversion = "val.#{conversion} if val" if conversion
+      class_eval(<<-END, __FILE__, __LINE__)
+        def #{method}
+          val = content_from :#{node}
+          #{conversion}
+        end
+      END
+    end
+
+    ##
+    # Provides a content writer helper that creates or updates the content of a node
+    # +method+ is the method to create
+    # +node+ is the name of the node to create (defaults to the method name)
+    #
+    #   class Node
+    #     content_attr_writer :body
+    #     content_attr_writer :id, :identity
+    #   end
+    #
+    #   n = Node.new 'foo'
+    #   n.body = 'thebodytext'
+    #   n.id = 'id-text'
+    #   n.to_s == '<foo><body>thebodytext</body><identity>id-text</identity></foo>'
+    def self.content_attr_writer(method, node = nil)
+      node ||= method
+      class_eval(<<-END, __FILE__, __LINE__)
+        def #{method}=(val)
+          set_content_for :#{node}, val
+        end
+      END
+    end
+
+    ##
+    # Provides a quick way of building +content_attr_reader+ and +content_attr_writer+
+    # for the same method and node
+    def self.content_attr_accessor(method, conversion = nil, node = nil)
+      content_attr_reader method, conversion, node
+      content_attr_writer method, node
     end
 
     ##
@@ -151,7 +212,8 @@ module Blather
     ##
     # Remove a child with the name and (optionally) namespace given
     def remove_child(name, ns = nil)
-      xpath(name, ns).first.remove
+      child = xpath(name, ns).first
+      child.remove if child
     end
 
     ##
@@ -162,9 +224,23 @@ module Blather
 
     ##
     # Pull the content from a child
-    def content_from(name)
-      name = name.to_s
-      (child = self.detect { |n| n.element_name == name }) ? child.content : nil
+    def content_from(name, ns = nil)
+      child = xpath(name, ns).first
+      child.content if child
+    end
+
+    ##
+    # Sets the content for the specified node.
+    # If the node exists it is updated. If not a new node is created
+    # If the node exists and the content is nil, the node will be removed entirely
+    def set_content_for(node, content = nil)
+      if content
+        child = xpath(node).first
+        self << (child = XMPPNode.new(node, self.document)) unless child
+        child.content = content
+      else
+        remove_child node
+      end
     end
 
     alias_method :copy, :dup
