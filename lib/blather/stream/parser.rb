@@ -16,13 +16,13 @@ class Stream # :nodoc:
     end
 
     def receive_data(string)
-      LOG.debug "PARSING: (#{string})" if @@debug
+      Blather.logger.debug "PARSING: (#{string})" if @@debug
       @stream_error = string =~ /stream:error/
       @parser.receive string
     end
 
     def on_start_element_ns(elem, attrs, prefix, uri, namespaces)
-      LOG.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
+      Blather.logger.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
 
       e = XMPPNode.new elem
       attrs.each { |k,v| e.attributes[k] = v if k }
@@ -45,12 +45,12 @@ class Stream # :nodoc:
     end
 
     def on_characters(chars = '')
-      LOG.debug "CHARS: #{chars}" if @@debug
+      Blather.logger.debug "CHARS: #{chars}" if @@debug
       @current << XML::Node.new_text(chars) if @current
     end
 
     def on_end_element_ns(elem, prefix, uri)
-      LOG.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
+      Blather.logger.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if !@current && "#{prefix}:#{elem}" =~ STREAM_REGEX
         @receiver.receive XMPPNode.new('stream:end')
