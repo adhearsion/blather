@@ -10,6 +10,16 @@ module Blather
       n.document.wont_equal @doc
     end
 
+    it 'sets the new document root to the node' do
+      n = XMPPNode.new 'foo'
+      n.document.root.must_equal n
+    end
+
+    it 'does not set the document root if the document is provided' do
+      n = XMPPNode.new 'foo', @doc
+      n.document.root.wont_equal n
+    end
+
     it 'generates a new node with the given document' do
       n = XMPPNode.new 'foo', @doc
       n.element_name.must_equal 'foo'

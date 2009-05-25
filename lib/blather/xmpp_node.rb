@@ -173,10 +173,11 @@ module Blather
 
     ##
     # Automatically sets the namespace registered by the subclass
-    def self.new(name = nil, doc = Nokogiri::XML::Document.new)
+    def self.new(name = nil, doc = nil)
       name ||= self.registered_name
 
-      node = super name.to_s, doc
+      node = super name.to_s, (doc || Nokogiri::XML::Document.new)
+      node.document.root = node unless doc
       node.namespace = self.registered_ns unless BASE_NAMES.include?(name.to_s)
       node
     end
@@ -249,7 +250,10 @@ module Blather
     # Inherit all of <tt>stanza</tt>'s attributes and children
     def inherit(stanza)
       inherit_attrs stanza.attributes
-      stanza.children.each { |c| self << c.dup }
+      stanza.children.each do |c|
+        self << (child = c.dup)
+        child.document = self.document
+      end
       self
     end
 
