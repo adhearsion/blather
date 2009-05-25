@@ -8,11 +8,12 @@ class Stanza
 
     register :message
 
-    def initialize(to = nil, body = nil, type = :chat)
-      super()
-      self.to = to
-      self.type = type
-      self.body = body
+    def self.new(to = nil, body = nil, type = :chat)
+      node = super()
+      node.to = to
+      node.type = type
+      node.body = body
+      node
     end
 
     VALID_TYPES.each do |valid_type|
@@ -26,32 +27,9 @@ class Stanza
       super
     end
 
-    def body=(body)
-      remove_child :body
-      self << XMPPNode.new('body', body) if body
-    end
-
-    def body
-      content_from :body
-    end
-
-    def subject=(subject)
-      remove_child :subject
-      self << XMPPNode.new('subject', subject) if subject
-    end
-
-    def subject
-      content_from :subject
-    end
-
-    def thread=(thread)
-      remove_child :thread
-      self << XMPPNode.new('thread', thread) if thread
-    end
-
-    def thread
-      content_from :thread
-    end
+    content_attr_accessor :body
+    content_attr_accessor :subject
+    content_attr_accessor :thread
   end
 
 end #Stanza

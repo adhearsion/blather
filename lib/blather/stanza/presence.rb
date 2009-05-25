@@ -24,7 +24,7 @@ class Stanza
 
     ##
     # Ensure element_name is "presence" for all subclasses
-    def initialize
+    def self.new
       super :presence
     end
 

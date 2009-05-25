@@ -3,12 +3,12 @@ require File.join(File.dirname(__FILE__), *%w[.. ext push_parser])
 %w[
   rubygems
   eventmachine
-  xml/libxml
+  nokogiri
   digest/md5
   logger
 
   blather/core_ext/active_support
-  blather/core_ext/libxml
+  blather/core_ext/nokogiri
 
   blather/errors
   blather/errors/sasl_error
@@ -46,8 +46,6 @@ require File.join(File.dirname(__FILE__), *%w[.. ext push_parser])
   blather/stream/session
   blather/stream/tls
 ].each { |r| require r }
-
-XML.indent_tree_output = false
 
 module Blather
   LOG = Logger.new($stdout) unless const_defined?(:LOG)

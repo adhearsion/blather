@@ -11,7 +11,7 @@ class Stream
         super
       end
 
-      if node.namespaces.find_by_href('http://etherx.jabber.org/streams') && node.find_first('/stream:stream[not(stream:error)]')
+      if node.document.find_first('/stream:stream[not(stream:error)]', :xmlns => NAMESPACE, :stream => STREAM_NS)
         send("<handshake>#{Digest::SHA1.hexdigest(@node['id']+@pass)}</handshake>")
       end
     end
@@ -23,7 +23,7 @@ class Stream
         <stream:stream
           to='#{@jid}'
           xmlns='#{NAMESPACE}'
-          xmlns:stream='http://etherx.jabber.org/streams'
+          xmlns:stream='#{STREAM_NS}'
         >
       STREAM
       send start_stream.gsub(/\s+/, ' ')

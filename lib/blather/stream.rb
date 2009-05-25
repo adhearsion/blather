@@ -1,6 +1,7 @@
 module Blather
 
   class Stream < EventMachine::Connection
+    STREAM_NS = 'http://etherx.jabber.org/streams'
     ##
     # Start the stream between client and server
     #   [client] must be an object that will respond to #call and #jid=
@@ -177,7 +178,7 @@ module Blather
     def features
       feature = @features.first
       LOG.debug "FEATURE: #{feature}"
-      @state = case feature ? feature.namespaces.default.href : nil
+      @state = case feature ? feature.namespace.href : nil
       when 'urn:ietf:params:xml:ns:xmpp-tls'      then :establish_tls
       when 'urn:ietf:params:xml:ns:xmpp-sasl'     then :authenticate_sasl
       when 'urn:ietf:params:xml:ns:xmpp-bind'     then :bind_resource

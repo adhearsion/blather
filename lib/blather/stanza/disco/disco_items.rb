@@ -4,47 +4,58 @@ class Stanza
   class DiscoItems < Disco
     register :disco_items, nil, 'http://jabber.org/protocol/disco#items'
 
-    def initialize(type = nil, node = nil, items = [])
-      super type
-      self.node = node
-      [items].flatten.each do |item|
-        query << (item.is_a?(Item) ? item : Item.new(item[:jid], item[:node], item[:name]))
-      end
+    def self.new(type = nil, node = nil, items = [])
+      new_node = super type
+      new_node.node = node
+      [items].flatten.each { |item| new_node.query << Item.new(item) }
+      new_node
     end
 
     def items
-      items = query.find('item')
-      items = query.find('query_ns:item', :query_ns => self.class.ns) if items.empty?
-      items.map { |i| Item.new i }
+      query.find('//query_ns:item', :query_ns => self.class.registered_ns).map { |i| Item.new i }
     end
 
     def node=(node)
-      query.attributes[:node] = node
+      query[:node] = node
     end
 
     def node
-      query.attributes[:node]
+      query[:node]
     end
 
     class Item < XMPPNode
-      def initialize(jid, node = nil, name = nil)
-        super :item
+      def self.new(jid, node = nil, name = nil)
+        new_node = super :item
 
-        if jid.is_a?(XML::Node)
-          self.inherit jid
+        case jid
+        when Nokogiri::XML::Node
+          new_node.inherit jid
+        when Hash
+          new_node.jid = jid[:jid]
+          new_node.node = jid[:node]
+          new_node.name = jid[:name]
         else
-          self.jid = jid
-          self.node = node
-          self.name = name
+          new_node.jid = jid
+          new_node.node = node
+          new_node.name = name
         end
+        new_node
       end
 
       def jid
-        (j = attributes[:jid]) ? JID.new(j) : nil
+        (j = self[:jid]) ? JID.new(j) : nil
       end
       attribute_writer :jid
 
-      attribute_accessor :node, :name, :to_sym => false      
+      attribute_accessor :node, :name
+
+      def eql?(o)
+        raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)
+        o.jid == self.jid &&
+        o.node == self.node &&
+        o.name == self.name
+      end
+      alias_method :==, :eql?
     end
   end
 

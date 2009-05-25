@@ -36,7 +36,10 @@ class Object
   end
 end
 
-include Blather
 include MiniTest
+
+def parse_stanza(xml)
+  Nokogiri::XML.parse xml
+end
 
 Unit.autorun

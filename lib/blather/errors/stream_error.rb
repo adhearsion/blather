@@ -4,6 +4,8 @@ module Blather
 # Stream Errors
 # RFC3920 Section 9.3 (http://xmpp.org/rfcs/rfc3920.html#streams-error-rules)
 class StreamError < BlatherError
+  STREAM_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-streams'
+
   register :stream_error
 
   attr_reader :text, :extras
@@ -12,11 +14,12 @@ class StreamError < BlatherError
   # Factory method for instantiating the proper class
   # for the error
   def self.import(node)
-    name = node.find_first('descendant::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-streams').element_name
-    text = node.find_first '//err_ns:text', :err_ns => 'urn:ietf:params:xml:ns:xmpp-streams'
+    name = node.find_first('descendant::*[name()!="text"]', STREAM_ERR_NS).element_name
+
+    text = node.find_first 'descendant::*[name()="text"]', STREAM_ERR_NS
     text = text.content if text
 
-    extras = node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }
+    extras = node.find("descendant::*[namespace-uri()!='#{STREAM_ERR_NS}']").map { |n| n }
 
     self.new name, text, extras
   end
@@ -41,21 +44,18 @@ class StreamError < BlatherError
   def to_node
     node = XMPPNode.new('stream:error')
 
-    err = XMPPNode.new(@name)
+    node << (err = XMPPNode.new(@name, node.document))
     err.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
-    node << err
 
     if self.text
-      text = XMPPNode.new('text')
+      node << (text = XMPPNode.new('text', node.document))
       text.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
-      text << self.text
-      node << text
+      text.content = self.text
     end
 
     self.extras.each do |extra|
-      extra_copy = extra.copy
-      extra_copy.namespace = extra.namespace
-      node << extra_copy
+      node << (extra_copy = extra.dup)
+      extra_copy.document = node.document
     end
     node
   end
@@ -67,7 +67,7 @@ class StreamError < BlatherError
   end
 
   def inspect # :nodoc:
-    "Stream Error (#{@name}): #{self.text}"
+    "Stream Error (#{@name}): #{self.text}" + (self.extras.empty? ? '' : " [#{self.extras}]")
   end
   alias_method :to_s, :inspect # :nodoc:
 end #StreamError
