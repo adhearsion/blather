@@ -8,16 +8,16 @@ module Blather
 
     it 'ensures a query node is present on create' do
       query = Stanza::Iq::Query.new
-      query.children.detect { |n| n.element_name == 'query' }.wont_be_nil
+      query.xpath('query').wont_be_empty
     end
 
     it 'ensures a query node exists when calling #query' do
       query = Stanza::Iq::Query.new
       query.remove_child :query
-      query.children.detect { |n| n.element_name == 'query' }.must_be_nil
+      query.xpath('query').must_be_empty
 
       query.query.wont_be_nil
-      query.children.detect { |n| n.element_name == 'query' }.wont_be_nil
+      query.xpath('query').wont_be_empty
     end
 
     [:get, :set, :result, :error].each do |type|
@@ -38,6 +38,18 @@ module Blather
       query.type.must_equal :get
       query.reply!
       query.type.must_equal :result
+    end
+
+    it 'can be registered under a namespace' do
+      class QueryNs < Stanza::Iq::Query; register :query_ns, nil, 'query:ns'; end
+      XMPPNode.class_from_registration(:query, 'query:ns').must_equal QueryNs
+      query_ns = QueryNs.new
+      query_ns.xpath('query').must_be_empty
+      query_ns.xpath('ns:query', 'ns' => 'query:ns').size.must_equal 1
+
+      query_ns.query
+      query_ns.query
+      query_ns.xpath('ns:query', 'ns' => 'query:ns').size.must_equal 1
     end
   end
 end
