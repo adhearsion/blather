@@ -204,14 +204,14 @@ module Blather
     it 'responds to iq:get with a "service-unavailable" error' do
       get = Stanza::Iq.new :get
       err = StanzaError.new(get, 'service-unavailable', :cancel).to_node
-      @client.expects(:write).with { |n| n.to_s == err.to_s }
+      @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
       @client.receive_data get
     end
 
     it 'responds to iq:set with a "service-unavailable" error' do
       get = Stanza::Iq.new :set
       err = StanzaError.new(get, 'service-unavailable', :cancel).to_node
-      @client.expects(:write).with { |n| n.to_s == err.to_s }
+      @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
       @client.receive_data get
     end
 

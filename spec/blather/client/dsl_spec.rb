@@ -65,7 +65,7 @@ module Blather
     it 'provides a "say" helper' do
       to, msg = 'me@me.com', 'hello!'
       Blather::Stanza::Message.stubs(:next_id).returns 0
-      @client.expects(:write).with Blather::Stanza::Message.new(to, msg)
+      @client.expects(:write).with { |n| n.to_s.must_equal Blather::Stanza::Message.new(to, msg).to_s }
       @dsl.say to, msg
     end
 
@@ -81,7 +81,7 @@ module Blather
       expected_stanza = Blather::Stanza::Disco::DiscoItems.new
       expected_stanza.to = who
       expected_stanza.node = where
-      @client.expects(:write).with expected_stanza
+      @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
       @dsl.discover what, who, where
     end
 
@@ -92,7 +92,7 @@ module Blather
       expected_stanza = Blather::Stanza::Disco::DiscoInfo.new
       expected_stanza.to = who
       expected_stanza.node = where
-      @client.expects(:write).with expected_stanza
+      @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
       @dsl.discover what, who, where
     end
 
