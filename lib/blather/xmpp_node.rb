@@ -177,7 +177,7 @@ module Blather
       name ||= self.registered_name
 
       node = super name.to_s, doc
-      node.namespace = self.registered_ns unless BASE_NAMES.include?(registered_name.to_s)
+      node.namespace = self.registered_ns unless BASE_NAMES.include?(name.to_s)
       node
     end
 
