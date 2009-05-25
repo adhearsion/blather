@@ -100,40 +100,4 @@ rescue LoadError
   puts "Rake SshDirPublisher is unavailable or your rubyforge environment is not configured."
 end
 
-MAKE = ENV['MAKE'] || (RUBY_PLATFORM =~ /mswin/ ? 'nmake' : 'make')
-
-namespace :ext do
-  ext_sources = FileList['ext/*.{rb,c}']
-
-  desc 'Compile the makefile'
-  file 'ext/Makefile' => ext_sources do
-    chdir('ext') { ruby 'extconf.rb' }
-  end
-
-  desc "make extension"
-  task :make => ext_sources + ['ext/Makefile'] do
-    chdir('ext') { sh MAKE }
-  end
-
-  desc 'Build push parser'
-  task :build => :make
-
-  desc 'Clean extensions'
-  task :clean do
-    chdir 'ext' do
-      sh "rm -f Makefile"
-      sh "rm -f *.{o,so,bundle,log}"
-    end
-  end
-end
-
-# If running under rubygems...
-__DIR__ ||= File.expand_path(File.dirname(__FILE__))
-if Gem.path.any? {|path| %r(^#{Regexp.escape path}) =~ __DIR__}
-  task :default => :gem_build
-else
-  task :default => ['ext:build', :test]
-end
- 
-desc ":default build when running under rubygems."
-task :gem_build => 'ext:build'
+task :default => :test
