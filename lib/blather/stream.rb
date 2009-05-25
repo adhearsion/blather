@@ -110,7 +110,7 @@ module Blather
       when 'stream:end'
         stop
 
-      when 'stream:features'
+      when 'features'
         @features = @node.children
         @state = :features
         dispatch
@@ -178,7 +178,7 @@ module Blather
     def features
       feature = @features.first
       LOG.debug "FEATURE: #{feature}"
-      @state = case feature ? feature.namespaces.default.href : nil
+      @state = case feature ? feature.namespace.href : nil
       when 'urn:ietf:params:xml:ns:xmpp-tls'      then :establish_tls
       when 'urn:ietf:params:xml:ns:xmpp-sasl'     then :authenticate_sasl
       when 'urn:ietf:params:xml:ns:xmpp-bind'     then :bind_resource

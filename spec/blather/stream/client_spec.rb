@@ -610,10 +610,11 @@ module Blather
 
         when :started
           state = :complete
-          val =~ %r{<iq[^>]+id="([^"]+)"}
-          server.send_data "<iq type='result' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{@jid}</jid></bind></iq>"
+          doc = parse_stanza val
+          doc.xpath('/iq/bind_ns:bind/bind_ns:resource[.="r"]', :bind_ns => Stream::Resource::BIND_NS).wont_be_empty
+
+          server.send_data "<iq type='result' id='#{doc.find_first('iq')['id']}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{@jid}</jid></bind></iq>"
           server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
-          val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
 
         when :complete
           EM.stop
@@ -642,9 +643,9 @@ module Blather
 
         when :started
           state = :complete
-          val =~ %r{<iq[^>]+id="([^"]+)"}
-          server.send_data "<iq type='error' id='#{$1}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>r</resource></bind><error type='modify'><bad-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
-          val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
+          doc = parse_stanza val
+          doc.xpath('/iq/bind_ns:bind/bind_ns:resource[.="r"]', :bind_ns => Stream::Resource::BIND_NS).wont_be_empty
+          server.send_data "<iq type='error' id='#{doc.find_first('iq')['id']}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>r</resource></bind><error type='modify'><bad-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
 
         when :complete
           EM.stop
@@ -674,9 +675,9 @@ module Blather
 
         when :started
           state = :complete
-          val =~ %r{<iq[^>]+id="([^"]+)"}
+          doc = parse_stanza val
+          doc.xpath('/iq/bind_ns:bind/bind_ns:resource[.="r"]', :bind_ns => Stream::Resource::BIND_NS).wont_be_empty
           server.send_data "<foo-bar />"
-          val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>r</resource></bind>})
 
         when :complete
           EM.stop
@@ -705,9 +706,11 @@ module Blather
 
         when :started
           state = :completed
-          server.send_data "<iq from='d' type='result' id='#{val[/id="([^"]+)"/,1]}' />"
+          doc = parse_stanza val
+          doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Stream::Session::SESSION_NS).wont_be_empty
+
+          server.send_data "<iq from='d' type='result' id='#{doc.find_first('iq')['id']}' />"
           server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
-          val.must_match(%r{<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"\s?/></iq>})
 
         when :completed
           EM.stop
@@ -737,8 +740,9 @@ module Blather
 
         when :started
           state = :completed
-          server.send_data "<iq from='d' type='error' id='#{val[/id="([^"]+)"/,1]}'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/><error type='wait'><internal-server-error xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
-          val.must_match(%r{<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"\s?/></iq>})
+          doc = parse_stanza val
+          doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Stream::Session::SESSION_NS).wont_be_empty
+          server.send_data "<iq from='d' type='error' id='#{doc.find_first('iq')['id']}'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/><error type='wait'><internal-server-error xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
 
         when :completed
           EM.stop
@@ -769,8 +773,9 @@ module Blather
 
         when :started
           state = :completed
+          doc = parse_stanza val
+          doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Stream::Session::SESSION_NS).wont_be_empty
           server.send_data '<foo-bar />'
-          val.must_match(%r{<iq id="[^"]+" type="set" to="d"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"\s?/></iq>})
 
         when :completed
           EM.stop

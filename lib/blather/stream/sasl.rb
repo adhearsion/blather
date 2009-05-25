@@ -70,7 +70,8 @@ class Stream # :nodoc:
     ##
     # Builds a standard auth node
     def auth_node(mechanism, content = nil)
-      node = XMPPNode.new 'auth', content
+      node = XMPPNode.new 'auth'
+      node.content = content if content
       node['xmlns'] = SASL_NS
       node['mechanism'] = mechanism
       node

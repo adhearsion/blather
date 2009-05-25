@@ -67,7 +67,7 @@ class StreamError < BlatherError
   end
 
   def inspect # :nodoc:
-    "Stream Error (#{@name}): #{self.text} [#{self.extras}]"
+    "Stream Error (#{@name}): #{self.text}" + (self.extras.empty? ? '' : " [#{self.extras}]")
   end
   alias_method :to_s, :inspect # :nodoc:
 end #StreamError

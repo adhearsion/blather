@@ -2,6 +2,8 @@ module Blather # :nodoc:
 class Stream # :nodoc:
 
   class Session < StreamHandler # :nodoc:
+    SESSION_NS = 'urn:ietf:params:xml:ns:xmpp-session'
+
     def initialize(stream, to)
       super stream
       @to = to
@@ -13,9 +15,9 @@ class Stream # :nodoc:
     def session
       response = Stanza::Iq.new :set
       response.to = @to
-      sess = XMPPNode.new 'session'
-      sess['xmlns'] = 'urn:ietf:params:xml:ns:xmpp-session'
-      response << sess
+      response << (sess = XMPPNode.new('session', response.document))
+      sess.namespace = SESSION_NS
+
       @stream.send response
     end
 

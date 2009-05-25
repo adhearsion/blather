@@ -2,6 +2,8 @@ module Blather # :nodoc:
 class Stream # :nodoc:
 
   class Resource < StreamHandler # :nodoc:
+    BIND_NS = 'urn:ietf:params:xml:ns:xmpp-bind'
+
     def initialize(stream, jid)
       super stream
       @jid = jid
@@ -15,12 +17,14 @@ class Stream # :nodoc:
       response = Stanza::Iq.new :set
       @id = response.id
 
-      binder = XMPPNode.new('bind')
-      binder.namespace = 'urn:ietf:params:xml:ns:xmpp-bind'
+      response << (binder = XMPPNode.new('bind'))
+      binder.namespace = BIND_NS
 
-      binder << XMPPNode.new('resource', @jid.resource) if @jid.resource
+      if @jid.resource
+        binder << (resource = XMPPNode.new('resource'))
+        resource.content = @jid.resource
+      end
 
-      response << binder
       @stream.send response
     end
 
@@ -32,7 +36,7 @@ class Stream # :nodoc:
       LOG.debug "RESOURE NODE #{@node}"
       # ensure this is a response to our original request
       if @id == @node['id']
-        @jid = JID.new @node.find_first('//bind_ns:bind/jid', :bind_ns => 'urn:ietf:params:xml:ns:xmpp-bind').content
+        @jid = JID.new @node.find_first('//bind_ns:bind/bind_ns:jid', :bind_ns => BIND_NS).content
         success @jid
       end
     end
