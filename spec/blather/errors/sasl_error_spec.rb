@@ -2,9 +2,9 @@ require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
 def sasl_error_node(err_name = 'aborted')
   node = Blather::XMPPNode.new 'failure'
-  node.namespace = 'urn:ietf:params:xml:ns:xmpp-sasl'
+  node.namespace = Blather::SASLError::SASL_ERR_NS
 
-  node << Blather::XMPPNode.new(err_name)
+  node << Blather::XMPPNode.new(err_name, node.document)
   node
 end
 

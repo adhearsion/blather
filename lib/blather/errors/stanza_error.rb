@@ -4,6 +4,7 @@ module Blather
 # Stanza errors
 # RFC3920 Section 9.3 (http://xmpp.org/rfcs/rfc3920.html#stanzas-error)
 class StanzaError < BlatherError
+  STANZA_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-stanzas'
   VALID_TYPES = [:cancel, :continue, :modify, :auth, :wait]
 
   register :stanza_error
@@ -19,9 +20,9 @@ class StanzaError < BlatherError
 
     error_node = node.find_first '//*[local-name()="error"]'
 
-    name = error_node.find_first('child::*[name()!="text"]', 'urn:ietf:params:xml:ns:xmpp-stanzas').element_name
+    name = error_node.find_first('child::*[name()!="text"]', STANZA_ERR_NS).element_name
     type = error_node['type']
-    text = node.find_first '//err_ns:text', :err_ns => 'urn:ietf:params:xml:ns:xmpp-stanzas'
+    text = node.find_first 'descendant::*[name()="text"]', STANZA_ERR_NS
     text = text.content if text
 
     extras = error_node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }
@@ -59,27 +60,23 @@ class StanzaError < BlatherError
   # Creates an XML node from the error
   def to_node
     node = self.original.reply
+    node.type = 'error'
+    node << (error_node = XMPPNode.new 'error')
 
-    error_node = XMPPNode.new 'error'
-    err = XMPPNode.new(@name)
+    error_node << (err = XMPPNode.new(@name, error_node.document))
     err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
-    error_node << err
 
     if self.text
-      text = XMPPNode.new('text')
+      error_node << (text = XMPPNode.new('text', error_node.document))
       text.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
-      text << self.text
-      error_node << text
+      text.content = self.text
     end
 
     self.extras.each do |extra|
-      extra_copy = extra.copy
-      extra_copy.namespace = extra.namespace
-      error_node << extra_copy
+      error_node << (extra_copy = extra.dup)
+      extra_copy.document = extra.document
     end
 
-    node << error_node
-    node.type = 'error'
     node
   end
 
@@ -90,7 +87,7 @@ class StanzaError < BlatherError
   end
 
   def inspect # :nodoc:
-    "Stanza Error (#{@name}): #{self.text}"
+    "Stanza Error (#{@name}): #{self.text} [#{self.extras}]"
   end
   alias_method :to_s, :inspect # :nodoc:
 end #StanzaError

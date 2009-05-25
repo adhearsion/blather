@@ -2,28 +2,23 @@ require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
 def stanza_error_node(type = 'cancel', error = 'internal-server-error', msg = nil)
   node = Blather::Stanza::Message.new 'error@jabber.local', 'test message', :error
-  XML::Document.new.root = node
 
-  error_node = Blather::XMPPNode.new('error')
+  node << (error_node = Blather::XMPPNode.new('error'))
   error_node['type'] = type.to_s
   
-  err = Blather::XMPPNode.new(error)
+  error_node << (err = Blather::XMPPNode.new(error))
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
-  error_node << err
 
   if msg
-    text = Blather::XMPPNode.new('text')
+    error_node << (text = Blather::XMPPNode.new('text'))
     text.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
-    text << msg
-    error_node << text
+    text.content = msg
   end
 
-  extra = Blather::XMPPNode.new('extra-error')
+  error_node << (extra = Blather::XMPPNode.new('extra-error'))
   extra.namespace = 'blather:stanza:error'
-  extra << 'Blather Error'
-  error_node << extra
+  extra.content = 'Blather Error'
 
-  node << error_node
   node
 end
 
@@ -92,14 +87,13 @@ module Blather
 
       it 'can be turned into xml' do
         @err.must_respond_to :to_xml
-        control = "<body>test message</body>\n<error>\n<internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"/>\n<text xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\">the server has experienced a misconfiguration</text>\n<extra-error xmlns=\"blather:stanza:error\">Blather Error</extra-error>\n</error>\n</message>".split("\n")
-        test = @err.to_xml.split("\n")
-        test_msg = test.shift
-        test.must_equal control
+        doc = Nokogiri::XML(@err.to_xml)
 
-        test_msg.must_match(/<message[^>]*id="#{@err.original.id}"/)
-        test_msg.must_match(/<message[^>]*from="error@jabber\.local"/)
-        test_msg.must_match(/<message[^>]*type="error"/)
+        doc.xpath("/message[@from='error@jabber.local' and @type='error']").wont_be_empty
+        doc.xpath("/message/error").wont_be_empty
+        doc.xpath("/message/error/err_ns:internal-server-error", :err_ns => StanzaError::STANZA_ERR_NS).wont_be_empty
+        doc.xpath("/message/error/err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => StanzaError::STANZA_ERR_NS).wont_be_empty
+        doc.xpath("/message/error/extra_ns:extra-error[.='Blather Error']", :extra_ns => 'blather:stanza:error').wont_be_empty
       end
     end
 

@@ -1,34 +1,36 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
 def stream_error_node(error = 'internal-server-error', msg = nil)
-  node = Blather::XMPPNode.new('stream:error')
-  XML::Document.new.root = node
+  node = Blather::XMPPNode.new('error')
+  node.namespace = {'stream' => Blather::Stream::STREAM_NS}
   
-  err = Blather::XMPPNode.new(error)
+  node << (err = Blather::XMPPNode.new(error))
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
-  node << err
 
   if msg
-    text = Blather::XMPPNode.new('text')
+    node << (text = Blather::XMPPNode.new('text'))
     text.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
-    text << msg
-    node << text
+    text.content = msg
   end
 
-  extra = Blather::XMPPNode.new('extra-error')
+  node << (extra = Blather::XMPPNode.new('extra-error'))
   extra.namespace = 'blather:stream:error'
-  extra << 'Blather Error'
+  extra.content = 'Blather Error'
 
-  node << extra
   node
 end
 
 module Blather
   describe 'Blather::StreamError' do
     it 'can import a node' do
+      err = stream_error_node 'internal-server-error', 'the message'
       StreamError.must_respond_to :import
-      e = StreamError.import stream_error_node
+      e = StreamError.import err
       e.must_be_kind_of StreamError
+
+      e.name.must_equal :internal_server_error
+      e.text.must_equal 'the message'
+      e.extras.must_equal err.find('descendant::*[name()="extra-error"]', 'blather:stream:error').map {|n|n}
     end
   end
 
@@ -66,7 +68,10 @@ module Blather
 
     it 'can be turned into xml' do
       @err.must_respond_to :to_xml
-      @err.to_xml.must_equal "<stream:error>\n<internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>\n<text xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\">the server has experienced a misconfiguration</text>\n<extra-error xmlns=\"blather:stream:error\">Blather Error</extra-error>\n</stream:error>"
+      doc = Nokogiri::XML(@err.to_xml)
+      doc.xpath("//err_ns:internal-server-error", :err_ns => StreamError::STREAM_ERR_NS).wont_be_empty
+      doc.xpath("//err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => StreamError::STREAM_ERR_NS).wont_be_empty
+      doc.xpath("//err_ns:extra-error[.='Blather Error']", :err_ns => 'blather:stream:error').wont_be_empty
     end
   end
 
