@@ -17,7 +17,7 @@ begin
     gem.extensions = ['Rakefile']
 
     gem.add_dependency 'eventmachine', '>= 0.12.6'
-    gem.add_dependency 'libxml-ruby', '>= 1.1.2'
+    gem.add_dependency 'nokogiri', '>= 1.3.0'
 
     gem.files = FileList['examples/**/*', 'lib/**/*', 'ext/*.{rb,c}'].to_a
 
