@@ -32,14 +32,13 @@ module Blather
     end
 
     it 'inherits a list of identities' do
-      n = XML::Document.string disco_info_xml
+      n = parse_stanza disco_info_xml
       r = Stanza::Iq::DiscoInfo.new.inherit n.root
       r.identities.size.must_equal 1
       r.identities.map { |i| i.class }.uniq.must_equal [Stanza::Iq::DiscoInfo::Identity]
     end
-
     it 'inherits a list of features' do
-      n = XML::Document.string disco_info_xml
+      n = parse_stanza disco_info_xml
       r = Stanza::Iq::DiscoInfo.new.inherit n.root
       r.features.size.must_equal 2
       r.features.map { |i| i.class }.uniq.must_equal [Stanza::Iq::DiscoInfo::Feature]
@@ -149,7 +148,7 @@ module Blather
 
   describe 'Blather::Stanza::Iq::DiscoInfo::Identity' do
     it 'will auto-inherit nodes' do
-      n = XML::Document.string "<identity name='Personal Events' type='pep' category='pubsub' node='publish' />"
+      n = parse_stanza "<identity name='Personal Events' type='pep' category='pubsub' node='publish' />"
       i = Stanza::Iq::DiscoInfo::Identity.new n.root
       i.name.must_equal 'Personal Events'
       i.type.must_equal :pep
@@ -177,17 +176,21 @@ module Blather
       n.name.must_equal 'foo'
     end
 
+    it 'raises an error if equality is sent a non DiscoInfo::Identity object' do
+      a = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
+      lambda { a == 'foo' }.must_raise RuntimeError
+    end
+
     it 'can determine equality' do
       a = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-      a.must_respond_to :eql?
       a.must_equal Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-      a.wont_equal "<identity name='Personal Events' type='pep' category='pubsub' node='publish' />"
+      a.wont_equal Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[not-name not-type not-cat])
     end
   end
 
   describe 'Blather::Stanza::Iq::DiscoInfo::Feature' do
     it 'will auto-inherit nodes' do
-      n = XML::Document.string "<feature var='ipv6' />"
+      n = parse_stanza "<feature var='ipv6' />"
       i = Stanza::Iq::DiscoInfo::Feature.new n.root
       i.var.must_equal 'ipv6'
     end
@@ -199,11 +202,15 @@ module Blather
       n.var.must_equal 'foo'
     end
 
+    it 'raises an error if equality is sent a non DiscoInfo::Feature object' do
+      a = Blather::Stanza::Iq::DiscoInfo::Feature.new('var')
+      lambda { a == 'foo' }.must_raise RuntimeError
+    end
+
     it 'can determine equality' do
       a = Blather::Stanza::Iq::DiscoInfo::Feature.new('var')
-      a.must_respond_to :eql?
       a.must_equal Blather::Stanza::Iq::DiscoInfo::Feature.new('var')
-      a.wont_equal "<feature var='ipv6' />"
+      a.wont_equal Blather::Stanza::Iq::DiscoInfo::Feature.new('not-var')
     end
   end
 end

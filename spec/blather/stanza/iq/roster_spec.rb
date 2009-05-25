@@ -31,7 +31,7 @@ module Blather
     end
 
     it 'ensures newly inherited items are RosterItem objects' do
-      n = XML::Document.string roster_xml
+      n = parse_stanza roster_xml
       r = Stanza::Iq::Roster.new.inherit n.root
       r.items.map { |i| i.class }.uniq.must_equal [Stanza::Iq::Roster::RosterItem]
     end
@@ -69,14 +69,14 @@ module Blather
     end
 
     it 'has a #groups helper that gives an array of groups' do
-      n = XML::Document.string "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
+      n = parse_stanza "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
       i = Stanza::Iq::Roster::RosterItem.new n.root
       i.must_respond_to :groups
       i.groups.sort.must_equal %w[bar baz foo]
     end
 
     it 'has a helper to set the groups' do
-      n = XML::Document.string "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
+      n = parse_stanza "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
       i = Stanza::Iq::Roster::RosterItem.new n.root
       i.must_respond_to :groups=
       i.groups.sort.must_equal %w[bar baz foo]
@@ -86,7 +86,7 @@ module Blather
 
     it 'can be easily converted into a proper stanza' do
       xml = "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
-      n = XML::Document.string xml
+      n = parse_stanza xml
       i = Stanza::Iq::Roster::RosterItem.new n.root
       i.must_respond_to :to_stanza
       s = i.to_stanza

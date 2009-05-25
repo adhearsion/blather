@@ -35,7 +35,7 @@ module Blather
     end
 
     it 'inherits a list of identities' do
-      n = XML::Document.string disco_items_xml
+      n = parse_stanza disco_items_xml
       r = Stanza::Iq::DiscoItems.new.inherit n.root
       r.items.size.must_equal 3
       r.items.map { |i| i.class }.uniq.must_equal [Stanza::Iq::DiscoItems::Item]
@@ -99,7 +99,7 @@ module Blather
 
   describe 'Blather::Stanza::Iq::DiscoItems::Item' do
     it 'will auto-inherit nodes' do
-      n = XML::Document.string "<item jid='foo@bar/baz' node='music' name='Music from the time of Shakespeare' />"
+      n = parse_stanza "<item jid='foo@bar/baz' node='music' name='Music from the time of Shakespeare' />"
       i = Stanza::Iq::DiscoItems::Item.new n.root
       i.jid.must_equal JID.new('foo@bar/baz')
       i.node.must_equal 'music'
@@ -128,11 +128,15 @@ module Blather
       n.name.must_equal 'Books by and about Shakespeare'
     end
 
+    it 'raises an error when compared against a non DiscoItems::Item' do
+      a = Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')
+      lambda { a == 'test' }.must_raise RuntimeError
+    end
+
     it 'can determine equality' do
       a = Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')
-      a.must_respond_to :eql?
       a.must_equal Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')
-      a.wont_equal "<item jid='foo@bar/baz' node='music' name='Music from the time of Shakespeare' />"
+      a.wont_equal Stanza::Iq::DiscoItems::Item.new('not-foo@bar/baz')
     end
   end
 end

@@ -7,9 +7,10 @@ class Iq
 
     ##
     # Any new items are added to the query
-    def initialize(type = nil, item = nil)
-      super type
-      query << item if item
+    def self.new(type = nil, item = nil)
+      node = super type
+      node.query << item if item
+      node
     end
 
     ##
@@ -20,16 +21,14 @@ class Iq
       items.each { |i| i.remove! }
       super
       # transmogrify nodes into RosterItems
-      items.each { |i| query << RosterItem.new(i); i.remove! }
+      items.each { |i| query << RosterItem.new(i); i.remove }
       self
     end
 
     ##
     # Roster items
     def items
-      items = query.find('//item', self.class.ns)
-      items = query.find('//query_ns:item', :query_ns => self.class.ns) if items.empty?
-      items.map { |i| RosterItem.new(i) }
+      query.find('//query_ns:item', :query_ns => self.class.registered_ns).map { |i| RosterItem.new(i) }
     end
 
     class RosterItem < XMPPNode
@@ -38,29 +37,36 @@ class Iq
       # [name] name alias of the given JID
       # [subscription] subscription type
       # [ask] ask subscription sub-state
-      def initialize(jid = nil, name = nil, subscription = nil, ask = nil)
-        super :item
+      def self.new(jid = nil, name = nil, subscription = nil, ask = nil)
+        new_node = super :item
 
-        if jid.is_a?(XML::Node)
-          self.inherit jid
+        case jid
+        when Nokogiri::XML::Node
+          new_node.inherit jid
+        when Hash
+          new_node.jid = jid[:jid]
+          new_node.name = jid[:name]
+          new_node.subscription = jid[:subscription]
+          new_node.ask = jid[:ask]
         else
-          self.jid = jid
-          self.name = name
-          self.subscription = subscription
-          self.ask = ask
+          new_node.jid = jid
+          new_node.name = name
+          new_node.subscription = subscription
+          new_node.ask = ask
         end
+        new_node
       end
 
       ##
       # Roster item's JID
       def jid
-        (j = attributes[:jid]) ? JID.new(j) : nil
+        (j = self[:jid]) ? JID.new(j) : nil
       end
       attribute_writer :jid
 
-      attribute_accessor :name, :to_sym => false
+      attribute_accessor :name
 
-      attribute_accessor :subscription, :ask
+      attribute_accessor :subscription, :ask, :call => :to_sym
 
       ##
       # The groups roster item belongs to
@@ -72,8 +78,13 @@ class Iq
       # Set the roster item's groups
       # must be an array
       def groups=(new_groups)
-        find(:group).each { |g| g.remove! }
-        new_groups.uniq.each { |g| self << XMPPNode.new(:group, g) } if new_groups
+        remove_children :group
+        if new_groups
+          new_groups.uniq.each do |g|
+            self << (group = XMPPNode.new(:group, self.document))
+            group.content = g
+          end
+        end
       end
 
       ##
