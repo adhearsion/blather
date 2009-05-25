@@ -20,34 +20,35 @@ class Stanza
 
     ##
     # Ensure the namespace is set to the query node
-    def initialize(type = nil, host = nil)
-      super type
-      self.to = host
-      pubsub.namespace = self.class.ns unless pubsub.namespace
+    def self.new(type = nil, host = nil)
+      new_node = super type
+      new_node.to = host
+      new_node.pubsub
+      new_node
     end
 
     ##
     # Kill the pubsub node before running inherit
     def inherit(node)
-      pubsub.remove!
+      pubsub.remove
       super
     end
 
     def pubsub
-      unless p = find_first('//pubsub_ns:pubsub', :pubsub_ns => self.class.ns)
-        p = XMPPNode.new('pubsub')
-        p.namespace = self.class.ns
-        self << p
+      unless p = find_first('pubsub_ns:pubsub', :pubsub_ns => self.class.registered_ns)
+        self << (p = XMPPNode.new('pubsub', self.document))
+        p.namespace = self.class.registered_ns
       end
       p
     end
   end
 
   class PubSubItem < XMPPNode
-    def initialize(id = nil, payload = nil)
-      super 'item'
-      self.id = id
-      self.payload = payload
+    def self.new(id = nil, payload = nil)
+      new_node = super 'item'
+      new_node.id = id
+      new_node.payload = payload
+      new_node
     end
 
     attribute_accessor :id, :to_sym => false
