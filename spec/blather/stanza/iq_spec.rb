@@ -10,6 +10,10 @@ module Blather
       Stanza::Iq.new.type.must_equal :get
     end
 
+    it 'sets the id when created' do
+      Stanza::Iq.new.id.wont_be_nil
+    end
+
     it 'wont import non-iq stanzas' do
       lambda { Stanza::Iq.import(XMPPNode.new('foo')) }.must_raise(Blather::ArgumentError)
     end

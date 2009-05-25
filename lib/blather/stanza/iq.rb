@@ -19,7 +19,7 @@ class Stanza
       node = super :iq
       node.type = type || :get
       node.to = to
-      node.id = id if id
+      node.id = id || self.next_id
       node
     end
 
