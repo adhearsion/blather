@@ -6,6 +6,11 @@ module Blather
       XMPPNode.class_from_registration(:presence, nil).must_equal Stanza::Presence
     end
 
+    it 'must be importable' do
+      doc = parse_stanza '<presence type="probe"/>'
+      XMPPNode.import(doc.root).must_be_instance_of Stanza::Presence
+    end
+
     it 'ensures type is one of Stanza::Presence::VALID_TYPES' do
       presence = Stanza::Presence.new
       lambda { presence.type = :invalid_type_name }.must_raise(Blather::ArgumentError)

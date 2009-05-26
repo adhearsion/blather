@@ -6,6 +6,11 @@ module Blather
       XMPPNode.class_from_registration(:iq, nil).must_equal Stanza::Iq
     end
 
+    it 'must be importable' do
+      doc = parse_stanza "<iq from='juliet@example.com/balcony' type='set' id='roster_4'></iq>"
+      XMPPNode.import(doc.root).must_be_instance_of Stanza::Iq
+    end
+
     it 'creates a new Iq stanza defaulted as a get' do
       Stanza::Iq.new.type.must_equal :get
     end

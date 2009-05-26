@@ -6,6 +6,13 @@ module Blather
       XMPPNode.class_from_registration(:subscription, nil).must_equal Stanza::Presence::Subscription
     end
 
+    [:subscribe, :subscribed, :unsubscribe, :unsubscribed].each do |type|
+      it "must be importable as #{type}" do
+        doc = parse_stanza "<presence type='#{type}'/>"
+        XMPPNode.import(doc.root).must_be_instance_of Stanza::Presence::Subscription
+      end
+    end
+
     it 'can set to on creation' do
       sub = Stanza::Presence::Subscription.new 'a@b'
       sub.to.to_s.must_equal 'a@b'

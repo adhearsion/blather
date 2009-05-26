@@ -27,6 +27,11 @@ module Blather
       XMPPNode.class_from_registration(:query, 'http://jabber.org/protocol/disco#items').must_equal Blather::Stanza::Iq::DiscoItems
     end
 
+    it 'must be importable' do
+      doc = parse_stanza disco_items_xml
+      XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Iq::DiscoItems
+    end
+
     it 'has a node attribute' do
       n = Blather::Stanza::Iq::DiscoItems.new nil, 'music', []
       n.node.must_equal 'music'

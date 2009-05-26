@@ -40,14 +40,25 @@ module Blather
     register :tls_failure
   end
 
+  class ParseWarning < BlatherError
+    register :parse_warning
+    attr_reader :libxml_error, :message
+
+    def initialize(err)
+      @libxml_error = err
+      @message = err.to_s
+    end
+  end
+
   ##
   # Something bad happened while parsing the incoming stream
   class ParseError < BlatherError
     register :parse_error
-    attr_reader :message
+    attr_reader :libxml_error, :message
 
-    def initialize(message)
-      @message = message
+    def initialize(err)
+      @libxml_error = err
+      @message = err.to_s
     end
   end
 end

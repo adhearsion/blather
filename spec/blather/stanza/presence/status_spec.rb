@@ -6,6 +6,16 @@ module Blather
       XMPPNode.class_from_registration(:status, nil).must_equal Stanza::Presence::Status
     end
 
+    it 'must be importable as unavailable' do
+      doc = parse_stanza '<presence type="unavailable"/>'
+      XMPPNode.import(doc.root).must_be_instance_of Stanza::Presence::Status
+    end
+
+    it 'must be importable as nil' do
+      doc = parse_stanza '<presence/>'
+      XMPPNode.import(doc.root).must_be_instance_of Stanza::Presence::Status
+    end
+
     it 'can set state on creation' do
       status = Stanza::Presence::Status.new :away
       status.state.must_equal :away

@@ -6,6 +6,19 @@ module Blather
       XMPPNode.class_from_registration(:message, nil).must_equal Stanza::Message
     end
 
+    it 'must be importable' do
+      doc = parse_stanza <<-XML
+        <message
+            to='romeo@example.net'
+            from='juliet@example.com/balcony'
+            type='chat'
+            xml:lang='en'>
+          <body>Wherefore art thou, Romeo?</body>
+        </message>
+      XML
+      XMPPNode.import(doc.root).must_be_instance_of Stanza::Message
+    end
+
     it 'provides "attr_accessor" for body' do
       s = Stanza::Message.new
       s.body.must_be_nil

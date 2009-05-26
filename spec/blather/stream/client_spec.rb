@@ -789,7 +789,7 @@ module Blather
       end
     end
 
-    it 'sends client an error on parse error' do
+    it 'sends client an error and reply to the server on parse error' do
       @client = mock()
       @client.expects(:receive_data).with do |v|
         v.must_be_kind_of ParseError
@@ -810,7 +810,7 @@ module Blather
 
         when :parse_error
           EM.stop
-          val.must_equal "</stream:stream>"
+          val.must_equal "<stream:error><xml-not-well-formed xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error></stream:stream>"
 
         else
           EM.stop
