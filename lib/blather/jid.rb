@@ -83,6 +83,7 @@ module Blather
     def <=>(o)
       to_s <=> o.to_s
     end
+    alias_method :eql?, :==
 
     ##
     # Test if JID is stripped

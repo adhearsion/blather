@@ -57,6 +57,7 @@ module Blather
 
     it 'checks for equality' do
       (JID.new('n@d/r') == JID.new('n@d/r')).must_equal true
+      JID.new('n@d/r').eql?(JID.new('n@d/r')).must_equal true
     end
 
     it 'will strip' do
