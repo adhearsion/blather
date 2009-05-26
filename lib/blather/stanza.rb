@@ -52,10 +52,19 @@ module Blather
     end
 
     ##
-    # Helper method to ask the object if it's an error
-    def error?
-      self.type == :error
+    # Helper method to generate stanza guard methods
+    #
+    # attribute_helpers_for(:type, [:subscribe, :unsubscribe])
+    #
+    # This generates "subscribe?" and "unsubscribe?" methods that return
+    # true if self.type == :subscribe or :unsubscribe, respectively.
+    def self.attribute_helpers_for(attr, values)
+      [values].flatten.each do |v|
+        define_method("#{v}?") { __send__(attr) == v }
+      end
     end
+
+    attribute_helpers_for(:type, :error)
 
     ##
     # Copies itself then swaps from and to

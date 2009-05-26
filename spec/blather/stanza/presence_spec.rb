@@ -19,6 +19,13 @@ describe 'Blather::Stanza::Presence' do
     it "provides a helper (#{valid_type}?) for type #{valid_type}" do
       Stanza::Presence.new.must_respond_to :"#{valid_type}?"
     end
+    it "returns true on call to (#{valid_type}?) if type == #{valid_type}" do
+      method = "#{valid_type}?".to_sym
+      pres = Stanza::Presence.new
+      pres.type = valid_type
+      pres.must_respond_to method
+      pres.__send__(method).must_equal true
+    end
   end
 
   it 'creates a Status object when importing a node with type == nil' do
@@ -43,7 +50,7 @@ describe 'Blather::Stanza::Presence' do
     s.type.must_equal :subscribe
   end
 
-  it 'creates a Presence object when importing a node with type equal to something unkown' do
+  it 'creates a Presence object when importing a node with type equal to something unknown' do
     n = XMPPNode.new
     n.attributes[:type] = :foo
     s = Stanza::Presence.import(n)

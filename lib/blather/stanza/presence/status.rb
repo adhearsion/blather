@@ -15,6 +15,8 @@ class Presence
       self.message = message
     end
 
+    attribute_helpers_for(:state, VALID_STATES)
+
     ##
     # Ensures type is nil or :unavailable
     def type=(type)
