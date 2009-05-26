@@ -11,7 +11,7 @@ class Stanza
     def self.import(node)
       raise(ArgumentError, "Import missmatch #{[node.element_name, self.registered_name].inspect}") if node.element_name != self.registered_name.to_s
       klass = nil
-      node.children.each { |e| break if klass = class_from_registration(e.element_name, e.namespace) }
+      node.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
       (klass || self).new(node.attributes[:type]).inherit(node)
     end
 

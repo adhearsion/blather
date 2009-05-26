@@ -35,6 +35,11 @@ module Blather
       r = Stanza::Iq::Roster.new.inherit n.root
       r.items.map { |i| i.class }.uniq.must_equal [Stanza::Iq::Roster::RosterItem]
     end
+
+    it 'can be created with #import' do
+      doc = parse_stanza roster_xml
+      XMPPNode.import(doc.root).must_be_instance_of Stanza::Iq::Roster
+    end
   end
 
   describe 'Blather::Stanza::Iq::Roster::RosterItem' do
