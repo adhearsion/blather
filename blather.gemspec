@@ -2,11 +2,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{blather}
-  s.version = "0.3.1"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2009-05-14}
+  s.date = %q{2009-05-22}
+  s.description = %q{An evented XMPP library written on EventMachine and libxml-ruby}
   s.email = %q{sprsquish@gmail.com}
   s.extensions = ["Rakefile"]
   s.extra_rdoc_files = [
@@ -16,6 +17,7 @@ Gem::Specification.new do |s|
   s.files = [
     "examples/drb_client.rb",
     "examples/echo.rb",
+    "examples/execute.rb",
     "examples/ping_pong.rb",
     "examples/print_heirarchy.rb",
     "ext/extconf.rb",
@@ -60,7 +62,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{squishtech}
   s.rubygems_version = %q{1.3.3}
-  s.summary = %q{An evented XMPP library written on EventMachine and libxml-ruby}
+  s.summary = %q{Simpler XMPP}
   s.test_files = [
     "spec/blather/client/client_spec.rb",
     "spec/blather/client/dsl_spec.rb",
