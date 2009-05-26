@@ -96,5 +96,14 @@ module Blather
     def as_error(name, type, text = nil, extras = [])
       StanzaError.new self, name, type, text, extras
     end
+
+    protected
+    def reply_if_needed!
+      unless @reversed_endpoints
+        reply!
+        @reversed_endpoints = true
+      end
+      self
+    end
   end
 end

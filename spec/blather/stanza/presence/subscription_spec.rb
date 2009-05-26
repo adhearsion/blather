@@ -65,6 +65,19 @@ describe 'Blather::Stanza::Presence::Subscription' do
     sub.type.must_equal :subscribe
   end
 
+  it "successfully routes chained actions" do
+    from = JID.new("foo@bar.com")
+    to = JID.new("baz@quux.com")
+    sub = Stanza::Presence::Subscription.new
+    sub.from = from
+    sub.to = to
+    sub.cancel!
+    sub.unsubscribe!
+    sub.type.must_equal :unsubscribe
+    sub.to.must_equal from
+    sub.from.must_equal to
+  end
+
   it 'has a #request? helper' do
     sub = Stanza::Presence::Subscription.new
     sub.must_respond_to :request?
