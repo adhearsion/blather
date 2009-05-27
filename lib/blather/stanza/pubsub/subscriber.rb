@@ -14,8 +14,8 @@ class PubSub
       def subscribe(host, node, jid)
         stanza = self.new(:set, host)
         subscription = XMPPNode.new 'subscription'
-        subscription.attributes[:node] = node
-        subscription.attributes[:jid] = JID.new(jid).stripped
+        subscription[:node] = node
+        subscription[:jid] = JID.new(jid).stripped
         stanza.pubsub << subscription
         stanza
       end
@@ -23,9 +23,9 @@ class PubSub
       def unsubscribe(host, node, jid, subid = nil)
         stanza = self.new(:set, host)
         unsubscription = XMPPNode.new 'unsubscribe'
-        unsubscription.attributes[:node] = node
-        unsubscription.attributes[:jid] = JID.new(jid).stripped
-        unsubscription.attributes[:subid] = subid
+        unsubscription[:node] = node
+        unsubscription[:jid] = JID.new(jid).stripped
+        unsubscription[:subid] = subid
         stanza.pubsub << unsubscription
         stanza
       end
@@ -34,26 +34,26 @@ class PubSub
     module InstanceMethods
       def subscription
         if sub = subscription?
-          { :node         => sub.attributes[:node],
-            :jid          => JID.new(sub.attributes[:jid]),
-            :subid        => sub.attributes[:subid],
-            :subscription => sub.attributes[:subscription] }
+          { :node         => sub[:node],
+            :jid          => JID.new(sub[:jid]),
+            :subid        => sub[:subid],
+            :subscription => sub[:subscription] }
         end
       end
 
       def subscription?
-        find_first('//pubsub_ns:pubsub/pubsub_ns:subscription', :pubsub_ns => self.ns)
+        find_first('pubsub/ns:subscription', :ns => self.class.registered_ns)
       end
 
       def unsubscribe
         if sub = unsubscribe?
-          { :node => sub.attributes[:node],
-            :jid  => JID.new(sub.attributes[:jid]) }
+          { :node => sub[:node],
+            :jid  => JID.new(sub[:jid]) }
         end
       end
 
       def unsubscribe?
-        find_first('//pubsub_ns:pubsub/pubsub_ns:unsubscribe', :pubsub_ns => self.class.ns)
+        find_first('pubsub/ns:unsubscribe', :ns => self.class.registered_ns)
       end
     end
 

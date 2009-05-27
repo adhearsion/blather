@@ -28,8 +28,7 @@ module Blather
     end
 
     it 'must be importable' do
-      doc = parse_stanza disco_items_xml
-      XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Iq::DiscoItems
+      XMPPNode.import(parse_stanza(disco_items_xml).root).must_be_instance_of Blather::Stanza::Iq::DiscoItems
     end
 
     it 'has a node attribute' do

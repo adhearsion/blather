@@ -10,10 +10,8 @@ class Stanza
 
     def self.import(node)
       klass = nil
-      if node.doc.find_first('//pubsub_ns:pubsub[not(pubsub_ns:subscription or pubsub_ns:unsubscribe)]', :pubsub_ns => self.ns)
-        node.find_first('//pubsub_ns:pubsub', :pubsub_ns => self.ns).children.each do |e|
-          break if klass = class_from_registration(e.element_name, e.namespaces.namespace.to_s)
-        end
+      if pubsub = node.document.find_first('//ns:pubsub[not(ns:subscribe or ns:subscription or ns:unsubscribe)]', :ns => self.registered_ns)
+        pubsub.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
       end
       (klass || self).new(node.attributes[:type]).inherit(node)
     end
@@ -30,12 +28,25 @@ class Stanza
     ##
     # Kill the pubsub node before running inherit
     def inherit(node)
-      pubsub.remove
+      remove_children :pubsub
       super
     end
 
     def pubsub
-      unless p = find_first('pubsub_ns:pubsub', :pubsub_ns => self.class.registered_ns)
+#      p = find_first('*[local-name()="pubsub"]')
+#      $stderr.puts(p.namespace ? p.namespace.href : nil) if p
+
+#      o = find_first('pubsub', self.class.registered_ns)
+#      o = find_first('ns:pubsub', :ns => self.class.registered_ns)
+#      $stderr.puts(o.namespace ? o.namespace.href : nil) if o
+      p = if self.class.registered_ns
+        find_first('ns:pubsub', :ns => self.class.registered_ns) ||
+        find_first('pubsub', :ns => self.class.registered_ns)
+      else
+        find_first('pubsub')
+      end
+
+      unless p
         self << (p = XMPPNode.new('pubsub', self.document))
         p.namespace = self.class.registered_ns
       end
@@ -51,7 +62,7 @@ class Stanza
       new_node
     end
 
-    attribute_accessor :id, :to_sym => false
+    attribute_accessor :id
 
     def payload=(payload = nil)
       self.content = (payload ? payload : '')

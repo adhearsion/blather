@@ -6,7 +6,7 @@ class Iq
     register :query, :query
 
     ##
-    # Ensure the namespace is set to the query node
+    # Ensure the query node is created
     def self.new(type = nil)
       node = super
       node.query

@@ -9,10 +9,14 @@ class Stanza
     register :iq
 
     def self.import(node)
-      raise(ArgumentError, "Import missmatch #{[node.element_name, self.registered_name].inspect}") if node.element_name != self.registered_name.to_s
       klass = nil
       node.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
-      (klass || self).new(node.attributes[:type]).inherit(node)
+
+      if klass && klass != self
+        klass.import(node)
+      else
+        new(node[:type]).inherit(node)
+      end
     end
 
     def self.new(type = nil, to = nil, id = nil)

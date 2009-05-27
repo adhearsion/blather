@@ -3,33 +3,31 @@ class Stanza
 class PubSub
 
   class Subscriptions < PubSub
-    register :pubsub_subscriptions, :subscriptions, self.ns
+    register :pubsub_subscriptions, :subscriptions, self.registered_ns
 
     include Enumerable
+    alias_method :find, :xpath
 
     ##
     # Ensure the namespace is set to the query node
-    def initialize(type = nil, host = nil)
-      super type
-      self.to = host
-      subscriptions
+    def self.new(type = nil, host = nil)
+      new_node = super type
+      new_node.to = host
+      new_node.subscriptions
+      new_node
     end
 
     ##
     # Kill the pubsub node before running inherit
     def inherit(node)
-      subscriptions.remove!
+      subscriptions.remove
       super
     end
 
     def subscriptions
-      aff = pubsub.find_first('//pubsub_ns:subscriptions', :pubsub_ns => self.class.ns)
-      (self.pubsub << (aff = XMPPNode.new('subscriptions'))) unless aff
+      aff = pubsub.find_first('subscriptions', self.class.registered_ns)
+      (self.pubsub << (aff = XMPPNode.new('subscriptions', self.document))) unless aff
       aff
-    end
-
-    def [](subscription)
-      list[subscription]
     end
 
     def each(&block)
@@ -41,10 +39,9 @@ class PubSub
     end
 
     def list
-      items = subscriptions.find('//pubsub_ns:subscription', :pubsub_ns => self.class.ns)
-      items.inject({}) do |hash, item|
-        hash[item.attributes[:subscription].to_sym] ||= []
-        hash[item.attributes[:subscription].to_sym] << item.attributes[:node]
+      subscriptions.find('//ns:subscription', :ns => self.class.registered_ns).inject({}) do |hash, item|
+        hash[item[:subscription].to_sym] ||= []
+        hash[item[:subscription].to_sym] << item[:node]
         hash
       end
     end

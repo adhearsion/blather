@@ -19,10 +19,6 @@ module Blather
       Stanza::Iq.new.id.wont_be_nil
     end
 
-    it 'wont import non-iq stanzas' do
-      lambda { Stanza::Iq.import(XMPPNode.new('foo')) }.must_raise(Blather::ArgumentError)
-    end
-
     it 'creates a new Stanza::Iq object on import' do
       Stanza::Iq.import(XMPPNode.new('iq')).must_be_kind_of Stanza::Iq
     end

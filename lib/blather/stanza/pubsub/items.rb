@@ -3,9 +3,10 @@ class Stanza
 class PubSub
 
   class Items < PubSub
-    register :pubsub_items, :items, self.ns
+    register :pubsub_items, :items, self.registered_ns
 
     include Enumerable
+    alias_method :find, :xpath
 
     def self.request(host, path, list = [], max = nil)
       node = self.new :get, host
@@ -18,32 +19,26 @@ class PubSub
       node
     end
 
-    def initialize(type = nil, host = nil)
-      super
-      items
-    end
-
-    ##
-    # Kill the items node before running inherit
-    def inherit(node)
-      items_node.remove!
-      super
+    def self.new(type = nil, host = nil)
+      new_node = super
+      new_node.items
+      new_node
     end
 
     def node
-      items_node.attributes[:node]
+      items_node[:node]
     end
 
     def node=(node)
-      items_node.attributes[:node] = node
+      items_node[:node] = node
     end
 
     def max_items
-      items_node.attributes[:max_items].to_i if items_node.attributes[:max_items]
+      items_node[:max_items].to_i if items_node[:max_items]
     end
 
     def max_items=(max_items)
-      items_node.attributes[:max_items] = max_items
+      items_node[:max_items] = max_items
     end
 
     def each(&block)
@@ -51,13 +46,15 @@ class PubSub
     end
 
     def items
-      items_node.map { |i| PubSubItem.new.inherit i }
+      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
     end
 
     def items_node
-      node = pubsub.find_first('//items', self.class.ns)
-      node = pubsub.find_first('//pubsub_ns:items', :pubsub_ns => self.class.ns) unless node
-      (self.pubsub << (node = XMPPNode.new('items'))) unless node
+      node = self.pubsub.find_first('ns:items', :ns => self.class.registered_ns)
+      unless node
+        (self.pubsub << (node = XMPPNode.new('items', self.document)))
+        node.namespace = self.pubsub.namespace
+      end
       node
     end
   end

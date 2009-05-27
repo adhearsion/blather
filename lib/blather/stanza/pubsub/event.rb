@@ -5,23 +5,50 @@ class PubSub
   class Event < Message
     register :pubsub_event, :event, 'http://jabber.org/protocol/pubsub#event'
 
+    ##
+    # Ensure the event_node is created
+    def self.new(type = nil)
+      node = super
+      node.event_node
+      node
+    end
+
+    ##
+    # Kill the event_node node before running inherit
+    def inherit(node)
+      event_node.remove
+      super
+    end
+
     def node
-      items_node.attributes[:node]
+      items_node[:node]
     end
 
     def items
-      items_node.map { |i| PubSubItem.new.inherit i }
+      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
+    end
+
+    def event_node
+      node = find_first('ns:event', :ns => self.class.registered_ns)
+      node = find_first('event', self.class.registered_ns) unless node
+      unless node
+        (self << (node = XMPPNode.new('event', self.document)))
+        node.namespace = self.class.registered_ns
+      end
+      node
     end
 
     def items_node
-      node = find_first('//items', self.class.ns)
-      node = find_first('//pubsub_ns:items', :pubsub_ns => self.class.ns) unless node
-      (self.pubsub << (node = XMPPNode.new('items'))) unless node
+      node = find_first('event/ns:items', :ns => self.class.registered_ns)
+      unless node
+        (self.event_node << (node = XMPPNode.new('items', self.document)))
+        node.namespace = event_node.namespace
+      end
       node
     end
 
     def subscription_ids
-      find('//hns:header[@name="SubID"]', :hns => 'http://jabber.org/protocol/shim').map { |n| n.content }
+      find('//ns:header[@name="SubID"]', :ns => 'http://jabber.org/protocol/shim').map { |n| n.content }
     end
   end
 

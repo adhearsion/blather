@@ -8,8 +8,19 @@ class Stanza
 
     register :message
 
+    def self.import(node)
+      klass = nil
+      node.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
+
+      if klass && klass != self
+        klass.import(node)
+      else
+        new(node[:type]).inherit(node)
+      end
+    end
+
     def self.new(to = nil, body = nil, type = :chat)
-      node = super()
+      node = super(:message)
       node.to = to
       node.type = type
       node.body = body

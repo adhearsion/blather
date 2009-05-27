@@ -3,30 +3,28 @@ class Stanza
 class PubSub
 
   class Affiliations < PubSub
-    register :pubsub_affiliations, :affiliations, self.ns
+    register :pubsub_affiliations, :affiliations, self.registered_ns
 
     include Enumerable
+    alias_method :find, :xpath
 
-    def initialize(type = nil, host = nil)
-      super
-      affiliations
+    def self.new(type = nil, host = nil)
+      new_node = super
+      new_node.affiliations
+      new_node
     end
 
     ##
     # Kill the affiliations node before running inherit
     def inherit(node)
-      affiliations.remove!
+      affiliations.remove
       super
     end
 
     def affiliations
-      aff = pubsub.find_first('//pubsub_ns:affiliations', :pubsub_ns => self.class.ns)
-      self.pubsub << (aff = XMPPNode.new('affiliations')) unless aff
+      aff = pubsub.find_first('pubsub_ns:affiliations', :pubsub_ns => self.class.registered_ns)
+      self.pubsub << (aff = XMPPNode.new('affiliations', self.document)) unless aff
       aff
-    end
-
-    def [](affiliation)
-      list[affiliation]
     end
 
     def each(&block)
@@ -38,10 +36,10 @@ class PubSub
     end
 
     def list
-      items = affiliations.find('//pubsub_ns:affiliation', :pubsub_ns => self.class.ns)
+      items = affiliations.find('//ns:affiliation', :ns => self.class.registered_ns)
       items.inject({}) do |hash, item|
-        hash[item.attributes[:affiliation].to_sym] ||= []
-        hash[item.attributes[:affiliation].to_sym] << item.attributes[:node]
+        hash[item[:affiliation].to_sym] ||= []
+        hash[item[:affiliation].to_sym] << item[:node]
         hash
       end
     end

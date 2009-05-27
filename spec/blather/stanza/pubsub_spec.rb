@@ -6,18 +6,66 @@ module Blather
       XMPPNode.class_from_registration(:pubsub, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub
     end
 
+    it 'is importable as a subscription' do
+      XMPPNode.import(parse_stanza(<<-XML).root).must_be_instance_of Stanza::PubSub
+        <iq type='result'
+            from='pubsub.shakespeare.lit'
+            to='francisco@denmark.lit/barracks'
+            id='sub1'>
+          <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+            <subscription
+                node='princely_musings'
+                jid='francisco@denmark.lit'
+                subid='ba49252aaa4f5d320c24d3766f0bdcade78c78d3'
+                subscription='subscribed'/>
+          </pubsub>
+        </iq>
+      XML
+    end
+
+    it 'is importable as a subscribe' do
+      XMPPNode.import(parse_stanza(<<-XML).root).must_be_instance_of Stanza::PubSub
+        <iq type='set'
+            from='francisco@denmark.lit/barracks'
+            to='pubsub.shakespeare.lit'
+            id='sub1'>
+          <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+            <subscribe
+                node='princely_musings'
+                jid='francisco@denmark.lit'/>
+          </pubsub>
+        </iq>
+      XML
+    end
+
+    it 'is importable as an unsubscribe' do
+      XMPPNode.import(parse_stanza(<<-XML).root).must_be_instance_of Stanza::PubSub
+        <iq type='set'
+            from='francisco@denmark.lit/barracks'
+            to='pubsub.shakespeare.lit'
+            id='unsub1'>
+          <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+             <unsubscribe
+                 node='princely_musings'
+                 jid='francisco@denmark.lit'/>
+          </pubsub>
+        </iq>
+      XML
+      
+    end
+
     it 'ensures a pubusb node is present on create' do
       pubsub = Stanza::PubSub.new
-      pubsub.find_first('/iq/pubsub_ns:pubsub', :pubsub_ns => Stanza::PubSub.registered_ns).wont_be_nil
+      pubsub.find_first('/iq/ns:pubsub', :ns => Stanza::PubSub.registered_ns).wont_be_nil
     end
 
     it 'ensures a pubsub node exists when calling #pubsub' do
       pubsub = Stanza::PubSub.new
       pubsub.remove_children :pubsub
-      pubsub.find_first('/iq/pubsub_ns:pubsub', :pubsub_ns => Stanza::PubSub.registered_ns).must_be_nil
+      pubsub.find_first('/iq/ns:pubsub', :ns => Stanza::PubSub.registered_ns).must_be_nil
 
       pubsub.pubsub.wont_be_nil
-      pubsub.find_first('/iq/pubsub_ns:pubsub', :pubsub_ns => Stanza::PubSub.registered_ns).wont_be_nil
+      pubsub.find_first('/iq/ns:pubsub', :ns => Stanza::PubSub.registered_ns).wont_be_nil
     end
 
     it 'sets the host if requested' do
@@ -44,6 +92,7 @@ module Blather
       item.payload.must_be_nil
       item.payload = 'testing'
       item.payload.must_equal 'testing'
+      item.content.must_equal 'testing'
     end
 
     it 'allows the payload to be unset' do

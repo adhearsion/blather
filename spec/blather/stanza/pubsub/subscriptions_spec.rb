@@ -8,62 +8,54 @@ def control_subscriptions
     :none => ['node5'] }
 end
 
-describe 'Blather::Stanza::PubSub::Subscriptions' do
-  it 'registers itself' do
-    XMPPNode.class_from_registration(:subscriptions, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub::Subscriptions
-  end
-
-  it 'can be imported' do
-    node = XML::Document.string(subscriptions_xml).root
-    subscriptions = XMPPNode.import node
-    subscriptions.class.must_equal Stanza::PubSub::Subscriptions
-  end
-
-  it 'ensures an subscriptions node is present on create' do
-    subscriptions = Stanza::PubSub::Subscriptions.new
-    subscriptions.find_first('//pubsub_ns:pubsub/subscriptions', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
-  end
-
-  it 'ensures an subscriptions node exists when calling #subscriptions' do
-    subscriptions = Stanza::PubSub::Subscriptions.new
-    subscriptions.pubsub.remove_child :subscriptions
-    subscriptions.find_first('//pubsub_ns:pubsub/subscriptions', :pubsub_ns => Stanza::PubSub.ns).must_be_nil
-
-    subscriptions.list.wont_be_nil
-    subscriptions.find_first('//pubsub_ns:pubsub/subscriptions', :pubsub_ns => Stanza::PubSub.ns).wont_be_nil
-  end
-
-  it 'defaults to a get node' do
-    aff = Stanza::PubSub::Subscriptions.new
-    aff.type.must_equal :get
-  end
-
-  it 'sets the host if requested' do
-    aff = Stanza::PubSub::Subscriptions.new :get, 'pubsub.jabber.local'
-    aff.to.must_equal JID.new('pubsub.jabber.local')
-  end
-
-  it 'can import a subscriptions result node' do
-    node = XML::Document.string(subscriptions_xml).root
-
-    subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
-    subscriptions.size.must_equal 4
-    subscriptions.list.must_equal control_subscriptions
-  end
-
-  it 'will iterate over each subscription' do
-    node = XML::Document.string(subscriptions_xml).root
-    subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
-    subscriptions.each do |type, nodes|
-      nodes.must_equal control_subscriptions[type]
+module Blather
+  describe 'Blather::Stanza::PubSub::Subscriptions' do
+    it 'registers itself' do
+      XMPPNode.class_from_registration(:subscriptions, 'http://jabber.org/protocol/pubsub').must_equal Stanza::PubSub::Subscriptions
     end
-  end
 
-  it 'can be accessed via "[]"' do
-    node = XML::Document.string(subscriptions_xml).root
-    subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
-    [:subscribed, :unconfigured, :pending, :none].each do |type|
-      subscriptions[type].must_equal control_subscriptions[type]
+    it 'can be imported' do
+      XMPPNode.import(parse_stanza(subscriptions_xml).root).must_be_instance_of Stanza::PubSub::Subscriptions
+    end
+
+    it 'ensures an subscriptions node is present on create' do
+      subscriptions = Stanza::PubSub::Subscriptions.new
+      subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Stanza::PubSub.registered_ns).wont_be_empty
+    end
+
+    it 'ensures an subscriptions node exists when calling #subscriptions' do
+      subscriptions = Stanza::PubSub::Subscriptions.new
+      subscriptions.pubsub.remove_children :subscriptions
+      subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Stanza::PubSub.registered_ns).must_be_empty
+
+      subscriptions.list.wont_be_nil
+      subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Stanza::PubSub.registered_ns).wont_be_empty
+    end
+
+    it 'defaults to a get node' do
+      aff = Stanza::PubSub::Subscriptions.new
+      aff.type.must_equal :get
+    end
+
+    it 'sets the host if requested' do
+      aff = Stanza::PubSub::Subscriptions.new :get, 'pubsub.jabber.local'
+      aff.to.must_equal JID.new('pubsub.jabber.local')
+    end
+
+    it 'can import a subscriptions result node' do
+      node = parse_stanza(subscriptions_xml).root
+
+      subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
+      subscriptions.size.must_equal 4
+      subscriptions.list.must_equal control_subscriptions
+    end
+
+    it 'will iterate over each subscription' do
+      node = parse_stanza(subscriptions_xml).root
+      subscriptions = Stanza::PubSub::Subscriptions.new.inherit node
+      subscriptions.each do |type, nodes|
+        nodes.must_equal control_subscriptions[type]
+      end
     end
   end
 end

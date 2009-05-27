@@ -11,10 +11,10 @@ module XML
       value.nil? ? remove_attribute(name) : attr_set(name, value.to_s)
     end
 
-    alias_method :attr_get, :[]
-    def [](name)
-      attr_get name.to_s
-    end
+#    alias_method :attr_get, :[]
+#    def [](name)
+#      attr_get name.to_s
+#    end
 
     alias_method :nokogiri_xpath, :xpath
     def xpath(*paths)
