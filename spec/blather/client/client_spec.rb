@@ -128,24 +128,6 @@ module Blather
       @client = Blather::Client.new
     end
 
-    it 'sets the from attr on a stanza' do
-      jid = 'me@me.com'
-      stanza = mock(:from => nil)
-      stanza.expects(:from=).with jid
-      @client.jid = jid
-      @client.write stanza
-    end
-
-    it 'does not set the from attr if it already exists' do
-      jid = 'me@me.com'
-      stanza = Stanza::Iq.new
-      stanza.from = jid
-      stanza.expects(:from).returns jid
-      stanza.expects(:from=).never
-      @client.jid = jid
-      @client.write stanza
-    end
-
     it 'writes to the stream' do
       stanza = Stanza::Iq.new
       stream = mock()
