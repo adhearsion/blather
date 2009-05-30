@@ -60,7 +60,7 @@ at_exit do
     if options[:log]
       log = File.new(options[:log], 'a')
       log.sync = options[:debug]
-      Blather::LOG.level = Logger::DEBUG if options[:debug]
+      Blather.logger.level = Logger::DEBUG if options[:debug]
       $stdout.reopen log
       $stderr.reopen $stdout
     end

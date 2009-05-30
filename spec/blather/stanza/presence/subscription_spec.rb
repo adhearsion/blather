@@ -80,6 +80,19 @@ module Blather
       sub.request?.must_equal true
     end
 
+    it "successfully routes chained actions" do
+      from = JID.new("foo@bar.com")
+      to = JID.new("baz@quux.com")
+      sub = Stanza::Presence::Subscription.new
+      sub.from = from
+      sub.to = to
+      sub.cancel!
+      sub.unsubscribe!
+      sub.type.must_equal :unsubscribe
+      sub.to.must_equal from
+      sub.from.must_equal to
+    end
+
     it "will inherit only another node's attributes" do
       inheritable = XMPPNode.new 'foo'
       inheritable[:bar] = 'baz'

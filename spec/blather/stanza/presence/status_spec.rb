@@ -109,5 +109,19 @@ module Blather
 
       lambda { status1 <=> status2 }.must_raise(Blather::ArgumentError)
     end
+
+    Stanza::Presence::Status::VALID_STATES.each do |valid_state|
+      it "provides a helper (#{valid_state}?) for state #{valid_state}" do
+        Stanza::Presence::Status.new.must_respond_to :"#{valid_state}?"
+      end
+
+      it "returns true on call to (#{valid_state}?) if state == #{valid_state}" do
+        method = "#{valid_state}?".to_sym
+        stat = Stanza::Presence::Status.new
+        stat.state = valid_state
+        stat.must_respond_to method
+        stat.__send__(method).must_equal true
+      end
+    end
   end
 end

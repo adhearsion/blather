@@ -22,7 +22,7 @@ module Blather
     #   responds to #to_s
     def send(stanza)
       #TODO Queue if not ready
-      LOG.debug "SENDING: (#{caller[1]}) #{stanza}"
+      Blather.logger.debug "SENDING: (#{caller[1]}) #{stanza}"
       send_data stanza.respond_to?(:to_xml) ? stanza.to_xml : stanza.to_s
     end
 
@@ -74,8 +74,8 @@ module Blather
     ##
     # Called by EM with data from the wire
     def receive_data(data) # :nodoc:
-      LOG.debug "\n#{'-'*30}\n"
-      LOG.debug "<< #{data}"
+      Blather.logger.debug "\n#{'-'*30}\n"
+      Blather.logger.debug "<< #{data}"
       @parser.receive_data data
 
     rescue ParseWarning => e
@@ -98,7 +98,7 @@ module Blather
     ##
     # Called by the parser with parsed nodes
     def receive(node) # :nodoc:
-      LOG.debug "RECEIVING (#{node.element_name}) #{node}"
+      Blather.logger.debug "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
       if @node.find_first('//stream:error', :stream => 'http://etherx.jabber.org/streams')
@@ -127,7 +127,7 @@ module Blather
     ##
     # Ensure the JID gets attached to the client
     def jid=(new_jid) # :nodoc:
-      LOG.debug "NEW JID: #{new_jid}"
+      Blather.logger.debug "NEW JID: #{new_jid}"
       @jid = JID.new new_jid
       @client.jid = @jid
     end
@@ -180,7 +180,7 @@ module Blather
     #   Runs through the list of features starting each one in turn
     def features
       feature = @features.first
-      LOG.debug "FEATURE: #{feature}"
+      Blather.logger.debug "FEATURE: #{feature}"
       @state = case feature ? feature.namespace.href : nil
       when 'urn:ietf:params:xml:ns:xmpp-tls'      then :establish_tls
       when 'urn:ietf:params:xml:ns:xmpp-sasl'     then :authenticate_sasl
@@ -200,9 +200,9 @@ module Blather
       unless @tls
         @tls = TLS.new self
         # on success destroy the TLS object and restart the stream
-        @tls.on_success { LOG.debug "TLS: SUCCESS"; @tls = nil; start }
+        @tls.on_success { Blather.logger.debug "TLS: SUCCESS"; @tls = nil; start }
         # on failure stop the stream
-        @tls.on_failure { |err| LOG.debug "TLS: FAILURE"; @error = err; stop }
+        @tls.on_failure { |err| Blather.logger.debug "TLS: FAILURE"; @error = err; stop }
 
         @node = @features.shift
       end
@@ -215,9 +215,9 @@ module Blather
       unless @sasl
         @sasl = SASL.new(self, @jid, @pass)
         # on success destroy the SASL object and restart the stream
-        @sasl.on_success { LOG.debug "SASL SUCCESS"; @sasl = nil; start }
+        @sasl.on_success { Blather.logger.debug "SASL SUCCESS"; @sasl = nil; start }
         # on failure set the error and stop the stream
-        @sasl.on_failure { |err| LOG.debug "SASL FAIL"; @error = err; stop }
+        @sasl.on_failure { |err| Blather.logger.debug "SASL FAIL"; @error = err; stop }
 
         @node = @features.shift
       end
@@ -230,9 +230,9 @@ module Blather
       unless @resource
         @resource = Resource.new self, @jid
         # on success destroy the Resource object, set the jid, continue along the features dispatch process
-        @resource.on_success { |jid| LOG.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
+        @resource.on_success { |jid| Blather.logger.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
         # on failure end the stream
-        @resource.on_failure { |err| LOG.debug "RESOURCE: FAILURE"; @error = err; stop }
+        @resource.on_failure { |err| Blather.logger.debug "RESOURCE: FAILURE"; @error = err; stop }
 
         @node = @features.shift
       end
@@ -246,9 +246,9 @@ module Blather
         @session = Session.new self, @to
         # on success destroy the session object, let the client know the stream has been started
         # then continue the features dispatch process
-        @session.on_success { LOG.debug "SESSION: SUCCESS"; @session = nil; @client.post_init; @state = :features; dispatch }
+        @session.on_success { Blather.logger.debug "SESSION: SUCCESS"; @session = nil; @client.post_init; @state = :features; dispatch }
         # on failure end the stream
-        @session.on_failure { |err| LOG.debug "SESSION: FAILURE"; @error = err; stop }
+        @session.on_failure { |err| Blather.logger.debug "SESSION: FAILURE"; @error = err; stop }
 
         @node = @features.shift
       end

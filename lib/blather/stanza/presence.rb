@@ -28,9 +28,7 @@ class Stanza
       super :presence
     end
 
-    VALID_TYPES.each do |valid_type|
-      define_method("#{valid_type}?") { self.type == valid_type }
-    end
+    attribute_helpers_for(:type, VALID_TYPES)
 
     ##
     # Ensures type is one of :unavailable, :subscribe, :subscribed, :unsubscribe, :unsubscribed, :probe or :error
