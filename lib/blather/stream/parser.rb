@@ -21,6 +21,8 @@ class Stream # :nodoc:
       Blather.logger.debug "PARSING: (#{string})" if @@debug
       @stream_error = string =~ /stream:error/
       @parser.write string
+    rescue RuntimeError => e
+      error e.to_s
     end
 
     def start_document; end
