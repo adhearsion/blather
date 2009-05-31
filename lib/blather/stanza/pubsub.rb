@@ -25,6 +25,14 @@ class Stanza
       new_node
     end
 
+    def self.items(host, node, list = [], max = nil)
+      new_node = self.new :get, host
+      new_node.items_node[:node] = node
+      [list].flatten.each { |item| new_node.items_node << PubSubItem.new(item) }
+      new_node.items_node[:max_items] = max
+      new_node
+    end
+
     ##
     # Kill the pubsub node before running inherit
     def inherit(node)
@@ -47,6 +55,15 @@ class Stanza
       p
     end
 
+    def items_node
+      node = pubsub.find_first('ns:items', :ns => self.class.registered_ns)
+      unless node
+        (self.pubsub << (node = XMPPNode.new('items', self.document)))
+        node.namespace = pubsub.namespace
+      end
+      node
+    end
+
     def items
       items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
     end
@@ -56,14 +73,14 @@ class Stanza
     def self.new(id = nil, payload = nil)
       new_node = super 'item'
       new_node.id = id
-      new_node.payload = payload
+      new_node.payload = payload if payload
       new_node
     end
 
     attribute_accessor :id
 
     def payload=(payload = nil)
-      self.content = (payload ? payload : '')
+      self.content = payload
     end
 
     def payload
