@@ -7,6 +7,10 @@ module Blather
     end
     module_function :client
 
+    ##
+    # Push data to the stream
+    # This works such that it can be chained:
+    #   self << stanza1 << stanza2 << "raw data"
     def <<(stanza)
       write stanza
       self
