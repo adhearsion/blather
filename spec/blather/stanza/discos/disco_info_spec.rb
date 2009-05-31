@@ -41,11 +41,18 @@ describe Blather::Stanza::Iq::DiscoInfo do
     r.identities.size.must_equal 1
     r.identities.map { |i| i.class }.uniq.must_equal [Blather::Stanza::Iq::DiscoInfo::Identity]
   end
+
   it 'inherits a list of features' do
     n = parse_stanza disco_info_xml
     r = Blather::Stanza::Iq::DiscoInfo.new.inherit n.root
     r.features.size.must_equal 2
     r.features.map { |i| i.class }.uniq.must_equal [Blather::Stanza::Iq::DiscoInfo::Feature]
+  end
+
+  it 'is constructed properly' do
+    n = Blather::Stanza::Iq::DiscoInfo.new :get, '/path/to/node'
+    n.to = 'to@jid.com'
+    n.find("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoInfo.registered_ns).wont_be_empty
   end
 end
 

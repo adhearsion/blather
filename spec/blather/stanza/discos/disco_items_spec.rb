@@ -30,6 +30,12 @@ describe Blather::Stanza::Iq::DiscoItems do
     Blather::XMPPNode.import(parse_stanza(disco_items_xml).root).must_be_instance_of Blather::Stanza::Iq::DiscoItems
   end
 
+  it 'is constructed properly' do
+    n = Blather::Stanza::Iq::DiscoItems.new :get, '/path/to/node'
+    n.to = 'to@jid.com'
+    n.find("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoItems.registered_ns).wont_be_empty
+  end
+
   it 'has a node attribute' do
     n = Blather::Stanza::Iq::DiscoItems.new nil, 'music', []
     n.node.must_equal 'music'
