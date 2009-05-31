@@ -2,10 +2,17 @@ require File.join(File.dirname(__FILE__), 'client')
 
 module Blather
   module DSL
+
+    autoload :PubSub, File.expand_path(File.join(File.dirname(__FILE__), *%w[dsl pubsub]))
+
     def client
       @client ||= Client.new
     end
     module_function :client
+
+    def pubsub
+      @pubsub ||= PubSub.new
+    end
 
     ##
     # Push data to the stream

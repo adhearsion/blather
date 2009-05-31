@@ -4,7 +4,7 @@ class Stanza
   autoload :Subscriber, 'lib/blather/stanza/pubsub/subscriber'
 
   class PubSub < Iq
-    register :pubsub, :pubsub, 'http://jabber.org/protocol/pubsub'
+    register :pubsub_node, :pubsub, 'http://jabber.org/protocol/pubsub'
 
     include Subscriber
 
@@ -33,12 +33,6 @@ class Stanza
     end
 
     def pubsub
-#      p = find_first('*[local-name()="pubsub"]')
-#      $stderr.puts(p.namespace ? p.namespace.href : nil) if p
-
-#      o = find_first('pubsub', self.class.registered_ns)
-#      o = find_first('ns:pubsub', :ns => self.class.registered_ns)
-#      $stderr.puts(o.namespace ? o.namespace.href : nil) if o
       p = if self.class.registered_ns
         find_first('ns:pubsub', :ns => self.class.registered_ns) ||
         find_first('pubsub', :ns => self.class.registered_ns)
@@ -51,6 +45,10 @@ class Stanza
         p.namespace = self.class.registered_ns
       end
       p
+    end
+
+    def items
+      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
     end
   end
 
