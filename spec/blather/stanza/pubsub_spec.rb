@@ -88,7 +88,7 @@ describe Blather::Stanza::PubSub do
   end
 end
 
-describe 'Blather::Stanza::PubSub#items' do
+describe 'Blather::Stanza::PubSub#items helper' do
   it 'can request all items' do
     pubsub = Blather::Stanza::PubSub.items 'host.name', '/path/to/node'
     pubsub.document.find("/iq[@type='get' and @to='host.name' and @id='#{pubsub.id}']/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
