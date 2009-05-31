@@ -63,7 +63,6 @@ module Blather #:nodoc:
     end
 
     def write(stanza)
-      stanza.from ||= jid if stanza.respond_to?(:from)
       @stream.send(stanza) if @stream
     end
 

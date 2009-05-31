@@ -18,9 +18,11 @@ class Stream # :nodoc:
     end
 
     def receive_data(string)
-      LOG.debug "PARSING: (#{string})" if @@debug
+      Blather.logger.debug "PARSING: (#{string})" if @@debug
       @stream_error = string =~ /stream:error/
       @parser.write string
+    rescue RuntimeError => e
+      error e.to_s
     end
 
     def start_document; end
@@ -28,7 +30,7 @@ class Stream # :nodoc:
     def warning(*args); end
 
     def start_element_ns(elem, attrs, prefix, uri, namespaces)
-      LOG.debug "START ELEM: (#{[elem, attrs, prefix, uri, namespaces].inspect})" if @@debug
+      Blather.logger.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
 
       args = [elem]
       args << @current.document if @current
@@ -64,7 +66,7 @@ class Stream # :nodoc:
     end
 
     def end_element_ns(elem, prefix, uri)
-      LOG.debug "END ELEM: #{[elem, prefix, uri].inspect}" if @@debug
+      Blather.logger.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if elem == 'stream'
         deliver XMPPNode.new('stream:end')
@@ -77,7 +79,7 @@ class Stream # :nodoc:
     end
 
     def characters(chars = '')
-      LOG.debug "CHARS: #{chars}" if @@debug
+      Blather.logger.debug "CHARS: #{chars}" if @@debug
       @current << Nokogiri::XML::Text.new(chars, @current.document) if @current
     end
 

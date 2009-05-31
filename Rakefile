@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = 'blather'
-    gem.summary = 'Simpler XMPP'
-    gem.description = 'An evented XMPP library written on EventMachine and libxml-ruby'
+    gem.summary = 'Simpler XMPP built for speed'
+    gem.description = 'An XMPP DSL for Ruby written on top of EventMachine and Nokogiri'
 
     gem.email = 'sprsquish@gmail.com'
     gem.homepage = 'http://github.com/sprsquish/blather'
@@ -19,7 +19,7 @@ begin
     gem.add_dependency 'eventmachine', '>= 0.12.6'
     gem.add_dependency 'nokogiri', '>= 1.3.0'
 
-    gem.files = FileList['examples/**/*', 'lib/**/*', 'ext/*.{rb,c}'].to_a
+    gem.files = FileList['examples/**/*', 'lib/**/*'].to_a
 
     gem.test_files = FileList['spec/**/*.rb']
 

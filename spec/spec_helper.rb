@@ -7,6 +7,8 @@ require 'minitest/spec'
 require 'mocha'
 require 'mocha/expectation_error'
 
+MiniTest::Unit.autorun
+
 module MiniTest
   require 'pathname' if MINI_DIR =~ %r{^./}
 
@@ -36,10 +38,6 @@ class Object
   end
 end
 
-include MiniTest
-
 def parse_stanza(xml)
   Nokogiri::XML.parse xml
 end
-
-Unit.autorun

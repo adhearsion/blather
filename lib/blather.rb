@@ -47,6 +47,16 @@
 ].each { |r| require r }
 
 module Blather
-  LOG = Logger.new($stdout) unless const_defined?(:LOG)
-  LOG.level = Logger::INFO
+  @@logger = nil
+  def self.logger
+    unless @@logger
+      @@logger = Logger.new($stdout)
+      @@logger.level = Logger::INFO
+    end
+    @@logger
+  end
+
+  def self.logger=(logger)
+    @@logger = logger
+  end
 end

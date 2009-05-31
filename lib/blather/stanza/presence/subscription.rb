@@ -25,47 +25,41 @@ class Presence
     # Create an approve stanza
     def approve!
       self.type = :subscribed
-      morph_to_reply
+      reply_if_needed!
     end
 
     ##
     # Create a refuse stanza
     def refuse!
       self.type = :unsubscribed
-      morph_to_reply
+      reply_if_needed!
     end
 
     ##
     # Create an unsubscribe stanza
     def unsubscribe!
       self.type = :unsubscribe
-      morph_to_reply
+      reply_if_needed!
     end
 
     ##
     # Create a cancel stanza
     def cancel!
       self.type = :unsubscribed
-      morph_to_reply
+      reply_if_needed!
     end
 
     ##
     # Create a request stanza
     def request!
       self.type = :subscribe
-      morph_to_reply
+      reply_if_needed!
     end
 
     def request?
       self.type == :subscribe
     end
 
-  private
-    def morph_to_reply
-      self.to = self.from if self.from
-      self.from = nil
-      self
-    end
   end #Subscription
 
 end #Presence

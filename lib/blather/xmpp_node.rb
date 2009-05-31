@@ -250,10 +250,7 @@ module Blather
     # Inherit all of <tt>stanza</tt>'s attributes and children
     def inherit(stanza)
       inherit_attrs stanza.attributes
-      stanza.children.each do |c|
-        self << (child = c.dup)
-        child.document = self.document
-      end
+      stanza.children.each { |c| self << c.dup }
       self
     end
 

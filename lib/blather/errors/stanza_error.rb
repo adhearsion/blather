@@ -72,11 +72,7 @@ class StanzaError < BlatherError
       text.content = self.text
     end
 
-    self.extras.each do |extra|
-      error_node << (extra_copy = extra.dup)
-      extra_copy.document = extra.document
-    end
-
+    self.extras.each { |extra| error_node << extra.dup }
     node
   end
 

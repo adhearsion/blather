@@ -33,7 +33,7 @@ class Stream # :nodoc:
     # Sets the sends the JID (now bound to a resource)
     # back to the stream
     def result
-      LOG.debug "RESOURE NODE #{@node}"
+      Blather.logger.debug "RESOURCE NODE #{@node}"
       # ensure this is a response to our original request
       if @id == @node['id']
         @jid = JID.new @node.find_first('//bind_ns:bind/bind_ns:jid', :bind_ns => BIND_NS).content

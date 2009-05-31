@@ -53,10 +53,7 @@ class StreamError < BlatherError
       text.content = self.text
     end
 
-    self.extras.each do |extra|
-      node << (extra_copy = extra.dup)
-      extra_copy.document = node.document
-    end
+    self.extras.each { |extra| node << extra.dup }
     node
   end
 

@@ -112,7 +112,7 @@ class Stream # :nodoc:
           key, value = statement.split('=')
           res[key] = value.delete('"') unless key.empty?
         end
-        LOG.debug "CHALLENGE DECODE: #{res.inspect}"
+        Blather.logger.debug "CHALLENGE DECODE: #{res.inspect}"
 
         @nonce ||= res['nonce']
         @realm ||= res['realm']
@@ -147,8 +147,8 @@ class Stream # :nodoc:
           @response[:response] = generate_response
           @response.each { |k,v| @response[k] = "\"#{v}\"" unless [:nc, :qop, :response, :charset].include?(k) }
 
-          LOG.debug "CHALLENGE RESPOSNE: #{@response.inspect}"
-          LOG.debug "CH RESP TXT: #{@response.map { |k,v| "#{k}=#{v}" } * ','}"
+          Blather.logger.debug "CHALLENGE RESPONSE: #{@response.inspect}"
+          Blather.logger.debug "CH RESP TXT: #{@response.map { |k,v| "#{k}=#{v}" } * ','}"
 
           # order is to simplify testing
           # Ruby 1.9 eliminates the need for this with ordered hashes
