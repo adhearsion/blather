@@ -67,6 +67,14 @@ class Stanza
     def items
       items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
     end
+
+    def node=(node)
+      items_node[:node] = node
+    end
+
+    def node
+      items_node[:node]
+    end
   end
 
   class PubSubItem < XMPPNode

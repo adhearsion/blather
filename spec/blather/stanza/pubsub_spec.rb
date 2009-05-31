@@ -86,6 +86,19 @@ describe Blather::Stanza::PubSub do
     pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
     pubsub.items.map { |i| i.class }.uniq.must_equal [Blather::Stanza::PubSub::PubSubItem]
   end
+
+  it 'has a #node helper' do
+    pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
+    pubsub.node.must_equal 'princely_musings'
+  end
+
+  it 'has a #node= helper' do
+    pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
+    pubsub.node.must_equal 'princely_musings'
+    pubsub.node = 'new_node_name'
+    pubsub.node.must_equal 'new_node_name'
+    pubsub.document.find('/iq/pubsub/ns:items[@node="new_node_name"]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+  end
 end
 
 describe 'Blather::Stanza::PubSub#items helper' do
