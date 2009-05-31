@@ -9,51 +9,49 @@ def control_affiliations
     :none => ['node6'] }
 end
 
-module Blather
-  describe 'Blather::Stanza::PubSub::Affiliations' do
-    it 'registers itself' do
-      XMPPNode.class_from_registration(:affiliations, Stanza::PubSub.registered_ns).must_equal Stanza::PubSub::Affiliations
-    end
+describe Blather::Stanza::PubSub::Affiliations do
+  it 'registers itself' do
+    Blather::XMPPNode.class_from_registration(:affiliations, Blather::Stanza::PubSub.registered_ns).must_equal Blather::Stanza::PubSub::Affiliations
+  end
 
-    it 'can be imported' do
-      XMPPNode.import(parse_stanza(affiliations_xml).root).must_be_instance_of Stanza::PubSub::Affiliations
-    end
+  it 'can be imported' do
+    Blather::XMPPNode.import(parse_stanza(affiliations_xml).root).must_be_instance_of Blather::Stanza::PubSub::Affiliations
+  end
 
-    it 'ensures an affiliations node is present on create' do
-      affiliations = Stanza::PubSub::Affiliations.new
-      affiliations.find_first('//ns:affiliations', :ns => Stanza::PubSub.registered_ns).wont_be_nil
-    end
+  it 'ensures an affiliations node is present on create' do
+    affiliations = Blather::Stanza::PubSub::Affiliations.new
+    affiliations.find_first('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_nil
+  end
 
-    it 'ensures an affiliations node exists when calling #affiliations' do
-      affiliations = Stanza::PubSub::Affiliations.new
-      affiliations.pubsub.remove_children :affiliations
-      affiliations.find_first('//ns:affiliations', :ns => Stanza::PubSub.registered_ns).must_be_nil
+  it 'ensures an affiliations node exists when calling #affiliations' do
+    affiliations = Blather::Stanza::PubSub::Affiliations.new
+    affiliations.pubsub.remove_children :affiliations
+    affiliations.find_first('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).must_be_nil
 
-      affiliations.affiliations.wont_be_nil
-      affiliations.find_first('//ns:affiliations', :ns => Stanza::PubSub.registered_ns).wont_be_nil
-    end
+    affiliations.affiliations.wont_be_nil
+    affiliations.find_first('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_nil
+  end
 
-    it 'defaults to a get node' do
-      Stanza::PubSub::Affiliations.new.type.must_equal :get
-    end
+  it 'defaults to a get node' do
+    Blather::Stanza::PubSub::Affiliations.new.type.must_equal :get
+  end
 
-    it 'sets the host if requested' do
-      aff = Stanza::PubSub::Affiliations.new :get, 'pubsub.jabber.local'
-      aff.to.must_equal JID.new('pubsub.jabber.local')
-    end
+  it 'sets the host if requested' do
+    aff = Blather::Stanza::PubSub::Affiliations.new :get, 'pubsub.jabber.local'
+    aff.to.must_equal Blather::JID.new('pubsub.jabber.local')
+  end
 
-    it 'can import an affiliates result node' do
-      node = parse_stanza(affiliations_xml).root
+  it 'can import an affiliates result node' do
+    node = parse_stanza(affiliations_xml).root
 
-      affiliations = Stanza::PubSub::Affiliations.new.inherit node
-      affiliations.size.must_equal 5
-      affiliations.list.must_equal control_affiliations
-    end
+    affiliations = Blather::Stanza::PubSub::Affiliations.new.inherit node
+    affiliations.size.must_equal 5
+    affiliations.list.must_equal control_affiliations
+  end
 
-    it 'will iterate over each affiliation' do
-      XMPPNode.import(parse_stanza(affiliations_xml).root).each do |type, nodes|
-        nodes.must_equal control_affiliations[type]
-      end
+  it 'will iterate over each affiliation' do
+    Blather::XMPPNode.import(parse_stanza(affiliations_xml).root).each do |type, nodes|
+      nodes.must_equal control_affiliations[type]
     end
   end
 end
