@@ -55,6 +55,12 @@ describe Blather::DSL do
     @dsl.my_roster
   end
 
+  it 'provides a << style writer that provides chaining' do
+    stanza = Blather::Stanza::Iq.new
+    @client.expects(:write).with stanza
+    (@dsl << stanza).must_equal @dsl
+  end
+
   it 'provides a writer' do
     stanza = Blather::Stanza::Iq.new
     @client.expects(:write).with stanza

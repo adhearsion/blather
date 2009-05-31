@@ -7,6 +7,11 @@ module Blather
     end
     module_function :client
 
+    def <<(stanza)
+      write stanza
+      self
+    end
+
     ##
     # Prepare server settings
     #   setup [node@domain/resource], [password], [host], [port]
