@@ -2,6 +2,8 @@ module Blather
 
   class Stream < EventMachine::Connection
     STREAM_NS = 'http://etherx.jabber.org/streams'
+    attr_accessor :jid
+
     ##
     # Start the stream between client and server
     #   [client] must be an object that will respond to #call and #jid=

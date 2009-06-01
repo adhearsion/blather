@@ -16,6 +16,11 @@ class Stream
       end
     end
 
+    def send(stanza)
+      stanza.from ||= self.jid if stanza.respond_to?(:from) && stanza.respond_to?(:from=)
+      super stanza
+    end
+
   protected
     def start
       @parser = Parser.new self
