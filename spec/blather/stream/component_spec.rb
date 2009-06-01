@@ -83,4 +83,13 @@ describe Blather::Stream::Component do
     end
   end
 
+  it 'sends stanzas to the wire with ensuring from is set' do
+    client = mock()
+    client.stubs(:jid)
+    client.stubs(:jid=)
+    msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
+    comp = Blather::Stream::Component.new nil, client, 'jid.com', 'pass'
+    comp.expects(:send_data).with { |s| s.must_match(/^<message[^>]*from="jid\.com"/) }
+    comp.send msg
+  end
 end
