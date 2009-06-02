@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'blather/client'
-
+Blather.logger.level = Logger::DEBUG
 when_ready { puts "Connected ! send messages to #{jid.stripped}." }
 
 subscription :request? do |s|

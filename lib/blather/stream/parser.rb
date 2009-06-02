@@ -21,9 +21,11 @@ class Stream # :nodoc:
       Blather.logger.debug "PARSING: (#{string})" if @@debug
       @stream_error = string =~ /stream:error/
       @parser.write string
+      self
     rescue RuntimeError => e
       error e.to_s
     end
+    alias_method :<<, :receive_data
 
     def start_document; end
     def end_document; end
@@ -50,7 +52,7 @@ class Stream # :nodoc:
         ns = node.add_namespace(pre, href)
         @namespaces[[pre, href]] ||= ns
       end
-      @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) unless !prefix || namespaces[prefix]
+      @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !namespaces[prefix]
       node.namespace = @namespaces[[prefix, uri]]
 
       deliver(node) if elem == 'stream' && !@stream_error
@@ -69,7 +71,9 @@ class Stream # :nodoc:
       Blather.logger.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if elem == 'stream'
-        deliver XMPPNode.new('stream:end')
+        node = XMPPNode.new('end')
+        node.namespace = {prefix => uri}
+        deliver node
       elsif @current.parent != @current.document
         @namespace_definitions.pop
         @current = @current.parent

@@ -1,64 +1,74 @@
 module Blather # :nodoc:
 class Stream # :nodoc:
 
-  class SASL < StreamHandler # :nodoc:
+  class SASL < Features # :nodoc:
     class UnknownMechanism < BlatherError
-      handler_heirarchy ||= []
-      handler_heirarchy << :unknown_mechanism
+      register :sasl_unknown_mechanism
     end
 
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'.freeze
+    register SASL_NS
 
-    def initialize(stream, jid, pass = nil)
-      super stream
-      @jid = jid
-      @pass = pass
-      @mechanism_idx = 0
+    def initialize(stream, succeed, fail)
+      super
+      @jid = @stream.jid
+      @pass = @stream.password
       @mechanisms = []
     end
 
-    def set_mechanism
-      mod = if @jid.node == '' && @mechanisms.find { |m| m.content == 'ANONYMOUS' }
-        Anonymous
+    def receive_data(stanza)
+      @node = stanza
+      case stanza.element_name
+      when 'mechanisms'
+        @mechanisms = stanza.children.map { |m| m.content.downcase }
+        next!
+      when 'failure'
+        next!
+      when 'success'
+        @stream.start
+        succeed!
       else
-        case (mechanism = @mechanisms[@mechanism_idx].content)
-        when 'DIGEST-MD5' then DigestMD5
-        when 'PLAIN'      then Plain
-        when 'ANONYMOUS'  then Anonymous
-        end
-      end
-
-      if mod
-        extend mod
-        true
-      else
-        # Send a failure node and kill the stream
-        @stream.send "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><invalid-mechanism/></failure>"
-        @failure.call UnknownMechanism.new("Unknown SASL mechanism (#{mechanism})")
-        false
-      end
-    end
-
-    ##
-    # Handle incoming nodes
-    # Cycle through possible mechanisms until we either
-    # run out of them or none work
-    def handle(node)
-      if node.element_name == 'failure'
-        if @mechanisms[@mechanism_idx += 1]
-          set_mechanism
-          authenticate
+        if self.respond_to?(stanza.element_name)
+          self.__send__(stanza.element_name)
         else
-          failure node
+          fail! UnknownResponse.new(stanza)
         end
-      else
-        super
       end
     end
 
   protected
-    def failure(node = nil)
-      @failure.call SASLError.import(node)
+    def next!
+      if @jid.node == ''
+        process_anonymous
+      else
+        @idx = @idx ? @idx+1 : 0
+        authenticate_with @mechanisms[@idx]
+      end
+    end
+
+    def process_anonymous
+      if @mechanisms.include?('anonymous')
+        authenticate_with 'anonymous'
+      else
+        fail! BlatherError.new('The server does not support ANONYMOUS login. You must provide a node in the JID')
+      end
+    end
+
+    def authenticate_with(method)
+      method = case method
+      when 'digest-md5' then  DigestMD5
+      when 'plain'      then  Plain
+      when 'anonymous'  then  Anonymous
+      when nil          then return fail!(SASLError.import(@node))
+      end
+      
+      if method
+        extend method
+        authenticate
+      else
+        @stream.send "<failure xmlns='#{SASL_NS}'><invalid-mechanism/></failure>"
+        fail! UnknownMechanism.new("Unknown SASL mechanism (#{method})")
+      end
     end
 
     ##
@@ -75,13 +85,6 @@ class Stream # :nodoc:
       node['xmlns'] = SASL_NS
       node['mechanism'] = mechanism
       node
-    end
-
-    ##
-    # Respond to the <mechanisms> node sent by the server
-    def mechanisms
-      @mechanisms = @node.children
-      authenticate if set_mechanism
     end
 
     ##

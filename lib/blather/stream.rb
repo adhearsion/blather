@@ -2,7 +2,7 @@ module Blather
 
   class Stream < EventMachine::Connection
     STREAM_NS = 'http://etherx.jabber.org/streams'
-    attr_accessor :jid
+    attr_accessor :jid, :password
 
     ##
     # Start the stream between client and server
@@ -18,6 +18,10 @@ module Blather
       EM.connect host, port, self, client, jid, pass
     end
 
+    [:started, :stopped, :ready, :negotiating].each do |state|
+      define_method("#{state}?") { @state == state }
+    end
+
     ##
     # Send data over the wire
     #   The argument for this can be anything that
@@ -29,48 +33,23 @@ module Blather
     end
 
     ##
-    # True if the stream is in the stopped state
-    def stopped?
-      @state == :stopped
-    end
-
-    ##
-    # True when the stream is in the negotiation phase.
-    def negotiating?
-      ![:stopped, :ready].include? @state
-    end
-
-    ##
-    # True when the stream is ready
-    #   The stream is ready immediately after receiving <stream:stream>
-    #   and before any feature negotion. Once feature negoation starts
-    #   the stream will not be ready until all negotations have completed
-    #   successfully.
-    def ready?
-      @state == :ready
-    end
-
-    ##
     # Called by EM.connect to initialize stream variables
     def initialize(client, jid, pass) # :nodoc:
       super()
 
       @error = nil
-      @client = client
+      @receiver = @client = client
 
-      self.jid = jid
-      @pass = pass
-
-      @to = @jid.domain
+      @jid = jid
+      @password = pass
     end
 
     ##
     # Called when EM completes the connection to the server
     # this kicks off the starttls/authorize/bind process
     def connection_completed # :nodoc:
-#      @keepalive = EM::Timer.new(60) { send_data ' ' }
-      @state = :stopped
-      dispatch
+#      @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
+      start
     end
 
     ##
@@ -78,13 +57,13 @@ module Blather
     def receive_data(data) # :nodoc:
       Blather.logger.debug "\n#{'-'*30}\n"
       Blather.logger.debug "<< #{data}"
-      @parser.receive_data data
+      @parser << data
 
     rescue ParseWarning => e
       @client.receive_data e
     rescue ParseError => e
       @error = e
-      send "<stream:error><xml-not-well-formed xmlns='urn:ietf:params:xml:ns:xmpp-streams'/></stream:error>"
+      send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
       stop
     end
 
@@ -103,27 +82,27 @@ module Blather
       Blather.logger.debug "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
-      if @node.find_first('//stream:error', :stream => 'http://etherx.jabber.org/streams')
-        handle_stream_error
-        return
+      if @node.namespace && @node.namespace.prefix == 'stream'
+        case @node.element_name
+        when 'stream'
+          @state = :ready if @state == :stopped
+          return
+        when 'error'
+          handle_stream_error
+          return
+        when 'end'
+          stop
+          return
+        when 'features'
+          @state = :negotiating
+          @receiver = Features.new(
+            self,
+            proc { ready! },
+            proc { |err| @error = err; stop }
+          )
+        end
       end
-
-      case @node.element_name
-      when 'stream'
-        @state = :ready if @state == :stopped
-
-      when 'stream:end'
-        stop
-
-      when 'features'
-        @features = @node.children
-        @state = :features
-        dispatch
-
-      else
-        dispatch
-
-      end
+      @receiver.receive_data @node.to_stanza
     end
 
     ##
@@ -134,20 +113,15 @@ module Blather
       @client.jid = @jid
     end
 
-  protected
-    ##
-    # Dispatch based on current state
-    def dispatch
-      __send__ @state
-    end
-
     ##
     # Start the stream
     #   Each time the stream is started or re-started we need to kill off the old
     #   parser so as not to confuse it
     def start
+      raise 'Stream#start needs to be defined by the subclass'
     end
 
+  protected
     ##
     # Stop the stream
     def stop
@@ -157,105 +131,15 @@ module Blather
       end
     end
 
-    ##
-    # Called when @state == :stopped to start the stream
-    #   Counter intuitive, I know
-    def stopped
-      start
-    end
-
-    ##
-    # Called when @state == :ready
-    #   Simply passes the stanza to the client
-    def ready
-      @client.receive_data @node.to_stanza
-    end
-
     def handle_stream_error
-      @error = StreamError.import @node
+      @error = StreamError.import(@node)
       stop
-      @state = :error
     end
 
-    ##
-    # Called when @state == :features
-    #   Runs through the list of features starting each one in turn
-    def features
-      feature = @features.first
-      Blather.logger.debug "FEATURE: #{feature}"
-      @state = case feature ? feature.namespace.href : nil
-      when 'urn:ietf:params:xml:ns:xmpp-tls'      then :establish_tls
-      when 'urn:ietf:params:xml:ns:xmpp-sasl'     then :authenticate_sasl
-      when 'urn:ietf:params:xml:ns:xmpp-bind'     then :bind_resource
-      when 'urn:ietf:params:xml:ns:xmpp-session'  then :establish_session
-      else :ready
-      end
-
-      # Dispatch to the individual feature methods unless
-      # feature negotiation is complete
-      dispatch unless ready?
-    end
-
-    ##
-    # Start TLS
-    def establish_tls
-      unless @tls
-        @tls = TLS.new self
-        # on success destroy the TLS object and restart the stream
-        @tls.on_success { Blather.logger.debug "TLS: SUCCESS"; @tls = nil; start }
-        # on failure stop the stream
-        @tls.on_failure { |err| Blather.logger.debug "TLS: FAILURE"; @error = err; stop }
-
-        @node = @features.shift
-      end
-      @tls.handle @node
-    end
-
-    ##
-    # Authenticate via SASL
-    def authenticate_sasl
-      unless @sasl
-        @sasl = SASL.new(self, @jid, @pass)
-        # on success destroy the SASL object and restart the stream
-        @sasl.on_success { Blather.logger.debug "SASL SUCCESS"; @sasl = nil; start }
-        # on failure set the error and stop the stream
-        @sasl.on_failure { |err| Blather.logger.debug "SASL FAIL"; @error = err; stop }
-
-        @node = @features.shift
-      end
-      @sasl.handle @node
-    end
-
-    ##
-    # Bind to the resource provided by either the client or the server
-    def bind_resource
-      unless @resource
-        @resource = Resource.new self, @jid
-        # on success destroy the Resource object, set the jid, continue along the features dispatch process
-        @resource.on_success { |jid| Blather.logger.debug "RESOURCE: SUCCESS"; @resource = nil; self.jid = jid; @state = :features; dispatch }
-        # on failure end the stream
-        @resource.on_failure { |err| Blather.logger.debug "RESOURCE: FAILURE"; @error = err; stop }
-
-        @node = @features.shift
-      end
-      @resource.handle @node
-    end
-
-    ##
-    # Establish the session between client and server
-    def establish_session
-      unless @session
-        @session = Session.new self, @to
-        # on success destroy the session object, let the client know the stream has been started
-        # then continue the features dispatch process
-        @session.on_success { Blather.logger.debug "SESSION: SUCCESS"; @session = nil; @client.post_init; @state = :features; dispatch }
-        # on failure end the stream
-        @session.on_failure { |err| Blather.logger.debug "SESSION: FAILURE"; @error = err; stop }
-
-        @node = @features.shift
-      end
-      @session.handle @node
+    def ready!
+      @state = :started
+      @receiver = @client
+      @client.post_init
     end
   end
-
 end

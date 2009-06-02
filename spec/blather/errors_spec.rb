@@ -19,12 +19,6 @@ describe 'Blather::ParseError' do
   end
 end
 
-describe 'Blather::TLSFailure' do
-  it 'is registers with the handler heirarchy' do
-    Blather::TLSFailure.new.handler_heirarchy.must_equal [:tls_failure, :error]
-  end
-end
-
 describe 'Blather::UnknownResponse' do
   before { @error = Blather::UnknownResponse.new(Blather::XMPPNode.new('foo-bar')) }
 

@@ -6,7 +6,6 @@ class Stream
     VERSION = '1.0'
     NAMESPACE = 'jabber:client'
 
-  protected
     def start
       @parser = Parser.new self
       start_stream = <<-STREAM

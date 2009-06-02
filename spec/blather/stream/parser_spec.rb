@@ -103,7 +103,7 @@ describe Blather::Stream::Parser do
   it 'response with stream:end when receiving </stream:stream>' do
     @parser.receive_data '<stream:stream xmlns:stream="http://etherx.jabber.org/streams"/>'
     @client.data.size.must_equal 2
-    @client.data[1].to_s.must_equal '<stream:end/>'
+    @client.data[1].to_s.must_equal '<stream:end xmlns:stream="http://etherx.jabber.org/streams"/>'
   end
 
   it 'raises ParseError when an error is sent' do

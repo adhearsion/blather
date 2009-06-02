@@ -63,7 +63,7 @@ describe Blather::Stream::Component do
     @client = mock(:post_init)
     @client.expects(:receive_data).with do |n|
       EM.stop
-      n.kind_of?(Blather::XMPPNode) && @stream.ready?.must_equal(true)
+      n.kind_of? Blather::XMPPNode
     end
 
     state = nil
