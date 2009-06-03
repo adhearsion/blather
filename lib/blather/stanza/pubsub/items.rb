@@ -50,8 +50,7 @@ class PubSub
     end
 
     def items_node
-      node = self.pubsub.find_first('ns:items', :ns => self.class.registered_ns)
-      unless node
+      unless node = self.pubsub.find_first('ns:items', :ns => self.class.registered_ns)
         (self.pubsub << (node = XMPPNode.new('items', self.document)))
         node.namespace = self.pubsub.namespace
       end

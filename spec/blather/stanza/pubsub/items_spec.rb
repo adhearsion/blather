@@ -38,7 +38,7 @@ describe Blather::Stanza::PubSub::Items do
     n = parse_stanza items_all_nodes_xml
     items = Blather::Stanza::PubSub::Items.new.inherit n.root
     count = 0
-    items.each { |i| i.class.must_equal Blather::Stanza::PubSub::PubSubItem; count += 1 }
+    items.each { |i| i.must_be_instance_of Blather::Stanza::PubSub::PubSubItem; count += 1 }
     count.must_equal 4
   end
 

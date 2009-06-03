@@ -27,7 +27,7 @@ describe Blather::Stanza::PubSub::Subscriptions do
     subscriptions.pubsub.remove_children :subscriptions
     subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).must_be_empty
 
-    subscriptions.list.wont_be_nil
+    subscriptions.subscriptions.wont_be_nil
     subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
   end
 

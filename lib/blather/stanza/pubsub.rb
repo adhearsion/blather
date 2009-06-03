@@ -28,7 +28,7 @@ class Stanza
     def self.items(host, node, list = [], max = nil)
       new_node = self.new :get, host
       new_node.items_node[:node] = node
-      [list].flatten.each { |item| new_node.items_node << PubSubItem.new(item) }
+      [list].flatten.each { |id| new_node.items_node << PubSubItem.new(id) }
       new_node.items_node[:max_items] = max
       new_node
     end
