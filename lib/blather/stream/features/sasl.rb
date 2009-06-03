@@ -58,16 +58,13 @@ class Stream # :nodoc:
       when 'digest-md5' then  DigestMD5
       when 'plain'      then  Plain
       when 'anonymous'  then  Anonymous
-      when nil          then  return fail!(SASLError.import(@node))
-      else                    return next!
+      when nil          then  fail!(SASLError.import(@node))
+      else                    next!
       end
       
-      if method
+      if method.is_a?(Module)
         extend method
         authenticate
-      else
-        @stream.send "<failure xmlns='#{SASL_NS}'><invalid-mechanism/></failure>"
-        fail! UnknownMechanism.new("Unknown SASL mechanism (#{method})")
       end
     end
 

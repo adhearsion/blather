@@ -25,7 +25,7 @@ module Blather
           connect jid.domain, port, self, client, jid, pass
         else
           srv.sort! { |a,b| (a.priority != b.priority) ? (a.priority <=> b.priority) : (b.weight <=> a.weight) }
-          srv.each { |r| return connect(r.target.to_s, r.port, self, client, jid, pass) }
+          srv.each { |r| break unless (connect(r.target.to_s, r.port, self, client, jid, pass) === false)}
         end
       end
     end
@@ -82,8 +82,6 @@ module Blather
       Blather.logger.debug "<< #{data}"
       @parser << data
 
-    rescue ParseWarning => e
-      @client.receive_data e
     rescue ParseError => e
       @error = e
       send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
@@ -140,14 +138,6 @@ module Blather
       Blather.logger.debug "NEW JID: #{new_jid}"
       @jid = JID.new new_jid
       @client.jid = @jid
-    end
-
-    ##
-    # Start the stream
-    #   Each time the stream is started or re-started we need to kill off the old
-    #   parser so as not to confuse it
-    def start
-      raise 'Stream#start needs to be defined by the subclass'
     end
 
   protected

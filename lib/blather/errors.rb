@@ -34,25 +34,14 @@ module Blather
     end
   end
 
-  class ParseWarning < BlatherError
-    register :parse_warning
-    attr_reader :libxml_error, :message
-
-    def initialize(err)
-      @libxml_error = err
-      @message = err.to_s
-    end
-  end
-
   ##
   # Something bad happened while parsing the incoming stream
   class ParseError < BlatherError
     register :parse_error
-    attr_reader :libxml_error, :message
+    attr_reader :message
 
-    def initialize(err)
-      @libxml_error = err
-      @message = err.to_s
+    def initialize(msg)
+      @message = msg.to_s
     end
   end
 end
