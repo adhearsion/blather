@@ -36,11 +36,12 @@ module DSL
     def publish(node, payload, host = nil)
       request(Stanza::PubSub::Publish.new(send_to(host), node, :set, payload)) { |n| yield n if block_given? }
     end
+
+    def delete(node, id, host = nil)
+      
+    end
 =begin
     def create(node)
-    end
-
-    def publish(node, payload)
     end
 
     def subscribe(node)

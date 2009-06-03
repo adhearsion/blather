@@ -24,8 +24,20 @@ class PubSub
       items_node[:node]
     end
 
+    def retractions
+      items_node.find('ns:retract', :ns => self.class.registered_ns).map { |i| i[:id] }
+    end
+
+    def retractions?
+      !retractions.empty?
+    end
+
     def items
       items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
+    end
+
+    def items?
+      !items.empty?
     end
 
     def event_node
