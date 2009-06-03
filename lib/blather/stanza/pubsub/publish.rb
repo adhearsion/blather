@@ -41,11 +41,7 @@ class PubSub
     end
 
     def items
-      publish.find('ns:item', :ns => self.class.registered_ns).inject({}) do |h,i|
-        i = PubSubItem.new.inherit(i)
-        h[i.id] = i
-        h
-      end
+      publish.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
     end
 
     def each(&block)

@@ -42,9 +42,8 @@ describe Blather::Stanza::PubSub::Publish do
   it 'will iterate over each item' do
     publish = Blather::Stanza::PubSub::Publish.new.inherit parse_stanza(publish_xml).root
     count = 0
-    publish.each do |k,i|
+    publish.each do |i|
       i.must_be_instance_of Blather::Stanza::PubSub::PubSubItem
-      k.must_equal i.id
       count += 1
     end
     count.must_equal 1
@@ -63,6 +62,7 @@ describe Blather::Stanza::PubSub::Publish do
     payload = {'id1' => 'payload1', 'id2' => 'payload2'}
     publish = Blather::Stanza::PubSub::Publish.new
     publish.payload = payload
+    publish.size.must_equal 2
     publish.xpath('/iq/ns:pubsub/ns:publish[ns:item[@id="id1" and .="payload1"] and ns:item[@id="id2" and .="payload2"]]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
   end
 
@@ -70,12 +70,14 @@ describe Blather::Stanza::PubSub::Publish do
     payload = %w[payload1 payload2]
     publish = Blather::Stanza::PubSub::Publish.new
     publish.payload = payload
+    publish.size.must_equal 2
     publish.xpath('/iq/ns:pubsub/ns:publish[ns:item[.="payload1"] and ns:item[.="payload2"]]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
   end
 
   it 'can set the payload with a string' do
     publish = Blather::Stanza::PubSub::Publish.new
     publish.payload = 'payload'
+    publish.size.must_equal 1
     publish.xpath('/iq/ns:pubsub/ns:publish[ns:item[.="payload"]]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
   end
 end

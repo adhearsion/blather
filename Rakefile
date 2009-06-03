@@ -39,7 +39,7 @@ begin
   Rcov::RcovTask.new do |test|
     test.libs << 'spec'
     test.pattern = 'spec/**/*_spec.rb'
-    test.rcov_opts += ['--exclude \/Library\/Ruby\/Gems,spec\/', '--xrefs']
+    test.rcov_opts += ['--exclude \/Library\/Ruby,spec\/', '--xrefs']
     test.verbose = true
   end
 rescue LoadError
