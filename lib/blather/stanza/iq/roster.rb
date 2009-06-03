@@ -18,7 +18,7 @@ class Iq
     # Creates RosterItem objects out of each roster item as well.
     def inherit(node)
       # remove the current set of nodes
-      items.each { |i| i.remove! }
+      remove_children :item
       super
       # transmogrify nodes into RosterItems
       items.each { |i| query << RosterItem.new(i); i.remove }
@@ -28,7 +28,7 @@ class Iq
     ##
     # Roster items
     def items
-      query.find('//query_ns:item', :query_ns => self.class.registered_ns).map { |i| RosterItem.new(i) }
+      query.find('//ns:item', :ns => self.class.registered_ns).map { |i| RosterItem.new(i) }
     end
 
     class RosterItem < XMPPNode
@@ -71,7 +71,7 @@ class Iq
       ##
       # The groups roster item belongs to
       def groups
-        find(:group).map { |g| g.content }
+        find('child::*[local-name()="group"]').map { |g| g.content }
       end
 
       ##

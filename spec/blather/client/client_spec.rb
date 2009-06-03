@@ -78,12 +78,6 @@ describe Blather::Client do
     @client.unbind
   end
 
-  it 'raises an error if the stream type somehow is not supported' do
-    Blather::Stream::Component.stubs(:start).returns nil
-    @client.setup('me.com', 'secret').run
-    lambda { @client.post_init }.must_raise RuntimeError
-  end
-
   it 'can register a temporary handler based on stanza ID' do
     stanza = Blather::Stanza::Iq.new
     response = mock()

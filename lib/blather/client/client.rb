@@ -40,7 +40,8 @@ module Blather #:nodoc:
     end
 
     def setup(jid, password, host = nil, port = nil)
-      @setup = [JID.new(jid), password]
+      @jid = JID.new(jid)
+      @setup = [@jid, password]
       @setup << host if host
       @setup << port if port
       self
@@ -72,11 +73,7 @@ module Blather #:nodoc:
     end
 
     def post_init
-      case @stream
-      when Stream::Component  then ready!
-      when Stream::Client     then client_post_init
-      else                    raise "Don't know #{@stream.class} stream type. How the hell did this happen!?"
-      end
+      self.jid.node ? client_post_init : ready!
     end
 
     def close

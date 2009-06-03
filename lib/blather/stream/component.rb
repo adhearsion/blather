@@ -6,13 +6,13 @@ class Stream
 
     def receive(node) # :nodoc:
       if node.element_name == 'handshake'
-        @client.post_init
+        ready!
       else
         super
       end
 
       if node.document.find_first('/stream:stream[not(stream:error)]', :xmlns => NAMESPACE, :stream => STREAM_NS)
-        send("<handshake>#{Digest::SHA1.hexdigest(@node['id']+@pass)}</handshake>")
+        send("<handshake>#{Digest::SHA1.hexdigest(@node['id']+@password)}</handshake>")
       end
     end
 
@@ -21,7 +21,6 @@ class Stream
       super stanza
     end
 
-  protected
     def start
       @parser = Parser.new self
       start_stream = <<-STREAM

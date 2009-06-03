@@ -6,14 +6,13 @@ class Stream
     VERSION = '1.0'
     NAMESPACE = 'jabber:client'
 
-  protected
     def start
       @parser = Parser.new self
       start_stream = <<-STREAM
         <stream:stream
           to='#{@to}'
           xmlns='#{NAMESPACE}'
-          xmlns:stream='http://etherx.jabber.org/streams'
+          xmlns:stream='#{STREAM_NS}'
           version='#{VERSION}'
           xml:lang='#{LANG}'
         >

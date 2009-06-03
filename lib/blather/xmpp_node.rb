@@ -249,6 +249,7 @@ module Blather
     ##
     # Inherit all of <tt>stanza</tt>'s attributes and children
     def inherit(stanza)
+      set_namespace stanza.namespace if stanza.namespace
       inherit_attrs stanza.attributes
       stanza.children.each { |c| self << c.dup }
       self

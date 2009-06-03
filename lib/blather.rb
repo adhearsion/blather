@@ -38,12 +38,12 @@
   blather/stream
   blather/stream/client
   blather/stream/component
-  blather/stream/stream_handler
   blather/stream/parser
-  blather/stream/resource
-  blather/stream/sasl
-  blather/stream/session
-  blather/stream/tls
+  blather/stream/features
+  blather/stream/features/resource
+  blather/stream/features/sasl
+  blather/stream/features/session
+  blather/stream/features/tls
 ].each { |r| require r }
 
 module Blather

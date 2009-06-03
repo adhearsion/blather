@@ -34,12 +34,6 @@ module Blather
     end
   end
 
-  ##
-  # TLS negotiations broke down
-  class TLSFailure < BlatherError
-    register :tls_failure
-  end
-
   class ParseWarning < BlatherError
     register :parse_warning
     attr_reader :libxml_error, :message
