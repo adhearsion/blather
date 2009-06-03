@@ -264,3 +264,18 @@ def subscriber_xml
 </iq>
 NODE
 end
+
+def publish_xml
+<<-NODE
+<iq type='result'
+    from='pubsub.shakespeare.lit'
+    to='hamlet@denmark.lit/blogbot'
+    id='publish1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <publish node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </publish>
+  </pubsub>
+</iq>
+NODE
+end
