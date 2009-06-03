@@ -12,7 +12,7 @@ class Stream
         <stream:stream
           to='#{@to}'
           xmlns='#{NAMESPACE}'
-          xmlns:stream='http://etherx.jabber.org/streams'
+          xmlns:stream='#{STREAM_NS}'
           version='#{VERSION}'
           xml:lang='#{LANG}'
         >

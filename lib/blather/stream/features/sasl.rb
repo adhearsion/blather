@@ -26,7 +26,6 @@ class Stream # :nodoc:
         next!
       when 'success'
         @stream.start
-        succeed!
       else
         if self.respond_to?(stanza.element_name)
           self.__send__(stanza.element_name)
@@ -59,7 +58,8 @@ class Stream # :nodoc:
       when 'digest-md5' then  DigestMD5
       when 'plain'      then  Plain
       when 'anonymous'  then  Anonymous
-      when nil          then return fail!(SASLError.import(@node))
+      when nil          then  return fail!(SASLError.import(@node))
+      else                    return next!
       end
       
       if method

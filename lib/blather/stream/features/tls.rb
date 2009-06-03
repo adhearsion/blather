@@ -16,7 +16,7 @@ class Stream # :nodoc:
       when 'proceed'
         @stream.start_tls
         @stream.start
-        succeed!
+#        succeed!
       else
         fail! TLSFailure.new
       end

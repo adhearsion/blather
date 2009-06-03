@@ -1,3 +1,4 @@
+require 'resolv'
 require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
 describe Blather::Stream::Client do
@@ -27,6 +28,9 @@ describe Blather::Stream::Client do
     }
   end
 
+  # Ensure nothing hits Resolv unless specified
+#  before { Resolv::DNS.expects(:open).never }
+
   it 'can be started' do
     client = mock()
     params = [client, 'n@d/r', 'pass', 'host', 1234]
@@ -41,9 +45,46 @@ describe Blather::Stream::Client do
     Blather::Stream::Client.start *(params)
   end
 
+  it 'attempts to find the SRV record if a host is not provided' do
+    dns = mock(:sort! => nil, :empty? => false)
+    dns.expects(:each).yields(mock({
+      :target => 'd',
+      :port => 5222
+    }))
+    Resolv::DNS.expects(:open).yields(mock(:getresources => dns))
+
+    client = Class.new
+    EM.expects(:connect).with do |*parms|
+      parms[0] == 'd'     &&
+      parms[1] == 5222    &&
+      parms[3] == client  &&
+      parms[5] == 'pass'  &&
+      parms[4] == Blather::JID.new('n@d/r')
+    end
+
+    Blather::Stream::Client.start client, 'n@d/r', 'pass'
+  end
+
+  it 'will not attempt to connect more often than necessary' do
+    dns = [mock(:target => 'd', :port => 5222), mock()]
+    dns.stubs(:sort!) #ignore sorting
+    Resolv::DNS.expects(:open).yields(mock(:getresources => dns))
+
+    client = Class.new
+    EM.expects(:connect).with do |*parms|
+      parms[0] == 'd'     &&
+      parms[1] == 5222    &&
+      parms[3] == client  &&
+      parms[5] == 'pass'  &&
+      parms[4] == Blather::JID.new('n@d/r')
+    end
+    Blather::Stream::Client.start client, 'n@d/r', 'pass'
+  end
+
   it 'can figure out the host to use based on the jid' do
-    client = mock()
-    params = [client, 'n@d/r', 'pass', 'd', 5222]
+    Resolv::DNS.expects(:open).yields(mock(:getresources => mock(:empty? => true)))
+    client = Class.new
+    params = [client, 'n@d/r', 'pass', nil, 5222]
     EM.expects(:connect).with do |*parms|
       parms[0] == 'd'     &&
       parms[1] == 5222    &&
@@ -475,7 +516,7 @@ describe Blather::Stream::Client do
       end
     end
   end
-
+=begin
   it 'sends client an error when an unknown mechanism is sent' do
     @client = mock()
     @client.expects(:receive_data).with { |v| v.must_be_kind_of(Blather::Stream::SASL::UnknownMechanism) }
@@ -494,7 +535,7 @@ describe Blather::Stream::Client do
       end
     end
   end
-
+=end
   %w[ aborted
       incorrect-encoding
       invalid-authzid

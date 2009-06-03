@@ -1,6 +1,8 @@
 module Blather
 
   class Stream < EventMachine::Connection
+    class NoConnection < RuntimeError; end
+
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :jid, :password
 
@@ -13,9 +15,29 @@ module Blather
     #   [port] (optional) must be the port to connect to. defaults to 5222
     def self.start(client, jid, pass, host = nil, port = 5222)
       jid = JID.new jid
-      host ||= jid.domain
+      if host
+        connect host, port, self, client, jid, pass
+      else
+        require 'resolv'
+        srv = []
+        Resolv::DNS.open { |dns| srv = dns.getresources("_xmpp-client._tcp.#{jid.domain}", Resolv::DNS::Resource::IN::SRV) }
+        if srv.empty?
+          connect jid.domain, port, self, client, jid, pass
+        else
+          srv.sort! { |a,b| (a.priority != b.priority) ? (a.priority <=> b.priority) : (b.weight <=> a.weight) }
+          srv.each { |r| return connect(r.target.to_s, r.port, self, client, jid, pass) }
+        end
+      end
+    end
 
-      EM.connect host, port, self, client, jid, pass
+    ##
+    # Attempt a connection
+    # Stream will raise +NoConnection+ if it receives #unbind before #post_init
+    # this catches that and returns false prompting for another attempt
+    def self.connect(host, port, conn, client, jid, pass)
+      EM.connect host, port, conn, client, jid, pass
+    rescue NoConnection
+      false
     end
 
     [:started, :stopped, :ready, :negotiating].each do |state|
@@ -40,7 +62,8 @@ module Blather
       @error = nil
       @receiver = @client = client
 
-      @jid = jid
+      self.jid = jid
+      @to = self.jid.domain
       @password = pass
     end
 
@@ -67,9 +90,15 @@ module Blather
       stop
     end
 
+    def post_init
+      @connected = true
+    end
+
     ##
     # Called by EM when the connection is closed
     def unbind # :nodoc:
+      raise NoConnection unless @connected
+
 #      @keepalive.cancel
       @state = :stopped
       @client.receive_data @error if @error
