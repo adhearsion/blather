@@ -126,4 +126,34 @@ describe Blather::DSL::PubSub do
     end
     @pubsub.items '/path/to/node', nil, 2
   end
+
+  it 'can publish items to a node with a hash' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Publish
+      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[@id='id1' and .='payload1'] and ns:item[@id='id2' and .='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.publish '/path/to/node', {'id1' => 'payload1', 'id2' => 'payload2'}
+  end
+
+  it 'can publish items to a node with an array' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Publish
+      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload1'] and ns:item[.='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.publish '/path/to/node', %w[payload1 payload2]
+  end
+
+  it 'can publish items to a node with a string' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Publish
+      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.publish '/path/to/node', 'payload'
+  end
 end

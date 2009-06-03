@@ -32,6 +32,10 @@ module DSL
     def items(path, list = [], max = nil, host = nil, &callback)
       request Stanza::PubSub.items(send_to(host), path, list, max), :items, callback
     end
+
+    def publish(node, payload, host = nil)
+      request(Stanza::PubSub::Publish.new(send_to(host), node, :set, payload)) { |n| yield n if block_given? }
+    end
 =begin
     def create(node)
     end
