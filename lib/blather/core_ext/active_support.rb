@@ -1,8 +1,4 @@
-%w[
-  inheritable_attributes
-  alias_method_chain
-].each { |r| require File.join(File.dirname(__FILE__), 'active_support', r) }
-
+require File.join(File.dirname(__FILE__), 'active_support', 'inheritable_attributes')
 
 class Object # :nodoc:
   def duplicable?; true; end
