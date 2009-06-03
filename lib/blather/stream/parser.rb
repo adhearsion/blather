@@ -19,8 +19,7 @@ class Stream # :nodoc:
 
     def receive_data(string)
       Blather.logger.debug "PARSING: (#{string})" if @@debug
-      @stream_error = string =~ /stream:error/
-      @parser.write string
+      @parser << string
       self
     rescue RuntimeError => e
       error e.to_s
@@ -55,7 +54,7 @@ class Stream # :nodoc:
       @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !namespaces[prefix]
       node.namespace = @namespaces[[prefix, uri]]
 
-      deliver(node) if elem == 'stream' && !@stream_error
+      deliver(node) if elem == 'stream'
 
 =begin
       $stderr.puts "\n\n"
@@ -85,6 +84,10 @@ class Stream # :nodoc:
     def characters(chars = '')
       Blather.logger.debug "CHARS: #{chars}" if @@debug
       @current << Nokogiri::XML::Text.new(chars, @current.document) if @current
+    end
+
+    def warning(msg)
+      Blather.logger.debug "PARSE WARNING: #{msg}" if @@debug
     end
 
     def error(msg)

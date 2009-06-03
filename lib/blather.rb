@@ -45,8 +45,8 @@ module Blather
   @@logger = nil
   def self.logger
     unless @@logger
-      @@logger = Logger.new($stdout)
-      @@logger.level = Logger::INFO
+      self.logger = Logger.new($stdout)
+      self.logger.level = Logger::INFO
     end
     @@logger
   end

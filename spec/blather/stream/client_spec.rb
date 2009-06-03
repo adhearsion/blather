@@ -35,11 +35,11 @@ describe Blather::Stream::Client do
     client = mock()
     params = [client, 'n@d/r', 'pass', 'host', 1234]
     EM.expects(:connect).with do |*parms|
-      parms[0] == 'host'  &&
-      parms[1] == 1234    &&
-      parms[3] == client  &&
-      parms[5] == 'pass'  &&
-      parms[4] == Blather::JID.new('n@d/r')
+      parms[0].must_equal 'host'
+      parms[1].must_equal 1234
+      parms[3].must_equal client
+      parms[5].must_equal 'pass'
+      parms[4].must_equal Blather::JID.new('n@d/r')
     end
 
     Blather::Stream::Client.start *(params)
@@ -55,13 +55,30 @@ describe Blather::Stream::Client do
 
     client = Class.new
     EM.expects(:connect).with do |*parms|
-      parms[0] == 'd'     &&
-      parms[1] == 5222    &&
-      parms[3] == client  &&
-      parms[5] == 'pass'  &&
-      parms[4] == Blather::JID.new('n@d/r')
+      parms[0].must_equal 'd'
+      parms[1].must_equal 5222
+      parms[3].must_equal client
+      parms[5].must_equal 'pass'
+      parms[4].must_equal Blather::JID.new('n@d/r')
     end
 
+    Blather::Stream::Client.start client, 'n@d/r', 'pass'
+  end
+
+  it 'will attempt as many connections as it takes' do
+    dns = [mock(:target => 'd', :port => 5222), mock(:target => 'g', :port => 1234)]
+    dns.stubs(:sort!) #ignore sorting
+    Resolv::DNS.expects(:open).yields(mock(:getresources => dns))
+
+    client = Class.new
+    EM.expects(:connect).with do |*parms|
+      raise Blather::Stream::NoConnection if parms[0] == 'd'
+      parms[0].must_equal 'g'
+      parms[1].must_equal 1234
+      parms[3].must_equal client
+      parms[5].must_equal 'pass'
+      parms[4].must_equal Blather::JID.new('n@d/r')
+    end
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
   end
 
@@ -72,11 +89,11 @@ describe Blather::Stream::Client do
 
     client = Class.new
     EM.expects(:connect).with do |*parms|
-      parms[0] == 'd'     &&
-      parms[1] == 5222    &&
-      parms[3] == client  &&
-      parms[5] == 'pass'  &&
-      parms[4] == Blather::JID.new('n@d/r')
+      parms[0].must_equal 'd'
+      parms[1].must_equal 5222
+      parms[3].must_equal client
+      parms[5].must_equal 'pass'
+      parms[4].must_equal Blather::JID.new('n@d/r')
     end
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
   end
@@ -86,11 +103,11 @@ describe Blather::Stream::Client do
     client = Class.new
     params = [client, 'n@d/r', 'pass', nil, 5222]
     EM.expects(:connect).with do |*parms|
-      parms[0] == 'd'     &&
-      parms[1] == 5222    &&
-      parms[3] == client  &&
-      parms[5] == 'pass'  &&
-      parms[4] == Blather::JID.new('n@d/r')
+      parms[0].must_equal 'd'
+      parms[1].must_equal 5222
+      parms[3].must_equal client
+      parms[5].must_equal 'pass'
+      parms[4].must_equal Blather::JID.new('n@d/r')
     end
 
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
@@ -221,6 +238,28 @@ describe Blather::Stream::Client do
       when :stopped
         EM.stop
         val.must_equal "</stream:stream>"
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'skips features it is unable to handle' do
+    state = nil
+    mocked_server() do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><auth xmlns='http://jabber.org/features/iq-auth'/><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        EM.stop
+        val.must_match(/starttls/)
 
       else
         EM.stop
@@ -442,6 +481,32 @@ describe Blather::Stream::Client do
     end
   end
 
+  it 'fails if asked to connect via ANONYMOUS but the server does not support it' do
+    state = nil
+    @jid = Blather::JID.new '@d'
+    @client = mock()
+    @client.expects(:receive_data).with { |s| s.must_be_instance_of Blather::BlatherError }
+
+    mocked_server(2) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        EM.stop
+        val.must_match(/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
   it 'tries each possible mechanism until it fails completely' do
     state = nil
     @client = mock()
@@ -507,6 +572,34 @@ describe Blather::Stream::Client do
 
       when :plain_sent
         EM.stop
+        val.must_match(/stream:stream/)
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'will ignore methods it does not understand' do
+    state = nil
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>CRAM-MD5</mechanism><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :auth_sent
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.must_equal('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+
+      when :auth_sent
+        EM.stop
+        state = :complete
         val.must_match(/stream:stream/)
 
       else
@@ -665,6 +758,38 @@ describe Blather::Stream::Client do
       when :complete
         EM.stop
         @client.jid.must_equal Blather::JID.new('n@d/r')
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'will error out if the bind ID mismatches' do
+    state = nil
+    @jid = Blather::JID.new('n@d')
+    @client = mock()
+
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :complete
+        val =~ %r{<iq[^>]+id="([^"]+)"}
+        @client.expects(:receive_data).with("BIND result ID mismatch. Expected: #{$1}. Received: #{$1}-bad")
+        server.send_data "<iq type='result' id='#{$1}-bad'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{@jid}/server_resource</jid></bind></iq>"
+        val.must_match(%r{<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"\s?/>})
+
+      when :complete
+        EM.stop
+        true
 
       else
         EM.stop
@@ -866,4 +991,5 @@ describe Blather::Stream::Client do
       end
     end
   end
+
 end
