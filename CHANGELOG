@@ -2,7 +2,7 @@ v0.4.0
   Switch from LibXML-Ruby to Nokogiri
   Update test suite to run on Ruby 1.9
   Add "<<" style writer to the DSL to provide for chaining outbound writes
-  
+  SRV lookup support
 
 v0.3.4
   Remove unneeded functions from the push parser.
