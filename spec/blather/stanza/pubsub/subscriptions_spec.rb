@@ -2,10 +2,10 @@ require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
 require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
 
 def control_subscriptions
-  { :subscribed => ['node1', 'node2'],
-    :unconfigured => ['node3'],
-    :pending => ['node4'],
-    :none => ['node5'] }
+  { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit'}, {:node => 'node2', :jid => 'francisco@denmark.lit'}],
+    :unconfigured => [{:node => 'node3', :jid => 'francisco@denmark.lit'}],
+    :pending => [{:node => 'node4', :jid => 'francisco@denmark.lit'}],
+    :none => [{:node => 'node5', :jid => 'francisco@denmark.lit'}] }
 end
 
 describe Blather::Stanza::PubSub::Subscriptions do

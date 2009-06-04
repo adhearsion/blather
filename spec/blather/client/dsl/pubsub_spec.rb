@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
 require 'blather/client/dsl'
 
 describe Blather::DSL::PubSub do
@@ -266,5 +267,199 @@ describe Blather::DSL::PubSub do
       n.type.must_equal :set
     end
     @pubsub.delete '/path/to/node'
+  end
+end
+
+describe 'Blather::DSL::PubSub callbacks' do
+  before do
+    @host = 'host.name'
+    @pubsub = Blather::DSL::PubSub.new @host
+    @client = Blather::Client.new
+    @client.jid = Blather::JID.new('n@d/r')
+    Blather::DSL.stubs(:client).returns @client
+  end
+
+  it 'returns a list of affiliations when requesting affiliations' do
+    affiliations = Blather::XMPPNode.import(parse_stanza(affiliations_xml).root)
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal affiliations.list }
+    @client.stubs(:write).with do |n|
+      affiliations.id = n.id
+      @client.receive_data affiliations
+      true
+    end
+    @pubsub.affiliations { |n| response.call n }
+  end
+
+  it 'returns a list of subscriptions when requesting subscriptions' do
+    subscriptions = Blather::XMPPNode.import(parse_stanza(subscriptions_xml).root)
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal subscriptions.list }
+    @client.stubs(:write).with do |n|
+      subscriptions.id = n.id
+      @client.receive_data subscriptions
+      true
+    end
+    @pubsub.subscriptions { |n| response.call n }
+  end
+
+  it 'returns a list of node items when requesting nodes' do
+    nodes = Blather::XMPPNode.import(parse_stanza(<<-NODES).root)
+    <iq type='result'
+        from='pubsub.shakespeare.lit'
+        to='francisco@denmark.lit/barracks'
+        id='nodes1'>
+      <query xmlns='http://jabber.org/protocol/disco#items'>
+        <item jid='pubsub.shakespeare.lit'
+              node='blogs'
+              name='Weblog updates'/>
+        <item jid='pubsub.shakespeare.lit'
+              node='news'
+              name='News and announcements'/>
+      </query>
+    </iq>
+    NODES
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal nodes.items }
+    @client.stubs(:write).with do |n|
+      nodes.id = n.id
+      @client.receive_data nodes
+      true
+    end
+    @pubsub.nodes { |n| response.call n }
+  end
+
+  it 'returns a DiscoInfo node when requesting a node' do
+    node = Blather::XMPPNode.import(parse_stanza(<<-NODES).root)
+    <iq type='result'
+        from='pubsub.shakespeare.lit'
+        to='francisco@denmark.lit/barracks'
+        id='meta1'>
+      <query xmlns='http://jabber.org/protocol/disco#info'
+             node='blogs'>
+        <identity category='pubsub' type='collection'/>
+      </query>
+    </iq>
+    NODES
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal node }
+    @client.stubs(:write).with do |n|
+      node.id = n.id
+      @client.receive_data node
+      true
+    end
+    @pubsub.node('blogs') { |n| response.call n }
+  end
+
+  it 'returns a set of items when requesting items' do
+    items = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
+    response = mock()
+    response.expects(:call).with { |n| n.map{|i|i.to_s}.must_equal items.items.map{|i|i.to_s} }
+    @client.stubs(:write).with do |n|
+      items.id = n.id
+      @client.receive_data items
+      true
+    end
+    @pubsub.items('princely_musings') { |n| response.call n }
+  end
+
+  it 'returns aa subscription node when subscribing' do
+    subscription = Blather::XMPPNode.import(parse_stanza(subscription_xml).root)
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal subscription }
+    @client.stubs(:write).with do |n|
+      subscription.id = n.id
+      @client.receive_data subscription
+      true
+    end
+    @pubsub.subscribe('princely_musings') { |n| response.call n }
+  end
+
+  it 'returns aa unsubscribe node when unsubscribing' do
+    unsubscribe = Blather::XMPPNode.import(parse_stanza(unsubscribe_xml).root)
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal unsubscribe }
+    @client.stubs(:write).with do |n|
+      unsubscribe.id = n.id
+      @client.receive_data unsubscribe
+      true
+    end
+    @pubsub.unsubscribe('princely_musings') { |n| response.call n }
+  end
+
+  it 'returns a publish result when publishing to a node' do
+    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    <iq type='result'
+        from='pubsub.shakespeare.lit'
+        to='hamlet@denmark.lit/blogbot'
+        id='publish1'>
+      <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+        <publish node='princely_musings'>
+          <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+        </publish>
+      </pubsub>
+    </iq>
+    NODE
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal result }
+    @client.stubs(:write).with do |n|
+      result.id = n.id
+      @client.receive_data result
+      true
+    end
+    @pubsub.publish('princely_musings', 'payload') { |n| response.call n }
+  end
+
+  it 'returns a create result when creating a node' do
+    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    <iq type='result'
+        from='pubsub.shakespeare.lit'
+        to='hamlet@denmark.lit/elsinore'
+        id='create2'>
+        <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+          <create node='25e3d37dabbab9541f7523321421edc5bfeb2dae'/>
+        </pubsub>
+    </iq>
+    NODE
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal result }
+    @client.stubs(:write).with do |n|
+      result.id = n.id
+      @client.receive_data result
+      true
+    end
+    @pubsub.create('princely_musings') { |n| response.call n }
+  end
+
+  it 'returns a purge result when purging a node' do
+    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    <iq type='result'
+        from='pubsub.shakespeare.lit'
+        id='purge1'/>
+    NODE
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal result }
+    @client.stubs(:write).with do |n|
+      result.id = n.id
+      @client.receive_data result
+      true
+    end
+    @pubsub.purge('princely_musings') { |n| response.call n }
+  end
+
+  it 'returns a delete result when deleting a node' do
+    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    <iq type='result'
+        from='pubsub.shakespeare.lit'
+        id='delete1'/>
+    NODE
+    response = mock()
+    response.expects(:call).with { |n| n.must_equal result }
+    @client.stubs(:write).with do |n|
+      result.id = n.id
+      @client.receive_data result
+      true
+    end
+    @pubsub.delete('princely_musings') { |n| response.call n }
   end
 end
