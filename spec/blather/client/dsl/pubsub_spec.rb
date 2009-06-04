@@ -6,6 +6,7 @@ describe Blather::DSL::PubSub do
     @host = 'host.name'
     @pubsub = Blather::DSL::PubSub.new @host
     @client = mock()
+    @client.stubs(:jid).returns Blather::JID.new('n@d/r')
     Blather::DSL.stubs(:client).returns @client
   end
 
@@ -175,5 +176,35 @@ describe Blather::DSL::PubSub do
       n.type.must_equal :set
     end
     @pubsub.retract '/path/to/node', 'id1'
+  end
+
+  it 'can subscribe to a node with the default jid' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Subscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.subscribe '/path/to/node'
+  end
+
+  it 'can subscribe to a node with a specified jid as a string' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Subscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.subscribe '/path/to/node', 'jid@d/r'
+  end
+
+  it 'can subscribe to a node with a specified jid as a Blather::JID' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Subscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.subscribe '/path/to/node', Blather::JID.new('jid@d/r')
   end
 end

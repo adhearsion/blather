@@ -40,6 +40,11 @@ module DSL
     def retract(node, ids = [], host = nil)
       request(Stanza::PubSub::Retract.new(send_to(host), node, :set, ids)) { |n| yield n if block_given? }
     end
+
+    def subscribe(node, jid = nil)
+      jid ||= DSL.client.jid.stripped
+      request(Stanza::PubSub::Subscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
+    end
 =begin
     def create(node)
     end
