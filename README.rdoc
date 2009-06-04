@@ -5,7 +5,7 @@ An evented XMPP library
 == Features
 
 * evented architecture
-* uses libxml
+* uses <strike>libxml</strike> Nokogiri
 * simplified starting point
 
 == Project Pages
@@ -120,7 +120,6 @@ Command line options:
 = TODO
 
 * Add Disco the the DSL
-* PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)
 * More examples (Re-write XMPP4R examples into Blather)
 
 = Author
