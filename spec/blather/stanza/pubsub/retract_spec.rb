@@ -54,6 +54,7 @@ describe Blather::Stanza::PubSub::Retract do
   it 'will iterate over each item' do
     retract = Blather::Stanza::PubSub::Retract.new.inherit parse_stanza(retract_xml).root
     retract.retractions.size.must_equal 1
+    retract.size.must_equal retract.retractions.size
     retract.retractions.must_equal %w[ae890ac52d0df67ed7cfdf51b644e901]
   end
 
@@ -66,4 +67,9 @@ describe Blather::Stanza::PubSub::Retract do
     retract.xpath('//ns:retract[@node="node-name"]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
   end
 
+  it 'will iterate over each retraction' do
+    Blather::XMPPNode.import(parse_stanza(retract_xml).root).each do |i|
+      i.must_include %w[ae890ac52d0df67ed7cfdf51b644e901]
+    end
+  end
 end
