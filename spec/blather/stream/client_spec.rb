@@ -18,7 +18,7 @@ describe Blather::Stream::Client do
 
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
     EventMachine::run {
-      EM.add_timer(0.25) { EM.stop if EM.reactor_running? }
+      EM.add_timer(0.5) { EM.stop if EM.reactor_running? }
 
       # Mocked server
       EventMachine::start_server '127.0.0.1', 12345, ServerMock
@@ -28,8 +28,6 @@ describe Blather::Stream::Client do
     }
   end
 
-  # Ensure nothing hits Resolv unless specified
-#  before { Resolv::DNS.expects(:open).never }
 
   it 'can be started' do
     client = mock()
