@@ -6,16 +6,16 @@ def stanza_error_node(type = 'cancel', error = 'internal-server-error', msg = ni
   node << (error_node = Blather::XMPPNode.new('error'))
   error_node['type'] = type.to_s
   
-  error_node << (err = Blather::XMPPNode.new(error))
+  error_node << (err = Blather::XMPPNode.new(error, error_node.document))
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
 
   if msg
-    error_node << (text = Blather::XMPPNode.new('text'))
+    error_node << (text = Blather::XMPPNode.new('text', error_node.document))
     text.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
     text.content = msg
   end
 
-  error_node << (extra = Blather::XMPPNode.new('extra-error'))
+  error_node << (extra = Blather::XMPPNode.new('extra-error', error_node.document))
   extra.namespace = 'blather:stanza:error'
   extra.content = 'Blather Error'
 

@@ -24,7 +24,7 @@ describe Blather::Stanza::Iq do
 
   it 'creates a proper object based on its children' do
     n = Blather::XMPPNode.new('iq')
-    n << Blather::XMPPNode.new('query')
+    n << Blather::XMPPNode.new('query', n.document)
     Blather::Stanza::Iq.import(n).must_be_kind_of Blather::Stanza::Iq::Query
   end
 

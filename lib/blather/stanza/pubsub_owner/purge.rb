@@ -1,6 +1,6 @@
 module Blather
 class Stanza
-class PubSub
+class PubSubOwner
 
   class Purge < PubSubOwner
     

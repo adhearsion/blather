@@ -27,11 +27,11 @@ class Stream # :nodoc:
       response = Stanza::Iq.new :set
       @id = response.id
 
-      response << (binder = XMPPNode.new('bind'))
+      response << (binder = XMPPNode.new('bind', response.document))
       binder.namespace = BIND_NS
 
       if @jid.resource
-        binder << (resource = XMPPNode.new('resource'))
+        binder << (resource = XMPPNode.new('resource', binder.document))
         resource.content = @jid.resource
       end
 

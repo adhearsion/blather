@@ -4,16 +4,16 @@ def stream_error_node(error = 'internal-server-error', msg = nil)
   node = Blather::XMPPNode.new('error')
   node.namespace = {'stream' => Blather::Stream::STREAM_NS}
   
-  node << (err = Blather::XMPPNode.new(error))
+  node << (err = Blather::XMPPNode.new(error, node.document))
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
 
   if msg
-    node << (text = Blather::XMPPNode.new('text'))
+    node << (text = Blather::XMPPNode.new('text', node.document))
     text.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
     text.content = msg
   end
 
-  node << (extra = Blather::XMPPNode.new('extra-error'))
+  node << (extra = Blather::XMPPNode.new('extra-error', node.document))
   extra.namespace = 'blather:stream:error'
   extra.content = 'Blather Error'
 

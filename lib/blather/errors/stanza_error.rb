@@ -61,7 +61,7 @@ class StanzaError < BlatherError
   def to_node
     node = self.original.reply
     node.type = 'error'
-    node << (error_node = XMPPNode.new 'error')
+    node << (error_node = XMPPNode.new('error'))
 
     error_node << (err = XMPPNode.new(@name, error_node.document))
     err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'

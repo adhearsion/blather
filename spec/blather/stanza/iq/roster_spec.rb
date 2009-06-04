@@ -64,8 +64,8 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
 
   it 'inherits a node when initialized with one' do
     n = Blather::XMPPNode.new 'item'
-    n['jid'] = 'n@d/r'
-    n['subscription'] = 'both'
+    n[:jid] = 'n@d/r'
+    n[:subscription] = 'both'
 
     i = Blather::Stanza::Iq::Roster::RosterItem.new n
     i.jid.must_equal Blather::JID.new('n@d/r')

@@ -79,8 +79,8 @@ class Stream # :nodoc:
     def auth_node(mechanism, content = nil)
       node = XMPPNode.new 'auth'
       node.content = content if content
-      node['xmlns'] = SASL_NS
-      node['mechanism'] = mechanism
+      node.namespace = SASL_NS
+      node[:mechanism] = mechanism
       node
     end
 
@@ -130,7 +130,7 @@ class Stream # :nodoc:
       # Send challenge response
       def respond
         node = XMPPNode.new 'response'
-        node['xmlns'] = SASL_NS
+        node.namespace = SASL_NS
 
         unless @initial_response_sent
           @initial_response_sent = true
