@@ -62,6 +62,18 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
     i.ask.must_equal :subscribe
   end
 
+  it 'can be initailized with a hash' do
+    control = { :jid          => 'j@d/r',
+                :name         => 'name',
+                :subscription => :both,
+                :ask          => :subscribe }
+    i = Blather::Stanza::Iq::Roster::RosterItem.new control
+    i.jid.must_equal Blather::JID.new(control[:jid])
+    i.name.must_equal control[:name]
+    i.subscription.must_equal control[:subscription]
+    i.ask.must_equal control[:ask]
+  end
+
   it 'inherits a node when initialized with one' do
     n = Blather::XMPPNode.new 'item'
     n[:jid] = 'n@d/r'
