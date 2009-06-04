@@ -21,7 +21,7 @@ class PubSub
     end
 
     def node
-      items_node[:node]
+      !purge? ? items_node[:node] : purge_node[:node]
     end
 
     def retractions
@@ -38,6 +38,10 @@ class PubSub
 
     def items?
       !items.empty?
+    end
+
+    def purge?
+      purge_node
     end
 
     def event_node
@@ -57,6 +61,10 @@ class PubSub
         node.namespace = event_node.namespace
       end
       node
+    end
+
+    def purge_node
+      event_node.find_first('ns:purge', :ns => self.class.registered_ns)
     end
 
     def subscription_ids

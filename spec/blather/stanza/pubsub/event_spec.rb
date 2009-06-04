@@ -69,4 +69,16 @@ describe Blather::Stanza::PubSub::Event do
     evt.items?.must_equal false
     evt.retractions.must_equal %w[ae890ac52d0df67ed7cfdf51b644e901]
   end
+
+  it 'can be a purge' do
+    evt = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    <message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+      <event xmlns='http://jabber.org/protocol/pubsub#event'>
+        <purge node='princely_musings'/>
+      </event>
+    </message>
+    NODE
+    evt.purge?.wont_be_nil
+    evt.node.must_equal 'princely_musings'
+  end
 end
