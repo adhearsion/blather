@@ -257,4 +257,14 @@ describe Blather::DSL::PubSub do
     end
     @pubsub.create '/path/to/node'
   end
+
+  it 'can delete a node' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSubOwner::Delete
+      n.find("/iq[@type='set']/ns:pubsub/ns:delete[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.delete '/path/to/node'
+  end
 end

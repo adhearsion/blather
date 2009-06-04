@@ -43,6 +43,7 @@
 
   blather/stanza/pubsub_owner
   blather/stanza/pubsub_owner/create
+  blather/stanza/pubsub_owner/delete
   blather/stanza/pubsub_owner/purge
 
   blather/stream
