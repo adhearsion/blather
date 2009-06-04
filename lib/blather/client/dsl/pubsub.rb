@@ -41,19 +41,20 @@ module DSL
       request(Stanza::PubSub::Retract.new(send_to(host), node, :set, ids)) { |n| yield n if block_given? }
     end
 
-    def subscribe(node, jid = nil)
+    def subscribe(node, jid = nil, host = nil)
       jid ||= DSL.client.jid.stripped
       request(Stanza::PubSub::Subscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
     end
 
-    def unsubscribe(node, jid = nil)
+    def unsubscribe(node, jid = nil, host = nil)
       jid ||= DSL.client.jid.stripped
       request(Stanza::PubSub::Unsubscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
     end
-=begin
-    def create(node)
+
+    def purge(node, host = nil)
+      request(Stanza::PubSubOwner::Purge.new(:set, send_to(host), node)) { |n| yield n if block_given? }
     end
-=end
+
   private
     def request(node, method = nil, callback = nil, &block)
       block = lambda { |node| callback.call node.__send__(method) } unless block_given?

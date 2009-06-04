@@ -237,4 +237,14 @@ describe Blather::DSL::PubSub do
     end
     @pubsub.unsubscribe '/path/to/node', Blather::JID.new('jid@d/r')
   end
+
+  it 'can purge a node' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSubOwner::Purge
+      n.find("/iq[@type='set']/ns:pubsub/ns:purge[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.purge '/path/to/node'
+  end
 end
