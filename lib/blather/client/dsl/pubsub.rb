@@ -37,8 +37,8 @@ module DSL
       request(Stanza::PubSub::Publish.new(send_to(host), node, :set, payload)) { |n| yield n if block_given? }
     end
 
-    def delete(node, id, host = nil)
-      
+    def retract(node, ids = [], host = nil)
+      request(Stanza::PubSub::Retract.new(send_to(host), node, :set, ids)) { |n| yield n if block_given? }
     end
 =begin
     def create(node)

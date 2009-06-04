@@ -156,4 +156,24 @@ describe Blather::DSL::PubSub do
     end
     @pubsub.publish '/path/to/node', 'payload'
   end
+
+  it 'can retract an item with an array' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Retract
+      n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1'] and ns:item[@id='id2']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.retract '/path/to/node', %w[id1 id2]
+  end
+
+  it 'can retract an item with a string' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Retract
+      n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.retract '/path/to/node', 'id1'
+  end
 end
