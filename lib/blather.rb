@@ -35,6 +35,7 @@
   blather/stanza/pubsub/items
   blather/stanza/pubsub/event
   blather/stanza/pubsub/publish
+  blather/stanza/pubsub/retract
 
   blather/stream
   blather/stream/client
