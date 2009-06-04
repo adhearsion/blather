@@ -21,7 +21,7 @@ class PubSub
       when Array  then  payload.map { |v| [nil, v] }
       else              [[nil, payload.to_s]]
       end
-      payload.each { |id,value| self.publish << PubSubItem.new(id, value) }
+      payload.each { |id,value| self.publish << PubSubItem.new(id, value, self.document) }
     end
 
     def node
@@ -41,7 +41,7 @@ class PubSub
     end
 
     def items
-      publish.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
+      publish.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new(nil,nil,self.document).inherit i }
     end
 
     def each(&block)

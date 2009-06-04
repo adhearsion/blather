@@ -28,7 +28,7 @@ class Stanza
     def self.items(host, node, list = [], max = nil)
       new_node = self.new :get, host
       new_node.items_node[:node] = node
-      [list].flatten.each { |id| new_node.items_node << PubSubItem.new(id) }
+      [list].flatten.each { |id| new_node.items_node << PubSubItem.new(id, nil, new_node.document) }
       new_node.items_node[:max_items] = max
       new_node
     end
@@ -65,7 +65,7 @@ class Stanza
     end
 
     def items
-      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
+      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new(nil,nil,self.document).inherit i }
     end
 
     def node=(node)
@@ -78,8 +78,8 @@ class Stanza
   end
 
   class PubSubItem < XMPPNode
-    def self.new(id = nil, payload = nil)
-      new_node = super 'item'
+    def self.new(id = nil, payload = nil, document = nil)
+      new_node = super 'item', document
       new_node.id = id
       new_node.payload = payload if payload
       new_node

@@ -33,7 +33,7 @@ class PubSub
     end
 
     def items
-      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
+      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new(nil,nil,self.document).inherit i }
     end
 
     def items?

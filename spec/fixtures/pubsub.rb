@@ -279,3 +279,18 @@ def publish_xml
 </iq>
 NODE
 end
+
+def retract_xml
+<<-NODE
+<iq type='set'
+    from='hamlet@denmark.lit/elsinore'
+    to='pubsub.shakespeare.lit'
+    id='retract1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <retract node='princely_musings'>
+      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+    </retract>
+  </pubsub>
+</iq>
+NODE
+end

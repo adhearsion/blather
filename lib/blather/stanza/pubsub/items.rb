@@ -14,7 +14,7 @@ class PubSub
       node.node = path
       node.max_items = max
 
-      (list || []).each { |id| node.items_node << PubSubItem.new(id) }
+      (list || []).each { |id| node.items_node << PubSubItem.new(id, nil, node.document) }
 
       node
     end
@@ -46,7 +46,7 @@ class PubSub
     end
 
     def items
-      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new.inherit i }
+      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new(nil,nil,self.document).inherit i }
     end
 
     def items_node
