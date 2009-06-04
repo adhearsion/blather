@@ -6,54 +6,6 @@ describe Blather::Stanza::PubSub do
     Blather::XMPPNode.class_from_registration(:pubsub, 'http://jabber.org/protocol/pubsub').must_equal Blather::Stanza::PubSub
   end
 
-  it 'is importable as a subscription' do
-    Blather::XMPPNode.import(parse_stanza(<<-XML).root).must_be_instance_of Blather::Stanza::PubSub
-      <iq type='result'
-          from='pubsub.shakespeare.lit'
-          to='francisco@denmark.lit/barracks'
-          id='sub1'>
-        <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-          <subscription
-              node='princely_musings'
-              jid='francisco@denmark.lit'
-              subid='ba49252aaa4f5d320c24d3766f0bdcade78c78d3'
-              subscription='subscribed'/>
-        </pubsub>
-      </iq>
-    XML
-  end
-
-  it 'is importable as a subscribe' do
-    Blather::XMPPNode.import(parse_stanza(<<-XML).root).must_be_instance_of Blather::Stanza::PubSub
-      <iq type='set'
-          from='francisco@denmark.lit/barracks'
-          to='pubsub.shakespeare.lit'
-          id='sub1'>
-        <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-          <subscribe
-              node='princely_musings'
-              jid='francisco@denmark.lit'/>
-        </pubsub>
-      </iq>
-    XML
-  end
-
-  it 'is importable as an unsubscribe' do
-    Blather::XMPPNode.import(parse_stanza(<<-XML).root).must_be_instance_of Blather::Stanza::PubSub
-      <iq type='set'
-          from='francisco@denmark.lit/barracks'
-          to='pubsub.shakespeare.lit'
-          id='unsub1'>
-        <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-           <unsubscribe
-               node='princely_musings'
-               jid='francisco@denmark.lit'/>
-        </pubsub>
-      </iq>
-    XML
-    
-  end
-
   it 'ensures a pubusb node is present on create' do
     pubsub = Blather::Stanza::PubSub.new
     pubsub.find_first('/iq/ns:pubsub', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_nil

@@ -1,16 +1,12 @@
 module Blather
 class Stanza
 
-  autoload :Subscriber, 'lib/blather/stanza/pubsub/subscriber'
-
   class PubSub < Iq
     register :pubsub_node, :pubsub, 'http://jabber.org/protocol/pubsub'
 
-    include Subscriber
-
     def self.import(node)
       klass = nil
-      if pubsub = node.document.find_first('//ns:pubsub[not(ns:subscribe or ns:subscription or ns:unsubscribe)]', :ns => self.registered_ns)
+      if pubsub = node.document.find_first('//ns:pubsub', :ns => self.registered_ns)
         pubsub.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
       end
       (klass || self).new(node.attributes[:type]).inherit(node)

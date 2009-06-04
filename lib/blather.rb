@@ -37,6 +37,7 @@
   blather/stanza/pubsub/publish
   blather/stanza/pubsub/retract
   blather/stanza/pubsub/subscribe
+  blather/stanza/pubsub/subscription
   blather/stanza/pubsub/unsubscribe
 
   blather/stream

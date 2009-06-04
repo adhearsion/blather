@@ -248,7 +248,7 @@ def unsubscribe_xml
 NODE
 end
 
-def subscriber_xml
+def subscription_xml
 <<-NODE
 <iq type='result'
     from='pubsub.shakespeare.lit'
@@ -260,6 +260,21 @@ def subscriber_xml
         jid='francisco@denmark.lit'
         subid='ba49252aaa4f5d320c24d3766f0bdcade78c78d3'
         subscription='subscribed'/>
+  </pubsub>
+</iq>
+NODE
+end
+
+def subscribe_xml
+<<-NODE
+<iq type='set'
+    from='francisco@denmark.lit/barracks'
+    to='pubsub.shakespeare.lit'
+    id='sub1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <subscribe
+        node='princely_musings'
+        jid='francisco@denmark.lit'/>
   </pubsub>
 </iq>
 NODE
