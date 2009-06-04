@@ -39,6 +39,18 @@ describe Blather::Stanza::PubSub::Retract do
     retract.node.must_equal 'node-name'
   end
 
+  it 'can set the retractions as a string' do
+    retract = Blather::Stanza::PubSub::Retract.new 'host', 'node'
+    retract.retractions = 'id1'
+    retract.xpath('//ns:retract[ns:item[@id="id1"]]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+  end
+
+  it 'can set the retractions as an array' do
+    retract = Blather::Stanza::PubSub::Retract.new 'host', 'node'
+    retract.retractions = %w[id1 id2]
+    retract.xpath('//ns:retract[ns:item[@id="id1"] and ns:item[@id="id2"]]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+  end
+
   it 'will iterate over each item' do
     retract = Blather::Stanza::PubSub::Retract.new.inherit parse_stanza(retract_xml).root
     retract.retractions.size.must_equal 1
