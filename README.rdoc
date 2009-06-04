@@ -1,11 +1,11 @@
 = Blather
 
-An evented XMPP library
+XMPP DSL (and more) for Ruby written on EventMachine and Nokogiri.
 
 == Features
 
 * evented architecture
-* uses <strike>libxml</strike> Nokogiri
+* uses Nokogiri
 * simplified starting point
 
 == Project Pages
@@ -28,7 +28,7 @@ RDocs:: http://squishtech.rubyforge.org/blather
 
 == Example
 
-See the /examples directory for more advanced examples.
+See the examples directory for more advanced examples.
 
 This will auto-accept any subscription requests and echo back any chat messages.
 
