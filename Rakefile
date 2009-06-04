@@ -64,7 +64,7 @@ begin
     rdoc.title = "blather #{version}"
     rdoc.rdoc_files.include('README*')
     rdoc.rdoc_files.include('lib/**/*.rb')
-    rdoc.options += %w[-S -T hanna --main README.rdoc --exclude autotest --exclude vendor]
+    rdoc.options += %w[-S -T hanna --main README.rdoc]
   end
 rescue LoadError
   task :rdoc do

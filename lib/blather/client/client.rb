@@ -128,7 +128,15 @@ module Blather #:nodoc:
 
     def call_handler_for(type, stanza)
       if @handlers[type]
-        @handlers[type].find { |guards, handler| handler.call(stanza) unless guarded?(guards, stanza) }
+        @handlers[type].find do |guards, handler|
+          if guards.first.is_a?(String)
+            unless (result = stanza.find(*guards)).empty?
+              handler.call(stanza, result)
+            end
+          elsif !guarded?(guards, stanza)
+            handler.call(stanza)
+          end
+        end
         true
       end
     end
@@ -167,9 +175,12 @@ module Blather #:nodoc:
     def check_guards(guards)
       guards.each do |guard|
         case guard
-        when Array              then guard.each { |g| check_guards([g]) }
-        when Symbol, Proc, Hash then nil
-        else                    raise "Bad guard: #{guard.inspect}"
+        when Array
+          guard.each { |g| check_guards([g]) }
+        when Symbol, Proc, Hash, String
+          nil
+        else
+          raise "Bad guard: #{guard.inspect}"
         end
       end
     end

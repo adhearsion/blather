@@ -359,6 +359,16 @@ describe 'Blather::Client guards' do
     @client.receive_data @stanza
   end
 
+  it 'can be an xpath and will send the result to the handler' do
+    @response.expects(:call).with do |stanza, xpath|
+      xpath.must_be_instance_of Nokogiri::XML::NodeSet
+      xpath.wont_be_empty
+      stanza.must_equal @stanza
+    end
+    @client.register_handler(:iq, "/iq[@id='#{@stanza.id}']") { |stanza, xpath| @response.call stanza, xpath }
+    @client.receive_data @stanza
+  end
+
   it 'raises an error when a bad guard is tried' do
     lambda { @client.register_handler(:iq, 0) {} }.must_raise RuntimeError
   end

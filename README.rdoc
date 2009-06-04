@@ -20,14 +20,6 @@ RubyForge:: http://rubyforge.org/projects/squishtech
 
 RDocs:: http://squishtech.rubyforge.org/blather
 
-== Author
-
-Jeff Smick <sprsquish@gmail.com>
-
-== Contributors
-
-Nolan Darilek <nolan@thewordnerd.info>
-
 = Usage
 
 == Installation
@@ -103,6 +95,12 @@ The different types of guards are:
   #   Equivalent to stanza.body == 'foo' || stanza.body == 'baz'
   message [{:body => 'foo'}, {:body => 'baz'}]
 
+  # XPath
+  #   Runs the xpath query on the stanza and checks for results
+  #   This guard type cannot be combined with other guards
+  #   Equivalent to !stanza.find('/iq/ns:pubsub', :ns => 'pubsub:namespace').empty?
+  iq '/iq/ns:pubsub', :ns => 'pubsub:namespace'
+
 == On the Command Line:
 
 Default usage is:
@@ -121,10 +119,17 @@ Command line options:
 
 = TODO
 
-* Add XPath guard that passes the result to the handler
 * Add Disco the the DSL
 * PubSub (XEP-0060: http://xmpp.org/extensions/xep-0060.html)
 * More examples (Re-write XMPP4R examples into Blather)
+
+= Author
+
+Jeff Smick <sprsquish@gmail.com>
+
+= Contributors
+
+Nolan Darilek <nolan@thewordnerd.info>
 
 = License
 
