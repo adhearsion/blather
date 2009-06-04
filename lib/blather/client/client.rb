@@ -89,7 +89,7 @@ module Blather #:nodoc:
         handler.call stanza
       else
         stanza.handler_heirarchy.each do |type|
-          break if call_handler_for(type, stanza) && (stanza.is_a?(BlatherError) || stanza.type == :iq)
+          break if call_handler_for(type, stanza)# && (stanza.is_a?(BlatherError) || stanza.type == :iq)
         end
       end
     end
@@ -137,7 +137,6 @@ module Blather #:nodoc:
             handler.call(stanza)
           end
         end
-        true
       end
     end
 
