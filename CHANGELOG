@@ -4,6 +4,7 @@ v0.4.0
   Add "<<" style writer to the DSL to provide for chaining outbound writes
   SRV lookup support
   Add XPath type of handler guard
+  PubSub support
 
 v0.3.4
   Remove unneeded functions from the push parser.
