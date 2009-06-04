@@ -32,17 +32,17 @@
 
   blather/stanza/pubsub
   blather/stanza/pubsub/affiliations
-  blather/stanza/pubsub/subscriptions
-  blather/stanza/pubsub/items
+  blather/stanza/pubsub/create
   blather/stanza/pubsub/event
+  blather/stanza/pubsub/items
   blather/stanza/pubsub/publish
   blather/stanza/pubsub/retract
   blather/stanza/pubsub/subscribe
   blather/stanza/pubsub/subscription
+  blather/stanza/pubsub/subscriptions
   blather/stanza/pubsub/unsubscribe
 
   blather/stanza/pubsub_owner
-  blather/stanza/pubsub_owner/create
   blather/stanza/pubsub_owner/delete
   blather/stanza/pubsub_owner/purge
 

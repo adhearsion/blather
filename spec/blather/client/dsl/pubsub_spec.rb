@@ -250,8 +250,8 @@ describe Blather::DSL::PubSub do
 
   it 'can create a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.must_be_instance_of Blather::Stanza::PubSubOwner::Create
-      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).wont_be_empty
+      n.must_be_instance_of Blather::Stanza::PubSub::Create
+      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
       n.to.must_equal Blather::JID.new(@host)
       n.type.must_equal :set
     end
