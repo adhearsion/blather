@@ -11,7 +11,7 @@ module Blather
     module_function :client
 
     def pubsub
-      @pubsub ||= PubSub.new
+      @pubsub ||= PubSub.new jid.domain
     end
 
     ##

@@ -108,4 +108,11 @@ describe Blather::DSL do
       @dsl.__send__(handler_method, *guards)
     end
   end
+
+  it 'has a pubsub helper set to the jid domain' do
+    jid = Blather::JID.new('jid@domain/resource')
+    @client.stubs(:jid).returns jid
+    @dsl.pubsub.must_be_instance_of Blather::DSL::PubSub
+    @dsl.pubsub.host.must_equal jid.domain
+  end
 end
