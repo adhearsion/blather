@@ -21,10 +21,10 @@ class Stream # :nodoc:
 
   private
     def check_response
-      if @node[:type] == 'error'
-        fail!(StanzaError.import(@node))
+      if @node[:type] == 'result'
+        succeed!        
       else
-        succeed!
+        fail!(StanzaError.import(@node))
       end
     end
 

@@ -25,7 +25,9 @@ module Blather
           connect jid.domain, port, self, client, jid, pass
         else
           srv.sort! { |a,b| (a.priority != b.priority) ? (a.priority <=> b.priority) : (b.weight <=> a.weight) }
-          srv.each { |r| break unless (connect(r.target.to_s, r.port, self, client, jid, pass) === false)}
+          conn = nil
+          srv.each { |r| break unless (conn = connect(r.target.to_s, r.port, self, client, jid, pass)) === false }
+          conn
         end
       end
     end

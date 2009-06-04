@@ -42,7 +42,7 @@ describe Blather::Stream::Client do
       parms[4].must_equal Blather::JID.new('n@d/r')
     end
 
-    Blather::Stream::Client.start *(params)
+    Blather::Stream::Client.start *params
   end
 
   it 'attempts to find the SRV record if a host is not provided' do
@@ -156,7 +156,6 @@ describe Blather::Stream::Client do
   it 'will be in the negotiating state during feature negotiations' do
     state = nil
     @client = mock()
-    @client.stubs(:post_init)
     @client.expects(:receive_data).with do |n|
       EM.stop
       state.must_equal(:negotiated) && @stream.negotiating?.must_equal(false)
@@ -880,7 +879,6 @@ describe Blather::Stream::Client do
         state = :completed
         doc = parse_stanza val
         doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Blather::Stream::Session::SESSION_NS).wont_be_empty
-
         server.send_data "<iq from='d' type='result' id='#{doc.find_first('iq')['id']}' />"
         server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
 
