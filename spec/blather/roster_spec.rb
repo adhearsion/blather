@@ -86,4 +86,19 @@ describe Blather::Roster do
     items.delete 'n@d'
     items.wont_equal @roster.items
   end
+
+  it 'will group roster items' do
+    @roster.delete 'n@d'
+    item1 = Blather::RosterItem.new("n1@d")
+    item1.groups = ['group1', 'group2']
+    item2 = Blather::RosterItem.new("n2@d")
+    item2.groups = ['group1', 'group3']
+    @roster << item1 << item2
+
+    @roster.grouped.must_equal({
+      'group1' => [item1, item2],
+      'group2' => [item1],
+      'group3' => [item2]
+    })
+  end
 end
