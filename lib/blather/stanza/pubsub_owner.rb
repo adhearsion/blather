@@ -1,8 +1,8 @@
 module Blather
 class Stanza
 
-  class PubSub < Iq
-    register :pubsub_node, :pubsub, 'http://jabber.org/protocol/pubsub'
+  class PubSubOwner < Iq
+    register :pubsub_owner, :pubsub, 'http://jabber.org/protocol/pubsub#owner'
 
     def self.import(node)
       klass = nil
@@ -29,33 +29,11 @@ class Stanza
     end
 
     def pubsub
-      p = find_first('ns:pubsub', :ns => self.class.registered_ns) ||
-          find_first('pubsub', :ns => self.class.registered_ns)
-
-      unless p
+      unless p = find_first('ns:pubsub', :ns => self.class.registered_ns)
         self << (p = XMPPNode.new('pubsub', self.document))
         p.namespace = self.class.registered_ns
       end
       p
-    end
-  end
-
-  class PubSubItem < XMPPNode
-    def self.new(id = nil, payload = nil, document = nil)
-      new_node = super 'item', document
-      new_node.id = id
-      new_node.payload = payload if payload
-      new_node
-    end
-
-    attribute_accessor :id
-
-    def payload=(payload = nil)
-      self.content = payload
-    end
-
-    def payload
-      content.empty? ? nil : content
     end
   end
 

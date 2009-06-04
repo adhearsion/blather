@@ -30,7 +30,7 @@ module DSL
     end
 
     def items(path, list = [], max = nil, host = nil, &callback)
-      request Stanza::PubSub.items(send_to(host), path, list, max), :items, callback
+      request Stanza::PubSub::Items.request(send_to(host), path, list, max), :items, callback
     end
 
     def publish(node, payload, host = nil)

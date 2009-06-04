@@ -29,6 +29,7 @@
   blather/stanza/presence
   blather/stanza/presence/status
   blather/stanza/presence/subscription
+
   blather/stanza/pubsub
   blather/stanza/pubsub/affiliations
   blather/stanza/pubsub/subscriptions
@@ -39,6 +40,9 @@
   blather/stanza/pubsub/subscribe
   blather/stanza/pubsub/subscription
   blather/stanza/pubsub/unsubscribe
+
+  blather/stanza/pubsub_owner
+  blather/stanza/pubsub_owner/purge
 
   blather/stream
   blather/stream/client

@@ -25,48 +25,9 @@ describe Blather::Stanza::PubSub do
     aff.to.must_equal Blather::JID.new('pubsub.jabber.local')
   end
 
-  it 'ensures an items node exists when calling #items_node' do
-    pubsub = Blather::Stanza::PubSub.new
-    pubsub.remove_children :items
-    pubsub.find('*[local-name()="items"]').must_be_empty
-
-    pubsub.items_node.wont_be_nil
-    pubsub.find('ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
-  end
-
   it 'ensures newly inherited items are PubSubItem objects' do
     pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
     pubsub.items.map { |i| i.class }.uniq.must_equal [Blather::Stanza::PubSub::PubSubItem]
-  end
-
-  it 'has a #node helper' do
-    pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
-    pubsub.node.must_equal 'princely_musings'
-  end
-
-  it 'has a #node= helper' do
-    pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
-    pubsub.node.must_equal 'princely_musings'
-    pubsub.node = 'new_node_name'
-    pubsub.node.must_equal 'new_node_name'
-    pubsub.document.find('/iq/pubsub/ns:items[@node="new_node_name"]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
-  end
-end
-
-describe 'Blather::Stanza::PubSub#items helper' do
-  it 'can request all items' do
-    pubsub = Blather::Stanza::PubSub.items 'host.name', '/path/to/node'
-    pubsub.document.find("/iq[@type='get' and @to='host.name' and @id='#{pubsub.id}']/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
-  end
-
-  it 'can request specific items' do
-    pubsub = Blather::Stanza::PubSub.items 'host.name', '/path/to/node', %w[item1 item2]
-    pubsub.document.find("/iq[@type='get' and @to='host.name' and @id='#{pubsub.id}']/ns:pubsub/ns:items[@node='/path/to/node'][ns:item[@id='item1']][ns:item[@id='item2']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
-  end
-
-  it 'can request a max number of items' do
-    pubsub = Blather::Stanza::PubSub.items 'host.name', '/path/to/node', nil, 2
-    pubsub.document.find("/iq[@type='get' and @to='host.name' and @id='#{pubsub.id}']/ns:pubsub/ns:items[@node='/path/to/node' and @max_items='2']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
   end
 end
 

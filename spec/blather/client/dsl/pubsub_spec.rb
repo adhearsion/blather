@@ -100,7 +100,7 @@ describe Blather::DSL::PubSub do
 
   it 'requests all items from a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.must_be_instance_of Blather::Stanza::PubSub
+      n.must_be_instance_of Blather::Stanza::PubSub::Items
       n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
       n.to.must_equal Blather::JID.new(@host)
       n.type.must_equal :get
@@ -110,7 +110,7 @@ describe Blather::DSL::PubSub do
 
   it 'requests specific items from a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.must_be_instance_of Blather::Stanza::PubSub
+      n.must_be_instance_of Blather::Stanza::PubSub::Items
       n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node'][ns:item[@id='item1']][ns:item[@id='item2']]", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
       n.to.must_equal Blather::JID.new(@host)
       n.type.must_equal :get
@@ -120,7 +120,7 @@ describe Blather::DSL::PubSub do
 
   it 'requests some items from a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.must_be_instance_of Blather::Stanza::PubSub
+      n.must_be_instance_of Blather::Stanza::PubSub::Items
       n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node' and @max_items='2']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
       n.to.must_equal Blather::JID.new(@host)
       n.type.must_equal :get
