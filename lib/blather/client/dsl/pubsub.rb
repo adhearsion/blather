@@ -45,16 +45,13 @@ module DSL
       jid ||= DSL.client.jid.stripped
       request(Stanza::PubSub::Subscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
     end
+
+    def unsubscribe(node, jid = nil)
+      jid ||= DSL.client.jid.stripped
+      request(Stanza::PubSub::Unsubscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
+    end
 =begin
     def create(node)
-    end
-
-    def subscribe(node)
-      DSL.client.write Stanza::PubSub::Subscribe.new(:set, host, node, DSL.client.jid)
-    end
-
-    def unsubscribe(node)
-      DSL.client.write Stanza::PubSub::Unsubscribe.new(:set, host, node, DSL.client.jid)
     end
 =end
   private

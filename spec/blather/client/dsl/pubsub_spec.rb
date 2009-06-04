@@ -207,4 +207,34 @@ describe Blather::DSL::PubSub do
     end
     @pubsub.subscribe '/path/to/node', Blather::JID.new('jid@d/r')
   end
+
+  it 'can unsubscribe to a node with the default jid' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.unsubscribe '/path/to/node'
+  end
+
+  it 'can unsubscribe to a node with a specified jid as a string' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.unsubscribe '/path/to/node', 'jid@d/r'
+  end
+
+  it 'can unsubscribe to a node with a specified jid as a Blather::JID' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.to.must_equal Blather::JID.new(@host)
+      n.type.must_equal :set
+    end
+    @pubsub.unsubscribe '/path/to/node', Blather::JID.new('jid@d/r')
+  end
 end
