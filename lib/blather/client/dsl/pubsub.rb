@@ -55,6 +55,10 @@ module DSL
       request(Stanza::PubSubOwner::Purge.new(:set, send_to(host), node)) { |n| yield n if block_given? }
     end
 
+    def create(node, host = nil)
+      request(Stanza::PubSubOwner::Create.new(:set, send_to(host), node)) { |n| yield n if block_given? }
+    end
+
   private
     def request(node, method = nil, callback = nil, &block)
       block = lambda { |node| callback.call node.__send__(method) } unless block_given?
