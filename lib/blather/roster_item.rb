@@ -13,6 +13,11 @@ module Blather
     attr_accessor :name,
                   :groups
 
+    def self.new(item)
+      return item if item.is_a?(self)
+      super
+    end
+
     ##
     # item:: can be a JID, String (a@b) or a Stanza
     def initialize(item)
@@ -29,7 +34,7 @@ module Blather
         self.name         = item[:name]
         self.subscription = item[:subscription]
         self.ask          = item[:ask]
-        item.groups.each { |g| self.groups << g }
+        item.groups.each { |g| @groups << g }
       end
 
       @groups = [nil] if @groups.empty?

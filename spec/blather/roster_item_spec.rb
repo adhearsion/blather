@@ -1,16 +1,27 @@
 require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
 
 describe Blather::RosterItem do
-  it 'initializes with Blather::JID' do
+  it 'can be initialized with Blather::JID' do
     jid = Blather::JID.new(jid)
     i = Blather::RosterItem.new jid
     i.jid.must_equal jid
   end
 
-  it 'initializes with an Iq::RosterItem' do
+  it 'can be initialized with an Iq::RosterItem' do
     jid = 'n@d/r'
     i = Blather::RosterItem.new Blather::Stanza::Iq::Roster::RosterItem.new(jid)
     i.jid.must_equal Blather::JID.new(jid).stripped
+  end
+
+  it 'can be initialized with a string' do
+    jid = 'n@d/r'
+    i = Blather::RosterItem.new jid
+    i.jid.must_equal Blather::JID.new(jid).stripped
+  end
+
+  it 'returns the same object when intialized with a Blather::RosterItem' do
+    control = Blather::RosterItem.new 'n@d/r'
+    Blather::RosterItem.new(control).must_be_same_as control
   end
 
   it 'has a Blather::JID setter that strips the Blather::JID' do
