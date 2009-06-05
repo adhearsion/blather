@@ -131,4 +131,15 @@ describe Blather::Stream::Parser do
     @client.data[0].document.xpath('/message/body[.="exit"]').wont_be_empty
     @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').wont_be_empty
   end
+
+  it 'ignores the component namespace on stanzas' do
+    [ "<message type='chat' to='n@d' from='n@d/r' id='id1' xmlns='jabber:component:accept'>",
+      "<body>exit</body>",
+      "<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml'>exit</body></html>",
+      "</message>"
+    ].each { |d| @parser.receive_data d }
+    @client.data.size.must_equal 1
+    @client.data[0].document.xpath('/message/body[.="exit"]').wont_be_empty
+    @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').wont_be_empty
+  end
 end

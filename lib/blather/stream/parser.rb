@@ -4,7 +4,7 @@ module Blather # :nodoc:
 class Stream # :nodoc:
 
   class Parser # :nodoc:
-    NS_TO_IGNORE = %w[jabber:client jabber:component]
+    NS_TO_IGNORE = %w[jabber:client jabber:component:accept]
 
     @@debug = !false
     def self.debug; @@debug; end
