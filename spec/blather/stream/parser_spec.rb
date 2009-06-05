@@ -9,7 +9,6 @@ describe Blather::Stream::Parser do
         @data ||= []
         @data << data
       end
-      def namespace; 'jabber:client'; end
     end.new
     @parser = Blather::Stream::Parser.new @client
   end

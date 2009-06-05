@@ -142,10 +142,6 @@ module Blather
       @client.jid = @jid
     end
 
-    def namespace
-      self.class.const_get(:NAMESPACE) if self.class.const_defined?(:NAMESPACE)
-    end
-
   protected
     ##
     # Stop the stream
