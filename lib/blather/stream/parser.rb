@@ -21,8 +21,6 @@ class Stream # :nodoc:
       Blather.logger.debug "PARSING: (#{string})" if @@debug
       @parser << string
       self
-    rescue RuntimeError => e
-      error e.to_s
     end
     alias_method :<<, :receive_data
 
