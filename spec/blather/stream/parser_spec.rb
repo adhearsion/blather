@@ -9,6 +9,7 @@ describe Blather::Stream::Parser do
         @data ||= []
         @data << data
       end
+      def namespace; 'jabber:client'; end
     end.new
     @parser = Blather::Stream::Parser.new @client
   end
@@ -119,5 +120,16 @@ describe Blather::Stream::Parser do
     @client.data.size.must_equal 2
     @client.data[0].document.xpath('/stream:stream[@to="example.com" and @version="1.0"]', 'xmlns' => 'jabber:client', 'stream' => 'http://etherx.jabber.org/streams').size.must_equal 1
     @client.data[1].to_s.must_equal '<stream:features xmlns:stream="http://etherx.jabber.org/streams"/>'
+  end
+
+  it 'ignores the client namespace on stanzas' do
+    [ "<message type='chat' to='n@d' from='n@d/r' id='id1' xmlns='jabber:client'>",
+      "<body>exit</body>",
+      "<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml'>exit</body></html>",
+      "</message>"
+    ].each { |d| @parser.receive_data d }
+    @client.data.size.must_equal 1
+    @client.data[0].document.xpath('/message/body[.="exit"]').wont_be_empty
+    @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').wont_be_empty
   end
 end

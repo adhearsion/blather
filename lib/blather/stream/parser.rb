@@ -43,6 +43,7 @@ class Stream # :nodoc:
         @current = node
       end
 
+      namespaces.delete_if { |pre, href| href == @receiver.namespace } if @receiver.namespace
       @namespace_definitions.push []
       namespaces.each do |pre, href|
         next if @namespace_definitions.flatten.include?(@namespaces[[pre, href]])
