@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
 describe Blather::Roster do
   before do
     @stream = mock()
-    @stream.stubs(:send_data)
+    @stream.stubs(:write)
 
     @stanza = mock()
     items = []; 4.times { |n| items << Blather::JID.new("n@d/#{n}r") }
@@ -51,9 +51,8 @@ describe Blather::Roster do
   end
 
   it 'sends a @roster addition over the wire' do
-    stream = mock()
-    stream.expects(:send_data)
-    roster = Blather::Roster.new stream, @stanza
+    client = mock(:write => nil)
+    roster = Blather::Roster.new client, @stanza
     roster.push('a@b/c')
   end
 
@@ -62,8 +61,8 @@ describe Blather::Roster do
   end
 
   it 'sends a @roster removal over the wire' do
-    stream = mock(:send_data => nil)
-    roster = Blather::Roster.new stream, @stanza
+    client = mock(:write => nil)
+    roster = Blather::Roster.new client, @stanza
     roster.delete('a@b/c')
   end
 

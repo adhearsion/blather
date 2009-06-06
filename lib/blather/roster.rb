@@ -40,7 +40,7 @@ module Blather
       jid = elem.respond_to?(:jid) ? elem.jid : JID.new(elem)
       @items[key(jid)] = node = RosterItem.new(elem)
 
-      @stream.send_data(node.to_stanza(:set)) if send
+      @stream.write(node.to_stanza(:set)) if send
     end
     alias_method :add, :push
 
@@ -49,7 +49,7 @@ module Blather
     # Sends a remove query stanza to the server
     def delete(jid)
       @items.delete key(jid)
-      @stream.send_data Stanza::Iq::Roster.new(:set, Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove))
+      @stream.write Stanza::Iq::Roster.new(:set, Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove))
     end
     alias_method :remove, :delete
 
