@@ -1,3 +1,6 @@
+v0.4.1
+  Bugfix in roster: trying to call the wrong method on client
+
 v0.4.0
   Switch from LibXML-Ruby to Nokogiri
   Update test suite to run on Ruby 1.9
