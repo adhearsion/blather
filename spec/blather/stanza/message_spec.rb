@@ -21,31 +21,42 @@ describe Blather::Stanza::Message do
   it 'provides "attr_accessor" for body' do
     s = Blather::Stanza::Message.new
     s.body.must_be_nil
-    s.xpath('body').must_be_empty
+    s.find('body').must_be_empty
 
     s.body = 'test message'
     s.body.wont_be_nil
-    s.xpath('body').wont_be_empty
+    s.find('body').wont_be_empty
   end
 
   it 'provides "attr_accessor" for subject' do
     s = Blather::Stanza::Message.new
     s.subject.must_be_nil
-    s.xpath('subject').must_be_empty
+    s.find('subject').must_be_empty
 
     s.subject = 'test subject'
     s.subject.wont_be_nil
-    s.xpath('subject').wont_be_empty
+    s.find('subject').wont_be_empty
   end
 
   it 'provides "attr_accessor" for thread' do
     s = Blather::Stanza::Message.new
     s.thread.must_be_nil
-    s.xpath('thread').must_be_empty
+    s.find('thread').must_be_empty
 
     s.thread = 1234
     s.thread.wont_be_nil
-    s.xpath('thread').wont_be_empty
+    s.find('thread').wont_be_empty
+  end
+
+  it 'can set a parent attribute for thread' do
+    s = Blather::Stanza::Message.new
+    s.thread.must_be_nil
+    s.find('thread').must_be_empty
+
+    s.thread = {4321 => 1234}
+    s.thread.must_equal '1234'
+    s.parent_thread.must_equal '4321'
+    s.find('thread[@parent="4321"]').wont_be_empty
   end
 
   it 'ensures type is one of Blather::Stanza::Message::VALID_TYPES' do
