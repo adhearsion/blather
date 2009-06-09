@@ -156,10 +156,9 @@ module Blather #:nodoc:
           # return FALSE unless any inequality is found
           guard.find do |method, test|
             value = stanza.__send__(method)
-            case test
-            when Regexp
-              !value.to_s.match(test)
-            when Array
+            if test.class.respond_to?(:last_match)
+              !(test =~ value)
+            elsif test.is_a?(Array)
               !test.include? value
             else
               test != value
