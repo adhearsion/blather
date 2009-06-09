@@ -126,7 +126,7 @@ Command line options:
 
 Jeff Smick <sprsquish@gmail.com>
 
-= Contributors
+== Contributors
 
 Nolan Darilek <nolan@thewordnerd.info>
 
