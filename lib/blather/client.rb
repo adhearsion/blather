@@ -7,8 +7,8 @@ options = {}
 optparse = OptionParser.new do |opts|
   opts.banner = "Run with #{$0} [options] user@server/resource password [host] [port]"
 
-  opts.on('-D', '--debug', 'Run in debug mode (you will see all XMPP communication)') do |debug|
-    options[:debug] = debug
+  opts.on('-D', '--debug', 'Run in debug mode (you will see all XMPP communication)') do
+    options[:debug] = true
   end
 
   opts.on('-d', '--daemonize', 'Daemonize the process') do |daemonize|
@@ -60,10 +60,12 @@ at_exit do
     if options[:log]
       log = File.new(options[:log], 'a')
       log.sync = options[:debug]
-      Blather.logger.level = Logger::DEBUG if options[:debug]
       $stdout.reopen log
       $stderr.reopen $stdout
     end
+
+    Blather.logger.level = Logger::DEBUG if options[:debug]
+
     trap(:INT) { EM.stop }
     trap(:TERM) { EM.stop }
     EM.run { client.run }
