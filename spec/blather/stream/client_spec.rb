@@ -988,4 +988,24 @@ describe Blather::Stream::Client do
     end
   end
 
+  it 'sends stanzas to the wire ensuring "from" is the full JID if set' do
+    client = mock()
+    client.stubs(:jid)
+    client.stubs(:jid=)
+    msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
+    msg.from = 'node@jid.com'
+    comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
+    comp.expects(:send_data).with { |s| s.must_match(/^<message[^>]*from="node@jid\.com\/resource"/) }
+    comp.send msg
+  end
+
+  it 'sends stanzas to the wire leaving "from" nil if not set' do
+    client = mock()
+    client.stubs(:jid)
+    client.stubs(:jid=)
+    msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
+    comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
+    comp.expects(:send_data).with { |s| s.wont_match(/^<message[^>]*from=/); true }
+    comp.send msg
+  end
 end

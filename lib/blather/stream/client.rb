@@ -19,6 +19,12 @@ class Stream
       STREAM
       send start_stream.gsub(/\s+/, ' ')
     end
+
+    def send(stanza)
+      stanza.from = self.jid if stanza.is_a?(Stanza) && !stanza.from.nil?
+      super stanza
+    end
+
   end #Client
 
 end #Stream
