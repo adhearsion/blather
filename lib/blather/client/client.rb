@@ -100,6 +100,7 @@ module Blather #:nodoc:
 
       register_handler :status do |status|
         roster[status.from].status = status if roster[status.from]
+        nil
       end
 
       register_handler :roster do |node|

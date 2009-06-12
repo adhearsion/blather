@@ -237,11 +237,37 @@ describe 'Blather::Client default handlers' do
     @client.receive_data status
   end
 
+  it 'lets status stanzas fall through to other handlers' do
+    jid = 'friend@jabber.local'
+    status = Blather::Stanza::Presence::Status.new :away
+    status.stubs(:from).returns jid
+    roster_item = mock()
+    roster_item.expects(:status=).with status
+    @client.stubs(:roster).returns({status.from => roster_item})
+
+    response = mock()
+    response.expects(:call).with jid
+    @client.register_handler(:status) { |s| response.call s.from.to_s }
+    @client.receive_data status
+  end
+
   it 'handles an incoming roster node by processing it through the roster' do
     roster = Blather::Stanza::Iq::Roster.new
     client_roster = mock()
     client_roster.expects(:process).with roster
     @client.stubs(:roster).returns client_roster
+    @client.receive_data roster
+  end
+
+  it 'handles an incoming roster node by processing it through the roster' do
+    roster = Blather::Stanza::Iq::Roster.new
+    client_roster = mock()
+    client_roster.expects(:process).with roster
+    @client.stubs(:roster).returns client_roster
+
+    response = mock()
+    response.expects(:call)
+    @client.register_handler(:roster) { |_| response.call }
     @client.receive_data roster
   end
 end
