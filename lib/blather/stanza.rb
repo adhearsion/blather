@@ -37,18 +37,9 @@ module Blather
     ##
     # Creates a new stanza with the same name as the node
     # then inherits all the node's attributes and properties
-    def self.import(node)
-      self.new(node.element_name).inherit(node)
-    end
-
-    ##
-    # Automatically set the stanza's ID
-    # and attach it to a document so XPath searching works
-    def self.new(name = nil)
-      node = super
-      node.name = name.to_s if name
-      node
-    end
+#    def self.import(node)
+#      self.new(node.element_name).inherit(node)
+#    end
 
     ##
     # Helper method to generate stanza guard methods
