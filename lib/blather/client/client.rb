@@ -85,13 +85,7 @@ module Blather #:nodoc:
     end
 
     def receive_data(stanza)
-      if handler = @tmp_handlers.delete(stanza.id)
-        handler.call stanza
-      else
-        stanza.handler_heirarchy.each do |type|
-          break if call_handler_for(type, stanza)# && (stanza.is_a?(BlatherError) || stanza.type == :iq)
-        end
-      end
+      catch(:halt) { handle_stanza stanza }
     end
 
   protected
@@ -101,7 +95,7 @@ module Blather #:nodoc:
       end
 
       register_handler :iq, :type => [:get, :set] do |iq|
-        write(StanzaError.new(iq, 'service-unavailable', :cancel).to_node)
+        write StanzaError.new(iq, 'service-unavailable', :cancel).to_node
       end
 
       register_handler :status do |status|
@@ -123,6 +117,16 @@ module Blather #:nodoc:
         roster.process node
         write @status
         ready!
+      end
+    end
+
+    def handle_stanza(stanza)
+      if handler = @tmp_handlers.delete(stanza.id)
+        handler.call stanza
+      else
+        stanza.handler_heirarchy.each do |type|
+          break if call_handler_for(type, stanza)
+        end
       end
     end
 

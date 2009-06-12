@@ -114,6 +114,18 @@ describe Blather::Client do
     @client.receive_data stanza
     @client.receive_data stanza
   end
+
+  it 'allows for breaking out of handlers' do
+    stanza = Blather::Stanza::Iq.new
+    response = mock()
+    response.expects(:call).times(1)
+    @client.register_handler(:iq) do |_|
+      response.call
+      throw :halt
+      response.call
+    end
+    @client.receive_data stanza
+  end
 end
 
 describe 'Blather::Client#write' do
