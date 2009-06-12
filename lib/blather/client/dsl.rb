@@ -83,6 +83,18 @@ module Blather
     end
 
     ##
+    # Halt the handler chain
+    def halt
+      throw :halt
+    end
+
+    ##
+    # Pass responsibility to the next handler
+    def pass
+      throw :pass
+    end
+
+    ##
     # Request items or info from an entity
     #   discover (items|info), [jid], [node] do |response|
     #   end

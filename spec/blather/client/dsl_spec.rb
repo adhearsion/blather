@@ -31,6 +31,14 @@ describe Blather::DSL do
     @dsl.shutdown
   end
 
+  it 'can throw a halt' do
+    catch(:halt) { @dsl.halt }
+  end
+
+  it 'can throw a pass' do
+    catch(:pass) { @dsl.pass }
+  end
+
   it 'sets up handlers' do
     type = :message
     guards = [:chat?, {:body => 'exit'}]

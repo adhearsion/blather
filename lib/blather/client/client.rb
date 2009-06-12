@@ -131,16 +131,17 @@ module Blather #:nodoc:
     end
 
     def call_handler_for(type, stanza)
-      if @handlers[type]
-        @handlers[type].find do |guards, handler|
-          if guards.first.is_a?(String)
-            unless (result = stanza.find(*guards)).empty?
-              handler.call(stanza, result)
-            end
-          elsif !guarded?(guards, stanza)
-            handler.call(stanza)
-          end
-        end
+      return unless handler = @handlers[type]
+      handler.find do |guards, handler|
+        catch(:pass) { call_handler handler, guards, stanza }
+      end
+    end
+
+    def call_handler(handler, guards, stanza)
+      if guards.first.respond_to?(:to_str) && !(result = stanza.find(*guards)).empty?
+        handler.call(stanza, result)
+      elsif !guarded?(guards, stanza)
+        handler.call(stanza)
       end
     end
 

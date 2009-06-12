@@ -117,13 +117,38 @@ describe Blather::Client do
 
   it 'allows for breaking out of handlers' do
     stanza = Blather::Stanza::Iq.new
-    response = mock()
-    response.expects(:call).times(1)
+    response = mock(:iq => nil)
     @client.register_handler(:iq) do |_|
-      response.call
+      response.iq
       throw :halt
-      response.call
+      response.fail
     end
+    @client.receive_data stanza
+  end
+
+  it 'allows for passing to the next handler of the same type' do
+    stanza = Blather::Stanza::Iq.new
+    response = mock(:iq1 => nil, :iq2 => nil)
+    @client.register_handler(:iq) do |_|
+      response.iq1
+      throw :pass
+      response.fail
+    end
+    @client.register_handler(:iq) do |_|
+      response.iq2
+    end
+    @client.receive_data stanza
+  end
+
+  it 'allows for passing to the next handler in the heirarchy' do
+    stanza = Blather::Stanza::Iq::Query.new
+    response = mock(:query => nil, :iq => nil)
+    @client.register_handler(:query) do |_|
+      response.query
+      throw :pass
+      response.fail
+    end
+    @client.register_handler(:iq) { |_| response.iq }
     @client.receive_data stanza
   end
 end
