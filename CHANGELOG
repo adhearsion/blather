@@ -1,3 +1,10 @@
+v0.4.2
+  Fix -D option to actually put Blather in debug mode
+  Stanzas over a client connection will either have the full JID or no JID
+  Regexp guards can be anything that implements #last_match (Regexp or Oniguruma)
+  Add "halt" and "pass" to allow handlers to either halt the handler chain or pass to the next handler
+  Fix default status handler so it doesn't eat the stanza
+
 v0.4.1
   Bugfix in roster: trying to call the wrong method on client
 
