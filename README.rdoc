@@ -104,14 +104,17 @@ The different types of guards are:
 === Filters
 
 Blather provides before and after filters that work much the way regular handlers work. Filters come in a before and after
-flavor. They're called in order of definition and can be guarded like handlers
+flavor. They're called in order of definition and can be guarded like handlers.
 
-  before { |stanza| "I'm run before any handler" }
-  before { |stanza| "I'm run next" }
+  before { |s| "I'm run before any handler" }
+  before { |s| "I'm run next" }
+
+  before(:message) { |s| "I'm only run in front of message stanzas" }
+  before(nil, :id => 1) { |s| "I'll only be run when the stanza's ID == 1" }
 
   # ... handlers
 
-  after { |stanza| "I'm run after everything" }
+  after { |s| "I'm run after everything" }
 
 == On the Command Line:
 

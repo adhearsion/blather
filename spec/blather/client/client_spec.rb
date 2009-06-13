@@ -326,8 +326,8 @@ describe 'Blather::Client filters' do
     stanza = Blather::Stanza::Iq.new
     ready = mock()
     ready.expects(:call).once
-    @client.register_filter(:before, :id => stanza.id) { |_| ready.call }
-    @client.register_filter(:before, :id => 'not-id') { |_| ready.call }
+    @client.register_filter(:before, :iq, :id => stanza.id) { |_| ready.call }
+    @client.register_filter(:before, :iq, :id => 'not-id') { |_| ready.call }
     @client.receive_data stanza
   end
 
@@ -367,7 +367,16 @@ describe 'Blather::Client filters' do
     ready = mock()
     ready.expects(:call).never
     @client.register_filter(:before) { |_| throw :halt }
-    @client.register_handler(:iq) { || ready.call }
+    @client.register_handler(:iq) { |_| ready.call }
+    @client.receive_data stanza
+  end
+
+  it 'can be specific to a handler' do
+    stanza = Blather::Stanza::Iq.new
+    ready = mock()
+    ready.expects(:call).once
+    @client.register_filter(:before, :iq) { |_| ready.call }
+    @client.register_filter(:before, :message) { |_| ready.call }
     @client.receive_data stanza
   end
 end

@@ -41,14 +41,14 @@ describe Blather::DSL do
 
   it 'can setup before filters' do
     guards = [:chat?, {:body => 'exit'}]
-    @client.expects(:register_filter).with :before, *guards
-    @dsl.before *guards
+    @client.expects(:register_filter).with :before, nil, *guards
+    @dsl.before nil, *guards
   end
 
   it 'can setup after filters' do
     guards = [:chat?, {:body => 'exit'}]
-    @client.expects(:register_filter).with :after, *guards
-    @dsl.after *guards
+    @client.expects(:register_filter).with :after, nil, *guards
+    @dsl.after nil, *guards
   end
 
   it 'sets up handlers' do

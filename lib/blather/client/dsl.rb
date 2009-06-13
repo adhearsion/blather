@@ -40,14 +40,14 @@ module Blather
 
     ##
     # Setup a before filter
-    def before(*guards, &block)
-      client.register_filter :before, *guards, &block
+    def before(handler = nil, *guards, &block)
+      client.register_filter :before, handler, *guards, &block
     end
 
     ##
     # Setup an after filter
-    def after(*guards, &block)
-      client.register_filter :after, *guards, &block
+    def after(handler = nil, *guards, &block)
+      client.register_filter :after, handler, *guards, &block
     end
 
     ##

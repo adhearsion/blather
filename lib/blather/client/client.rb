@@ -85,9 +85,9 @@ module Blather #:nodoc:
     # Register a filter to be run before or after the handler chain is run.
     # * +type+ - the type of filter. Must be +:before+ or +:after+
     # * +guards+ - guards that should be checked before the filter is called
-    def register_filter(type, *guards, &filter)
+    def register_filter(type, handler = nil, *guards, &filter)
       raise "Invalid filter: #{type}. Must be :before or :after" unless [:before, :after].include?(type)
-      @filters[type] << [guards, filter]
+      @filters[type] << [guards, handler, filter]
     end
 
     ##
@@ -209,7 +209,8 @@ module Blather #:nodoc:
     end
 
     def run_filters(type, stanza) # :nodoc:
-      @filters[type].each do |guards, filter|
+      @filters[type].each do |guards, handler, filter|
+        next if handler && !stanza.handler_heirarchy.include?(handler)
         catch(:pass) { call_handler filter, guards, stanza }
       end
     end
