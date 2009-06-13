@@ -313,6 +313,65 @@ describe 'Blather::Client with a Client stream' do
   end
 end
 
+describe 'Blather::Client filters' do
+  before do
+    @client = Blather::Client.new
+  end
+
+  it 'raises an error when an invalid filter type is registered' do
+    lambda { @client.register_filter(:invalid) {} }.must_raise RuntimeError
+  end
+
+  it 'can be guarded' do
+    stanza = Blather::Stanza::Iq.new
+    ready = mock()
+    ready.expects(:call).once
+    @client.register_filter(:before, :id => stanza.id) { |_| ready.call }
+    @client.register_filter(:before, :id => 'not-id') { |_| ready.call }
+    @client.receive_data stanza
+  end
+
+  it 'can pass to the next handler' do
+    stanza = Blather::Stanza::Iq.new
+    ready = mock()
+    ready.expects(:call).once
+    @client.register_filter(:before) { |_| throw :pass; ready.call }
+    @client.register_filter(:before) { |_| ready.call }
+    @client.receive_data stanza
+  end
+
+  it 'runs them in order' do
+    stanza = Blather::Stanza::Iq.new
+    count = 0
+    @client.register_filter(:before) { |_| count.must_equal 0; count = 1 }
+    @client.register_filter(:before) { |_| count.must_equal 1; count = 2 }
+    @client.register_handler(:iq) { |_| count.must_equal 2; count = 3 }
+    @client.register_filter(:after) { |_| count.must_equal 3; count = 4 }
+    @client.register_filter(:after) { |_| count.must_equal 4 }
+    @client.receive_data stanza
+  end
+
+  it 'can modify the stanza' do
+    stanza = Blather::Stanza::Iq.new
+    stanza.from = 'from@test.local'
+    new_jid = 'before@filter.local'
+    ready = mock()
+    ready.expects(:call).with new_jid
+    @client.register_filter(:before) { |s| s.from = new_jid }
+    @client.register_handler(:iq) { |s| ready.call s.from.to_s }
+    @client.receive_data stanza
+  end
+
+  it 'can halt the handler chain' do
+    stanza = Blather::Stanza::Iq.new
+    ready = mock()
+    ready.expects(:call).never
+    @client.register_filter(:before) { |_| throw :halt }
+    @client.register_handler(:iq) { || ready.call }
+    @client.receive_data stanza
+  end
+end
+
 describe 'Blather::Client guards' do
   before do
     @client = Blather::Client.new

@@ -35,13 +35,6 @@ module Blather
     end
 
     ##
-    # Creates a new stanza with the same name as the node
-    # then inherits all the node's attributes and properties
-#    def self.import(node)
-#      self.new(node.element_name).inherit(node)
-#    end
-
-    ##
     # Helper method to generate stanza guard methods
     #
     # attribute_helpers_for(:type, [:subscribe, :unsubscribe])

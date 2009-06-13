@@ -39,6 +39,18 @@ module Blather
     end
 
     ##
+    # Setup a before filter
+    def before(*guards, &block)
+      client.register_filter :before, *guards, &block
+    end
+
+    ##
+    # Setup an after filter
+    def after(*guards, &block)
+      client.register_filter :after, *guards, &block
+    end
+
+    ##
     # Set handler for a stanza type
     def handle(stanza_type, *guards, &block)
       client.register_handler stanza_type, *guards, &block

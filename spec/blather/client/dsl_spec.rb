@@ -39,6 +39,18 @@ describe Blather::DSL do
     catch(:pass) { @dsl.pass }
   end
 
+  it 'can setup before filters' do
+    guards = [:chat?, {:body => 'exit'}]
+    @client.expects(:register_filter).with :before, *guards
+    @dsl.before *guards
+  end
+
+  it 'can setup after filters' do
+    guards = [:chat?, {:body => 'exit'}]
+    @client.expects(:register_filter).with :after, *guards
+    @dsl.after *guards
+  end
+
   it 'sets up handlers' do
     type = :message
     guards = [:chat?, {:body => 'exit'}]

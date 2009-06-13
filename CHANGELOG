@@ -4,6 +4,7 @@ v0.4.2
   Regexp guards can be anything that implements #last_match (Regexp or Oniguruma)
   Add "halt" and "pass" to allow handlers to either halt the handler chain or pass to the next handler
   Fix default status handler so it doesn't eat the stanza
+  Add before and after filters. Filters, like handlers, can have guards.
 
 v0.4.1
   Bugfix in roster: trying to call the wrong method on client

@@ -12,6 +12,7 @@ module Blather #:nodoc:
       @status = Stanza::Presence::Status.new
       @handlers = {}
       @tmp_handlers = {}
+      @filters = {:before => [], :after => []}
       @roster = Roster.new self
 
       setup_initial_handlers
@@ -53,6 +54,11 @@ module Blather #:nodoc:
       @stream = klass.start self, *@setup
     end
 
+    def register_filter(type, *guards, &filter)
+      raise "Invalid filter: #{type}. Must be :before or :after" unless [:before, :after].include?(type)
+      @filters[type] << [guards, filter]
+    end
+
     def register_tmp_handler(id, &handler)
       @tmp_handlers[id] = handler
     end
@@ -85,7 +91,11 @@ module Blather #:nodoc:
     end
 
     def receive_data(stanza)
-      catch(:halt) { handle_stanza stanza }
+      catch(:halt) do
+        run_filters :before, stanza
+        handle_stanza stanza
+        run_filters :after, stanza
+      end
     end
 
   protected
@@ -118,6 +128,12 @@ module Blather #:nodoc:
         roster.process node
         write @status
         ready!
+      end
+    end
+
+    def run_filters(type, stanza)
+      @filters[type].each do |guards, filter|
+        catch(:pass) { call_handler filter, guards, stanza }
       end
     end
 
