@@ -101,6 +101,18 @@ The different types of guards are:
   #   Equivalent to !stanza.find('/iq/ns:pubsub', :ns => 'pubsub:namespace').empty?
   iq '/iq/ns:pubsub', :ns => 'pubsub:namespace'
 
+=== Filters
+
+Blather provides before and after filters that work much the way regular handlers work. Filters come in a before and after
+flavor. They're called in order of definition and can be guarded like handlers
+
+  before { |stanza| "I'm run before any handler" }
+  before { |stanza| "I'm run next" }
+
+  # ... handlers
+
+  after { |stanza| "I'm run after everything" }
+
 == On the Command Line:
 
 Default usage is:
@@ -126,7 +138,7 @@ Command line options:
 
 Jeff Smick <sprsquish@gmail.com>
 
-== Contributors
+=== Contributors
 
 Nolan Darilek <nolan@thewordnerd.info>
 

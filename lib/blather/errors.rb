@@ -2,16 +2,27 @@ module Blather
   # Main error class
   class BlatherError < StandardError
     class_inheritable_array :handler_heirarchy
-
     self.handler_heirarchy ||= []
-    self.handler_heirarchy << :error
 
+    @@handler_list = []
+
+    ##
+    # Register the class's handler
     def self.register(handler)
+      @@handler_list << handler
       self.handler_heirarchy.unshift handler
     end
 
+    ##
+    # The list of registered handlers
+    def self.handler_list
+      @@handler_list
+    end
+
+    register :error
+
     # HACK!! until I can refactor the entire Error object model
-    def id
+    def id # :nodoc:
       nil
     end
   end

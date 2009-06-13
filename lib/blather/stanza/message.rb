@@ -124,6 +124,7 @@ class Stanza
   #   msg.thread = {'parent-id' => 'thread-id'}
   #   msg.thread                                  # => 'thread-id'
   #   msg.parent_thread                           # => 'parent-id'
+  #
   class Message < Stanza
     VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal] # :nodoc:
 

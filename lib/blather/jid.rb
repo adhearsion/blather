@@ -7,29 +7,23 @@ module Blather
 
     PATTERN = /^(?:([^@]*)@)??([^@\/]*)(?:\/(.*?))?$/.freeze
 
-    ##
-    # Get the JID's node
-    attr_reader :node
+    attr_reader :node,
+                :domain,
+                :resource
 
     ##
-    # Get the JID's domain
-    attr_reader :domain
-
-    ##
-    # Get the JID's resource
-    attr_reader :resource
-
-    ##
-    # If a JID is passed in just return it. 
-    # No need to copy out all the values
+    # Create a new JID. If called as new('a@b/c'), parse the string and split (node, domain, resource).
+    # * +node+ - can be any of the following:
+    #   * a string representing the JID ("node@domain.tld/resource")
+    #   * a JID. in which case nothing will be done and the original JID will be passed back
+    #   * a string representing the node
+    # * +domain+ - the domain of the JID
+    # * +resource+ - the resource the connection should be bound to
     def self.new(node, domain = nil, resource = nil)
       node.is_a?(JID) ? node : super
     end
 
-    ##
-    # Create a new JID. If called as new('a@b/c'), parse the string and
-    # split (node, domain, resource)
-    def initialize(node, domain = nil, resource = nil)
+    def initialize(node, domain = nil, resource = nil) # :nodoc:
       @resource = resource
       @domain = domain
       @node = node
@@ -62,14 +56,12 @@ module Blather
 
     ##
     # Returns a new JID with resource removed.
-    # return:: [JID]
     def stripped
-      self.class.new @node, @domain
+      dup.strip!
     end
 
     ##
     # Removes the resource (sets it to nil)
-    # return:: [JID] self
     def strip!
       @resource = nil
       self
@@ -80,8 +72,8 @@ module Blather
     # helpful for sorting etc.
     #
     # String representations are compared, see JID#to_s
-    def <=>(o)
-      to_s <=> o.to_s
+    def <=>(other)
+      to_s <=> other.to_s
     end
     alias_method :eql?, :==
 
