@@ -256,8 +256,9 @@ module Blather #:nodoc:
           # return FALSE unless any inequality is found
           guard.find do |method, test|
             value = stanza.__send__(method)
+            # last_match is the only method found unique to Regexp classes
             if test.class.respond_to?(:last_match)
-              !(test =~ value)
+              !(test =~ value.to_s)
             elsif test.is_a?(Array)
               !test.include? value
             else

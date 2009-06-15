@@ -430,6 +430,9 @@ describe 'Blather::Client guards' do
 
     @stanza.expects(:body).returns 'keyword not found'
     @client.receive_data @stanza
+
+    @stanza.expects(:body).returns nil
+    @client.receive_data @stanza
   end
 
   it 'can be a hash with an array' do
