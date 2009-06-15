@@ -98,7 +98,9 @@ class Presence
     ##
     # :available if state is nil
     def state # :nodoc:
-      (type || content_from(:show) || :available).to_sym
+      state = type || content_from(:show)
+      state = :available if state.blank?
+      state.to_sym
     end
 
     ##

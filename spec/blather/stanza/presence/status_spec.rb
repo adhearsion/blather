@@ -49,6 +49,13 @@ describe Blather::Stanza::Presence::Status do
     Blather::Stanza::Presence::Status.new.state.must_equal :available
   end
 
+  it 'returns :available if <show/> is blank' do
+    status = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+      <presence><show/><presence/>
+    NODE
+    status.state.must_equal :available
+  end
+
   it 'returns :unavailable if type is :unavailable' do
     status = Blather::Stanza::Presence::Status.new
     status.type = :unavailable
