@@ -274,8 +274,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   before do
     @host = 'host.name'
     @pubsub = Blather::DSL::PubSub.new @host
-    @client = Blather::Client.new
-    @client.jid = Blather::JID.new('n@d/r')
+    @client = Blather::Client.setup Blather::JID.new('n@d/r'), 'pass'
     Blather::DSL.stubs(:client).returns @client
   end
 

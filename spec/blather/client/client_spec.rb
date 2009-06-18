@@ -4,17 +4,15 @@ require 'blather/client/client'
 describe Blather::Client do
   before do
     @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @jid = Blather::JID.new('n@d/r')
+    @client.post_init @stream, @jid
   end
 
-  it 'provides a JID accessor' do
+  it 'provides a Blather::JID reader' do
     @client.must_respond_to :jid
-    @client.jid.must_be_nil
-
-    jid = 'me@me.com/test'
-    @client.must_respond_to :jid=
-    @client.jid = jid
-    @client.jid.must_be_kind_of Blather::JID
-    @client.jid.must_equal Blather::JID.new(jid)
+    @client.jid.must_equal @jid
   end
 
   it 'provides a reader for the roster' do
@@ -61,8 +59,8 @@ describe Blather::Client do
   it 'writes to the connection the closes when #close is called' do
     stream = mock()
     stream.expects(:close_connection_after_writing)
-    Blather::Stream::Component.stubs(:start).returns stream
-    @client.setup('me.com', 'secret').run
+    @client.setup('me.com', 'secret')
+    @client.post_init stream, Blather::JID.new('me.com')
     @client.close
   end
 
@@ -162,8 +160,8 @@ describe 'Blather::Client#write' do
     stanza = Blather::Stanza::Iq.new
     stream = mock()
     stream.expects(:send).with stanza
-    Blather::Stream::Client.expects(:start).returns stream
-    @client.setup('me@me.com', 'me').run
+    @client.setup('me@me.com', 'me')
+    @client.post_init stream, Blather::JID.new('me.com')
     @client.write stanza
   end
 end
@@ -171,15 +169,20 @@ end
 describe 'Blather::Client#status=' do
   before do
     @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @client.post_init @stream, Blather::JID.new('n@d/r')
   end
 
-  it 'updates the state when not sending to a JID' do
+  it 'updates the state when not sending to a Blather::JID' do
+    @stream.stubs(:write)
     @client.status.wont_equal :away
     @client.status = :away, 'message'
     @client.status.must_equal :away
   end
 
-  it 'does not update the state when sending to a JID' do
+  it 'does not update the state when sending to a Blather::JID' do
+    @stream.stubs(:write)
     @client.status.wont_equal :away
     @client.status = :away, 'message', 'me@me.com'
     @client.status.wont_equal :away
@@ -188,7 +191,7 @@ describe 'Blather::Client#status=' do
   it 'writes the new status to the stream' do
     Blather::Stanza::Presence::Status.stubs(:next_id).returns 0
     status = [:away, 'message']
-    @client.expects(:write).with do |s|
+    @stream.expects(:send).with do |s|
       s.must_be_kind_of Blather::Stanza::Presence::Status
       s.to_s.must_equal Blather::Stanza::Presence::Status.new(*status).to_s
     end
@@ -199,6 +202,9 @@ end
 describe 'Blather::Client default handlers' do
   before do
     @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @client.post_init @stream, Blather::JID.new('n@d/r')
   end
 
   it 're-raises errors' do
@@ -227,7 +233,7 @@ describe 'Blather::Client default handlers' do
     @client.receive_data get
   end
 
-  it 'handles status changes by updating the roster if the status is from a JID in the roster' do
+  it 'handles status changes by updating the roster if the status is from a Blather::JID in the roster' do
     jid = 'friend@jabber.local'
     status = Blather::Stanza::Presence::Status.new :away
     status.stubs(:from).returns jid
@@ -275,16 +281,17 @@ end
 describe 'Blather::Client with a Component stream' do
   before do
     class MockComponent < Blather::Stream::Component; def initialize(); end; end
+    @stream = MockComponent.new('')
+    @stream.stubs(:send_data)
     @client = Blather::Client.new 
-    Blather::Stream::Component.stubs(:start).returns MockComponent.new('')
-    @client.setup('me.com', 'secret').run
+    @client.setup('me.com', 'secret')
   end
 
   it 'calls the ready handler when sent post_init' do
     ready = mock()
     ready.expects(:call)
     @client.register_handler(:ready) { ready.call }
-    @client.post_init
+    @client.post_init @stream
   end
 end
 
@@ -299,7 +306,7 @@ describe 'Blather::Client with a Client stream' do
 
   it 'sends a request for the roster when post_init is called' do
     @stream.expects(:send).with { |stanza| stanza.must_be_kind_of Blather::Stanza::Iq::Roster }
-    @client.post_init
+    @client.post_init @stream, Blather::JID.new('n@d/r')
   end
 
   it 'calls the ready handler after post_init and roster is received' do
@@ -309,13 +316,16 @@ describe 'Blather::Client with a Client stream' do
     ready = mock()
     ready.expects(:call)
     @client.register_handler(:ready) { ready.call }
-    @client.post_init
+    @client.post_init @stream, Blather::JID.new('n@d/r')
   end
 end
 
 describe 'Blather::Client filters' do
   before do
     @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @client.post_init @stream, Blather::JID.new('n@d/r')
   end
 
   it 'raises an error when an invalid filter type is registered' do
@@ -383,7 +393,10 @@ end
 
 describe 'Blather::Client guards' do
   before do
+    stream = mock()
+    stream.stubs(:send)
     @client = Blather::Client.new
+    @client.post_init stream, Blather::JID.new('n@d/r')
     @stanza = Blather::Stanza::Iq.new
     @response = mock()
   end

@@ -721,7 +721,7 @@ describe Blather::Stream::Client do
 
       when :complete
         EM.stop
-        @client.jid.must_equal Blather::JID.new('n@d/server_resource')
+        @stream.jid.must_equal Blather::JID.new('n@d/server_resource')
 
       else
         EM.stop
@@ -754,7 +754,7 @@ describe Blather::Stream::Client do
 
       when :complete
         EM.stop
-        @client.jid.must_equal Blather::JID.new('n@d/r')
+        @stream.jid.must_equal Blather::JID.new('n@d/r')
 
       else
         EM.stop

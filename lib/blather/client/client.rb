@@ -78,7 +78,7 @@ module Blather #:nodoc:
     def run
       raise 'not setup!' unless setup?
       klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
-      @stream = klass.start self, *@setup
+      klass.start self, *@setup
     end
 
     ##
@@ -111,7 +111,7 @@ module Blather #:nodoc:
     ##
     # Write data to the stream
     def write(stanza)
-      @stream.send(stanza) if @stream
+      self.stream.send(stanza)
     end
 
     ##
@@ -131,10 +131,12 @@ module Blather #:nodoc:
     ##
     # Close the connection
     def close
-      @stream.close_connection_after_writing
+      self.stream.close_connection_after_writing
     end
 
-    def post_init # :nodoc:
+    def post_init(stream, jid = nil) # :nodoc:
+      @stream = stream
+      @jid = JID.new(jid) if jid
       self.jid.node ? client_post_init : ready!
     end
 
@@ -150,10 +152,6 @@ module Blather #:nodoc:
       end
     end
 
-    def jid=(new_jid) # :nodoc :
-      @jid = JID.new new_jid
-    end
-
     def setup? # :nodoc:
       @setup.is_a? Array
     end
@@ -167,6 +165,11 @@ module Blather #:nodoc:
     end
 
   protected
+    def stream
+      raise 'Stream not ready!' unless @stream
+      @stream
+    end
+
     def check_handler(type, guards)
       Blather.logger.warn "Handler for type \"#{type}\" will never be called as it's not a registered type" unless current_handlers.include?(type)
       check_guards guards

@@ -4,7 +4,8 @@ module Blather
     class NoConnection < RuntimeError; end
 
     STREAM_NS = 'http://etherx.jabber.org/streams'
-    attr_accessor :jid, :password
+    attr_accessor :password
+    attr_reader :jid
 
     ##
     # Start the stream between client and server
@@ -25,9 +26,7 @@ module Blather
           connect jid.domain, port, self, client, jid, pass
         else
           srv.sort! { |a,b| (a.priority != b.priority) ? (a.priority <=> b.priority) : (b.weight <=> a.weight) }
-          conn = nil
-          srv.each { |r| break unless (conn = connect(r.target.to_s, r.port, self, client, jid, pass)) === false }
-          conn
+          srv.each { |r| break unless connect(r.target.to_s, r.port, self, client, jid, pass) === false }
         end
       end
     end
@@ -139,7 +138,6 @@ module Blather
     def jid=(new_jid) # :nodoc:
       Blather.logger.debug "NEW JID: #{new_jid}"
       @jid = JID.new new_jid
-      @client.jid = @jid
     end
 
   protected
@@ -160,7 +158,7 @@ module Blather
     def ready!
       @state = :started
       @receiver = @client
-      @client.post_init
+      @client.post_init self, @jid
     end
   end
 end
