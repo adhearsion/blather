@@ -6,7 +6,7 @@ class Stream # :nodoc:
   class Parser # :nodoc:
     NS_TO_IGNORE = %w[jabber:client jabber:component:accept]
 
-    @@debug = !false
+    @@debug = false
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
 
