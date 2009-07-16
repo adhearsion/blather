@@ -516,6 +516,17 @@ describe 'Blather::Client guards' do
     @client.receive_data @stanza
   end
 
+  it 'can be an xpath with namespaces and will send the result to the handler' do
+    @stanza = Blather::Stanza.import(parse_stanza('<message><foo xmlns="http://bar.com"></message>').root)
+    @response.expects(:call).with do |stanza, xpath|
+      xpath.must_be_instance_of Nokogiri::XML::NodeSet
+      xpath.wont_be_empty
+      stanza.must_equal @stanza
+    end
+    @client.register_handler(:message, "/message/bar:foo", :bar => 'http://bar.com') { |stanza, xpath| @response.call stanza, xpath }
+    @client.receive_data @stanza
+  end
+
   it 'raises an error when a bad guard is tried' do
     lambda { @client.register_handler(:iq, 0) {} }.must_raise RuntimeError
   end
