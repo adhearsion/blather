@@ -1,3 +1,13 @@
+v0.4.3
+  Bugfix: status stanza with a blank state will be considered :available (GH-23)
+  Bugfix: ensure regexp guards try to match against a string (GH-24)
+  Stream creation is now evented. The stream object will be sent to #post_init
+  Parser debugging disabled by default
+  Update parser to work with Nokogiri 1.3.2
+  Bugfix: discover helper now calls the correct method on client
+  Bugfix: ensure XMPPNode#inherit properly sets namespaces on inherited nodes
+  Bugfix: xpath guards with namespaces work properly (GH-25)
+
 v0.4.2
   Fix -D option to actually put Blather in debug mode
   Stanzas over a client connection will either have the full JID or no JID
