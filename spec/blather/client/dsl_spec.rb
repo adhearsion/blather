@@ -102,7 +102,7 @@ describe Blather::DSL do
   it 'provides a disco helper for items' do
     what, who, where = :items, 'me@me.com', 'my/node'
     Blather::Stanza::Disco::DiscoItems.stubs(:next_id).returns 0
-    @client.expects(:temporary_handler).with '0'
+    @client.expects(:register_tmp_handler).with '0'
     expected_stanza = Blather::Stanza::Disco::DiscoItems.new
     expected_stanza.to = who
     expected_stanza.node = where
@@ -113,7 +113,7 @@ describe Blather::DSL do
   it 'provides a disco helper for info' do
     what, who, where = :info, 'me@me.com', 'my/node'
     Blather::Stanza::Disco::DiscoInfo.stubs(:next_id).returns 0
-    @client.expects(:temporary_handler).with '0'
+    @client.expects(:register_tmp_handler).with '0'
     expected_stanza = Blather::Stanza::Disco::DiscoInfo.new
     expected_stanza.to = who
     expected_stanza.node = where

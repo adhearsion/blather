@@ -115,7 +115,7 @@ module Blather
       stanza.to = who
       stanza.node = where
 
-      client.temporary_handler stanza.id, &callback
+      client.register_tmp_handler stanza.id, &callback
       write stanza
     end
 
