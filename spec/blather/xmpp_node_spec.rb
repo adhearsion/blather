@@ -213,7 +213,7 @@ describe Blather::XMPPNode do
     n2.element_name.must_equal n.element_name
   end
 
-  it 'provides an inhert mechanism' do
+  it 'provides an inherit mechanism' do
     n = Blather::XMPPNode.new 'foo'
     n2 = Blather::XMPPNode.new 'foo'
     n2.content = 'bar'
@@ -222,6 +222,13 @@ describe Blather::XMPPNode do
     n.inherit(n2)
     n['foo'].must_equal 'bar'
     n.content.must_equal 'bar'
+    n2.to_s.must_equal n.to_s
+  end
+
+  it 'holds on to namespaces when inheriting content' do
+    n = parse_stanza('<message><bar:foo xmlns:bar="http://bar.com"></message>').root
+    n2 = Blather::XMPPNode.new('message').inherit n
+    n2.to_s.must_equal n.to_s
   end
 
   it 'provides a mechanism to inherit attrs' do

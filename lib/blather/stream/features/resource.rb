@@ -51,7 +51,7 @@ class Stream # :nodoc:
       Blather.logger.debug "RESOURCE NODE #{@node}"
       # ensure this is a response to our original request
       if @id == @node['id']
-        @stream.jid = JID.new @node.find_first('//bind/bind_ns:jid', :bind_ns => BIND_NS).content
+        @stream.jid = JID.new @node.find_first('bind_ns:bind/bind_ns:jid', :bind_ns => BIND_NS).content
         succeed!
       else
         fail!("BIND result ID mismatch. Expected: #{@id}. Received: #{@node['id']}")

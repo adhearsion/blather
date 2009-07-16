@@ -251,7 +251,11 @@ module Blather
     def inherit(stanza)
       set_namespace stanza.namespace if stanza.namespace
       inherit_attrs stanza.attributes
-      stanza.children.each { |c| self << c.dup }
+      stanza.children.each do |c|
+        self << (n = c.dup)
+        ns = n.namespace_definitions.find { |ns| ns.prefix == c.namespace.prefix }
+        n.namespace = ns if ns
+      end
       self
     end
 

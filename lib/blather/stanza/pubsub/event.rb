@@ -25,7 +25,7 @@ class PubSub
     end
 
     def retractions
-      items_node.find('ns:retract', :ns => self.class.registered_ns).map { |i| i[:id] }
+      items_node.find('//ns:retract', :ns => self.class.registered_ns).map { |i| i[:id] }
     end
 
     def retractions?
@@ -33,7 +33,7 @@ class PubSub
     end
 
     def items
-      items_node.find('ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new(nil,nil,self.document).inherit i }
+      items_node.find('//ns:item', :ns => self.class.registered_ns).map { |i| PubSubItem.new(nil,nil,self.document).inherit i }
     end
 
     def items?
@@ -45,8 +45,8 @@ class PubSub
     end
 
     def event_node
-      node = find_first('ns:event', :ns => self.class.registered_ns)
-      node = find_first('event', self.class.registered_ns) unless node
+      node = find_first('//ns:event', :ns => self.class.registered_ns)
+      node = find_first('//event', self.class.registered_ns) unless node
       unless node
         (self << (node = XMPPNode.new('event', self.document)))
         node.namespace = self.class.registered_ns
@@ -55,7 +55,7 @@ class PubSub
     end
 
     def items_node
-      node = find_first('event/ns:items', :ns => self.class.registered_ns)
+      node = find_first('ns:event/ns:items', :ns => self.class.registered_ns)
       unless node
         (self.event_node << (node = XMPPNode.new('items', self.document)))
         node.namespace = event_node.namespace
@@ -64,7 +64,7 @@ class PubSub
     end
 
     def purge_node
-      event_node.find_first('ns:purge', :ns => self.class.registered_ns)
+      event_node.find_first('//ns:purge', :ns => self.class.registered_ns)
     end
 
     def subscription_ids
