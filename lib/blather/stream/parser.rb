@@ -27,9 +27,11 @@ class Stream # :nodoc:
 
     def start_document; end
     def end_document; end
+    def start_element(*args); end
+    def end_element(*args); end
     def warning(*args); end
 
-    def start_element_ns(elem, attrs, prefix, uri, namespaces)
+    def start_element_namespace(elem, attrs, prefix, uri, namespaces)
       Blather.logger.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
 
       args = [elem]
@@ -37,13 +39,17 @@ class Stream # :nodoc:
       node = XMPPNode.new *args
       node.document.root = node unless @current
 
-      attrs.each { |k,v| node[k] = v if k }
+      attrs.each do |attr|
+        node[attr.localname] = attr.value
+      end
 
       if !@receiver.stopped?
         @current << node if @current
         @current = node
       end
 
+
+      ns_keys = namespaces.map { |pre, href| pre }
       namespaces.delete_if { |pre, href| NS_TO_IGNORE.include? href }
       @namespace_definitions.push []
       namespaces.each do |pre, href|
@@ -51,7 +57,7 @@ class Stream # :nodoc:
         ns = node.add_namespace(pre, href)
         @namespaces[[pre, href]] ||= ns
       end
-      @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !namespaces[prefix]
+      @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !ns_keys.include?(prefix)
       node.namespace = @namespaces[[prefix, uri]]
 
       deliver(node) if elem == 'stream'
@@ -66,7 +72,7 @@ class Stream # :nodoc:
 =end
     end
 
-    def end_element_ns(elem, prefix, uri)
+    def end_element_namespace(elem, prefix, uri)
       Blather.logger.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if elem == 'stream'
