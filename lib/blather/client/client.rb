@@ -236,10 +236,11 @@ module Blather #:nodoc:
     end
 
     def call_handler(handler, guards, stanza) # :nodoc:
-      if guards.first.respond_to?(:to_str) && !(result = stanza.find(*guards)).empty?
-        handler.call(stanza, result)
-      elsif !guarded?(guards, stanza)
-        handler.call(stanza)
+      if guards.first.respond_to?(:to_str)
+        result = stanza.find(*guards)
+        handler.call(stanza, result) unless result.empty?
+      else
+        handler.call(stanza) unless guarded?(guards, stanza)
       end
     end
 
