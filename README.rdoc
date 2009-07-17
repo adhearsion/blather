@@ -20,6 +20,8 @@ RubyForge:: http://rubyforge.org/projects/squishtech
 
 RDocs:: http://squishtech.rubyforge.org/blather
 
+Google Group:: http://groups.google.com/group/xmpp-blather
+
 = Usage
 
 == Installation
