@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{blather}
-  s.version = "0.4.2"
+  s.version = "0.4.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2009-06-13}
+  s.date = %q{2009-07-18}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
   s.email = %q{sprsquish@gmail.com}
   s.extra_rdoc_files = [
@@ -133,13 +133,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<eventmachine>, [">= 0.12.6"])
-      s.add_runtime_dependency(%q<nokogiri>, [">= 1.3.0"])
+      s.add_runtime_dependency(%q<nokogiri>, [">= 1.3.2"])
     else
       s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
-      s.add_dependency(%q<nokogiri>, [">= 1.3.0"])
+      s.add_dependency(%q<nokogiri>, [">= 1.3.2"])
     end
   else
     s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
-    s.add_dependency(%q<nokogiri>, [">= 1.3.0"])
+    s.add_dependency(%q<nokogiri>, [">= 1.3.2"])
   end
 end
