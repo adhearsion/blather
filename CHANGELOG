@@ -1,3 +1,6 @@
+v0.4.4
+  Add "disconnected" handler type to handle connection termination
+
 v0.4.3
   Bugfix: status stanza with a blank state will be considered :available (GH-23)
   Bugfix: ensure regexp guards try to match against a string (GH-24)

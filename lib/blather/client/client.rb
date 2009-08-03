@@ -80,6 +80,7 @@ module Blather #:nodoc:
       klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
       klass.start self, *@setup
     end
+    alias_method :connect, :run
 
     ##
     # Register a filter to be run before or after the handler chain is run.
@@ -141,7 +142,7 @@ module Blather #:nodoc:
     end
 
     def unbind # :nodoc:
-      EM.stop if EM.reactor_running?
+      call_handler_for(:disconnected, nil) || (EM.reactor_running? && EM.stop)
     end
 
     def receive_data(stanza) # :nodoc:
@@ -176,7 +177,7 @@ module Blather #:nodoc:
     end
 
     def current_handlers
-      [:ready] + Stanza.handler_list + BlatherError.handler_list
+      [:ready, :disconnected] + Stanza.handler_list + BlatherError.handler_list
     end
 
     def setup_initial_handlers # :nodoc:

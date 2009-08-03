@@ -57,6 +57,18 @@ Setup handlers by calling their names as methods.
   # and #body == 'exit'
   message :chat?, :body => 'exit'
 
+=== Non-Stanza Handlers
+
+So far there are two non-stanza related handlers.
+
+  when_ready (or handle(:ready) {})
+    Called after the connection has been connected. It's good for initializing your system.
+
+  disconnected (or handle(:disconnected) {})
+    Called after the connection has been terminated. Good for teardown or automatic reconnection.
+    The following will reconnect every time the connection is lost:
+    disconnected { client.connect }
+
 === Handler Guards
 
 Guards act like AND statements. Each condition must be met if the handler is to be used.

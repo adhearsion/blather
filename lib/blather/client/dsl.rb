@@ -63,6 +63,12 @@ module Blather
     end
 
     ##
+    # Wrapper for "handle :disconnected"
+    def disconnected(&block)
+      handle :disconnected, &block
+    end
+
+    ##
     # Set current status
     def set_status(state = nil, msg = nil)
       client.status = state, msg

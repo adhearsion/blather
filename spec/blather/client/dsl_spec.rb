@@ -63,6 +63,11 @@ describe Blather::DSL do
     @dsl.when_ready
   end
 
+  it 'provides a helper for disconnected' do
+    @client.expects(:register_handler).with :disconnected
+    @dsl.disconnected
+  end
+
   it 'sets the initial status' do
     state = :away
     msg = 'do not disturb'

@@ -76,6 +76,32 @@ describe Blather::Client do
     @client.unbind
   end
 
+  it 'calls the :disconnected handler with #unbind is called' do
+    EM.expects(:reactor_running?).returns false
+    disconnected = mock()
+    disconnected.expects(:call)
+    @client.register_handler(:disconnected) { disconnected.call }
+    @client.unbind    
+  end
+
+  it 'does not call EM.stop on #unbind if a handler returns positive' do
+    EM.expects(:reactor_running?).never
+    EM.expects(:stop).never
+    disconnected = mock()
+    disconnected.expects(:call).returns true
+    @client.register_handler(:disconnected) { disconnected.call }
+    @client.unbind
+  end
+
+  it 'calls EM.stop on #unbind if a handler returns negative' do
+    EM.expects(:reactor_running?).returns true
+    EM.expects(:stop)
+    disconnected = mock()
+    disconnected.expects(:call).returns false
+    @client.register_handler(:disconnected) { disconnected.call }
+    @client.unbind
+  end
+
   it 'can register a temporary handler based on stanza ID' do
     stanza = Blather::Stanza::Iq.new
     response = mock()
