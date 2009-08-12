@@ -1,5 +1,6 @@
 v0.4.4
   Add "disconnected" handler type to handle connection termination
+  Bugfix: Fix error with pubsub using the wrong client connection
 
 v0.4.3
   Bugfix: status stanza with a blank state will be considered :available (GH-23)
