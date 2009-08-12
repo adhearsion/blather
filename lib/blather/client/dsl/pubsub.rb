@@ -61,7 +61,7 @@ module DSL
     # * +node+ is the node to subscribe to
     # * +jid+ is the jid that should be used. Defaults to the stripped current JID
     def subscribe(node, jid = nil, host = nil)
-      jid ||= DSL.client.jid.stripped
+      jid ||= client.jid.stripped
       request(Stanza::PubSub::Subscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
     end
 
@@ -71,7 +71,7 @@ module DSL
     # * +node+ is the node to subscribe to
     # * +jid+ is the jid that should be used. Defaults to the stripped current JID
     def unsubscribe(node, jid = nil, host = nil)
-      jid ||= DSL.client.jid.stripped
+      jid ||= client.jid.stripped
       request(Stanza::PubSub::Unsubscribe.new(:set, send_to(host), node, jid)) { |n| yield n if block_given? }
     end
 
@@ -121,12 +121,16 @@ module DSL
   private
     def request(node, method = nil, callback = nil, &block)
       block = lambda { |node| callback.call(method ? node.__send__(method) : node) } unless block_given?
-      @client.write_with_handler(node, &block)
+      client.write_with_handler(node, &block)
     end
 
     def send_to(host = nil)
       raise 'You must provide a host' unless (host ||= @host)
       host
+    end
+
+    def client
+      @client
     end
   end
 
