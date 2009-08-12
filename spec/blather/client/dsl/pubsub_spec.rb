@@ -5,10 +5,9 @@ require 'blather/client/dsl'
 describe Blather::DSL::PubSub do
   before do
     @host = 'host.name'
-    @pubsub = Blather::DSL::PubSub.new @host
     @client = mock()
     @client.stubs(:jid).returns Blather::JID.new('n@d/r')
-    Blather::DSL.stubs(:client).returns @client
+    @pubsub = Blather::DSL::PubSub.new @client, @host
   end
 
   it 'raises an error when trying to send a stanza without a host' do
@@ -273,9 +272,8 @@ end
 describe 'Blather::DSL::PubSub callbacks' do
   before do
     @host = 'host.name'
-    @pubsub = Blather::DSL::PubSub.new @host
     @client = Blather::Client.setup Blather::JID.new('n@d/r'), 'pass'
-    Blather::DSL.stubs(:client).returns @client
+    @pubsub = Blather::DSL::PubSub.new @client, @host
   end
 
   it 'returns a list of affiliations when requesting affiliations' do
