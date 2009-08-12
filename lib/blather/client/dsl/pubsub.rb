@@ -4,7 +4,8 @@ module DSL
   class PubSub
     attr_accessor :host
 
-    def initialize(host)
+    def initialize(client, host)
+      @client = client
       @host = host
     end
 
@@ -120,7 +121,7 @@ module DSL
   private
     def request(node, method = nil, callback = nil, &block)
       block = lambda { |node| callback.call(method ? node.__send__(method) : node) } unless block_given?
-      DSL.client.write_with_handler(node, &block)
+      @client.write_with_handler(node, &block)
     end
 
     def send_to(host = nil)
