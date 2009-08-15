@@ -185,9 +185,9 @@ module Blather #:nodoc:
         raise err
       end
 
-      register_handler :iq, :type => [:get, :set] do |iq|
-        write StanzaError.new(iq, 'service-unavailable', :cancel).to_node
-      end
+      # register_handler :iq, :type => [:get, :set] do |iq|
+      #   write StanzaError.new(iq, 'service-unavailable', :cancel).to_node
+      # end
 
       register_handler :status do |status|
         roster[status.from].status = status if roster[status.from]

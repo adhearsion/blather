@@ -238,26 +238,26 @@ describe 'Blather::Client default handlers' do
     lambda { @client.receive_data err }.must_raise Blather::BlatherError
   end
 
-  it 'responds to iq:get with a "service-unavailable" error' do
-    get = Blather::Stanza::Iq.new :get
-    err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
-    @client.expects(:write).with err
-    @client.receive_data get
-  end
+  # it 'responds to iq:get with a "service-unavailable" error' do
+  #   get = Blather::Stanza::Iq.new :get
+  #   err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
+  #   @client.expects(:write).with err
+  #   @client.receive_data get
+  # end
 
-  it 'responds to iq:get with a "service-unavailable" error' do
-    get = Blather::Stanza::Iq.new :get
-    err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
-    @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
-    @client.receive_data get
-  end
+  # it 'responds to iq:get with a "service-unavailable" error' do
+  #   get = Blather::Stanza::Iq.new :get
+  #   err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
+  #   @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
+  #   @client.receive_data get
+  # end
 
-  it 'responds to iq:set with a "service-unavailable" error' do
-    get = Blather::Stanza::Iq.new :set
-    err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
-    @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
-    @client.receive_data get
-  end
+  # it 'responds to iq:set with a "service-unavailable" error' do
+  #   get = Blather::Stanza::Iq.new :set
+  #   err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
+  #   @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
+  #   @client.receive_data get
+  # end
 
   it 'handles status changes by updating the roster if the status is from a Blather::JID in the roster' do
     jid = 'friend@jabber.local'
