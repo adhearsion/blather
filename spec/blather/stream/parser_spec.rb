@@ -79,9 +79,9 @@ describe Blather::Stream::Parser do
         '<error type="modify">',
           '<undefined-condition xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>',
           '<text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Some special application diagnostic information...</text>',
-          '<special-application-condition xmlns="application-ns"/>',
+          '<special-application-condition xmlns="special:application-ns"/>',
         "</error>",
-      "</message>"
+      "</message>",
     ]
     data.each { |d| @parser.receive_data d }
     @client.data.size.must_equal 1
