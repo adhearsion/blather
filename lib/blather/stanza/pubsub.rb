@@ -51,11 +51,22 @@ class Stanza
     attribute_accessor :id
 
     def payload=(payload = nil)
-      self.content = payload
+      self.entry.content = payload
     end
 
     def payload
-      content.empty? ? nil : content
+      self.entry.content.empty? ? nil : content
+    end
+
+    def entry
+      e = find_first('ns:entry', :ns => 'http://www.w3.org/2005/Atom') ||
+          find_first('entry', :ns => 'http://www.w3.org/2005/Atom')
+
+      unless e
+        self << (e = XMPPNode.new('entry', self.document))
+        e.namespace = 'http://www.w3.org/2005/Atom'
+      end
+      e
     end
   end
 
