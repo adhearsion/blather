@@ -19,7 +19,7 @@ module Blather
     # This works such that it can be chained:
     #   self << stanza1 << stanza2 << "raw data"
     def <<(stanza)
-      write stanza
+      client.write stanza
       self
     end
 
@@ -83,7 +83,7 @@ module Blather
     ##
     # Write data to the stream
     # Anything that resonds to #to_s can be paseed to the stream
-    def write(stanza)
+    def write_to_stream(stanza)
       client.write stanza
     end
 
@@ -122,7 +122,7 @@ module Blather
       stanza.node = where
 
       client.register_tmp_handler stanza.id, &callback
-      write stanza
+      client.write stanza
     end
 
     ##

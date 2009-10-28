@@ -5,7 +5,7 @@ require 'blather/client'
 when_ready { puts "Connected ! send messages to #{jid.stripped}." }
 
 subscription :request? do |s|
-  write s.approve!
+  write_to_stream s.approve!
 end
 
 message :chat?, :body => 'exit' do |m|

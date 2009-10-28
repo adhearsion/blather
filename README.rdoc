@@ -41,12 +41,12 @@ This will auto-accept any subscription requests and echo back any chat messages.
 
   # Auto approve subscription requests
   subscription :request? do |s|
-    write s.approve!
+    write_to_stream s.approve!
   end
 
   # Echo back what was said
   message :chat?, :body do |m|
-    write m.reply
+    write_to_stream m.reply
   end
 
 == Handlers

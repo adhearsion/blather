@@ -89,7 +89,7 @@ describe Blather::DSL do
   it 'provides a writer' do
     stanza = Blather::Stanza::Iq.new
     @client.expects(:write).with stanza
-    @dsl.write stanza
+    @dsl.write_to_stream stanza
   end
 
   it 'provides a "say" helper' do

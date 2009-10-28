@@ -1,3 +1,6 @@
+v0.4.5
+	Bugfix: Change DSL#write to DSL#write_to_stream. Previous way was messing with YAML
+
 v0.4.4
   Add "disconnected" handler type to handle connection termination
   Bugfix: Fix error with pubsub using the wrong client connection

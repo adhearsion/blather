@@ -167,8 +167,7 @@ module Blather #:nodoc:
 
   protected
     def stream
-      raise 'Stream not ready!' unless @stream
-      @stream
+      @stream || raise('Stream not ready!')
     end
 
     def check_handler(type, guards)
