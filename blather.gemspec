@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{blather}
-  s.version = "0.4.4"
+  s.version = "0.4.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2009-08-12}
+  s.date = %q{2009-10-28}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
   s.email = %q{sprsquish@gmail.com}
   s.extra_rdoc_files = [
