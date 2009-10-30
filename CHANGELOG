@@ -1,3 +1,6 @@
+v0.4.6
+	Bugfix: prioritize authentication mechanisms
+
 v0.4.5
 	Bugfix: Change DSL#write to DSL#write_to_stream. Previous way was messing with YAML
 

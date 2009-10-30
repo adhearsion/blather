@@ -6,6 +6,12 @@ class Stream # :nodoc:
       register :sasl_unknown_mechanism
     end
 
+    MECHANISMS = %w[
+      digest-md5
+      plain
+      anonymous
+    ].freeze
+
     SASL_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'.freeze
     register SASL_NS
 
@@ -20,7 +26,8 @@ class Stream # :nodoc:
       @node = stanza
       case stanza.element_name
       when 'mechanisms'
-        @mechanisms = stanza.children.map { |m| m.content.downcase }
+        available_mechanisms = stanza.children.map { |m| m.content.downcase }
+        @mechanisms = MECHANISMS.select { |m| available_mechanisms.include? m }
         next!
       when 'failure'
         next!

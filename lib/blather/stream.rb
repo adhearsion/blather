@@ -80,7 +80,7 @@ module Blather
     # Called by EM with data from the wire
     def receive_data(data) # :nodoc:
       Blather.logger.debug "\n#{'-'*30}\n"
-      Blather.logger.debug "<< #{data}"
+      Blather.logger.debug "STREAM IN: #{data}"
       @parser << data
 
     rescue ParseError => e
