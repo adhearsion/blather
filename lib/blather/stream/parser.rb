@@ -30,6 +30,7 @@ class Stream # :nodoc:
     def start_element(*args); end
     def end_element(*args); end
     def warning(*args); end
+    def xmldecl(*args); end
 
     def start_element_namespace(elem, attrs, prefix, uri, namespaces)
       Blather.logger.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
