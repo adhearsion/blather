@@ -3,7 +3,7 @@ require 'nokogiri'
 module Blather # :nodoc:
 class Stream # :nodoc:
 
-  class Parser # :nodoc:
+  class Parser < Nokogiri::XML::SAX::Document # :nodoc:
     NS_TO_IGNORE = %w[jabber:client jabber:component:accept]
 
     @@debug = false
@@ -24,13 +24,6 @@ class Stream # :nodoc:
       self
     end
     alias_method :<<, :receive_data
-
-    def start_document; end
-    def end_document; end
-    def start_element(*args); end
-    def end_element(*args); end
-    def warning(*args); end
-    def xmldecl(*args); end
 
     def start_element_namespace(elem, attrs, prefix, uri, namespaces)
       Blather.logger.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug

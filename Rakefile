@@ -15,7 +15,7 @@ begin
     gem.rubyforge_project = 'squishtech'
 
     gem.add_dependency 'eventmachine', '>= 0.12.6'
-    gem.add_dependency 'nokogiri', '>= 1.3.2'
+    gem.add_dependency 'nokogiri', '>= 1.4.0'
 
     gem.files = FileList['examples/**/*', 'lib/**/*'].to_a
 
