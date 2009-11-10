@@ -1,8 +1,11 @@
+v0.4.7
+  Update to work with Nokogiri 1.4.0
+
 v0.4.6
-	Bugfix: prioritize authentication mechanisms
+  Bugfix: prioritize authentication mechanisms
 
 v0.4.5
-	Bugfix: Change DSL#write to DSL#write_to_stream. Previous way was messing with YAML
+  Bugfix: Change DSL#write to DSL#write_to_stream. Previous way was messing with YAML
 
 v0.4.4
   Add "disconnected" handler type to handle connection termination
@@ -76,7 +79,7 @@ v0.3.0
   Added support for anonymous authentication by providing a blank node on the jid ("@[host]")
 
 v0.2.3
-  Go back to using the master branch for gems (stupid mistake)  
+  Go back to using the master branch for gems (stupid mistake)
 
 v0.2.2
   Switch to Jeweler.
