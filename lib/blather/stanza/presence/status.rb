@@ -46,14 +46,14 @@ class Presence
   # == Priority Attribute
   #
   # The +priority+ attribute sets the priority of the status for the entity and must be an integer between
-  # -128 and 127. 
+  # -128 and 127.
   #
   # == Message Attribute
   #
   # The optional +message+ element contains XML character data specifying a natural-language description of
   # availability status. It is normally used in conjunction with the show element to provide a detailed
   # description of an availability state (e.g., "In a meeting").
-  # 
+  #
   # Blather treats the +message+ attribute like a normal ruby object attribute providing a getter and setter.
   # The default +message+ is nil.
   #
@@ -108,12 +108,20 @@ class Presence
     def priority=(new_priority) # :nodoc:
       raise ArgumentError, 'Priority must be between -128 and +127' if new_priority && !(-128..127).include?(new_priority.to_i)
       set_content_for :priority, new_priority
-      
+
     end
 
-    content_attr_reader :priority, :to_i
+    def priority
+      read_content(:priority).to_i
+    end
 
-    content_attr_accessor :message, nil, :status
+    def message
+      read_content :status
+    end
+
+    def message=(message)
+      set_content_for :status, message
+    end
 
     ##
     # Compare status based on priority

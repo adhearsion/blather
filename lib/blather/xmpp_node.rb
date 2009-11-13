@@ -45,65 +45,6 @@ module Blather
     end
 
     ##
-    # Provides a content reader helper that returns the content of a node
-    # +method+ is the method to create
-    # +conversion+ is a method to call on the content before sending it back
-    # +node+ is the name of the content node (this defaults to the method name)
-    #
-    #   class Node
-    #     content_attr_reader :body
-    #     content_attr_reader :type, :to_sym
-    #     content_attr_reader :id, :to_i, :identity
-    #   end
-    #
-    #   n = Node.new 'foo'
-    #   n.to_s == "<foo><body>foobarbaz</body><type>error</type><identity>1000</identity></foo>"
-    #   n.body == 'foobarbaz'
-    #   n.type == :error
-    #   n.id == 1000
-    def self.content_attr_reader(method, conversion = nil, node = nil)
-      node ||= method
-      conversion = "val.#{conversion} if val.respond_to?(:#{conversion})" if conversion
-      class_eval(<<-END, __FILE__, __LINE__)
-        def #{method}
-          val = content_from :#{node}
-          #{conversion}
-        end
-      END
-    end
-
-    ##
-    # Provides a content writer helper that creates or updates the content of a node
-    # +method+ is the method to create
-    # +node+ is the name of the node to create (defaults to the method name)
-    #
-    #   class Node
-    #     content_attr_writer :body
-    #     content_attr_writer :id, :identity
-    #   end
-    #
-    #   n = Node.new 'foo'
-    #   n.body = 'thebodytext'
-    #   n.id = 'id-text'
-    #   n.to_s == '<foo><body>thebodytext</body><identity>id-text</identity></foo>'
-    def self.content_attr_writer(method, node = nil)
-      node ||= method
-      class_eval(<<-END, __FILE__, __LINE__)
-        def #{method}=(val)
-          set_content_for :#{node}, val
-        end
-      END
-    end
-
-    ##
-    # Provides a quick way of building +content_attr_reader+ and +content_attr_writer+
-    # for the same method and node
-    def self.content_attr_accessor(method, conversion = nil, node = nil)
-      content_attr_reader method, conversion, node
-      content_attr_writer method, node
-    end
-
-    ##
     # Automatically sets the namespace registered by the subclass
     def self.new(name = nil, doc = nil)
       name ||= self.registered_name
@@ -121,6 +62,11 @@ module Blather
 
     def write_attr(attr_name, value)
       self[attr_name.to_sym] = value
+    end
+
+    def read_content(node, to_call = nil)
+      val = content_from node.to_sym
+      val && to_call ? val.__send__(to_call) : val
     end
 
     ##

@@ -73,70 +73,33 @@ describe Blather::XMPPNode do
   end
 
   it 'provides a content reader' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_reader :bar }.new('foo')
+    foo = Blather::XMPPNode.new('foo')
     foo << (bar = Blather::XMPPNode.new('bar', foo.document))
     bar.content = 'baz'
-    foo.must_respond_to :bar
-    foo.bar.must_equal 'baz'
+    foo.read_content(:bar).must_equal 'baz'
   end
 
   it 'provides a content reader that converts the value' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_reader :bar, :to_sym }.new('foo')
+    foo = Blather::XMPPNode.new('foo')
     foo << (bar = Blather::XMPPNode.new('bar', foo.document))
     bar.content = 'baz'
-    foo.must_respond_to :bar
-    foo.bar.must_equal :baz
-  end
-
-  it 'provides a content reader with a different node' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_reader :bar, nil, :fiz }.new('foo')
-    foo << (fiz = Blather::XMPPNode.new('fiz', foo.document))
-    fiz.content = 'baz'
-    foo.must_respond_to :bar
-    foo.bar.must_equal 'baz'
+    foo.read_content(:bar, :to_sym).must_equal :baz
   end
 
   it 'provides a content writer' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_writer :bar }.new('foo')
-    foo.must_respond_to :bar=
-    foo.bar = 'baz'
+    foo = Blather::XMPPNode.new('foo')
+    foo.set_content_for :bar, 'baz'
     foo.content_from(:bar).must_equal 'baz'
   end
 
-  it 'provides a content writer with a different node' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_writer :bar, :fiz }.new('foo')
-    foo.must_respond_to :bar=
-    foo.bar = 'baz'
-    foo.content_from(:fiz).must_equal 'baz'
-  end
-
-  it 'provides a content accessor' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_accessor :bar }.new('foo')
-    foo << (bar = Blather::XMPPNode.new('bar', foo.document))
-    foo.must_respond_to :bar=
-    foo.must_respond_to :bar
-    foo.bar = 'baz'
-    foo.bar.must_equal 'baz'
-  end
-
-  it 'provides a content accessor with conversion' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_accessor :bar, :to_sym }.new('foo')
-    foo << (bar = Blather::XMPPNode.new('bar', foo.document))
-    foo.must_respond_to :bar=
-    foo.must_respond_to :bar
-    foo.bar = 'baz'
-    foo.bar.must_equal :baz
-  end
-
   it 'provides a content writer that removes a child when set to nil' do
-    foo = Class.new(Blather::XMPPNode) { content_attr_writer :bar }.new('foo')
+    foo = Blather::XMPPNode.new('foo')
     foo << (bar = Blather::XMPPNode.new('bar', foo.document))
     bar.content = 'baz'
     foo.content_from(:bar).must_equal 'baz'
     foo.xpath('bar').wont_be_empty
 
-    foo.must_respond_to :bar=
-    foo.bar = nil
+    foo.set_content_for :bar, nil
     foo.content_from(:bar).must_be_nil
     foo.xpath('bar').must_be_empty
   end
