@@ -42,7 +42,6 @@ class Stream # :nodoc:
         @current = node
       end
 
-
       ns_keys = namespaces.map { |pre, href| pre }
       namespaces.delete_if { |pre, href| NS_TO_IGNORE.include? href }
       @namespace_definitions.push []
@@ -56,14 +55,12 @@ class Stream # :nodoc:
 
       deliver(node) if elem == 'stream'
 
-=begin
-      $stderr.puts "\n\n"
-      $stderr.puts [elem, attrs, prefix, uri, namespaces].inspect
-      $stderr.puts @namespaces.inspect
-      $stderr.puts [@namespaces[[prefix, uri]].prefix, @namespaces[[prefix, uri]].href].inspect if @namespaces[[prefix, uri]]
-      $stderr.puts node.inspect
-      $stderr.puts node.document.to_s.gsub(/\n\s*/,'')
-=end
+      # $stderr.puts "\n\n"
+      # $stderr.puts [elem, attrs, prefix, uri, namespaces].inspect
+      # $stderr.puts @namespaces.inspect
+      # $stderr.puts [@namespaces[[prefix, uri]].prefix, @namespaces[[prefix, uri]].href].inspect if @namespaces[[prefix, uri]]
+      # $stderr.puts node.inspect
+      # $stderr.puts node.document.to_s.gsub(/\n\s*/,'')
     end
 
     def end_element_namespace(elem, prefix, uri)

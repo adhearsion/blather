@@ -45,9 +45,26 @@ class Stanza
       def jid
         (j = self[:jid]) ? JID.new(j) : nil
       end
-      attribute_writer :jid
 
-      attribute_accessor :node, :name
+      def jid=(jid)
+        write_attr :jid, jid
+      end
+
+      def node
+        read_attr :node
+      end
+
+      def node=(node)
+        write_attr :node, node
+      end
+
+      def name
+        read_attr :name
+      end
+
+      def name=(name)
+        write_attr :name, name
+      end
 
       def eql?(o)
         raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)

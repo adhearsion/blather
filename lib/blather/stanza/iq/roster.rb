@@ -33,7 +33,7 @@ class Iq
 
     class RosterItem < XMPPNode
       ##
-      # [jid] may be either a JID or XMPPNode. 
+      # [jid] may be either a JID or XMPPNode.
       # [name] name alias of the given JID
       # [subscription] subscription type
       # [ask] ask subscription sub-state
@@ -62,11 +62,34 @@ class Iq
       def jid
         (j = self[:jid]) ? JID.new(j) : nil
       end
-      attribute_writer :jid
 
-      attribute_accessor :name
+      def jid=(jid)
+        write_attr :jid, jid
+      end
 
-      attribute_accessor :subscription, :ask, :call => :to_sym
+      def name
+        read_attr :name
+      end
+
+      def name=(name)
+        write_attr :name, name
+      end
+
+      def subscription
+        read_attr :subscription, :to_sym
+      end
+
+      def subscription=(subscription)
+        write_attr :subscription, subscription
+      end
+
+      def ask
+        read_attr :ask, :to_sym
+      end
+
+      def ask=(ask)
+        write_attr :ask, ask
+      end
 
       ##
       # The groups roster item belongs to

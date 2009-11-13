@@ -51,43 +51,25 @@ describe Blather::XMPPNode do
     Blather::XMPPNode.import(n).must_be_kind_of ImportSubClass
   end
 
-  it 'provides an attribute_reader' do
-    foo = Class.new(Blather::XMPPNode) { attribute_reader :bar }.new
-    foo.must_respond_to :bar
-    foo.bar.must_be_nil
+  it 'provides an attribute reader' do
+    foo = Blather::XMPPNode.new
+    foo.read_attr(:bar).must_be_nil
     foo[:bar] = 'baz'
-    foo.bar.must_equal 'baz'
+    foo.read_attr(:bar).must_equal 'baz'
   end
 
-  it 'provides an attribute_reader with converstion' do
-    foo = Class.new(Blather::XMPPNode) { attribute_reader :bar, :call => :to_sym }.new
-    foo.must_respond_to :bar
-    foo.bar.must_be_nil
+  it 'provides an attribute reader with converstion' do
+    foo = Blather::XMPPNode.new
+    foo.read_attr(:bar, :to_sym).must_be_nil
     foo[:bar] = 'baz'
-    foo.bar.must_equal :baz
+    foo.read_attr(:bar, :to_sym).must_equal :baz
   end
 
-  it 'provides an attribute_writer' do
-    foo = Class.new(Blather::XMPPNode) { attribute_writer :bar }.new
+  it 'provides an attribute writer' do
+    foo = Blather::XMPPNode.new
     foo[:bar].must_be_nil
-    foo.bar = 'baz'
+    foo.write_attr(:bar, 'baz')
     foo[:bar].must_equal 'baz'
-  end
-
-  it 'provides an attribute_accessor' do
-    foo = Class.new(Blather::XMPPNode) do
-      attribute_accessor :bar, :call => :to_sym
-      attribute_accessor :baz
-    end.new
-    foo.must_respond_to :bar
-    foo.bar.must_be_nil
-    foo.bar = 'fiz'
-    foo.bar.must_equal :fiz
-
-    foo.must_respond_to :baz
-    foo.baz.must_be_nil
-    foo.baz = 'buz'
-    foo.baz.must_equal 'buz'
   end
 
   it 'provides a content reader' do

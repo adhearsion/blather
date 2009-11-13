@@ -63,9 +63,21 @@ module Blather
       self
     end
 
-    attribute_accessor :id
+    def id
+      read_attr :id
+    end
 
-    attribute_writer :to, :from
+    def id=(id)
+      write_attr :id, id
+    end
+
+    def to=(to)
+      write_attr :to, to
+    end
+
+    def from=(from)
+      write_attr :from, from
+    end
 
     ##
     # returns:: JID created from the "to" value of the stanza
@@ -79,7 +91,13 @@ module Blather
       JID.new(self[:from]) if self[:from]
     end
 
-    attribute_accessor :type, :call => :to_sym
+    def type
+      read_attr :type, :to_sym
+    end
+
+    def type=(type)
+      write_attr :type, type
+    end
 
     ##
     # Transform the stanza into a stanza error

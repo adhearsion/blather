@@ -2,7 +2,13 @@ module Blather
 class Stanza
 
   class PubSubErrors < PubSub
-    attribute_accessor :node, :to_sym => false
+    def node
+      read_attr :node
+    end
+
+    def node=(node)
+      write_attr :node, node
+    end
   end
 
 end #Stanza

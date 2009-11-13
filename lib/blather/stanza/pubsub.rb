@@ -48,7 +48,13 @@ class Stanza
       new_node
     end
 
-    attribute_accessor :id
+    def id
+      read_attr :id
+    end
+
+    def id=(id)
+      write_attr :id, id
+    end
 
     def payload=(payload = nil)
       self.entry.content = payload
