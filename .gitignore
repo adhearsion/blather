@@ -11,3 +11,4 @@ rdoc
 *.log
 *.pid
 notes
+.yardoc
