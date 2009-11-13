@@ -72,7 +72,33 @@ class Stanza
       super :presence
     end
 
-    attribute_helpers_for(:type, VALID_TYPES)
+    def unavailable?
+      self.type == :unavailable
+    end
+
+    def subscribe?
+      self.type == :subscribe
+    end
+
+    def subscribed?
+      self.type == :subscribed
+    end
+
+    def unsubscribe?
+      self.type == :unsubscribe
+    end
+
+    def unsubscribed?
+      self.type == :unsubscribed
+    end
+
+    def probe?
+      self.type == :probe
+    end
+
+    def error?
+      self.type == :error
+    end
 
     ##
     # Ensures type is one of :unavailable, :subscribe, :subscribed, :unsubscribe, :unsubscribed, :probe or :error

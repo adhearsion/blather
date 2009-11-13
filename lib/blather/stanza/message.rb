@@ -149,7 +149,25 @@ class Stanza
       node
     end
 
-    attribute_helpers_for :type, VALID_TYPES
+    def chat?
+      self.type == :chat
+    end
+
+    def error?
+      self.type == :error
+    end
+
+    def groupchat?
+      self.type == :groupchat
+    end
+
+    def headline?
+      self.type == :headline
+    end
+
+    def normal?
+      self.type == :normal
+    end
 
     def type=(type) # :nodoc:
       raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)

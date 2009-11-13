@@ -76,7 +76,25 @@ class Presence
       node
     end
 
-    attribute_helpers_for(:state, [:available] + VALID_STATES)
+    def available?
+      self.state == :available
+    end
+
+    def away?
+      self.state == :away
+    end
+
+    def chat?
+      self.state == :chat
+    end
+
+    def dnd?
+      self.state == :dnd
+    end
+
+    def xa?
+      self.state == :xa
+    end
 
     ##
     # Ensures type is nil or :unavailable

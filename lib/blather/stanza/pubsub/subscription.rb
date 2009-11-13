@@ -16,7 +16,21 @@ class PubSub
       new_node
     end
 
-    attribute_helpers_for :subscription, VALID_TYPES
+    def none?
+      self.type == :none
+    end
+
+    def pending?
+      self.type == :pending
+    end
+
+    def subscribed?
+      self.type == :subscribed
+    end
+
+    def unconfigured?
+      self.type == :unconfigured
+    end
 
     def jid
       JID.new(subscription_node[:jid])

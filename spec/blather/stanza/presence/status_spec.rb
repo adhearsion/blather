@@ -116,7 +116,7 @@ describe Blather::Stanza::Presence::Status do
     lambda { status1 <=> status2 }.must_raise(Blather::ArgumentError)
   end
 
-  Blather::Stanza::Presence::Status::VALID_STATES.each do |valid_state|
+  ([:available] + Blather::Stanza::Presence::Status::VALID_STATES).each do |valid_state|
     it "provides a helper (#{valid_state}?) for state #{valid_state}" do
       Blather::Stanza::Presence::Status.new.must_respond_to :"#{valid_state}?"
     end

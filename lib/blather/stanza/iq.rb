@@ -68,7 +68,21 @@ class Stanza
       node
     end
 
-    attribute_helpers_for :type, VALID_TYPES
+    def get?
+      self.type == :get
+    end
+    
+    def set?
+      self.type == :set
+    end
+    
+    def result?
+      self.type == :result
+    end
+    
+    def error?
+      self.type == :error
+    end
 
     ##
     # Ensures type is :get, :set, :result or :error
