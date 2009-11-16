@@ -2,20 +2,27 @@ module Blather
 class Stanza
 class Iq
 
+  # Roster Stanza
+  # [RFC 3921 Section 7 Roster Management](http://xmpp.org/rfcs/rfc3921.html#roster)
+  #
+  # @handler :roster
   class Roster < Query
     register :roster, nil, 'jabber:iq:roster'
 
-    ##
-    # Any new items are added to the query
+    # Create a new roster stanza and (optionally) load it with an item
+    #
+    # @param [<Blather::Stanza::Iq::VALID_TYPES>] type the stanza type
+    # @param [Blather::XMPPNode] item a roster item
     def self.new(type = nil, item = nil)
       node = super type
       node.query << item if item
       node
     end
 
-    ##
     # Inherit the XMPPNode to create a proper Roster object.
     # Creates RosterItem objects out of each roster item as well.
+    #
+    # @param [Blather::XMPPNode] node a node to inherit
     def inherit(node)
       # remove the current set of nodes
       remove_children :item
@@ -25,18 +32,33 @@ class Iq
       self
     end
 
-    ##
-    # Roster items
+    # The list of roster items
+    #
+    # @return [Array<Blather::Stanza::Iq::Roster::RosterItem>]
     def items
       query.find('//ns:item', :ns => self.class.registered_ns).map { |i| RosterItem.new(i) }
     end
 
+    # Individual roster items.
+    # This is a convenience class to attach methods to the node
     class RosterItem < XMPPNode
-      ##
-      # [jid] may be either a JID or XMPPNode.
-      # [name] name alias of the given JID
-      # [subscription] subscription type
-      # [ask] ask subscription sub-state
+
+      # Create a new RosterItem
+      # @overload new(XML::Node)
+      #   Create a RosterItem by inheriting a node
+      #   @param [XML::Node] node an xml node to inherit
+      # @overload new(opts)
+      #   Create a RosterItem through a hash of options
+      #   @param [Hash] opts the options
+      #   @option opts [Blather::JID, String, nil] :jid the JID of the item
+      #   @option opts [String, nil] :name the alias to give the JID
+      #   @option opts [Symbol, nil] :subscription the subscription status of the RosterItem must be one of Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
+      #   @option opts [:subscribe, nil] :ask the ask value of the RosterItem
+      # @overload new(jid = nil, name = nil, subscription = nil, ask = nil)
+      #   @param [Blather::JID, String, nil] jid the JID of the item
+      #   @param [String, nil] name the alias to give the JID
+      #   @param [Symbol, nil] subscription the subscription status of the RosterItem must be one of Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
+      #   @param [:subscribe, nil] ask the ask value of the RosterItem
       def self.new(jid = nil, name = nil, subscription = nil, ask = nil)
         new_node = super :item
 
@@ -57,49 +79,72 @@ class Iq
         new_node
       end
 
-      ##
-      # Roster item's JID
+      # Get the JID attached to the item
+      #
+      # @return [Blather::JID, nil]
       def jid
         (j = self[:jid]) ? JID.new(j) : nil
       end
 
+      # Set the JID of the item
+      #
+      # @param [Blather::JID, String, nil] jid the new JID
       def jid=(jid)
         write_attr :jid, jid
       end
 
+      # Get the item name
+      #
+      # @return [String, nil]
       def name
         read_attr :name
       end
 
+      # Set the item name
+      #
+      # @param [#to_s] name the name of the item
       def name=(name)
         write_attr :name, name
       end
 
+      # Get the subscription value of the item
+      #
+      # @return [<:both, :from, :none, :remove, :to>]
       def subscription
         read_attr :subscription, :to_sym
       end
 
+      # Set the subscription value of the item
+      #
+      # @param [<:both, :from, :none, :remove, :to>] subscription
       def subscription=(subscription)
         write_attr :subscription, subscription
       end
 
+      # Get the ask value of the item
+      #
+      # @return [<:subscribe, nil>]
       def ask
         read_attr :ask, :to_sym
       end
 
+      # Set the ask value of the item
+      #
+      # @param [<:subscribe, nil>] ask
       def ask=(ask)
         write_attr :ask, ask
       end
 
-      ##
       # The groups roster item belongs to
+      #
+      # @return [Array<String>]
       def groups
         find('child::*[local-name()="group"]').map { |g| g.content }
       end
 
-      ##
       # Set the roster item's groups
-      # must be an array
+      #
+      # @param [Array<#to_s>] new_groups an array of group names
       def groups=(new_groups)
         remove_children :group
         if new_groups
@@ -110,9 +155,10 @@ class Iq
         end
       end
 
-      ##
       # Convert the roster item to a proper stanza all wrapped up
       # This facilitates new subscriptions
+      #
+      # @return [Blather::Stanza::Iq::Roster]
       def to_stanza
         Roster.new(:set, self)
       end
