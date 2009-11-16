@@ -105,6 +105,15 @@ class Stanza
       raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
       super
     end
+
+    # Overrides the parent method to ensure the reply is of type :result
+    #
+    # @returns [self]
+    def reply!
+      super
+      self.type = :result
+      self
+    end
   end
 
 end #Stanza

@@ -2,28 +2,34 @@ module Blather
 class Stanza
 class Iq
 
-  # 
+  # Query Stanza
+  #
+  # @handler :query
   class Query < Iq
     register :query, :query
 
-    ##
-    # Ensure the query node is created
+    # Overrides the parent method to ensure a query node is created
+    #
+    # @see Blather::Stanza::Iq.new
     def self.new(type = nil)
       node = super
       node.query
       node
     end
 
-    ##
-    # Kill the query node before running inherit
+    # Overrides the parent method to ensure the current query node is destroyed
+    #
+    # @see Blather::Stanza::Iq#inherit
     def inherit(node)
       query.remove
       super
     end
 
-    ##
     # Query node accessor
-    # This will ensure there actually is a query node
+    # If a query node exists it will be returned.
+    # Otherwise a new node will be created and returned
+    #
+    # @return [Balather::XMPPNode]
     def query
       q = if self.class.registered_ns
         find_first('query_ns:query', :query_ns => self.class.registered_ns)
@@ -36,14 +42,6 @@ class Iq
         q.namespace = self.class.registered_ns
       end
       q
-    end
-
-    ##
-    # A query reply should have type set to "result"
-    def reply!
-      super
-      self.type = :result
-      self
     end
   end #Query
 
