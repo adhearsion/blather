@@ -1,8 +1,9 @@
 module Blather
 
-##
 # Stream Errors
-# RFC3920 Section 9.3 (http://xmpp.org/rfcs/rfc3920.html#streams-error-rules)
+# [RFC3920 Section 9.3](http://xmpp.org/rfcs/rfc3920.html#streams-error-rules)
+#
+# @handler :stream_error
 class StreamError < BlatherError
   STREAM_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-streams'
 
@@ -10,9 +11,9 @@ class StreamError < BlatherError
 
   attr_reader :text, :extras
 
-  ##
-  # Factory method for instantiating the proper class
-  # for the error
+  # Factory method for instantiating the proper class for the error
+  #
+  # @param [Blather::XMPPNode] node the importable node
   def self.import(node)
     name = node.find_first('descendant::*[name()!="text"]', STREAM_ERR_NS).element_name
 
@@ -24,23 +25,28 @@ class StreamError < BlatherError
     self.new name, text, extras
   end
 
-  ##
-  # <tt>text</tt> is the (optional) error message.
-  # <tt>extras</tt> should be an array of nodes to attach to the error
-  # each extra should be in an application specific namespace
-  # see RFC3920 Section 4.7.2 (http://xmpp.org/rfcs/rfc3920.html#rfc.section.4.7.2)
+  # Create a new Stream Error
+  # [RFC3920 Section 4.7.2](http://xmpp.org/rfcs/rfc3920.html#rfc.section.4.7.2)
+  #
+  # @param [String] name the error name
+  # @param [String, nil] text optional error text
+  # @param [Array<Blather::XMPPNode>] extras an array of extras to attach to the error
   def initialize(name, text = nil, extras = [])
     @name = name
     @text = text
     @extras = extras
   end
 
+  # The error name
+  #
+  # @return [Symbol]
   def name
     @name.gsub('-','_').to_sym
   end
 
-  ##
   # Creates an XML node from the error
+  #
+  # @return [Blather::XMPPNode]
   def to_node
     node = XMPPNode.new('stream:error')
 
@@ -57,16 +63,19 @@ class StreamError < BlatherError
     node
   end
 
-  ##
-  # Turns the object into XML fit to be sent over the stream
+  # Convert the object to a proper node then convert it to a string
+  #
+  # @return [String]
   def to_xml
     to_node.to_s
   end
 
-  def inspect # :nodoc:
+  # @private
+  def inspect
     "Stream Error (#{@name}): #{self.text}" + (self.extras.empty? ? '' : " [#{self.extras}]")
   end
-  alias_method :to_s, :inspect # :nodoc:
+  # @private
+  alias_method :to_s, :inspect
 end #StreamError
 
 end #Blather

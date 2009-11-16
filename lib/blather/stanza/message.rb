@@ -125,12 +125,14 @@ class Stanza
   #   msg.thread                                  # => 'thread-id'
   #   msg.parent_thread                           # => 'parent-id'
   #
+  # @handler :message
   class Message < Stanza
-    VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal] # :nodoc:
+    VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal]
 
     register :message
 
-    def self.import(node) # :nodoc:
+    # @private
+    def self.import(node)
       klass = nil
       node.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
 
@@ -141,6 +143,11 @@ class Stanza
       end
     end
 
+    # Create a new Message stanza
+    #
+    # @param [#to_s] to the JID to send the message to
+    # @param [#to_s] body the body of the message
+    # @param [Symbol] type the message type. Must be one of VALID_TYPES
     def self.new(to = nil, body = nil, type = :chat)
       node = super :message
       node.to = to
@@ -149,57 +156,92 @@ class Stanza
       node
     end
 
+    # Check if the Message is of type :chat
+    #
+    # @return [true, false]
     def chat?
       self.type == :chat
     end
 
+    # Check if the Message is of type :error
+    #
+    # @return [true, false]
     def error?
       self.type == :error
     end
 
+    # Check if the Message is of type :groupchat
+    #
+    # @return [true, false]
     def groupchat?
       self.type == :groupchat
     end
 
+    # Check if the Message is of type :headline
+    #
+    # @return [true, false]
     def headline?
       self.type == :headline
     end
 
+    # Check if the Message is of type :normal
+    #
+    # @return [true, false]
     def normal?
       self.type == :normal
     end
 
-    def type=(type) # :nodoc:
+    # Ensures type is :get, :set, :result or :error
+    #
+    # @param [#to_sym] type the Message type. Must be one of VALID_TYPES
+    def type=(type)
       raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
       super
     end
 
+    # Get the message body
+    #
+    # @return [String]
     def body
       read_content :body
     end
 
+    # Set the message body
+    #
+    # @param [#to_s] body the message body
     def body=(body)
       set_content_for :body, body
     end
 
+    # Get the message subject
+    #
+    # @return [String]
     def subject
       read_content :subject
     end
 
+    # Set the message subject
+    #
+    # @param [#to_s] body the message subject
     def subject=(subject)
       set_content_for :subject, subject
     end
 
+    # Get the message thread
+    #
+    # @return [String]
     def thread
       read_content :thread
     end
 
-    def parent_thread # :nodoc:
+    # @private
+    def parent_thread
       n = find_first('thread')
       n[:parent] if n
     end
 
-    def thread=(thread) # :nodoc:
+    # @private
+    def thread=(thread)
       parent, thread = thread.to_a.flatten if thread.is_a?(Hash)
       set_content_for :thread, thread
       find_first('thread')[:parent] = parent

@@ -3,7 +3,8 @@ module Blather
   # Base XML Node
   # All XML classes subclass XMPPNode it allows the addition of helpers
   class XMPPNode < Nokogiri::XML::Node
-    BASE_NAMES = %w[presence message iq].freeze # :nodoc:
+    # @private
+    BASE_NAMES = %w[presence message iq].freeze
 
     @@registrations = {}
 
@@ -53,7 +54,6 @@ module Blather
     # @param [String, nil] name the element name
     # @param [XML::Document, nil] doc the document to attach the node to. If not provided one will be created
     # @return a new object with the registered name and namespace
-    def initialize(name = nil, doc = nil); end # :for yardoc:
     def self.new(name = nil, doc = nil)
       name ||= self.registered_name
 
@@ -98,7 +98,8 @@ module Blather
       self.class.import self
     end
 
-    alias_method :nokogiri_namespace=, :namespace= # :nodoc:
+    # @private
+    alias_method :nokogiri_namespace=, :namespace=
     # Attach a namespace to the node
     #
     # @overload namespace=(ns)
@@ -200,6 +201,10 @@ module Blather
     def inherit_attrs(attrs)
       attrs.each  { |name, value| self[name] = value }
       self
+    end
+
+    def inspect
+      self.to_xml
     end
   end #XMPPNode
 

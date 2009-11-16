@@ -1,4 +1,4 @@
-module Nokogiri # :nodoc:
+module Nokogiri
 module XML
 
   class Node

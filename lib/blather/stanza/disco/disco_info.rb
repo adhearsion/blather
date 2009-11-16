@@ -1,6 +1,10 @@
 module Blather
 class Stanza
 
+  # Disco Info node that provides or retreives information about a jabber entity
+  #
+  # @handler :disco_info
+  # @see [XEP-0030 Disco Info](http://xmpp.org/extensions/xep-0030.html#info)
   class DiscoInfo < Disco
     register :disco_info, nil, 'http://jabber.org/protocol/disco#info'
 
@@ -10,7 +14,6 @@ class Stanza
     # @param [Array<Array, DiscoInfo::Identity>, nil] identities a list of identities. these are passed directly to DiscoInfo::Identity.new
     # @param [Array<Array, DiscoInfo::Identity>, nil] features a list of features. these are passed directly to DiscoInfo::Feature.new
     # @return [DiscoInfo] a new DiscoInfo stanza
-    def initialize(type = nil, node = nil, identities = [], features = []); end # :for yarddoc:
     def self.new(type = nil, node = nil, identities = [], features = [])
       new_node = super type
       new_node.node = node
@@ -45,7 +48,6 @@ class Stanza
       #   @param [String] name the name of the Identity
       #   @param [String, nil] type the type of the Identity
       #   @param [String, nil] category the category of the Identity
-      def initialize(name, type = nil, category = nil); end # :for yarddoc:
       def self.new(name, type = nil, category = nil)
         new_node = super :identity
 
@@ -121,7 +123,6 @@ class Stanza
       #   Create a new feature by var
       #   @param [String] var a the Feautre's var
       # @return [DiscoInfo::Feature]
-      def initialize(var); end # :for yarddoc:
       def self.new(var)
         new_node = super :feature
         case var

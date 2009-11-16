@@ -39,12 +39,14 @@ class Stanza
   #
   #   iq.type = :invalid    # => RuntimeError
   #
+  # @handler :iq
   class Iq < Stanza
-    VALID_TYPES = [:get, :set, :result, :error] # :nodoc:
+    VALID_TYPES = [:get, :set, :result, :error]
 
     register :iq
 
-    def self.import(node) # :nodoc:
+    # @private
+    def self.import(node)
       klass = nil
       node.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
 
@@ -55,11 +57,11 @@ class Stanza
       end
     end
 
-    ##
     # Create a new Iq
-    # * +type+ - the type of stanza (:get, :set, :result, :error)
-    # * +to+ - the JID of the inteded recipient
-    # * +id+ - the stanza's ID. Leaving this nil will set the ID to the next unique number
+    #
+    # @param [Symbol, nil] type the type of stanza (:get, :set, :result, :error)
+    # @param [Blather::JID, String, nil] jid the JID of the inteded recipient
+    # @param [#to_s] id the stanza's ID. Leaving this nil will set the ID to the next unique number
     def self.new(type = nil, to = nil, id = nil)
       node = super :iq
       node.type = type || :get
@@ -68,25 +70,38 @@ class Stanza
       node
     end
 
+    # Check if the IQ is of type :get
+    #
+    # @return [true, false]
     def get?
       self.type == :get
     end
-    
+
+    # Check if the IQ is of type :set
+    #
+    # @return [true, false]
     def set?
       self.type == :set
     end
-    
+
+    # Check if the IQ is of type :result
+    #
+    # @return [true, false]
     def result?
       self.type == :result
     end
-    
+
+    # Check if the IQ is of type :error
+    #
+    # @return [true, false]
     def error?
       self.type == :error
     end
 
-    ##
     # Ensures type is :get, :set, :result or :error
-    def type=(type) # :nodoc:
+    #
+    # @param [#to_sym] type the Iq type. Must be one of VALID_TYPES
+    def type=(type)
       raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
       super
     end

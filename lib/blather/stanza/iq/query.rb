@@ -2,6 +2,7 @@ module Blather
 class Stanza
 class Iq
 
+  # 
   class Query < Iq
     register :query, :query
 
@@ -35,14 +36,6 @@ class Iq
         q.namespace = self.class.registered_ns
       end
       q
-    end
-
-    ##
-    # A query reply should have type set to "result"
-    def reply
-      elem = super
-      elem.type = :result
-      elem
     end
 
     ##

@@ -8,7 +8,7 @@ class Object
     # We check defined? in case we find a removed class that has yet to be
     # garbage collected. This also fails for anonymous classes -- please
     # submit a patch if you have a workaround.
-    def subclasses_of(*superclasses) #:nodoc:
+    def subclasses_of(*superclasses)
       subclasses = []
 
       superclasses.each do |sup|
@@ -24,7 +24,7 @@ class Object
   rescue RuntimeError
     # JRuby and any implementations which cannot handle the objectspace traversal
     # above fall back to this implementation
-    def subclasses_of(*superclasses) #:nodoc:
+    def subclasses_of(*superclasses)
       subclasses = []
 
       superclasses.each do |sup|
@@ -61,8 +61,8 @@ runner = proc do |k,v|
 
   str = ''
   if level > 0
-    (level - 1).times { str << '|   ' }
-    str << '|-- '
+    (level - 1).times { str << '|  ' }
+    str << '|- '
   end
 
   puts str+k

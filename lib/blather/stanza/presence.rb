@@ -47,12 +47,12 @@ class Stanza
   #
   #   presence.type = :invalid   # => RuntimeError
   #
+  # @handler :presence
   class Presence < Stanza
-    VALID_TYPES = [:unavailable, :subscribe, :subscribed, :unsubscribe, :unsubscribed, :probe, :error] # :nodoc:
+    VALID_TYPES = [:unavailable, :subscribe, :subscribed, :unsubscribe, :unsubscribed, :probe, :error]
 
     register :presence
 
-    ##
     # Creates a class based on the presence type
     # either a Status or Subscription object is created based
     # on the type attribute.
@@ -66,43 +66,64 @@ class Stanza
       klass.new.inherit(node)
     end
 
-    ##
     # Ensure element_name is "presence" for all subclasses
     def self.new
       super :presence
     end
 
+    # Check if the IQ is of type :unavailable
+    #
+    # @return [true, false]
     def unavailable?
       self.type == :unavailable
     end
 
+    # Check if the IQ is of type :subscribe
+    #
+    # @return [true, false]
     def subscribe?
       self.type == :subscribe
     end
 
+    # Check if the IQ is of type :subscribed
+    #
+    # @return [true, false]
     def subscribed?
       self.type == :subscribed
     end
 
+    # Check if the IQ is of type :unsubscribe
+    #
+    # @return [true, false]
     def unsubscribe?
       self.type == :unsubscribe
     end
 
+    # Check if the IQ is of type :unsubscribed
+    #
+    # @return [true, false]
     def unsubscribed?
       self.type == :unsubscribed
     end
 
+    # Check if the IQ is of type :probe
+    #
+    # @return [true, false]
     def probe?
       self.type == :probe
     end
 
+    # Check if the IQ is of type :error
+    #
+    # @return [true, false]
     def error?
       self.type == :error
     end
 
-    ##
     # Ensures type is one of :unavailable, :subscribe, :subscribed, :unsubscribe, :unsubscribed, :probe or :error
-    def type=(type) # :nodoc:
+    #
+    # @param [#to_sym] type the Presence type. Must be one of VALID_TYPES
+    def type=(type)
       raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
       super
     end

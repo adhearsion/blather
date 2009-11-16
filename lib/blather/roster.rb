@@ -1,20 +1,25 @@
 module Blather
 
-  ##
-  # Local Roster 
+  # Local Roster
   # Takes care of adding/removing JIDs through the stream
   class Roster
     include Enumerable
 
+    # Create a new roster
+    #
+    # @param [Blather::Stream] stream the stream the roster should use to update roster entries
+    # @param [Blather::Stanza::Roster] stanza a roster stanza used to preload the roster
+    # @return [Blather::Roster]
     def initialize(stream, stanza = nil)
       @stream = stream
       @items = {}
       stanza.items.each { |i| push i, false } if stanza
     end
 
-    ##
-    # Process any incoming stanzas adn either add or remove the
+    # Process any incoming stanzas and either adds or removes the
     # corresponding RosterItem
+    #
+    # @param [Blather::Stanza::Roster] stanza a roster stanza
     def process(stanza)
       stanza.items.each do |i|
         case i.subscription
@@ -24,18 +29,21 @@ module Blather
       end
     end
 
-    ##
     # Pushes a JID into the roster
-    # then returns self to allow for chaining
+    #
+    # @param [String, Blather::JID, #jid] elem a JID to add to the roster
+    # @return [self]
+    # @see #push
     def <<(elem)
       push elem
       self
     end
 
-    ##
-    # Push a JID into the roster
-    # Will send the new item to the server
-    # unless overridden by calling #push(elem, false)
+    # Push a JID into the roster and update the server
+    #
+    # @param [String, Blather::JID, #jid] elem a jid to add to the roster
+    # @param [true, false] send send the update over the wire
+    # @see Blather::JID
     def push(elem, send = true)
       jid = elem.respond_to?(:jid) ? elem.jid : JID.new(elem)
       @items[key(jid)] = node = RosterItem.new(elem)
@@ -44,35 +52,40 @@ module Blather
     end
     alias_method :add, :push
 
-    ##
-    # Remove a JID from the roster
-    # Sends a remove query stanza to the server
+    # Remove a JID from the roster and update the server
+    #
+    # @param [String, Blather::JID] jid the JID to remove from the roster
     def delete(jid)
       @items.delete key(jid)
       @stream.write Stanza::Iq::Roster.new(:set, Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove))
     end
     alias_method :remove, :delete
 
-    ##
     # Get a RosterItem by JID
+    #
+    # @param [String, Blather::JID] jid the jid of the item to return
+    # @return [Blather::RosterItem, nil] the associated RosterItem
     def [](jid)
       items[key(jid)]
     end
 
-    ##
     # Iterate over all RosterItems
+    #
+    # @yield [Blather::RosterItem] yields each RosterItem
     def each(&block)
       items.each &block
     end
 
-    ##
-    # Returns a duplicate of all RosterItems
+    # Get a duplicate of all RosterItems
+    #
+    # @return [Array<Blather::RosterItem>] a duplicate of all RosterItems
     def items
       @items.dup
     end
 
-    ##
     # A hash of items keyed by group
+    #
+    # @return [Hash<group => Array<RosterItem>>]
     def grouped
       self.inject(Hash.new{|h,k|h[k]=[]}) do |hash, item|
         item[1].groups.each { |group| hash[group] << item[1] }

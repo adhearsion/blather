@@ -1,8 +1,9 @@
 module Blather
 
-##
 # Stanza errors
 # RFC3920 Section 9.3 (http://xmpp.org/rfcs/rfc3920.html#stanzas-error)
+#
+# @handler :stanza_error
 class StanzaError < BlatherError
   STANZA_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-stanzas'
   VALID_TYPES = [:cancel, :continue, :modify, :auth, :wait]
@@ -11,9 +12,10 @@ class StanzaError < BlatherError
 
   attr_reader :original, :name, :type, :text, :extras
 
-  ##
-  # Factory method for instantiating the proper class
-  # for the error
+  # Factory method for instantiating the proper class for the error
+  #
+  # @param [Blather::XMPPNode] node the error node to import
+  # @return [Blather::StanzaError]
   def self.import(node)
     original = node.copy
     original.remove_child 'error'
@@ -36,6 +38,14 @@ class StanzaError < BlatherError
   # <tt>type</tt> is the error type specified in RFC3920 (http://xmpp.org/rfcs/rfc3920.html#rfc.section.9.3.2)
   # <tt>text</tt> is an option error description
   # <tt>extras</tt> an array of application specific nodes to add to the error. These should be properly namespaced.
+
+  # Create a new StanzaError
+  #
+  # @param [Blather::XMPPNode] original the original stanza
+  # @param [String] name the error name
+  # @param [#to_s] type the error type as specified in [RFC3920](http://xmpp.org/rfcs/rfc3920.html#rfc.section.9.3.2)
+  # @param [String, nil] text additional text for the error
+  # @param [Array<Blather::XMPPNode>] extras an array of extra nodes to add
   def initialize(original, name, type, text = nil, extras = [])
     @original = original
     @name = name
@@ -44,20 +54,26 @@ class StanzaError < BlatherError
     @extras = extras
   end
 
-  ##
-  # Set the error type (see RFC3920 Section 9.3.2 (http://xmpp.org/rfcs/rfc3920.html#rfc.section.9.3.2))
+  # Set the error type
+  #
+  # @param [#to_sym] type the new error type. Must be on of Blather::StanzaError::VALID_TYPES
+  # @see [RFC3920 Section 9.3.2](http://xmpp.org/rfcs/rfc3920.html#rfc.section.9.3.2)
   def type=(type)
     type = type.to_sym
     raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if !VALID_TYPES.include?(type)
     @type = type
   end
 
+  # The error name
+  #
+  # @return [Symbol]
   def name
     @name.gsub('-','_').to_sym
   end
 
-  ##
   # Creates an XML node from the error
+  #
+  # @return [Blather::XMPPNode]
   def to_node
     node = self.original.reply
     node.type = 'error'
@@ -76,16 +92,19 @@ class StanzaError < BlatherError
     node
   end
 
-  ##
-  # Turns the object into XML fit to be sent over the stream
+  # Convert the object to a proper node then convert it to a string
+  #
+  # @return [String]
   def to_xml
     to_node.to_s
   end
 
-  def inspect # :nodoc:
+  # @private
+  def inspect
     "Stanza Error (#{@name}): #{self.text} [#{self.extras}]"
   end
-  alias_method :to_s, :inspect # :nodoc:
+  # @private
+  alias_method :to_s, :inspect
 end #StanzaError
 
 end #Blather
