@@ -62,13 +62,18 @@ class Presence
   #   status.message = "gone!"
   #   status.message            # => "gone!"
   #
+  # @handler :status
   class Status < Presence
-    VALID_STATES = [:away, :chat, :dnd, :xa] # :nodoc:
+    VALID_STATES = [:away, :chat, :dnd, :xa].freeze
 
     include Comparable
 
     register :status, :status
 
+    # Create a new Status stanza
+    #
+    # @param [<:away, :chat, :dnd, :xa>] state the state of the status
+    # @param [#to_s] message a message to send with the status
     def self.new(state = nil, message = nil)
       node = super()
       node.state = state
@@ -76,35 +81,54 @@ class Presence
       node
     end
 
+    # Check if the state is available
+    #
+    # @return [true, false]
     def available?
       self.state == :available
     end
 
+    # Check if the state is away
+    #
+    # @return [true, false]
     def away?
       self.state == :away
     end
 
+    # Check if the state is chat
+    #
+    # @return [true, false]
     def chat?
       self.state == :chat
     end
 
+    # Check if the state is dnd
+    #
+    # @return [true, false]
     def dnd?
       self.state == :dnd
     end
 
+    # Check if the state is xa
+    #
+    # @return [true, false]
     def xa?
       self.state == :xa
     end
 
-    ##
+    # Set the type attribute
     # Ensures type is nil or :unavailable
-    def type=(type) # :nodoc:
+    #
+    # @param [<:unavailable, nil>] type the type
+    def type=(type)
       raise ArgumentError, "Invalid type (#{type}). Must be nil or unavailable" if type && type.to_sym != :unavailable
       super
     end
 
-    ##
+    # Set the state
     # Ensure state is one of :available, :away, :chat, :dnd, :xa or nil
+    #
+    # @param [<:available, :away, :chat, :dnd, :xa, nil>] state
     def state=(state) # :nodoc:
       state = state.to_sym if state
       state = nil if state == :available
@@ -113,37 +137,50 @@ class Presence
       set_content_for :show, state
     end
 
-    ##
-    # :available if state is nil
-    def state # :nodoc:
+    # Get the state of the status
+    #
+    # @return [<:available, :away, :chat, :dnd, :xa>]
+    def state
       state = type || content_from(:show)
       state = :available if state.blank?
       state.to_sym
     end
 
-    ##
-    # Ensure priority is between -128 and 127
+    # Set the priority of the status
+    # Ensures priority is between -128 and 127
+    #
+    # @param [Fixnum<-128...127>] new_priority
     def priority=(new_priority) # :nodoc:
       raise ArgumentError, 'Priority must be between -128 and +127' if new_priority && !(-128..127).include?(new_priority.to_i)
       set_content_for :priority, new_priority
-
     end
 
+    # Get the priority of the status
+    #
+    # @return [Fixnum<-128...127>]
     def priority
       read_content(:priority).to_i
     end
 
+    # Get the status message
+    #
+    # @return [String, nil]
     def message
       read_content :status
     end
 
+    # Set the status message
+    #
+    # @param [String, nil] message
     def message=(message)
       set_content_for :status, message
     end
 
-    ##
     # Compare status based on priority
     # raises an error if the JIDs aren't the same
+    #
+    # @param [Blather::Stanza::Presence::Status] o
+    # @return [true,false]
     def <=>(o)
       unless self.from && o.from && self.from.stripped == o.from.stripped
         raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
