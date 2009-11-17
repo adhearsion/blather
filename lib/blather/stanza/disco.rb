@@ -1,7 +1,8 @@
 module Blather
 class Stanza
 
-  # Base discovery node
+  # # Disco Base class
+  #
   # Use Blather::Stanza::DiscoInfo or Blather::Stanza::DiscoItems
   class Disco < Iq::Query
 
@@ -20,5 +21,5 @@ class Stanza
     end
   end
 
-end #Stanza
-end #Blather
+end # Stanza
+end # Blather

@@ -1,10 +1,14 @@
 module Blather
 class Stanza
 
-  # Disco Items node that provides or retreives items associated with a jabbery entity
+  # # DiscoItems Stanza
+  #
+  # [XEP-0030 Disco Info](http://xmpp.org/extensions/xep-0030.html#items)
+  #
+  # Disco Items node that provides or retreives items associated with a
+  # jabbery entity
   #
   # @handler :disco_items
-  # @see [XEP-0030 Disco Info](http://xmpp.org/extensions/xep-0030.html#items)
   class DiscoItems < Disco
     register :disco_items, nil, 'http://jabber.org/protocol/disco#items'
 
@@ -25,7 +29,9 @@ class Stanza
     #
     # @return [Array<Blather::Stanza::DiscoItems::Item>]
     def items
-      query.find('//query_ns:item', :query_ns => self.class.registered_ns).map { |i| Item.new i }
+      query.find('//ns:item', :ns => self.class.registered_ns).map do |i|
+        Item.new i
+      end
     end
 
     # An individual Disco Item
@@ -110,7 +116,10 @@ class Stanza
       #
       # @param [Blather::Stanza::DiscoItems::Item] o the other Item
       def eql?(o)
-        raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)
+        unless o.is_a?(self.class)
+          raise "Cannot compare #{self.class} with #{o.class}"
+        end
+
         o.jid == self.jid &&
         o.node == self.node &&
         o.name == self.name

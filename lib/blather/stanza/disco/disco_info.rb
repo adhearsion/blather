@@ -1,35 +1,44 @@
 module Blather
 class Stanza
 
+  # # DiscoInfo Stanza
+  #
+  # [XEP-0030 Disco Info](http://xmpp.org/extensions/xep-0030.html#info)
+  #
   # Disco Info node that provides or retreives information about a jabber entity
   #
   # @handler :disco_info
-  # @see [XEP-0030 Disco Info](http://xmpp.org/extensions/xep-0030.html#info)
   class DiscoInfo < Disco
     register :disco_info, nil, 'http://jabber.org/protocol/disco#info'
 
     # Create a new DiscoInfo stanza
     # @param [:get, :set, :result, :error, nil] type the Iq stanza type
     # @param [String, nil] node the name of the node the info belongs to
-    # @param [Array<Array, DiscoInfo::Identity>, nil] identities a list of identities. these are passed directly to DiscoInfo::Identity.new
-    # @param [Array<Array, DiscoInfo::Identity>, nil] features a list of features. these are passed directly to DiscoInfo::Feature.new
+    # @param [Array<Array, DiscoInfo::Identity>, nil] identities a list of
+    # identities. these are passed directly to DiscoInfo::Identity.new
+    # @param [Array<Array, DiscoInfo::Identity>, nil] features a list of
+    # features. these are passed directly to DiscoInfo::Feature.new
     # @return [DiscoInfo] a new DiscoInfo stanza
     def self.new(type = nil, node = nil, identities = [], features = [])
       new_node = super type
       new_node.node = node
-      [identities].flatten.each { |id|      new_node.query << Identity.new(id)      }
-      [features].flatten.each   { |feature| new_node.query << Feature.new(feature)  }
+      [identities].flatten.each { |i| new_node.query << Identity.new(i) }
+      [features].flatten.each   { |f| new_node.query << Feature.new(f) }
       new_node
     end
 
     # List of identity objects
     def identities
-      query.find('//query_ns:identity', :query_ns => self.class.registered_ns).map { |i| Identity.new i }
+      query.find('//ns:identity', :ns => self.class.registered_ns).map do |i|
+        Identity.new i
+      end
     end
 
     # List of feature objects
     def features
-      query.find('//query_ns:feature', :query_ns => self.class.registered_ns).map { |i| Feature.new i }
+      query.find('//ns:feature', :ns => self.class.registered_ns).map do |f|
+        Feature.new f
+      end
     end
 
     class Identity < XMPPNode
@@ -106,13 +115,16 @@ class Stanza
       # @param [DiscoInfo::Identity] o the Identity object to compare against
       # @return [true, false]
       def eql?(o)
-        raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)
+        unless o.is_a?(self.class)
+          raise "Cannot compare #{self.class} with #{o.class}"
+        end
+
         o.name == self.name &&
         o.type == self.type &&
         o.category == self.category
       end
       alias_method :==, :eql?
-    end
+    end # Identity
 
     class Feature < XMPPNode
       # Create a new DiscoInfo::Feature object
@@ -150,12 +162,15 @@ class Stanza
       # @param [DiscoInfo::Feature] o the Feature object to compare against
       # @return [true, false]
       def eql?(o)
-        raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)
+        unless o.is_a?(self.class)
+          raise "Cannot compare #{self.class} with #{o.class}"
+        end
+
         o.var == self.var
       end
       alias_method :==, :eql?
     end
-  end
+  end # Feature
 
-end #Stanza
-end #Blather
+end # Stanza
+end # Blather
