@@ -2,9 +2,16 @@ module Blather
 class Stanza
 class Presence
 
+  # Subscription stanza
+  #
+  # @handler :subscription
   class Subscription < Presence
     register :subscription, :subscription
 
+    # Create a new Subscription stanza
+    #
+    # @param [Blather::JID, #to_s] to the JID to subscribe to
+    # @param [Symbol, nil] type the subscription type
     def self.new(to = nil, type = nil)
       node = super()
       node.to = to
@@ -12,50 +19,71 @@ class Presence
       node
     end
 
+    # @private
     def inherit(node)
       inherit_attrs node.attributes
       self
     end
 
+    # Set the to value on the stanza
+    #
+    # @param [Blather::JID, #to_s] to a JID to subscribe to
     def to=(to)
       super JID.new(to).stripped
     end
 
-    ##
-    # Create an approve stanza
+    # Transform the stanza into an approve stanza
+    # makes approving requests simple
+    #
+    # @example approve an incoming request
+    #   subscription(:subscribe?) { |s| write_to_stream s.approve! }
+    # @return [self]
     def approve!
       self.type = :subscribed
       reply_if_needed!
     end
 
-    ##
-    # Create a refuse stanza
+    # Transform the stanza into a refuse stanza
+    # makes refusing requests simple
+    #
+    # @example refuse an incoming request
+    #   subscription(:request?) { |s| write_to_stream s.refuse! }
+    # @return [self]
     def refuse!
       self.type = :unsubscribed
       reply_if_needed!
     end
 
-    ##
-    # Create an unsubscribe stanza
+    # Transform the stanza into an unsubscribe stanza
+    # makes unsubscribing simple
+    #
+    # @return [self]
     def unsubscribe!
       self.type = :unsubscribe
       reply_if_needed!
     end
 
-    ##
-    # Create a cancel stanza
+    # Transform the stanza into a cancel stanza
+    # makes canceling simple
+    #
+    # @return [self]
     def cancel!
       self.type = :unsubscribed
       reply_if_needed!
     end
 
-    ##
-    # Create a request stanza
+    # Transform the stanza into a request stanza
+    # makes requests simple
+    #
+    # @return [self]
     def request!
       self.type = :subscribe
       reply_if_needed!
     end
 
+    # Check if the stanza is a request
+    #
+    # @return [true, false]
     def request?
       self.type == :subscribe
     end
