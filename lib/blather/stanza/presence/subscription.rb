@@ -6,8 +6,9 @@ class Presence
   #
   # [RFC 3921 Section 8 - Integration of Roster Items and Presence Subscriptions](http://xmpp.org/rfcs/rfc3921.html#rfc.section.8)
   #
-  # Blather handles subscription request/response through this class. It provides
-  # a set of helper methods to quickly transform the stanza into a response.
+  # Blather handles subscription request/response through this class. It
+  # provides a set of helper methods to quickly transform the stanza into a
+  # response.
   #
   # @handler :subscription
   class Subscription < Presence

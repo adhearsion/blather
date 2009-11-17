@@ -25,20 +25,26 @@ class Stanza
   # presence stanza. If included, the `type` attribute must have one of the
   # following values:
   #
-  # * `:unavailable`  -- Signals that the entity is no longer available for
-  #                      communication
-  # * `:subscribe`    -- The sender wishes to subscribe to the recipient's
-  #                      presence.
-  # * `:subscribed`   -- The sender has allowed the recipient to receive their
-  #                      presence.
-  # * `:unsubscribe`  -- The sender is unsubscribing from another entity's
-  #                      presence.
+  # * `:unavailable` -- Signals that the entity is no longer available for
+  #   communication
+  #
+  # * `:subscribe` -- The sender wishes to subscribe to the recipient's
+  #   presence.
+  #
+  # * `:subscribed` -- The sender has allowed the recipient to receive their
+  #   presence.
+  #
+  # * `:unsubscribe` -- The sender is unsubscribing from another entity's
+  #   presence.
+  #
   # * `:unsubscribed` -- The subscription request has been denied or a
-  #                      previously-granted subscription has been cancelled.
-  # * `:probe`        -- A request for an entity's current presence; should be
-  #                      generated only by a server on behalf of a user.
-  # * `:error`        -- An error has occurred regarding processing or delivery
-  #                      of a previously-sent presence stanza.
+  #   previously-granted subscription has been cancelled.
+  #
+  # * `:probe` -- A request for an entity's current presence; should be
+  #   generated only by a server on behalf of a user.
+  #
+  # * `:error` -- An error has occurred regarding processing or delivery of a
+  #   previously-sent presence stanza.
   #
   # Blather provides a helper for each possible type:
   #

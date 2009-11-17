@@ -16,12 +16,16 @@ class Presence
   # The `state` attribute determains the availability of the entity and can be
   # one of the following:
   #
-  # * `:available`  -- The entity or resource is available
-  # * `:away`       -- The entity or resource is temporarily away.
-  # * `:chat`       -- The entity or resource is actively interested in chatting.
-  # * `:dnd`        -- The entity or resource is busy (dnd = "Do Not Disturb").
-  # * `:xa`         -- The entity or resource is away for an extended period
-  #                    (xa = "eXtended Away").
+  # * `:available` -- The entity or resource is available
+  #
+  # * `:away` -- The entity or resource is temporarily away.
+  #
+  # * `:chat` -- The entity or resource is actively interested in chatting.
+  #
+  # * `:dnd` -- The entity or resource is busy (dnd = "Do Not Disturb").
+  #
+  # * `:xa` -- The entity or resource is away for an extended period (xa =
+  #   "eXtended Away").
   #
   # Blather provides a helper for each possible state:
   #
