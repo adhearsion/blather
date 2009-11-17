@@ -2,7 +2,10 @@ module Blather
 class Stanza
 class Iq
 
-  # Query Stanza
+  # # Query Stanza
+  #
+  # This is a base class for any query based Iq stanzas. It provides a base set
+  # of methods for working with query stanzas
   #
   # @handler :query
   class Query < Iq

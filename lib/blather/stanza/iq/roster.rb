@@ -2,8 +2,9 @@ module Blather
 class Stanza
 class Iq
 
-  # Roster Stanza
-  # [RFC 3921 Section 7 Roster Management](http://xmpp.org/rfcs/rfc3921.html#roster)
+  # # Roster Stanza
+  #
+  # [RFC 3921 Section 7 - Roster Management](http://xmpp.org/rfcs/rfc3921.html#roster)
   #
   # @handler :roster
   class Roster < Query
@@ -36,9 +37,13 @@ class Iq
     #
     # @return [Array<Blather::Stanza::Iq::Roster::RosterItem>]
     def items
-      query.find('//ns:item', :ns => self.class.registered_ns).map { |i| RosterItem.new(i) }
+      query.find('//ns:item', :ns => self.class.registered_ns).map do |i|
+        RosterItem.new i
+      end
     end
 
+    # # RosterItem Fragment
+    #
     # Individual roster items.
     # This is a convenience class to attach methods to the node
     class RosterItem < XMPPNode
@@ -52,12 +57,16 @@ class Iq
       #   @param [Hash] opts the options
       #   @option opts [Blather::JID, String, nil] :jid the JID of the item
       #   @option opts [String, nil] :name the alias to give the JID
-      #   @option opts [Symbol, nil] :subscription the subscription status of the RosterItem must be one of Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
+      #   @option opts [Symbol, nil] :subscription the subscription status of
+      #   the RosterItem must be one of
+      #   Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
       #   @option opts [:subscribe, nil] :ask the ask value of the RosterItem
       # @overload new(jid = nil, name = nil, subscription = nil, ask = nil)
       #   @param [Blather::JID, String, nil] jid the JID of the item
       #   @param [String, nil] name the alias to give the JID
-      #   @param [Symbol, nil] subscription the subscription status of the RosterItem must be one of Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
+      #   @param [Symbol, nil] subscription the subscription status of the
+      #   RosterItem must be one of
+      #   Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
       #   @param [:subscribe, nil] ask the ask value of the RosterItem
       def self.new(jid = nil, name = nil, subscription = nil, ask = nil)
         new_node = super :item

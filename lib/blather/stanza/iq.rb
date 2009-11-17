@@ -24,11 +24,11 @@ class Stanza
   #
   # * `:get`    -- The stanza is a request for information or requirements.
   # * `:set`    -- The stanza provides required data, sets new values, or
-  #                replaces existing values.
+  #   replaces existing values.
   # * `:result` -- The stanza is a response to a successful get or set
-  #                request.
+  #   request.
   # * `:error`  -- An error has occurred regarding processing or delivery of a
-  #                previously-sent get or set (see Stanza Errors).
+  #   previously-sent get or set (see Stanza Errors).
   #
   # Blather provides a helper for each possible type:
   #
