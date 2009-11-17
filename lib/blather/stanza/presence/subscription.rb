@@ -2,7 +2,12 @@ module Blather
 class Stanza
 class Presence
 
-  # Subscription stanza
+  # # Subscription Stanza
+  #
+  # [RFC 3921 Section 8 - Integration of Roster Items and Presence Subscriptions](http://xmpp.org/rfcs/rfc3921.html#rfc.section.8)
+  #
+  # Blather handles subscription request/response through this class. It provides
+  # a set of helper methods to quickly transform the stanza into a response.
   #
   # @handler :subscription
   class Subscription < Presence
@@ -36,7 +41,7 @@ class Presence
     # makes approving requests simple
     #
     # @example approve an incoming request
-    #   subscription(:subscribe?) { |s| write_to_stream s.approve! }
+    #   subscription(:request?) { |s| write_to_stream s.approve! }
     # @return [self]
     def approve!
       self.type = :subscribed
