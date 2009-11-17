@@ -1,10 +1,15 @@
 module Blather
-  # Base XMPP Stanza
-  # All stanzas inherit this class
+
+  # # Base XMPP Stanza
+  #
+  # All stanzas inherit this class. It provides a set of methods and helpers
+  # common to all XMPP Stanzas
   #
   # @handler :stanza
   class Stanza < XMPPNode
+    # @private
     @@last_id = 0
+    # @private
     @@handler_list = []
 
     class_inheritable_array :handler_heirarchy
