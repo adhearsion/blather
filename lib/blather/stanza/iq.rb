@@ -1,47 +1,45 @@
 module Blather
 class Stanza
 
-  # = Iq Stanza
-  #
   # Info/Query, or IQ, is a request-response mechanism, similar in some ways to HTTP. The semantics of IQ enable an entity
   # to make a request of, and receive a response from, another entity. The data content of the request and response is
   # defined by the namespace declaration of a direct child element of the IQ element, and the interaction is tracked by the
   # requesting entity through use of the 'id' attribute. Thus, IQ interactions follow a common pattern of structured data
   # exchange such as get/result or set/result (although an error may be returned in reply to a request if appropriate).
   #
-  # == ID Attribute
+  # ## "ID" Attribute
   #
   # Iq Stanzas require the ID attribute be set. Blather will handle this automatically when a new Iq is created.
   #
-  # == Type Attribute
+  # ## "Type" Attribute
   #
-  # * +:get+ -- The stanza is a request for information or requirements.
-  # * +:set+ -- The stanza provides required data, sets new values, or replaces existing values.
-  # * +:result+ -- The stanza is a response to a successful get or set request.
-  # * +:error+ -- An error has occurred regarding processing or delivery of a previously-sent get or set (see Stanza Errors).
+  # * `:get` -- The stanza is a request for information or requirements.
+  # * `:set` -- The stanza provides required data, sets new values, or replaces existing values.
+  # * `:result` -- The stanza is a response to a successful get or set request.
+  # * `:error` -- An error has occurred regarding processing or delivery of a previously-sent get or set (see Stanza Errors).
   #
   # Blather provides a helper for each possible type:
   #
-  #   Iq#get?
-  #   Iq#set?
-  #   Iq#result?
-  #   Iq#error?
+  #     Iq#get?
+  #     Iq#set?
+  #     Iq#result?
+  #     Iq#error?
   #
-  # Blather treats the +type+ attribute like a normal ruby object attribute providing a getter and setter.
-  # The default +type+ is +get+.
+  # Blather treats the `type` attribute like a normal ruby object attribute providing a getter and setter.
+  # The default `type` is `get`.
   #
-  #   iq = Iq.new
-  #   iq.type               # => :get
-  #   iq.get?               # => true
-  #   iq.type = :set
-  #   iq.set?               # => true
-  #   iq.get?               # => false
+  #     iq = Iq.new
+  #     iq.type               # => :get
+  #     iq.get?               # => true
+  #     iq.type = :set
+  #     iq.set?               # => true
+  #     iq.get?               # => false
   #
-  #   iq.type = :invalid    # => RuntimeError
+  #     iq.type = :invalid    # => RuntimeError
   #
   # @handler :iq
   class Iq < Stanza
-    VALID_TYPES = [:get, :set, :result, :error]
+    VALID_TYPES = [:get, :set, :result, :error].freeze
 
     register :iq
 
@@ -116,5 +114,5 @@ class Stanza
     end
   end
 
-end #Stanza
+end
 end
