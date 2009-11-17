@@ -108,7 +108,7 @@ class Stanza
 
     # Overrides the parent method to ensure the reply is of type :result
     #
-    # @returns [self]
+    # @return [self]
     def reply!
       super
       self.type = :result
