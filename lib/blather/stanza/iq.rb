@@ -1,22 +1,34 @@
 module Blather
 class Stanza
 
-  # Info/Query, or IQ, is a request-response mechanism, similar in some ways to HTTP. The semantics of IQ enable an entity
-  # to make a request of, and receive a response from, another entity. The data content of the request and response is
-  # defined by the namespace declaration of a direct child element of the IQ element, and the interaction is tracked by the
-  # requesting entity through use of the 'id' attribute. Thus, IQ interactions follow a common pattern of structured data
-  # exchange such as get/result or set/result (although an error may be returned in reply to a request if appropriate).
+  # # Iq Stanza
+  #
+  # [RFC 3920 Section 9.2.3 - IQ Semantics](http://xmpp.org/rfcs/rfc3920.html#rfc.section.9.2.3)
+  #
+  # Info/Query, or IQ, is a request-response mechanism, similar in some ways
+  # to HTTP. The semantics of IQ enable an entity to make a request of, and
+  # receive a response from, another entity. The data content of the request
+  # and response is defined by the namespace declaration of a direct child
+  # element of the IQ element, and the interaction is tracked by the
+  # requesting entity through use of the 'id' attribute. Thus, IQ interactions
+  # follow a common pattern of structured data exchange such as get/result or
+  # set/result (although an error may be returned in reply to a request if
+  # appropriate).
   #
   # ## "ID" Attribute
   #
-  # Iq Stanzas require the ID attribute be set. Blather will handle this automatically when a new Iq is created.
+  # Iq Stanzas require the ID attribute be set. Blather will handle this
+  # automatically when a new Iq is created.
   #
   # ## "Type" Attribute
   #
-  # * `:get` -- The stanza is a request for information or requirements.
-  # * `:set` -- The stanza provides required data, sets new values, or replaces existing values.
-  # * `:result` -- The stanza is a response to a successful get or set request.
-  # * `:error` -- An error has occurred regarding processing or delivery of a previously-sent get or set (see Stanza Errors).
+  # * `:get`    -- The stanza is a request for information or requirements.
+  # * `:set`    -- The stanza provides required data, sets new values, or
+  #                replaces existing values.
+  # * `:result` -- The stanza is a response to a successful get or set
+  #                request.
+  # * `:error`  -- An error has occurred regarding processing or delivery of a
+  #                previously-sent get or set (see Stanza Errors).
   #
   # Blather provides a helper for each possible type:
   #
@@ -25,8 +37,8 @@ class Stanza
   #     Iq#result?
   #     Iq#error?
   #
-  # Blather treats the `type` attribute like a normal ruby object attribute providing a getter and setter.
-  # The default `type` is `get`.
+  # Blather treats the `type` attribute like a normal ruby object attribute
+  # providing a getter and setter. The default `type` is `get`.
   #
   #     iq = Iq.new
   #     iq.type               # => :get
@@ -46,7 +58,10 @@ class Stanza
     # @private
     def self.import(node)
       klass = nil
-      node.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
+      node.children.detect do |e|
+        ns = e.namespace ? e.namespace.href : nil
+        klass = class_from_registration(e.element_name, ns)
+      end
 
       if klass && klass != self
         klass.import(node)
@@ -59,7 +74,8 @@ class Stanza
     #
     # @param [Symbol, nil] type the type of stanza (:get, :set, :result, :error)
     # @param [Blather::JID, String, nil] jid the JID of the inteded recipient
-    # @param [#to_s] id the stanza's ID. Leaving this nil will set the ID to the next unique number
+    # @param [#to_s] id the stanza's ID. Leaving this nil will set the ID to
+    #                the next unique number
     def self.new(type = nil, to = nil, id = nil)
       node = super :iq
       node.type = type || :get
@@ -100,7 +116,9 @@ class Stanza
     #
     # @param [#to_sym] type the Iq type. Must be one of VALID_TYPES
     def type=(type)
-      raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}" if type && !VALID_TYPES.include?(type.to_sym)
+      if type && !VALID_TYPES.include?(type.to_sym)
+        raise ArgumentError, "Invalid Type (#{type}), use: #{VALID_TYPES*' '}"
+      end
       super
     end
 
