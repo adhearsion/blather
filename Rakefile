@@ -57,7 +57,7 @@ begin
   YARD::Templates::Engine.register_template_path 'yard/templates'
 
   YARD::Rake::YardocTask.new do |t|
-    t.options = ['--no-private', '-m', 'markdown']
+    t.options = ['--no-private', '-m', 'markdown', '-o', './doc/public/yard']
   end
 rescue LoadError
   task :yardoc do
