@@ -10,11 +10,9 @@ XMPP DSL (and more) for Ruby written on EventMachine and Nokogiri.
 
 ## Project Pages
 
-* [Blather](https://sprsquish.github.com/blather)
+* [Docs](http://blather.squishtech.com)
 * [GitHub](https://github.com/sprsquish/blather)
-* [GitHub Docs](http://docs.github.com/sprsquish/blather)
 * [Gemcutter](http://gemcutter.org/gems/blather)
-* [YARD Docs](http://blather.squishtech.com)
 * [Google Group](http://groups.google.com/group/xmpp-blather)
 
 # Usage
