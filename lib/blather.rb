@@ -58,7 +58,10 @@
 ].each { |r| require r }
 
 module Blather
+  # @private
   @@logger = nil
+
+  # Get or create an instance of Logger
   def self.logger
     unless @@logger
       self.logger = Logger.new($stdout)
@@ -67,6 +70,7 @@ module Blather
     @@logger
   end
 
+  # Set the Logger
   def self.logger=(logger)
     @@logger = logger
   end

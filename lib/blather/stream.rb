@@ -1,5 +1,6 @@
 module Blather
-  # A pure XMPP stream.
+
+  # # A pure XMPP stream.
   #
   # Blather::Stream can be used to build your own handler system if Blather's
   # doesn't suit your needs. It will take care of the entire connection
@@ -21,31 +22,31 @@ module Blather
   #   side shut the stream down.
   #
   # @example Create a new stream and handle it with our own class
-  #   class MyClient
-  #     attr :jid
+  #     class MyClient
+  #       attr :jid
   #
-  #     def post_init(stream, jid = nil)
-  #       @stream = stream
-  #       self.jid = jid
-  #       p "Stream Started"
+  #       def post_init(stream, jid = nil)
+  #         @stream = stream
+  #         self.jid = jid
+  #         p "Stream Started"
+  #       end
+  #
+  #       # Pretty print the stream
+  #       def receive_data(stanza)
+  #         pp stanza
+  #       end
+  #
+  #       def unbind
+  #         p "Stream Ended"
+  #       end
+  #
+  #       def write(what)
+  #         @stream.write what
+  #       end
   #     end
   #
-  #     # Pretty print the stream
-  #     def receive_data(stanza)
-  #       pp stanza
-  #     end
-  #
-  #     def unbind
-  #       p "Stream Ended"
-  #     end
-  #
-  #     def write(what)
-  #       @stream.write what
-  #     end
-  #   end
-  #
-  #   client = Blather::Stream.start MyClient.new, "jid@domain/resource", "pass"
-  #   client.write "[pure xml over the wire]"
+  #     client = Blather::Stream.start MyClient.new, "jid@domain/res", "pass"
+  #     client.write "[pure xml over the wire]"
   class Stream < EventMachine::Connection
     class NoConnection < RuntimeError; end
 
@@ -55,14 +56,14 @@ module Blather
 
     # Start the stream between client and server
     #
-    # @param [Object] client an object that will respond to #post_init, #unbind
-    #        #receive_data
+    # @param [Object] client an object that will respond to #post_init,
+    # #unbind #receive_data
     # @param [Blather::JID, #to_s] jid the jid to authenticate with
     # @param [String] pass the password to authenticate with
-    # @param [String, nil] host the hostname or IP to connect to. Default is to
-    #        use the domain on the JID
+    # @param [String, nil] host the hostname or IP to connect to. Default is
+    # to use the domain on the JID
     # @param [Fixnum, nil] port the port to connect on. Default is the XMPP
-    #        default of 5222
+    # default of 5222
     def self.start(client, jid, pass, host = nil, port = 5222)
       jid = JID.new jid
       if host
@@ -70,12 +71,24 @@ module Blather
       else
         require 'resolv'
         srv = []
-        Resolv::DNS.open { |dns| srv = dns.getresources("_xmpp-client._tcp.#{jid.domain}", Resolv::DNS::Resource::IN::SRV) }
+        Resolv::DNS.open do |dns|
+          srv = dns.getresources(
+            "_xmpp-client._tcp.#{jid.domain}",
+            Resolv::DNS::Resource::IN::SRV
+          )
+        end
+
         if srv.empty?
           connect jid.domain, port, self, client, jid, pass
         else
-          srv.sort! { |a,b| (a.priority != b.priority) ? (a.priority <=> b.priority) : (b.weight <=> a.weight) }
-          srv.each { |r| break unless connect(r.target.to_s, r.port, self, client, jid, pass) === false }
+          srv.sort! do |a,b|
+            (a.priority != b.priority) ? (a.priority <=> b.priority) :
+                                         (b.weight <=> a.weight)
+          end
+
+          srv.detect do |r|
+            not connect(r.target.to_s, r.port, self, client, jid, pass) === false
+          end
         end
       end
     end
@@ -96,9 +109,10 @@ module Blather
 
     # Send data over the wire
     #
-    # @param [#to_s] stanza the stanza to send over the wire
+    # @todo Queue if not ready
+    #
+    # @param [#to_xml, #to_s] stanza the stanza to send over the wire
     def send(stanza)
-      #TODO Queue if not ready
       Blather.logger.debug "SENDING: (#{caller[1]}) #{stanza}"
       send_data stanza.respond_to?(:to_xml) ? stanza.to_xml : stanza.to_s
     end
@@ -212,5 +226,6 @@ module Blather
       @receiver = @client
       @client.post_init self, @jid
     end
-  end
-end
+  end  # Stream
+
+end  # Blather

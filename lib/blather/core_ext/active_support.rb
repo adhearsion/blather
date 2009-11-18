@@ -1,53 +1,44 @@
 require File.join(File.dirname(__FILE__), 'active_support', 'inheritable_attributes')
 
-# @private
-class Object
+class Object  # @private
   def duplicable?; true; end
   def blank?; respond_to?(:empty?) ? empty? : !self; end
   def present?; !blank?; end
 end
 
-# @private
-class Array
+class Array  # @private
   alias_method :blank?, :empty?
   def extract_options!; last.is_a?(::Hash) ? pop : {}; end
 end
 
-# @private
-class Hash
+class Hash  # @private
   alias_method :blank?, :empty?
 end
 
-# @private
-class String
+class String  # @private
   def blank?; self !~ /\S/; end
 end
 
-# @private
-class NilClass
+class NilClass  # @private
   def duplicable?; false; end
   def blank?; true; end
 end
 
-# @private
-class FalseClass
+class FalseClass  # @private
   def duplicable?; false; end
   def blank?; true; end
 end
 
-# @private
-class TrueClass
+class TrueClass  # @private
   def duplicable?; false; end
   def blank?; false; end
 end
 
-# @private
-class Symbol
+class Symbol  # @private
   def duplicable?; false; end
 end
 
-# @private
-class Numeric
+class Numeric  # @private
   def duplicable?; false; end
   def blank?; false; end
 end

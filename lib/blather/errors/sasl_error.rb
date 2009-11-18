@@ -8,6 +8,7 @@ class SASLError < BlatherError
   SASL_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
   class_inheritable_accessor :err_name
+  # @private
   @@registrations = {}
 
   register :sasl_error
@@ -32,8 +33,11 @@ class SASLError < BlatherError
   #
   # @return [Symbol] a symbol representing the error name
   def name
-    @node.find_first('err_ns:*', :err_ns => SASL_ERR_NS).element_name.gsub('-', '_').to_sym if @node
+    if @node
+      name = @node.find_first('ns:*', :ns => SASL_ERR_NS).element_name
+      name.gsub('-', '_').to_sym
+    end
   end
-end #SASLError
+end  # SASLError
 
-end #Blather
+end  # Blather

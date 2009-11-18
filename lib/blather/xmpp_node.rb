@@ -6,6 +6,7 @@ module Blather
     # @private
     BASE_NAMES = %w[presence message iq].freeze
 
+    # @private
     @@registrations = {}
 
     class_inheritable_accessor  :registered_ns,
@@ -37,11 +38,13 @@ module Blather
 
     # Import an XML::Node to the appropriate class
     #
-    # Looks up the class the node should be then creates it based on the elements of the XML::Node
+    # Looks up the class the node should be then creates it based on the
+    # elements of the XML::Node
     # @param [XML::Node] node the node to import
     # @return the appropriate object based on the node name and namespace
     def self.import(node)
-      klass = class_from_registration(node.element_name, (node.namespace.href if node.namespace))
+      ns = (node.namespace.href if node.namespace)
+      klass = class_from_registration(node.element_name, ns)
       if klass && klass != self
         klass.import(node)
       else
@@ -52,7 +55,8 @@ module Blather
     # Create a new Node object
     #
     # @param [String, nil] name the element name
-    # @param [XML::Document, nil] doc the document to attach the node to. If not provided one will be created
+    # @param [XML::Document, nil] doc the document to attach the node to. If
+    # not provided one will be created
     # @return a new object with the registered name and namespace
     def self.new(name = nil, doc = nil)
       name ||= self.registered_name
@@ -66,7 +70,8 @@ module Blather
     # Helper method to read an attribute
     #
     # @param [#to_sym] attr_name the name of the attribute
-    # @param [String, Symbol, nil] to_call the name of the method to call on the returned value
+    # @param [String, Symbol, nil] to_call the name of the method to call on
+    # the returned value
     # @return nil or the value
     def read_attr(attr_name, to_call = nil)
       val = self[attr_name.to_sym]
@@ -84,7 +89,8 @@ module Blather
     # Helper method to read the content of a node
     #
     # @param [#to_sym] node the name of the node
-    # @param [String, Symbol, nil] to_call the name of the method to call on the returned value
+    # @param [String, Symbol, nil] to_call the name of the method to call on
+    # the returned value
     # @return nil or the value
     def read_content(node, to_call = nil)
       val = content_from node.to_sym
@@ -163,7 +169,8 @@ module Blather
 
     # Sets the content for the specified node.
     # If the node exists it is updated. If not a new node is created
-    # If the node exists and the content is nil, the node will be removed entirely
+    # If the node exists and the content is nil, the node will be removed
+    # entirely
     #
     # @param [String] node the name of the node to update/create
     # @param [String, nil] content the content to set within the node
@@ -206,6 +213,6 @@ module Blather
     def inspect
       self.to_xml
     end
-  end #XMPPNode
+  end  # XMPPNode
 
-end
+end  # Blather

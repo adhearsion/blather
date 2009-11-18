@@ -4,7 +4,7 @@
 # their parents' attributes, instead of just a pointer to the same. This means that the child can add elements
 # to, for example, an array without those additions being shared with either their parent, siblings, or
 # children, which is unlike the regular class-level attributes that are shared across the entire hierarchy.
-class Class
+class Class  # @private
   def class_inheritable_reader(*syms)
     syms.each do |sym|
       next if sym.is_a?(Hash)
@@ -114,4 +114,4 @@ class Class
 
     alias inherited_without_inheritable_attributes inherited
     alias inherited inherited_with_inheritable_attributes
-end #Class
+end  # Class

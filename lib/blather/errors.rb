@@ -7,6 +7,7 @@ module Blather
     class_inheritable_array :handler_heirarchy
     self.handler_heirarchy ||= []
 
+    # @private
     @@handler_list = []
 
     # Register the class's handler
@@ -31,7 +32,7 @@ module Blather
     def id
       nil
     end
-  end
+  end  # BlatherError
 
   # Used in cases where a stanza only allows specific values for its attributes
   # and an invalid value is attempted.
@@ -39,7 +40,7 @@ module Blather
   # @handler :argument_error
   class ArgumentError < BlatherError
     register :argument_error
-  end
+  end  # ArgumentError
 
   # The stream handler received a response it didn't know how to handle
   #
@@ -51,7 +52,7 @@ module Blather
     def initialize(node)
       @node = node
     end
-  end
+  end  # UnknownResponse
 
   # Something bad happened while parsing the incoming stream
   #
@@ -63,5 +64,6 @@ module Blather
     def initialize(msg)
       @message = msg.to_s
     end
-  end
-end
+  end  # ParseError
+
+end  # Blather

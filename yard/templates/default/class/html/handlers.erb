@@ -1,0 +1,18 @@
+<!-- <dl class="box">
+  <dt class="r0 last">Handler Stack:</dt>
+  <dd class="r0 last">
+    <span class="inheritName"><%= @handler_stack.first %></span>
+    <ul class="fullTree">
+      <li><%= @handler_stack.first %></li>
+      <% @handler_stack[1..-1].each do |handler| %>
+        <li class="next"><%= handler %></li>
+      <% end %>
+    </ul>
+    <a href="#" class="inheritanceTree">show all</a>
+  </dd>
+</dl>
+<div class="clear"></div> -->
+<p class="note notetag">
+  <strong>Handler Stack:</strong>
+  [<%= @handler_stack * ', ' %>]
+</p>

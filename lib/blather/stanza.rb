@@ -123,17 +123,13 @@ module Blather
       write_attr :type, type
     end
 
-    ##
-    # Transform the stanza into a stanza error
-    # <tt>err_name_or_class</tt> can be the name of the error or the error class to use
-    # <tt>type</tt>, <tt>text</tt>, <tt>extras</tt> are the same as for StanzaError#new
-
     # Create an error stanza from the current stanza
     #
     # @param [String] name the error name
     # @param [<Blather::StanzaError::VALID_TYPES>] type the error type
     # @param [String, nil] text the error text
-    # @param [Array<XML::Node>] extras an array of extra nodes to attach to the error
+    # @param [Array<XML::Node>] extras an array of extra nodes to attach to
+    # the error
     #
     # @return [Blather::StanzaError]
     def as_error(name, type, text = nil, extras = [])

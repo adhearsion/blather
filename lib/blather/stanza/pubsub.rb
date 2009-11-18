@@ -1,19 +1,34 @@
 module Blather
 class Stanza
 
+  # # Pubsub Stanza
+  #
+  # [XEP-0060 - Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
+  #
+  # The base class for all PubSub nodes. This provides helper methods common to
+  # all PubSub nodes.
+  #
+  # @handler :pubsub_node
   class PubSub < Iq
     register :pubsub_node, :pubsub, 'http://jabber.org/protocol/pubsub'
 
+    # @private
     def self.import(node)
       klass = nil
       if pubsub = node.document.find_first('//ns:pubsub', :ns => self.registered_ns)
-        pubsub.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
+        pubsub.children.detect do |e|
+          ns = e.namespace ? e.namespace.href : nil
+          klass = class_from_registration(e.element_name, ns)
+        end
       end
       (klass || self).new(node[:type]).inherit(node)
     end
 
-    ##
-    # Ensure the namespace is set to the query node
+    # Overwrites the parent constructor to ensure a pubsub node is present.
+    # Also allows the addition of a host attribute
+    #
+    # @param [<Blather::Stanza::Iq::VALID_TYPES>] type the IQ type
+    # @param [String, nil] host the host the node should be sent to
     def self.new(type = nil, host = nil)
       new_node = super type
       new_node.to = host
@@ -21,13 +36,18 @@ class Stanza
       new_node
     end
 
-    ##
-    # Kill the pubsub node before running inherit
+    # Overrides the parent to ensure the current pubsub node is destroyed before
+    # inheritting the new content
+    #
+    # @private
     def inherit(node)
       remove_children :pubsub
       super
     end
 
+    # Get or create the pubsub node on the stanza
+    #
+    # @return [Blather::XMPPNode]
     def pubsub
       p = find_first('ns:pubsub', :ns => self.class.registered_ns) ||
           find_first('pubsub', :ns => self.class.registered_ns)
@@ -38,9 +58,21 @@ class Stanza
       end
       p
     end
-  end
+  end  # PubSub
 
+  # # PubSubItem Fragment
+  #
+  # This fragment is found in many places throughout the pubsub spec
+  # This is a convenience class to attach methods to the node
   class PubSubItem < XMPPNode
+    ATOM_NS = 'http://www.w3.org/2005/Atom'.freeze
+
+    # Create a new PubSubItem
+    #
+    # @param [String, nil] id the id of the stanza
+    # @param [#to_s, nil] payload the payload to attach to this item.
+    # @param [XML::Document, nil] document the document the node should be
+    # attached to. This should be the document of the parent PubSub node.
     def self.new(id = nil, payload = nil, document = nil)
       new_node = super 'item', document
       new_node.id = id
@@ -48,33 +80,50 @@ class Stanza
       new_node
     end
 
+    # Get the item's ID
+    #
+    # @return [String, nil]
     def id
       read_attr :id
     end
 
+    # Set the item's ID
+    #
+    # @param [#to_s] id the new ID
     def id=(id)
       write_attr :id, id
     end
 
-    def payload=(payload = nil)
-      self.entry.content = payload
-    end
-
+    # Get the item's payload
+    #
+    # To get the XML representation use #entry
+    #
+    # @return [String, nil]
     def payload
       self.entry.content.empty? ? nil : content
     end
 
+    # Set the item's payload
+    #
+    # @param [String, nil] payload the payload
+    def payload=(payload)
+      self.entry.content = payload
+    end
+
+    # Get or create the entry node
+    #
+    # @return [Blather::XMPPNode]
     def entry
-      e = find_first('ns:entry', :ns => 'http://www.w3.org/2005/Atom') ||
-          find_first('entry', :ns => 'http://www.w3.org/2005/Atom')
+      e = find_first('ns:entry', :ns => ATOM_NS) ||
+          find_first('entry', :ns => ATOM_NS)
 
       unless e
         self << (e = XMPPNode.new('entry', self.document))
-        e.namespace = 'http://www.w3.org/2005/Atom'
+        e.namespace = ATOM_NS
       end
       e
     end
-  end
+  end  # PubSubItem
 
-end #Stanza
-end #Blather
+end  # Stanza
+end  # Blather

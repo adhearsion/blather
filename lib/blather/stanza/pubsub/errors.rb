@@ -1,6 +1,9 @@
 module Blather
 class Stanza
 
+  # # PusSub Error Stanza
+  #
+  # @private
   class PubSubErrors < PubSub
     def node
       read_attr :node
@@ -9,7 +12,7 @@ class Stanza
     def node=(node)
       write_attr :node, node
     end
-  end
+  end  # PubSubErrors
 
-end #Stanza
-end #Blather
+end  # Stanza
+end  # Blather

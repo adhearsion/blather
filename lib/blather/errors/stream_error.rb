@@ -30,7 +30,8 @@ class StreamError < BlatherError
   #
   # @param [String] name the error name
   # @param [String, nil] text optional error text
-  # @param [Array<Blather::XMPPNode>] extras an array of extras to attach to the error
+  # @param [Array<Blather::XMPPNode>] extras an array of extras to attach to the
+  # error
   def initialize(name, text = nil, extras = [])
     @name = name
     @text = text
@@ -76,6 +77,6 @@ class StreamError < BlatherError
   end
   # @private
   alias_method :to_s, :inspect
-end #StreamError
+end  # StreamError
 
-end #Blather
+end  # Blather

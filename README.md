@@ -56,13 +56,15 @@ Setup handlers by calling their names as methods.
 
 So far there are two non-stanza related handlers.
 
-    # Called after the connection has been connected. It's good for initializing your system.
+    # Called after the connection has been connected. It's good for initializing
+    # your system.
     # DSL:
     when_ready {}
     # Client:
     client.register_handler(:ready) {}
 
-    # Called after the connection has been terminated. Good for teardown or automatic reconnection.
+    # Called after the connection has been terminated. Good for teardown or
+    # automatic reconnection.
     # DSL:
     disconnected {}
     # Client
@@ -72,7 +74,8 @@ So far there are two non-stanza related handlers.
 
 ### Handler Guards
 
-Guards act like AND statements. Each condition must be met if the handler is to be used.
+Guards act like AND statements. Each condition must be met if the handler is to
+be used.
 
     # Equivalent to saying (stanza.chat? && stanza.body)
     message :chat?, :body
@@ -118,8 +121,9 @@ The different types of guards are:
 
 ### Filters
 
-Blather provides before and after filters that work much the way regular handlers work. Filters come in a before and after
-flavor. They're called in order of definition and can be guarded like handlers.
+Blather provides before and after filters that work much the way regular
+handlers work. Filters come in a before and after flavor. They're called in
+order of definition and can be guarded like handlers.
 
     before { |s| "I'm run before any handler" }
     before { |s| "I'm run next" }
@@ -139,12 +143,12 @@ Default usage is:
 
 Command line options:
 
-    -D, --debug                      Run in debug mode (you will see all XMPP communication)
-    -d, --daemonize                  Daemonize the process
-        --pid=[PID]                  Write the PID to this file
-        --log=[LOG]                  Write to the [LOG] file instead of stdout/stderr
-    -h, --help                       Show this message
-    -v, --version                    Show version
+    -D, --debug       Run in debug mode (you will see all XMPP communication)
+    -d, --daemonize   Daemonize the process
+        --pid=[PID]   Write the PID to this file
+        --log=[LOG]   Write to the [LOG] file instead of stdout/stderr
+    -h, --help        Show this message
+    -v, --version     Show version
 
 
 # Author

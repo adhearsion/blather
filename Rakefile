@@ -56,9 +56,11 @@ end
 
 begin
   require 'yard'
-  YARD::Tags::Library.define_tag 'Blather handler', :handler
+  YARD::Tags::Library.define_tag 'Blather handler', :handler, :with_name
+  YARD::Templates::Engine.register_template_path 'yard/templates'
+
   YARD::Rake::YardocTask.new do |t|
-    t.options = ['--no-private']
+    t.options = ['--no-private', '-m', 'markdown']
   end
 rescue LoadError
   task :yardoc do

@@ -1,9 +1,16 @@
 module Blather
 class Stanza
 
+  # # PubSubOwner Base Class
+  #
+  # [XEP-0060 - Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
+  #
+  # @handler :pubsub_owner
   class PubSubOwner < Iq
     register :pubsub_owner, :pubsub, 'http://jabber.org/protocol/pubsub#owner'
 
+    # Creates the proper class from the stana's child
+    # @private
     def self.import(node)
       klass = nil
       if pubsub = node.document.find_first('//ns:pubsub', :ns => self.registered_ns)
@@ -12,8 +19,8 @@ class Stanza
       (klass || self).new(node[:type]).inherit(node)
     end
 
-    ##
-    # Ensure the namespace is set to the query node
+    # Overrides the parent to ensure a pubsub node is created
+    # @private
     def self.new(type = nil, host = nil)
       new_node = super type
       new_node.to = host
@@ -21,13 +28,16 @@ class Stanza
       new_node
     end
 
-    ##
-    # Kill the pubsub node before running inherit
+    # Overrides the parent to ensure the pubsub node is destroyed
+    # @private
     def inherit(node)
       remove_children :pubsub
       super
     end
 
+    # Get or create the pubsub node on the stanza
+    #
+    # @return [Blather::XMPPNode]
     def pubsub
       unless p = find_first('ns:pubsub', :ns => self.class.registered_ns)
         self << (p = XMPPNode.new('pubsub', self.document))
@@ -35,7 +45,7 @@ class Stanza
       end
       p
     end
-  end
+  end  # PubSubOwner
 
-end #Stanza
-end #Blather
+end  # Stanza
+end  # Blather

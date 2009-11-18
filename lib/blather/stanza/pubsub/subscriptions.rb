@@ -2,14 +2,19 @@ module Blather
 class Stanza
 class PubSub
 
+  # # PubSub Subscriptions Stanza
+  #
+  # [XEP-0060 Section 5.6 Retrieve Subscriptions](http://xmpp.org/extensions/xep-0060.html#entity-subscriptions)
+  #
+  # @handler :pubsub_subscriptions
   class Subscriptions < PubSub
     register :pubsub_subscriptions, :subscriptions, self.registered_ns
 
     include Enumerable
     alias_method :find, :xpath
 
-    ##
-    # Ensure the namespace is set to the query node
+    # Overrides the parent to ensure a subscriptions node is created
+    # @private
     def self.new(type = nil, host = nil)
       new_node = super type
       new_node.to = host
@@ -17,27 +22,48 @@ class PubSub
       new_node
     end
 
-    ##
-    # Kill the pubsub node before running inherit
+    # Overrides the parent to ensure the subscriptions node is destroyed
+    # @private
     def inherit(node)
       subscriptions.remove
       super
     end
 
+    # Get or create the actual subscriptions node
+    #
+    # @return [Blather::XMPPNode]
     def subscriptions
       aff = pubsub.find_first('subscriptions', self.class.registered_ns)
-      (self.pubsub << (aff = XMPPNode.new('subscriptions', self.document))) unless aff
+      unless aff
+        (self.pubsub << (aff = XMPPNode.new('subscriptions', self.document)))
+      end
       aff
     end
 
+    # Iterate over the list of subscriptions
+    #
+    # @yieldparam [Hash] subscription
+    # @see {#list}
     def each(&block)
       list.each &block
     end
 
+    # Get the size of the subscriptions list
+    #
+    # @return [Fixnum]
     def size
       list.size
     end
 
+    # Get a hash of subscriptions
+    #
+    # @example
+    #   { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit'}, {:node => 'node2', :jid => 'francisco@denmark.lit'}],
+    #     :unconfigured => [{:node => 'node3', :jid => 'francisco@denmark.lit'}],
+    #     :pending => [{:node => 'node4', :jid => 'francisco@denmark.lit'}],
+    #     :none => [{:node => 'node5', :jid => 'francisco@denmark.lit'}] }
+    #
+    # @return [Hash]
     def list
       subscriptions.find('//ns:subscription', :ns => self.class.registered_ns).inject({}) do |hash, item|
         hash[item[:subscription].to_sym] ||= []
@@ -48,8 +74,8 @@ class PubSub
         hash
       end
     end
-  end #Subscriptions
+  end  # Subscriptions
 
-end #PubSub
-end #Stanza
-end #Blather
+end  # PubSub
+end  # Stanza
+end  # Blather

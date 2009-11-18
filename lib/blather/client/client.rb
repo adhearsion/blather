@@ -1,48 +1,54 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. blather])
 
-module Blather #:nodoc:
-
-  # = Blather Client
+module Blather
+  # # Blather Client
   #
-  # Blather's Client class provides a set of helpers for working with common XMPP tasks such as setting up and starting
-  # the connection, settings status, registering and dispatching filters and handlers and roster management.
+  # Blather's Client class provides a set of helpers for working with common
+  # XMPP tasks such as setting up and starting the connection, settings
+  # status, registering and dispatching filters and handlers and roster
+  # management.
   #
-  # Client can be used separately from the DSL if you'd like to implement your own DSL
-  # Here's the echo example using the client without the DSL:
+  # Client can be used separately from the DSL if you'd like to implement your
+  # own DSL Here's the echo example using the client without the DSL:
   #
-  #   require 'blather/client/client'
-  #   client = Client.setup 'echo@jabber.local', 'echo'
+  #     require 'blather/client/client'
+  #     client = Client.setup 'echo@jabber.local', 'echo'
   #
-  #   client.register_handler(:ready) { puts "Connected ! send messages to #{client.jid.stripped}." }
+  #     client.register_handler(:ready) do
+  #       puts "Connected ! send messages to #{client.jid.stripped}."
+  #     end
   #
-  #   client.register_handler :subscription, :request? do |s|
-  #     client.write s.approve!
-  #   end
+  #     client.register_handler :subscription, :request? do |s|
+  #       client.write s.approve!
+  #     end
   #
-  #   client.register_handler :message, :chat?, :body => 'exit' do |m|
-  #     client.write Blather::Stanza::Message.new(m.from, 'Exiting...')
-  #     client.close
-  #   end
+  #     client.register_handler :message, :chat?, :body => 'exit' do |m|
+  #       client.write Blather::Stanza::Message.new(m.from, 'Exiting...')
+  #       client.close
+  #     end
   #
-  #   client.register_handler :message, :chat?, :body do |m|
-  #     client.write Blather::Stanza::Message.new(m.from, "You sent: #{m.body}")
-  #   end
+  #     client.register_handler :message, :chat?, :body do |m|
+  #       client.write Blather::Stanza::Message.new(m.from, "You sent: #{m.body}")
+  #     end
   #
   class Client
     attr_reader :jid,
                 :roster
 
-    ##
-    # Initialize and setup the client
-    # * +jid+ - the JID to login with
-    # * +password+ - password associated with the JID
-    # * +host+ - hostname or IP to connect to. If nil the stream will look one up based on the domain in the JID
-    # * +port+ - port to connect to
+    # Create a new client and set it up
+    #
+    # @param [Blather::JID, #to_s] jid the JID to authorize with
+    # @param [String] password the password to authorize with
+    # @param [String] host if this isn't set it'll be resolved off the JID's
+    # domain
+    # @param [Fixnum, String] port the port to connect to.
+    #
+    # @return [Blather::Client]
     def self.setup(jid, password, host = nil, port = nil)
       self.new.setup(jid, password, host, port)
     end
 
-    def initialize # :nodoc:
+    def initialize  # @private
       @state = :initializing
 
       @status = Stanza::Presence::Status.new
@@ -54,14 +60,14 @@ module Blather #:nodoc:
       setup_initial_handlers
     end
 
-    ##
-    # Get the current status. Taken from the +state+ attribute of Status
+    # Get the current status. Taken from the `state` attribute of Status
     def status
       @status.state
     end
 
-    ##
-    # Set the status. Status can be set with either a single value or an array containing
+    # Set the status. Status can be set with either a single value or an array
+    # containing
+    #
     # [state, message, to].
     def status=(state)
       state, msg, to = state
@@ -73,8 +79,10 @@ module Blather #:nodoc:
       write status
     end
 
-    ##
     # Start the connection.
+    #
+    # The stream type used is based on the JID. If a node exists it uses
+    # Blather::Stream::Client otherwise Blather::Stream::Component
     def run
       raise 'not setup!' unless setup?
       klass = @setup[0].node ? Blather::Stream::Client : Blather::Stream::Component
@@ -82,70 +90,79 @@ module Blather #:nodoc:
     end
     alias_method :connect, :run
 
-    ##
     # Register a filter to be run before or after the handler chain is run.
-    # * +type+ - the type of filter. Must be +:before+ or +:after+
-    # * +guards+ - guards that should be checked before the filter is called
+    #
+    # @param [<:before, :after>] type the filter type
+    # @param [Symbol, nil] handler set the filter on a specific handler
+    # @param [guards] guards take a look at the guards documentation
+    # @yield [Blather::Stanza] stanza the incomming stanza
     def register_filter(type, handler = nil, *guards, &filter)
-      raise "Invalid filter: #{type}. Must be :before or :after" unless [:before, :after].include?(type)
+      unless [:before, :after].include?(type)
+        raise "Invalid filter: #{type}. Must be :before or :after"
+      end
       @filters[type] << [guards, handler, filter]
     end
 
-    ##
-    # Register a temporary handler. Temporary handlers are based on the ID of the JID and live 
-    # only until a stanza with said ID is received. 
-    # * +id+ - the ID of the stanza that should be handled
+    # Register a temporary handler. Temporary handlers are based on the ID of
+    # the JID and live only until a stanza with said ID is received.
+    #
+    # @param [#to_s] id the ID of the stanza that should be handled
+    # @yield [Blather::Stanza] stanza the incomming stanza
     def register_tmp_handler(id, &handler)
-      @tmp_handlers[id] = handler
+      @tmp_handlers[id.to_s] = handler
     end
 
-    ##
     # Register a handler
-    # * +type+ - the handler type. Should be registered in Stanza.handler_list. Blather will log a warning if it's not.
-    # * +guards+ - the list of guards that must be verified before the handler will be called
+    #
+    # @param [Symbol, nil] handler set the filter on a specific handler
+    # @param [guards] guards take a look at the guards documentation
+    # @yield [Blather::Stanza] stanza the incomming stanza
     def register_handler(type, *guards, &handler)
       check_handler type, guards
       @handlers[type] ||= []
       @handlers[type] << [guards, handler]
     end
 
-    ##
     # Write data to the stream
+    #
+    # @param [#to_xml, #to_s] stanza the content to send down the wire
     def write(stanza)
       self.stream.send(stanza)
     end
 
-    ##
-    # Helper that will create a temporary handler for the stanza being sent before writing it to the stream.
+    # Helper that will create a temporary handler for the stanza being sent
+    # before writing it to the stream.
     #
-    #   client.write_with_handler(stanza) { |s| "handle stanza here" }
+    #     client.write_with_handler(stanza) { |s| "handle stanza here" }
     #
     # is equivalent to:
     #
-    #   client.register_tmp_handler(stanza.id) { |s| "handle stanza here" }
-    #   client.write stanza
+    #     client.register_tmp_handler(stanza.id) { |s| "handle stanza here" }
+    #     client.write stanza
+    #
+    # @param [Blather::Stanza] stanza the stanza to send down the wire
+    # @yield [Blather::Stanza] stanza the reply stanza
     def write_with_handler(stanza, &handler)
       register_tmp_handler stanza.id, &handler
       write stanza
     end
 
-    ##
     # Close the connection
     def close
       self.stream.close_connection_after_writing
     end
 
-    def post_init(stream, jid = nil) # :nodoc:
+    def post_init(stream, jid = nil)  # @private
       @stream = stream
       @jid = JID.new(jid) if jid
       self.jid.node ? client_post_init : ready!
     end
 
-    def unbind # :nodoc:
+    def unbind  # @private
       call_handler_for(:disconnected, nil) || (EM.reactor_running? && EM.stop)
     end
 
-    def receive_data(stanza) # :nodoc:
+    def receive_data(stanza)  # @private
       catch(:halt) do
         run_filters :before, stanza
         handle_stanza stanza
@@ -153,11 +170,11 @@ module Blather #:nodoc:
       end
     end
 
-    def setup? # :nodoc:
+    def setup?  # @private
       @setup.is_a? Array
     end
 
-    def setup(jid, password, host = nil, port = nil) # :nodoc:
+    def setup(jid, password, host = nil, port = nil)  # @private
       @jid = JID.new(jid)
       @setup = [@jid, password]
       @setup << host if host
@@ -166,20 +183,20 @@ module Blather #:nodoc:
     end
 
   protected
-    def stream
+    def stream  # @private
       @stream || raise('Stream not ready!')
     end
 
-    def check_handler(type, guards)
+    def check_handler(type, guards)  # @private
       Blather.logger.warn "Handler for type \"#{type}\" will never be called as it's not a registered type" unless current_handlers.include?(type)
       check_guards guards
     end
 
-    def current_handlers
+    def current_handlers  # @private
       [:ready, :disconnected] + Stanza.handler_list + BlatherError.handler_list
     end
 
-    def setup_initial_handlers # :nodoc:
+    def setup_initial_handlers  # @private
       register_handler :error do |err|
         raise err
       end
@@ -198,12 +215,12 @@ module Blather #:nodoc:
       end
     end
 
-    def ready! # :nodoc:
+    def ready!  # @private
       @state = :ready
       call_handler_for :ready, nil
     end
 
-    def client_post_init # :nodoc:
+    def client_post_init  # @private
       write_with_handler Stanza::Iq::Roster.new do |node|
         roster.process node
         write @status
@@ -211,14 +228,14 @@ module Blather #:nodoc:
       end
     end
 
-    def run_filters(type, stanza) # :nodoc:
+    def run_filters(type, stanza)  # @private
       @filters[type].each do |guards, handler, filter|
         next if handler && !stanza.handler_heirarchy.include?(handler)
         catch(:pass) { call_handler filter, guards, stanza }
       end
     end
 
-    def handle_stanza(stanza) # :nodoc:
+    def handle_stanza(stanza)  # @private
       if handler = @tmp_handlers.delete(stanza.id)
         handler.call stanza
       else
@@ -228,14 +245,14 @@ module Blather #:nodoc:
       end
     end
 
-    def call_handler_for(type, stanza) # :nodoc:
+    def call_handler_for(type, stanza)  # @private
       return unless handler = @handlers[type]
       handler.find do |guards, handler|
         catch(:pass) { call_handler handler, guards, stanza }
       end
     end
 
-    def call_handler(handler, guards, stanza) # :nodoc:
+    def call_handler(handler, guards, stanza)  # @private
       if guards.first.respond_to?(:to_str)
         result = stanza.find(*guards)
         handler.call(stanza, result) unless result.empty?
@@ -244,11 +261,12 @@ module Blather #:nodoc:
       end
     end
 
-    ##
     # If any of the guards returns FALSE this returns true
     # the logic is reversed to allow short circuiting
     # (why would anyone want to loop over more values than necessary?)
-    def guarded?(guards, stanza) # :nodoc:
+    #
+    # @private
+    def guarded?(guards, stanza)
       guards.find do |guard|
         case guard
         when Symbol
@@ -275,7 +293,7 @@ module Blather #:nodoc:
       end
     end
 
-    def check_guards(guards) # :nodoc:
+    def check_guards(guards)  # @private
       guards.each do |guard|
         case guard
         when Array
@@ -287,6 +305,6 @@ module Blather #:nodoc:
         end
       end
     end
+  end  # Client
 
-  end #Client
-end #Blather
+end  # Blather

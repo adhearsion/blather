@@ -7,8 +7,10 @@ module Blather
 
     # Create a new roster
     #
-    # @param [Blather::Stream] stream the stream the roster should use to update roster entries
-    # @param [Blather::Stanza::Roster] stanza a roster stanza used to preload the roster
+    # @param [Blather::Stream] stream the stream the roster should use to
+    # update roster entries
+    # @param [Blather::Stanza::Roster] stanza a roster stanza used to preload
+    # the roster
     # @return [Blather::Roster]
     def initialize(stream, stanza = nil)
       @stream = stream
@@ -57,7 +59,8 @@ module Blather
     # @param [String, Blather::JID] jid the JID to remove from the roster
     def delete(jid)
       @items.delete key(jid)
-      @stream.write Stanza::Iq::Roster.new(:set, Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove))
+      item = Stanza::Iq::Roster::RosterItem.new(jid, nil, :remove)
+      @stream.write Stanza::Iq::Roster.new(:set, item)
     end
     alias_method :remove, :delete
 
@@ -94,13 +97,15 @@ module Blather
     end
 
   private
+    # Creates a stripped jid
     def self.key(jid)
       JID.new(jid).stripped.to_s
     end
 
+    # Instance method to wrap around the class method
     def key(jid)
       self.class.key(jid)
     end
-  end #Roster
+  end  # Roster
 
-end
+end  # Blather

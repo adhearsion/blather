@@ -27,7 +27,8 @@ module Blather
     #   @param [String] jid a JID string
     # @overload initialize(node)
     #   Create a new RosterItem based on a stanza
-    #   @param [Blather::Stanza::Iq::Roster::RosterItem] node a RosterItem stanza
+    #   @param [Blather::Stanza::Iq::Roster::RosterItem] node a RosterItem
+    #   stanza
     # @return [Blather::RosterItem] the new RosterItem
     def initialize(item)
       @statuses = []
@@ -62,8 +63,9 @@ module Blather
     #
     # @param [#to_sym] sub the new subscription
     def subscription=(sub)
-      raise ArgumentError, "Invalid Type (#{sub}), use: #{VALID_SUBSCRIPTION_TYPES*' '}" if
-        sub && !VALID_SUBSCRIPTION_TYPES.include?(sub = sub.to_sym)
+      if sub && !VALID_SUBSCRIPTION_TYPES.include?(sub = sub.to_sym)
+        raise ArgumentError, "Invalid Type (#{sub}), use: #{VALID_SUBSCRIPTION_TYPES*' '}"
+      end
       @subscription = sub ? sub : :none
     end
 
@@ -78,7 +80,9 @@ module Blather
     #
     # @param [nil, :subscribe] ask the new ask
     def ask=(ask)
-      raise ArgumentError, "Invalid Type (#{ask}), can only be :subscribe" if ask && (ask = ask.to_sym) != :subscribe
+      if ask && (ask = ask.to_sym) != :subscribe
+        raise ArgumentError, "Invalid Type (#{ask}), can only be :subscribe"
+      end
       @ask = ask ? ask : nil
     end
 
@@ -95,10 +99,15 @@ module Blather
     #
     # @param [String, nil] resource the resource to get the status of
     def status(resource = nil)
-      top = resource ? @statuses.detect { |s| s.from.resource == resource } : @statuses.first
+      top = if resource
+        @statuses.detect { |s| s.from.resource == resource }
+      else
+        @statuses.first
+      end
     end
 
-    # Translate the RosterItem into a proper stanza that can be sent over the stream
+    # Translate the RosterItem into a proper stanza that can be sent over the
+    # stream
     #
     # @return [Blather::Stanza::Iq::Roster]
     def to_stanza(type = nil)
