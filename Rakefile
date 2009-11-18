@@ -25,9 +25,6 @@ begin
   end
 
   Jeweler::GemcutterTasks.new
-  Jeweler::RubyforgeTasks.new do |rubyforge|
-    rubyforge.doc_task = "rdoc"
-  end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
@@ -68,5 +65,6 @@ rescue LoadError
   end
 end
 
+desc 'Generate documentation'
 task :doc => :yard
 task :default => :test
