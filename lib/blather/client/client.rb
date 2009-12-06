@@ -230,7 +230,7 @@ module Blather
 
     def run_filters(type, stanza)  # @private
       @filters[type].each do |guards, handler, filter|
-        next if handler && !stanza.handler_heirarchy.include?(handler)
+        next if handler && !stanza.handler_hierarchy.include?(handler)
         catch(:pass) { call_handler filter, guards, stanza }
       end
     end
@@ -239,7 +239,7 @@ module Blather
       if handler = @tmp_handlers.delete(stanza.id)
         handler.call stanza
       else
-        stanza.handler_heirarchy.each do |type|
+        stanza.handler_hierarchy.each do |type|
           break if call_handler_for(type, stanza)
         end
       end

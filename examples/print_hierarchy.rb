@@ -52,7 +52,7 @@ end
 
 handlers = {}
 (Object.subclasses_of(Blather::Stanza) + Object.subclasses_of(Blather::BlatherError)).each do |klass|
-  handlers = handlers.deep_merge klass.handler_heirarchy.inject('klass' => klass.to_s.gsub('Blather::', '')) { |h,k| {k.to_s => h} }
+  handlers = handlers.deep_merge klass.handler_hierarchy.inject('klass' => klass.to_s.gsub('Blather::', '')) { |h,k| {k.to_s => h} }
 end
 
 level = 0

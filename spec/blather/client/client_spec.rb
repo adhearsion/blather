@@ -164,7 +164,7 @@ describe Blather::Client do
     @client.receive_data stanza
   end
 
-  it 'allows for passing to the next handler in the heirarchy' do
+  it 'allows for passing to the next handler in the hierarchy' do
     stanza = Blather::Stanza::Iq::Query.new
     response = mock(:query => nil, :iq => nil)
     @client.register_handler(:query) do |_|

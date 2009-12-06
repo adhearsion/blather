@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
      "examples/ping.rb",
      "examples/ping_pong.rb",
      "examples/pong.rb",
-     "examples/print_heirarchy.rb",
+     "examples/print_hierarchy.rb",
      "examples/pubsub/cli.rb",
      "examples/pubsub/ping_pong.rb",
      "examples/rosterprint.rb",

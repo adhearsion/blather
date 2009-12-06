@@ -7,7 +7,7 @@ describe Blather::Stanza do
 
   it 'provides a handler registration mechanism' do
     class Registration < Blather::Stanza; register :handler_test, :handler, 'test:namespace'; end
-    Registration.handler_heirarchy.must_include :handler_test
+    Registration.handler_hierarchy.must_include :handler_test
     Blather::Stanza.handler_list.must_include :handler_test
   end
 
@@ -24,8 +24,8 @@ describe Blather::Stanza do
   it 'can register subclass handlers' do
     class SuperClassRegister < Blather::Stanza; register :super_class; end
     class SubClassRegister < SuperClassRegister; register :sub_class; end
-    SuperClassRegister.handler_heirarchy.wont_include :sub_class
-    SubClassRegister.handler_heirarchy.must_include :super_class
+    SuperClassRegister.handler_hierarchy.wont_include :sub_class
+    SubClassRegister.handler_hierarchy.must_include :super_class
   end
 
   it 'can import a node' do
