@@ -1,3 +1,6 @@
+v0.4.8
+  Bugfix: heirarchy -> hierarchy spelling mistake
+
 v0.4.7
   Update to work with Nokogiri 1.4.0
 
