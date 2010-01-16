@@ -159,6 +159,9 @@ class Stanza
   class Message < Stanza
     VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal].freeze
 
+    HTML_NS = 'http://jabber.org/protocol/xhtml-im'.freeze
+    HTML_BODY_NS = 'http://www.w3.org/1999/xhtml'.freeze
+
     register :message
 
     # @private
@@ -246,6 +249,39 @@ class Stanza
     # @param [#to_s] body the message body
     def body=(body)
       set_content_for :body, body
+    end
+
+    # Get the message xhtml node
+    # This will create the node if it doesn't exist
+    #
+    # @return [XML::Node]
+    def xhtml_node
+      unless h = find_first('ns:html', :ns => HTML_NS)
+        self << (h = XMPPNode.new('html', self.document))
+        h.namespace = HTML_NS
+      end
+
+      unless b = h.find_first('ns:body', :ns => HTML_BODY_NS)
+        h << (b = XMPPNode.new('body', self.document))
+        b.namespace = HTML_BODY_NS
+      end
+
+      b
+    end
+
+    # Get the message xhtml
+    #
+    # @return [String]
+    def xhtml
+      self.xhtml_node.content.strip
+    end
+
+    # Set the message xhtml
+    # This will use Nokogiri to ensure the xhtml is valid
+    #
+    # @param [#to_s] valid xhtml
+    def xhtml=(xhtml_body)
+      self.xhtml_node.content = Nokogiri::XML(xhtml_body).to_xhtml
     end
 
     # Get the message subject

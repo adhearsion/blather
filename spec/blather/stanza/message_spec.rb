@@ -73,4 +73,60 @@ describe Blather::Stanza::Message do
       Blather::Stanza::Message.new.must_respond_to :"#{valid_type}?"
     end
   end
+
+  it 'ensures an html node exists when asked for xhtml_node' do
+    search_args = [
+      '/message/html_ns:html',
+      {:html_ns => Blather::Stanza::Message::HTML_NS}
+    ]
+    msg = Blather::Stanza::Message.new
+    msg.find_first(*search_args).must_be_nil
+
+    msg.xhtml_node
+    msg.find_first(*search_args).wont_be_nil
+  end
+
+  it 'ensures a body node exists when asked for xhtml_node' do
+    search_args = [
+      '/message/html_ns:html/body_ns:body',
+      {:html_ns => Blather::Stanza::Message::HTML_NS,
+      :body_ns => Blather::Stanza::Message::HTML_BODY_NS}
+    ]
+    msg = Blather::Stanza::Message.new
+    msg.find_first(*search_args).must_be_nil
+
+    msg.xhtml_node
+    msg.find_first(*search_args).wont_be_nil
+  end
+
+  it 'returns an existing node when asked for xhtml_node' do
+    msg = Blather::Stanza::Message.new
+    msg << (h = Blather::XMPPNode.new('html', msg.document))
+    h.namespace = Blather::Stanza::Message::HTML_NS
+    h << (b = Blather::XMPPNode.new('body', msg.document))
+    b.namespace = Blather::Stanza::Message::HTML_BODY_NS
+
+    msg.xhtml_node.must_equal(b)
+  end
+
+  it 'has an xhtml setter' do
+    msg = Blather::Stanza::Message.new
+    xhtml = "<some>xhtml</some>"
+    msg.xhtml = xhtml
+    msg.xhtml_node.content.strip.must_equal(xhtml)
+  end
+
+  it 'sets valid xhtml even if the input is not valid' do
+    msg = Blather::Stanza::Message.new
+    xhtml = "<some>xhtml"
+    msg.xhtml = xhtml
+    msg.xhtml_node.content.strip.must_equal("<some>xhtml</some>")
+  end
+
+  it 'has an xhtml getter' do
+    msg = Blather::Stanza::Message.new
+    xhtml = "<some>xhtml</some>"
+    msg.xhtml = xhtml
+    msg.xhtml.must_equal(xhtml)
+  end
 end
