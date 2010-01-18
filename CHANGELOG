@@ -1,5 +1,7 @@
 v0.4.8
+  Feature: add xhtml getter/setter to Message stanza
   Bugfix: heirarchy -> hierarchy spelling mistake
+  Hella documentation
 
 v0.4.7
   Update to work with Nokogiri 1.4.0
