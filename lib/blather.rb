@@ -1,4 +1,6 @@
 # Require the necessary files
+$:.unshift(File.dirname(__FILE__))
+
 %w[
   rubygems
   eventmachine
@@ -61,6 +63,9 @@
   blather/stanza/pubsub_owner
   blather/stanza/pubsub_owner/delete
   blather/stanza/pubsub_owner/purge
+  
+  blather/stanza/muc/invite
+  blather/stanza/muc/x
 
   blather/stanza/x
 
