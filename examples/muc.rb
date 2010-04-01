@@ -12,4 +12,6 @@ end
 
 when_ready do
   muc.join
+  sleep 2
+  muc.unlock
 end

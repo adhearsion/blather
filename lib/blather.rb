@@ -32,6 +32,7 @@ $:.unshift(File.dirname(__FILE__))
   blather/stanza/iq
   blather/stanza/iq/command
   blather/stanza/iq/ibb
+  blather/stanza/iq/muc/admin
   blather/stanza/iq/muc/owner
   blather/stanza/iq/ping
   blather/stanza/iq/query

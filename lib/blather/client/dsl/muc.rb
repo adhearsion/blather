@@ -68,13 +68,38 @@ module DSL
       self.status = :unavailable
     end
     
+    # <iq from='crone1@shakespeare.lit/desktop'
+    #     id='begone'
+    #     to='heath@chat.shakespeare.lit'
+    #     type='set'>
+    #   <query xmlns='http://jabber.org/protocol/muc#owner'>
+    #     <destroy jid='darkcave@chat.shakespeare.lit'>
+    #       <reason>Macbeth doth come.</reason>
+    #     </destroy>
+    #   </query>
+    # </iq>
+    def destroy(reason = nil)
+      destroy = Blather::Stanza::Iq::MUC::Owner::Destroy.new(@room)
+      destroy.reason = reason
+      write destroy
+    end
+    
     #  <iq type='set' id='purple52b37aa2' to='test3@conference.macbook.local'>
     #   <query xmlns='http://jabber.org/protocol/muc#owner'>
     #   <x xmlns='jabber:x:data' type='submit'/></query>
     # </iq>
-    def unlock
-      write Blather::Stanza::Iq::MUC::Owner.new(:set, @room, "submit")
+    def configure(&block)
+      get_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:get, @room)
+      write_with_handler(get_configure) do |response|
+        set_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:set, @room)
+        if block_given?
+          set_configure.data = yield(response)
+        else
+          set_configure.data = :default
+        end
+      end
     end
+    alias_method :unlock, :configure
     
     # <iq from='crone1@shakespeare.lit/desktop'
     #     id='member3'
@@ -96,12 +121,17 @@ module DSL
     #           role='participant'/>
     #   </query>
     # </iq>
-    def members
-      
+    def members(&block)
+      members = Blather::Stanza::Iq::MUC::Admin::Members.new(@room)
+      write_with_handler(members, &block)
     end
     
     def write(stanza)
       @client.write(stanza)
+    end
+    
+    def write_with_handler(stanza, &block)
+      @client.write_with_handler(stanza, &block)
     end
   end
   
