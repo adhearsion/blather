@@ -5,27 +5,32 @@ module DSL
   #  Room configuration
 
   class MUC
-    def initialize(client, jid)
-      @client = client
-      @room   = JID.new(jid)
+    def initialize(client, jid, password = nil)
+      @client   = client
+      @room     = JID.new(jid)
+      @password = password
     end
     
     def join
-      self.status = :available
+      status       = Stanza::Presence::Status.new
+      status.to    = @room
+      status       << Stanza::MUC::Join.new(@password)
+      write status
     end
     
     # <presence
     #     from='wiccarocks@shakespeare.lit/laptop'
     #     to='darkcave@chat.shakespeare.lit/oldhag'>
-    #     <x xmlns='http://jabber.org/protocol/muc'/>
+    #     <x xmlns='http://jabber.org/protocol/muc'>
+    #       <password>pass</password>
+    #     </x>
     #   <show>available</show>
     # </presence>
     def status=(state)
       status       = Stanza::Presence::Status.new
       status.state = state
       status.to    = @room
-      status.priority = 1
-      status       << Stanza::MUC::X.new
+      status       << Stanza::MUC::Invite.new(@password)
       write status
     end
     
@@ -38,7 +43,8 @@ module DSL
     # </message>
     def invite(jid, reason = nil)
       message = Stanza::Message.new(@room, nil, nil)
-      message << Stanza::MUC::Invite.new(jid, reason)
+      message << Stanza::MUC::Invite.new(jid, reason, @password)
+      write message
     end
 
     # <message to='room@service' type='groupchat'>
@@ -60,6 +66,14 @@ module DSL
     
     def leave
       self.status = :unavailable
+    end
+    
+    #  <iq type='set' id='purple52b37aa2' to='test3@conference.macbook.local'>
+    #   <query xmlns='http://jabber.org/protocol/muc#owner'>
+    #   <x xmlns='jabber:x:data' type='submit'/></query>
+    # </iq>
+    def unlock
+      write Blather::Stanza::Iq::MUC::Owner.new(:set, @room, "submit")
     end
     
     # <iq from='crone1@shakespeare.lit/desktop'
