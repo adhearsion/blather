@@ -32,8 +32,8 @@ module MUC
 
       protected    
         def create_data
-          unless create_data = find_first('ns:x', :ns => DATA_NAMESPACE)
-            self << (create_data = XMPPNode.new('x', self.document))
+          unless create_data = query.find_first('ns:x', :ns => DATA_NAMESPACE)
+            query << (create_data = XMPPNode.new('x', self.document))
             create_data.namespace = DATA_NAMESPACE
           end
           create_data

@@ -8,12 +8,14 @@ module DSL
     def initialize(client, jid, password = nil)
       @client   = client
       @room     = JID.new(jid)
+      @nickname = @room.resource
       @password = password
+      @room.strip!
     end
     
-    def join
+    def join(reason = nil)
       status       = Stanza::Presence::Status.new
-      status.to    = @room
+      status.to    = "#{@room}/#{@nickname}"
       status       << Stanza::MUC::Join.new(@password)
       write status
     end
@@ -21,16 +23,12 @@ module DSL
     # <presence
     #     from='wiccarocks@shakespeare.lit/laptop'
     #     to='darkcave@chat.shakespeare.lit/oldhag'>
-    #     <x xmlns='http://jabber.org/protocol/muc'>
-    #       <password>pass</password>
-    #     </x>
     #   <show>available</show>
     # </presence>
     def status=(state)
       status       = Stanza::Presence::Status.new
       status.state = state
       status.to    = @room
-      status       << Stanza::MUC::Invite.new(@password)
       write status
     end
     
@@ -50,8 +48,9 @@ module DSL
     # <message to='room@service' type='groupchat'>
     #   <body>foo</body>
     # </message>    
-    def say(msg)
+    def say(msg, xhtml = nil)
       message = Stanza::Message.new(@room, msg, :groupchat)
+      message.xhtml = xhtml || msg
       write message
     end
     
@@ -84,22 +83,29 @@ module DSL
       write destroy
     end
     
+    def get_configuration(&block)
+      get_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:get, @room)
+      write_with_handler(get_configure, &block)      
+    end
+    alias_method :configuration, :get_configuration
+    
+    def set_configuration(values, &block)
+      set_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:set, @room)
+      set_configure.data = values
+      write_with_handler(set_configure, &block)
+    end
+    alias_method :configuration=, :set_configuration
+    
     #  <iq type='set' id='purple52b37aa2' to='test3@conference.macbook.local'>
     #   <query xmlns='http://jabber.org/protocol/muc#owner'>
     #   <x xmlns='jabber:x:data' type='submit'/></query>
     # </iq>
-    def configure(&block)
-      get_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:get, @room)
-      write_with_handler(get_configure) do |response|
-        set_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:set, @room)
-        if block_given?
-          set_configure.data = yield(response)
-        else
-          set_configure.data = :default
-        end
+    def set_default_configuration(&block)
+      set_configuration(:default) do
+        yield if block_given?
       end
     end
-    alias_method :unlock, :configure
+    alias_method :unlock, :set_default_configuration
     
     # <iq from='crone1@shakespeare.lit/desktop'
     #     id='member3'
