@@ -7,8 +7,8 @@ module MUC
 #      <reason>comment</reason>
 #    </invite>
 #  </x>
-class Invite < XMPPNode
-  register :x, "http://jabber.org/protocol/muc#user"
+class Invite < Stanza
+  register :x, :invite, "http://jabber.org/protocol/muc#user"
   
   def self.new(jid = nil, reason = nil, password = nil)
     invite = super :x
@@ -22,14 +22,26 @@ class Invite < XMPPNode
     create_invite[:to] = JID.new(jid)
   end
   
+  def to
+    JID.new(create_invite[:to])
+  end
+  
   def reason=(reason)
     return if reason.blank?
     create_reason.content = reason
   end
   
+  def reason
+    create_reason.content
+  end
+  
   def password=(password)
     return if password.blank?
     create_password.content = password
+  end
+  
+  def password
+    create_password.content
   end
   
   protected
