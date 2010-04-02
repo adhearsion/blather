@@ -2,13 +2,12 @@ module Blather
 module DSL
   # TODO
   #  Get room name?
-  #  Room configuration
 
   class MUC
-    def initialize(client, jid, password = nil)
+    def initialize(client, jid, nickname = nil, password = nil)
       @client   = client
       @room     = JID.new(jid)
-      @nickname = @room.resource
+      @nickname = nickname || @room.resource
       @password = password
       @room.strip!
     end

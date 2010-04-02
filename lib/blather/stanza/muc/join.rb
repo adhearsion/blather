@@ -6,7 +6,7 @@ class Join < XMPPNode
   register :x, "http://jabber.org/protocol/muc"
   
   def self.new(password = nil)
-    join = super
+    join = super :x
     join.password = password
     join
   end
