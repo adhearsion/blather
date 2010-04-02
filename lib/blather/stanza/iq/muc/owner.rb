@@ -21,9 +21,14 @@ module MUC
           raise "Invalid data format" unless data.is_a?(Hash)
           data.each {|key, value|
             create_field = XMPPNode.new('field', self.document)
-            create_field[:var] = "muc#roomconfig_#{key}"
+            create_field[:var] = key
+            
             create_field_value = XMPPNode.new('value', self.document)
-            create_field_value.content = value
+            if [TrueClass, FalseClass].include?(value.class)
+              value = value ? 1 : 0
+            end
+            create_field_value.content = value.to_s
+            
             create_field << create_field_value
             create_data  << create_field
           }      
