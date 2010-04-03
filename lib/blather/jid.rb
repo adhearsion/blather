@@ -49,9 +49,9 @@ module Blather
     # Validating pattern for JID string
     PATTERN = /^(?:([^@]*)@)??([^@\/]*)(?:\/(.*?))?$/.freeze
 
-    attr_reader :node,
-                :domain,
-                :resource
+    attr_accessor :node,
+                  :domain,
+                  :resource
 
     # @private
     def self.new(node, domain = nil, resource = nil)
@@ -75,20 +75,31 @@ module Blather
     # @raise [ArgumentError] if the parts of the JID are too large (1023 bytes)
     # @return [Blather::JID] a new jid object
     def initialize(node, domain = nil, resource = nil)
-      @resource = resource
-      @domain = domain
-      @node = node
+      self.resource = resource
+      self.domain = domain
+      self.node = node
 
-      if @domain.nil? && @resource.nil?
-        @node, @domain, @resource = @node.to_s.scan(PATTERN).first
+      if self.domain.nil? && self.resource.nil?
+        self.node, self.domain, self.resource = self.node.to_s.scan(PATTERN).first
       end
-
-      @node.downcase!   if @node
-      @domain.downcase! if @domain
-
+    end
+    
+    def node=(node)
+      @node = (node && node.downcase)
       raise ArgumentError, 'Node too long' if (@node || '').length > 1023
+      @node
+    end
+    
+    def domain=(domain)
+      @domain = (domain && domain.downcase)
       raise ArgumentError, 'Domain too long' if (@domain || '').length > 1023
+      @domain
+    end
+    
+    def resource=(resource)
+      @resource = resource
       raise ArgumentError, 'Resource too long' if (@resource || '').length > 1023
+      @resource
     end
 
     # Turn the JID into a string
@@ -101,9 +112,9 @@ module Blather
     #
     # @return [String] the JID as a string
     def to_s
-      s = @domain
-      s = "#{@node}@#{s}" if @node
-      s = "#{s}/#{@resource}" if @resource
+      s = domain
+      s = "#{node}@#{s}" if node
+      s = "#{s}/#{resource}" if resource
       s
     end
 
@@ -118,7 +129,7 @@ module Blather
     #
     # @return [Blather::JID] the JID without a resource
     def strip!
-      @resource = nil
+      self.resource = nil
       self
     end
 
@@ -137,7 +148,7 @@ module Blather
     #
     # @return [true, false]
     def stripped?
-      @resource.nil?
+      resource.nil?
     end
   end  # JID
 
