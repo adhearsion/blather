@@ -49,7 +49,7 @@ module DSL
     # </message>    
     def say(msg, xhtml = nil)
       message = Stanza::Message.new(@room, msg, :groupchat)
-      message.xhtml = xhtml || msg
+      message.xhtml = xhtml if xhtml
       write message
     end
     
