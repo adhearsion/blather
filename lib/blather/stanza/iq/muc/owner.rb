@@ -34,6 +34,17 @@ module MUC
           }      
         end
       end
+      
+      def data
+        items = create_data.find('//ns:field', :ns => self.class.registered_ns)
+        items.inject({}) do |hash, item|
+          key       = item[:var]
+          value     = item.find_first('ns:value', :ns => self.class.registered_ns)
+          value     = value.content
+          hash[key] = value
+          hash
+        end
+      end
 
       protected    
         def create_data
