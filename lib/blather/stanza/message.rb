@@ -380,10 +380,11 @@ class Stanza
 
     def delay
       delay = find_first('ns:x', :ns => 'jabber:x:delay')
-      return unless delay
+      stamp = delay && delay[:stamp]
+      return unless stamp
       # Make sure time is UTC
-      delay += "Z" unless delay[-1..-1] == "Z"
-      Time.parse(delay[:stamp])
+      stamp += "Z" unless stamp[-1..-1] == "Z"
+      Time.parse(stamp)
     end
   end
 
