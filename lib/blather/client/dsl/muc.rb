@@ -84,7 +84,9 @@ module DSL
     
     def get_configuration(&block)
       get_configure = Blather::Stanza::Iq::MUC::Owner::Configure.new(:get, @room)
-      write_with_handler(get_configure, &block)      
+      write_with_handler(get_configure) do |stana|
+        yield stana.data
+      end
     end
     alias_method :configuration, :get_configuration
     
