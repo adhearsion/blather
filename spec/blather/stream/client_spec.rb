@@ -45,7 +45,7 @@ describe Blather::Stream::Client do
 
   it 'attempts to find the SRV record if a host is not provided' do
     dns = mock(:sort! => nil, :empty? => false)
-    dns.expects(:each).yields(mock({
+    dns.expects(:detect).yields(mock({
       :target => 'd',
       :port => 5222
     }))

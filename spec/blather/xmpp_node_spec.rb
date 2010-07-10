@@ -135,10 +135,11 @@ describe Blather::XMPPNode do
     c.namespace = 'foo:bar'
     n << c
 
-    n.find(:bar).size.must_equal 2
-    n.remove_child 'bar', 'foo:bar'
     n.find(:bar).size.must_equal 1
-    n.find(:bar).first.namespace.must_be_nil
+    n.find('//xmlns:bar', :xmlns => 'foo:bar').size.must_equal 1
+    n.remove_child '//xmlns:bar', :xmlns => 'foo:bar'
+    n.find(:bar).size.must_equal 1
+    n.find('//xmlns:bar', :xmlns => 'foo:bar').size.must_equal 0
   end
 
   it 'will remove all child elements' do

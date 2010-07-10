@@ -69,7 +69,7 @@ describe Blather::Stanza::PubSub::Retract do
 
   it 'will iterate over each retraction' do
     Blather::XMPPNode.import(parse_stanza(retract_xml).root).each do |i|
-      i.must_include %w[ae890ac52d0df67ed7cfdf51b644e901]
+      i.must_include "ae890ac52d0df67ed7cfdf51b644e901"
     end
   end
 end
