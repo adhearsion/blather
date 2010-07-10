@@ -12,5 +12,4 @@ rdoc
 *.pid
 notes
 .yardoc
-blather.gemspec
 *.rbc
