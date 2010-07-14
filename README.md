@@ -160,8 +160,8 @@ than a change set made directly on master.
 
 ### Contributors
 
-[Nolan Darilek](http://github.com/thewordnerd)
-[Tim Carey-Smith](http://github.com/halorgium)
+* [Nolan Darilek](http://github.com/thewordnerd)
+* [Tim Carey-Smith](http://github.com/halorgium)
 
 # Copyright
 
