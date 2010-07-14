@@ -147,7 +147,12 @@ Command line options:
         --log=[LOG]   Write to the [LOG] file instead of stdout/stderr
     -h, --help        Show this message
     -v, --version     Show version
+    
+## Health warning:
 
+Some parts of Blather will allow you to do stupid things that don't conform to XMPP
+spec. You should exercise caution and read the relevant specifications (indicated in
+the preamble to most relevant classes).
 
 # Author
 

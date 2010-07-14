@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2010-07-09}
+  s.date = %q{2010-07-18}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
   s.email = %q{sprsquish@gmail.com}
   s.extra_rdoc_files = [
@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
      "lib/blather/stanza/disco/disco_info.rb",
      "lib/blather/stanza/disco/disco_items.rb",
      "lib/blather/stanza/iq.rb",
+     "lib/blather/stanza/iq/command.rb",
      "lib/blather/stanza/iq/query.rb",
      "lib/blather/stanza/iq/roster.rb",
      "lib/blather/stanza/message.rb",
@@ -65,6 +66,7 @@ Gem::Specification.new do |s|
      "lib/blather/stanza/pubsub_owner.rb",
      "lib/blather/stanza/pubsub_owner/delete.rb",
      "lib/blather/stanza/pubsub_owner/purge.rb",
+     "lib/blather/stanza/x.rb",
      "lib/blather/stream.rb",
      "lib/blather/stream/client.rb",
      "lib/blather/stream/component.rb",
@@ -96,6 +98,7 @@ Gem::Specification.new do |s|
      "spec/blather/roster_spec.rb",
      "spec/blather/stanza/discos/disco_info_spec.rb",
      "spec/blather/stanza/discos/disco_items_spec.rb",
+     "spec/blather/stanza/iq/command_spec.rb",
      "spec/blather/stanza/iq/query_spec.rb",
      "spec/blather/stanza/iq/roster_spec.rb",
      "spec/blather/stanza/iq_spec.rb",
@@ -121,6 +124,7 @@ Gem::Specification.new do |s|
      "spec/blather/stream/client_spec.rb",
      "spec/blather/stream/component_spec.rb",
      "spec/blather/stream/parser_spec.rb",
+     "spec/blather/x_spec.rb",
      "spec/blather/xmpp_node_spec.rb",
      "spec/fixtures/pubsub.rb",
      "spec/spec_helper.rb"
