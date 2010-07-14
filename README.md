@@ -148,6 +148,11 @@ Command line options:
     -h, --help        Show this message
     -v, --version     Show version
 
+# Contributions
+
+All contributions are welcome, even encouraged. However, contributions must be
+well tested. If you send me a branch name to merge that'll get my attention faster
+than a change set made directly on master.
 
 # Author
 
@@ -156,6 +161,7 @@ Command line options:
 ### Contributors
 
 [Nolan Darilek](http://github.com/thewordnerd)
+[Tim Carey-Smith](http://github.com/halorgium)
 
 # Copyright
 
