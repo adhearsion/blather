@@ -102,6 +102,15 @@ describe Blather::Stanza::Iq::DiscoItems do
     di.items.size.must_equal 2
     di.items.each { |i| control.include?(i).must_equal true }
   end
+  
+  it 'allows adding of items' do
+    di = Blather::Stanza::Iq::DiscoItems.new
+    di.items.size.must_equal 0
+    di.items = [{:jid => 'foo@bar/baz', :node => 'node', :name => 'name'}]
+    di.items.size.must_equal 1
+    di.items = [Blather::Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name])]
+    di.items.size.must_equal 2
+  end
 end
 
 describe Blather::Stanza::Iq::DiscoItems::Item do
