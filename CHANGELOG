@@ -1,3 +1,8 @@
+v0.4.9
+  Feature: XEP-0004 x:data (benlangfeld)
+  Feature: XEP-0050 Ad-Hoc commands (benlangfeld)
+  Minor bugfixes for the specs
+
 v0.4.8
   Feature: add xhtml getter/setter to Message stanza
   Bugfix: heirarchy -> hierarchy spelling mistake
