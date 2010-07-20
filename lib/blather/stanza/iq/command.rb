@@ -185,7 +185,7 @@ class Iq
     # @param [:executing, :completed, :canceled] status the new status
     def status=(status)
       if status && !VALID_STATUS.include?(status.to_sym)
-        raise ArgumentError, "Invalid Action (#{statusn}), use: #{VALID_STATUS*' '}"
+        raise ArgumentError, "Invalid Action (#{status}), use: #{VALID_STATUS*' '}"
       end
       command[:status] = status
     end
@@ -196,10 +196,10 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def actions
-      a = find_first('actions')
+      a = find_first('//ns:actions', :ns => self.class.registered_ns)
 
       unless a
-        (self << (a = XMPPNode.new('actions', self.document)))
+        (self.command << (a = XMPPNode.new('actions', self.document)))
       end
       a
     end
@@ -243,10 +243,10 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def note
-      n = find_first('note')
+      n = find_first('//ns:note', :ns => self.class.registered_ns)
 
       unless n
-        (self << (n = XMPPNode.new('note', self.document)))
+        (self.command << (n = XMPPNode.new('note', self.document)))
       end
       n
     end
@@ -303,7 +303,12 @@ class Iq
 
     # Returns the command's x:data form child
     def form
-      X.new command.find_first('//ns:x', :ns => X.registered_ns)
+      x = X.new find_first('//ns:x', :ns => X.registered_ns)
+
+      unless x
+        (self.command << (x = X.new))
+      end
+      x
     end
 
   end #Command
