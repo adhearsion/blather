@@ -137,12 +137,18 @@ class Stanza
       #   @option opts [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"] :type the type of the field
       #   @option opts [String] :var the variable for the field
       #   @option opts [String] :label the label for the field
+      #   @option [String, nil] :value the value for the field
+      #   @option [String, nil] :description the description for the field
+      #   @option [true, false, nil] :required the required flag for the field
       # @overload new(type, var = nil, label = nil)
       #   Create a new Field by name
       #   @param [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"] type the type of the field
       #   @param [String, nil] var the variable for the field
       #   @param [String, nil] label the label for the field
-      def self.new(type, var = nil, label = nil)
+      #   @param [String, nil] value the value for the field
+      #   @param [String, nil] description the description for the field
+      #   @param [true, false, nil] required the required flag for the field
+      def self.new(type, var = nil, label = nil, value = nil, description = nil, required = false)
         new_node = super :field
 
         case type
@@ -152,10 +158,16 @@ class Stanza
           new_node.type = type[:type]
           new_node.var = type[:var]
           new_node.label = type[:label]
+          new_node.value = type[:value]
+          new_node.desc = type[:description]
+          new_node.required! type[:required]
         else
           new_node.type = type
           new_node.var = var
           new_node.label = label
+          new_node.value = value
+          new_node.desc = description
+          new_node.required! required
         end
         new_node
       end
@@ -212,8 +224,10 @@ class Stanza
       #
       # @param [String] value the field's value
       def value=(value)
-        self.remove_children :value
-        self << "<value>#{value}</value>"
+        unless value == nil
+          self.remove_children :value
+          self << "<value>#{value}</value>"
+        end
       end
 
       # Get the field's description
@@ -229,8 +243,10 @@ class Stanza
       #
       # @param [String] description the field's description
       def desc=(description)
-        self.remove_children :desc
-        self << "<desc>#{description}</desc>"
+        unless description == nil
+          self.remove_children :desc
+          self << "<desc>#{description}</desc>"
+        end
       end
 
       # Get the field's required flag
