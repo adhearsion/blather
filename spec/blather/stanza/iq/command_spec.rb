@@ -8,7 +8,6 @@ def command_xml
       id='form2'>
     <command xmlns='http://jabber.org/protocol/commands'
              node='node1'
-             action='execute'
              sessionid='dqjiodmqlmakm'>
       <x xmlns='jabber:x:data' type='form'>
         <field var='field-name' type='text-single' label='description' />
@@ -112,12 +111,17 @@ describe Blather::Stanza::Iq::Command do
     n.action = :cancel
     n.action.must_equal :cancel
   end
-
+  
+  it 'must default action to :execute on import' do
+    n = Blather::XMPPNode.import(parse_stanza(command_xml).root)
+    n.action.must_equal :execute
+  end
+  
   it 'has a status attribute' do
     n = Blather::Stanza::Iq::Command.new
-    n.status.must_equal nil
-    n.status = :executing
     n.status.must_equal :executing
+    n.status = :completed
+    n.status.must_equal :completed
   end
 
   it 'has a sessionid attribute' do

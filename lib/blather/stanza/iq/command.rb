@@ -96,7 +96,8 @@ class Iq
     #
     # @return [Symbol, nil]
     def action
-      command.read_attr :action, :to_sym
+      a = command[:action] || "execute"
+      a.to_sym
     end
 
     # Check if the command action is :cancel
@@ -148,7 +149,8 @@ class Iq
     #
     # @return [Symbol, nil]
     def status
-      command.read_attr :status, :to_sym
+      s = command[:status] || "executing"
+      s.to_sym
     end
 
     # Check if the command status is :executing
