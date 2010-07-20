@@ -121,7 +121,7 @@ describe Blather::Stanza::X do
   it 'allows adding of fields' do
     di = Blather::Stanza::X.new nil
     di.fields.size.must_equal 0
-    di.add_fields [{:label => 'label', :type => 'text-single', :var => 'var'}]
+    di.add_fields [{:label => 'label', :type => 'text-single', :var => 'var', :required => true}]
     di.fields.size.must_equal 1
     di.add_fields [Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
     di.fields.size.must_equal 2
