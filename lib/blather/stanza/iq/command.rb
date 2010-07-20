@@ -28,7 +28,6 @@ class Iq
       new_node.command
       new_node.node = node
       new_node.action = action
-      new_node.new_sessionid!
       new_node
     end
 
@@ -78,6 +77,13 @@ class Iq
     # @return [String, nil]
     def sessionid
       command[:sessionid]
+    end
+    
+    # Check if there is a sessionid set
+    #
+    # @return [true, false]
+    def sessionid?
+      sessionid == nil ? false : true
     end
 
     # Set the sessionid of the command
