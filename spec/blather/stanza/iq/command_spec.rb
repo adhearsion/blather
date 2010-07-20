@@ -126,9 +126,16 @@ describe Blather::Stanza::Iq::Command do
 
   it 'has a sessionid attribute' do
     n = Blather::Stanza::Iq::Command.new
-    n.sessionid.wont_be_nil
+    n.sessionid.must_equal nil
     n.sessionid = "somerandomstring"
     n.sessionid.must_equal Digest::SHA1.hexdigest("somerandomstring")
+  end
+  
+  it 'has a sessionid? attribute' do
+    n = Blather::Stanza::Iq::Command.new
+    n.sessionid?.must_equal false
+    n.new_sessionid!
+    n.sessionid?.must_equal true
   end
 
   it 'has an allowed_actions attribute' do
