@@ -196,7 +196,7 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def actions
-      a = find_first('//ns:actions', :ns => self.class.registered_ns)
+      a = self.command.find_first('ns:actions', :ns => self.class.registered_ns)
 
       unless a
         (self.command << (a = XMPPNode.new('actions', self.document)))
@@ -209,11 +209,22 @@ class Iq
     # @return [[Symbol]]
     def allowed_actions
       a = []
-      a << :execute
       actions.children.each do |action|
         a << action.name.to_sym
       end
+      a << :execute unless a.include?(:execute)
       a
+    end
+    
+    def primary_allowed_action
+      (actions[:execute] || :execute).to_sym
+    end
+    
+    def primary_allowed_action=(a)
+      if a && ![:prev, :next, :complete, :execute].include?(a.to_sym)
+        raise ArgumentError, "Invalid Action (#{a}), use: #{[:prev, :next, :complete, :execute]*' '}"
+      end
+      actions[:execute] = a
     end
 
     # Add allowed actions to the command
@@ -224,17 +235,16 @@ class Iq
         if action && !VALID_ACTIONS.include?(action.to_sym)
           raise ArgumentError, "Invalid Action (#{action}), use: #{VALID_ACTIONS*' '}"
         end
-        actions << "<#{action.to_s}/>"
+        actions << XMPPNode.new(action.to_s)
       end
+      actions << XMPPNode.new(:execute) unless [allowed_actions].flatten.include?(:execute)
     end
 
     # Remove allowed actions from the command
     #
     # @param [[:prev, :next, :complete]] disallowed_actions the allowed actions to remove
-    def remove_allowed_actions(disallowed_actions)
-      [disallowed_actions].flatten.each do |action|
-        actions.remove_children action.to_sym
-      end
+    def remove_allowed_actions!
+      actions.remove
     end
 
     # Command note accessor
@@ -255,7 +265,8 @@ class Iq
     #
     # @return [Symbol, nil]
     def note_type
-      note.read_attr :type, :to_sym
+      n = note[:type] || nil
+      n.to_sym if n
     end
 
     # Check if the command status is :info
@@ -303,13 +314,17 @@ class Iq
 
     # Returns the command's x:data form child
     def form
-      x = X.new find_first('//ns:x', :ns => X.registered_ns)
-
-      unless x
+      x = command.find_first('//ns:x', :ns => X.registered_ns)
+      
+      if x
+        x = X.new x
+      else
         (self.command << (x = X.new))
       end
       x
     end
+    
+    
 
   end #Command
 
