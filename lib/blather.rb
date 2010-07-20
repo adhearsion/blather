@@ -4,6 +4,7 @@
   eventmachine
   nokogiri
   digest/md5
+  digest/sha1
   logger
 
   blather/core_ext/active_support
@@ -21,6 +22,7 @@
   blather/stanza
   blather/stanza/iq
   blather/stanza/iq/query
+  blather/stanza/iq/command
   blather/stanza/iq/roster
   blather/stanza/disco
   blather/stanza/disco/disco_info
@@ -45,6 +47,8 @@
   blather/stanza/pubsub_owner
   blather/stanza/pubsub_owner/delete
   blather/stanza/pubsub_owner/purge
+
+  blather/stanza/x
 
   blather/stream
   blather/stream/client
