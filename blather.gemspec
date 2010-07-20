@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{blather}
-  s.version = "0.4.8"
+  s.version = "0.4.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2010-07-18}
+  s.date = %q{2010-07-19}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
   s.email = %q{sprsquish@gmail.com}
   s.extra_rdoc_files = [
@@ -120,11 +120,11 @@ Gem::Specification.new do |s|
      "spec/blather/stanza/pubsub_owner/purge_spec.rb",
      "spec/blather/stanza/pubsub_owner_spec.rb",
      "spec/blather/stanza/pubsub_spec.rb",
+     "spec/blather/stanza/x_spec.rb",
      "spec/blather/stanza_spec.rb",
      "spec/blather/stream/client_spec.rb",
      "spec/blather/stream/component_spec.rb",
      "spec/blather/stream/parser_spec.rb",
-     "spec/blather/x_spec.rb",
      "spec/blather/xmpp_node_spec.rb",
      "spec/fixtures/pubsub.rb",
      "spec/spec_helper.rb"
