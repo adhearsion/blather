@@ -142,7 +142,6 @@ describe Blather::Stanza::Iq::Command do
     n = Blather::XMPPNode.import parse_stanza(command_xml).root
     n.allowed_actions.must_equal [:execute]
     n.add_allowed_actions [:next, :prev]
-    puts n
     n.allowed_actions.must_equal [:next, :prev, :execute]
     n.remove_allowed_actions!
     n.allowed_actions.must_equal [:execute]
