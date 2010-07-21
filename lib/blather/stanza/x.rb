@@ -55,6 +55,13 @@ class Stanza
         Field.new f
       end
     end
+    
+    # Find a field by var
+    # @param var the var for the field you wish to find
+    def field(var)
+      m = fields.select { |f| f.var == var }
+      m.first
+    end
 
     # Add an array of fields to form
     # @param fields the array of fields, passed directly to Field.new
