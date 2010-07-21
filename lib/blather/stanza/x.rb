@@ -140,6 +140,8 @@ class Stanza
       #   @option [String, nil] :value the value for the field
       #   @option [String, nil] :description the description for the field
       #   @option [true, false, nil] :required the required flag for the field
+      #   @param [Array<Array, X::Field::Option>, nil] :options a list of field options.
+      #   These are passed directly to X::Field::Option.new
       # @overload new(type, var = nil, label = nil)
       #   Create a new Field by name
       #   @param [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"] type the type of the field
@@ -148,7 +150,9 @@ class Stanza
       #   @param [String, nil] value the value for the field
       #   @param [String, nil] description the description for the field
       #   @param [true, false, nil] required the required flag for the field
-      def self.new(type, var = nil, label = nil, value = nil, description = nil, required = false)
+      #   @param [Array<Array, X::Field::Option>, nil] options a list of field options.
+      #   These are passed directly to X::Field::Option.new
+      def self.new(type, var = nil, label = nil, value = nil, description = nil, required = false, options = [])
         new_node = super :field
 
         case type
@@ -161,6 +165,7 @@ class Stanza
           new_node.value = type[:value]
           new_node.desc = type[:description]
           new_node.required! type[:required]
+          new_node.add_options(type[:options])
         else
           new_node.type = type
           new_node.var = var
@@ -168,6 +173,7 @@ class Stanza
           new_node.value = value
           new_node.desc = description
           new_node.required! required
+          new_node.add_options(options)
         end
         new_node
       end
