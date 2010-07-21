@@ -15,12 +15,12 @@ def x_xml
     <field var='field-name3'
            type='text-single'
            label='description' />
-    <field var='field-name'
+    <field var='field-name4'
            type='{field-type}'
            label='description'>
       <desc/>
       <required/>
-      <value>field-value</value>
+      <value>field-value4</value>
       <option label='option-label'><value>option-value</value></option>
       <option label='option-label'><value>option-value</value></option>
     </field>
@@ -79,6 +79,13 @@ describe Blather::Stanza::X do
     r = Blather::Stanza::X.new.inherit n.form
     r.fields.size.must_equal 4
     r.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
+  end
+  
+  it 'returns a field object for a particular var' do
+    x = Blather::Stanza::X.new parse_stanza(x_xml).root
+    f = x.field 'field-name4'
+    f.must_be_instance_of Blather::Stanza::X::Field
+    f.value.must_equal 'field-value4'
   end
 
   it 'takes a list of hashes for fields' do
