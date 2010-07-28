@@ -303,11 +303,13 @@ class Iq
 
     # Returns the command's x:data form child
     def form
-      if x = command.find_first('//ns:x', :ns => X.registered_ns)
-        x = X.new x
+      if found_x = command.find_first('//ns:x', :ns => X.registered_ns)
+        x = X.new found_x
+        found_x.remove
       else
-        (self.command << (x = X.new))
+        x = X.new
       end
+      self.command << x
       x
     end
   end #Command
