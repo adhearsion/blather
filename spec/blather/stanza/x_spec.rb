@@ -16,7 +16,7 @@ def x_xml
            type='text-single'
            label='description' />
     <field var='field-name4'
-           type='{field-type}'
+           type='list-multi'
            label='description'>
       <desc/>
       <required/>
@@ -80,7 +80,7 @@ describe Blather::Stanza::X do
     r.fields.size.must_equal 4
     r.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
   end
-  
+
   it 'returns a field object for a particular var' do
     x = Blather::Stanza::X.new parse_stanza(x_xml).root
     f = x.field 'field-name4'
@@ -128,9 +128,9 @@ describe Blather::Stanza::X do
   it 'allows adding of fields' do
     di = Blather::Stanza::X.new nil
     di.fields.size.must_equal 0
-    di.add_fields [{:label => 'label', :type => 'text-single', :var => 'var', :required => true}]
+    di.fields = [{:label => 'label', :type => 'text-single', :var => 'var', :required => true}]
     di.fields.size.must_equal 1
-    di.add_fields [Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
+    di.fields += [Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
     di.fields.size.must_equal 2
   end
 
@@ -178,9 +178,9 @@ describe Blather::Stanza::X::Field do
   it 'has a required? attribute' do
     n = Blather::Stanza::X::Field.new 'text-single', 'subject', 'Music from the time of Shakespeare'
     n.required?.must_equal false
-    n.required!
+    n.required = true
     n.required?.must_equal true
-    n.required! false
+    n.required = false
     n.required?.must_equal false
   end
 
@@ -197,9 +197,9 @@ describe Blather::Stanza::X::Field do
   it 'allows adding of options' do
     di = Blather::Stanza::X::Field.new nil
     di.options.size.must_equal 0
-    di.add_options [{:label => 'Person', :value => 'person'}]
+    di.options += [{:label => 'Person', :value => 'person'}]
     di.options.size.must_equal 1
-    di.add_options [Blather::Stanza::X::Field::Option.new(*%w[person1 Person1])]
+    di.options += [Blather::Stanza::X::Field::Option.new(*%w[person1 Person1])]
     di.options.size.must_equal 2
   end
 
