@@ -141,16 +141,16 @@ describe Blather::Stanza::Iq::Command do
   it 'has an allowed_actions attribute' do
     n = Blather::XMPPNode.import parse_stanza(command_xml).root
     n.allowed_actions.must_equal [:execute]
-    n.add_allowed_actions [:next, :prev]
+    n.allowed_actions = [:next, :prev]
     (n.allowed_actions - [:next, :prev, :execute]).must_be_empty
     n.remove_allowed_actions!
     n.allowed_actions.must_equal [:execute]
-    n.add_allowed_actions [:next]
+    n.allowed_actions += [:next]
     (n.allowed_actions - [:next, :execute]).must_be_empty
 
     r = Blather::Stanza::Iq::Command.new
     r.allowed_actions.must_equal [:execute]
-    r.add_allowed_actions [:prev]
+    r.allowed_actions += [:prev]
     (r.allowed_actions - [:prev, :execute]).must_be_empty
   end
 
