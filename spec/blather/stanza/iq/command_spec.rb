@@ -85,7 +85,18 @@ describe Blather::Stanza::Iq::Command do
     c.type.must_equal :result
   end
 
-  # TODO: Deal with #reply/#reply! better?
+  it 'removes action on reply' do
+    c = Blather::XMPPNode.import parse_stanza(command_xml).root
+    c.action.must_equal :execute
+    c.reply.action.must_equal nil
+  end
+  
+  it 'removes action on reply!' do
+    c = Blather::XMPPNode.import parse_stanza(command_xml).root
+    c.action.must_equal :execute
+    c.reply!
+    c.action.must_equal nil
+  end
 
   it 'can be registered under a namespace' do
     class CommandNs < Blather::Stanza::Iq::Command; register :command_ns, nil, 'command:ns'; end

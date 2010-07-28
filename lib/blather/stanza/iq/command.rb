@@ -32,11 +32,23 @@ class Iq
     end
 
     # Overrides the parent method to ensure the current command node is destroyed
+    # and the action is set to execute if no action provided
     #
     # @see Blather::Stanza::Iq#inherit
     def inherit(node)
       command.remove
       super
+      self.action = :execute unless self.action
+      self
+    end
+    
+    # Overrides the parent method to ensure the reply has no action
+    #
+    # @return [self]
+    def reply!
+      super
+      self.action = nil
+      self
     end
 
     # Command node accessor
@@ -102,7 +114,7 @@ class Iq
     #
     # @return [Symbol, nil]
     def action
-      ((val = command[:action]) && val.to_sym) || :execute
+      (val = command[:action]) && val.to_sym
     end
 
     # Check if the command action is :cancel
