@@ -303,7 +303,9 @@ class Stanza
       # @param options the array of options, passed directly to Option.new
       def options=(options)
         remove_children :option
-        [options].flatten.each { |o| self << Option.new(o) }
+        if options
+          [options].flatten.each { |o| self << Option.new(o) }
+        end
       end
 
       # Compare two Field objects by type, var and label
