@@ -46,7 +46,7 @@ class Iq
     # @return [Blather::XMPPNode]
     def command
       c = if self.class.registered_ns
-        find_first('command_ns:command', :command_ns => self.class.registered_ns)
+        find_first('ns:command', :ns => self.class.registered_ns)
       else
         find_first('command')
       end
@@ -78,12 +78,12 @@ class Iq
     def sessionid
       command[:sessionid]
     end
-    
+
     # Check if there is a sessionid set
     #
     # @return [true, false]
     def sessionid?
-      sessionid == nil ? false : true
+      !sessionid.nil?
     end
 
     # Set the sessionid of the command
@@ -95,15 +95,14 @@ class Iq
 
     # Generate a new session ID (SHA-1 hash)
     def new_sessionid!
-      self.sessionid = "commandsession-"+id
+      self.sessionid = "commandsession-#{id}"
     end
 
     # Get the action of the command
     #
     # @return [Symbol, nil]
     def action
-      a = command[:action] || "execute"
-      a.to_sym
+      ((val = command[:action]) && val.to_sym) || :execute
     end
 
     # Check if the command action is :cancel
@@ -155,8 +154,7 @@ class Iq
     #
     # @return [Symbol, nil]
     def status
-      s = command[:status] || "executing"
-      s.to_sym
+      ((val = command[:status]) && val.to_sym) || :executing
     end
 
     # Check if the command status is :executing
@@ -196,10 +194,9 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def actions
-      a = self.command.find_first('ns:actions', :ns => self.class.registered_ns)
-
-      unless a
+      unless a = self.command.find_first('ns:actions', :ns => self.class.registered_ns)
         (self.command << (a = XMPPNode.new('actions', self.document)))
+        a.namespace = self.command.namespace
       end
       a
     end
@@ -208,18 +205,13 @@ class Iq
     #
     # @return [[Symbol]]
     def allowed_actions
-      a = []
-      actions.children.each do |action|
-        a << action.name.to_sym
-      end
-      a << :execute unless a.include?(:execute)
-      a
+      ([:execute] + actions.children.map { |action| action.name.to_sym }).uniq
     end
-    
+
     def primary_allowed_action
       (actions[:execute] || :execute).to_sym
     end
-    
+
     def primary_allowed_action=(a)
       if a && ![:prev, :next, :complete, :execute].include?(a.to_sym)
         raise ArgumentError, "Invalid Action (#{a}), use: #{[:prev, :next, :complete, :execute]*' '}"
@@ -230,14 +222,12 @@ class Iq
     # Add allowed actions to the command
     #
     # @param [[:prev, :next, :complete]] allowed_actions the new allowed actions
-    def add_allowed_actions(allowed_actions)
-      [allowed_actions].flatten.each do |action|
-        if action && !VALID_ACTIONS.include?(action.to_sym)
-          raise ArgumentError, "Invalid Action (#{action}), use: #{VALID_ACTIONS*' '}"
-        end
-        actions << XMPPNode.new(action.to_s)
+    def add_allowed_actions(*allowed_actions)
+      allowed_actions = ([allowed_actions].flatten.map(&:to_sym) + [:execute]).uniq
+      if (invalid_actions = allowed_actions - VALID_ACTIONS).size > 0
+        raise ArgumentError, "Invalid Action(s) (#{invalid_actions*' '}), use: #{VALID_ACTIONS*' '}"
       end
-      actions << XMPPNode.new(:execute) unless [allowed_actions].flatten.include?(:execute)
+      allowed_actions.each { |action| actions << XMPPNode.new(action.to_s) }
     end
 
     # Remove allowed actions from the command
@@ -253,10 +243,9 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def note
-      n = find_first('//ns:note', :ns => self.class.registered_ns)
-
-      unless n
+      unless n = self.command.find_first('ns:note', :ns => self.class.registered_ns)
         (self.command << (n = XMPPNode.new('note', self.document)))
+        n.namespace = self.command.namespace
       end
       n
     end
@@ -265,8 +254,7 @@ class Iq
     #
     # @return [Symbol, nil]
     def note_type
-      n = note[:type] || nil
-      n.to_sym if n
+      (val = note[:type]) && val.to_sym
     end
 
     # Check if the command status is :info
@@ -302,32 +290,27 @@ class Iq
 
     # Get the text of the command's note
     def note_text
-      content_from "note"
+      content_from :note
     end
 
     # Set the command's note text
     #
     # @param [String] note_text the command's new note text
     def note_text=(note_text)
-      set_content_for "note", note_text
+      set_content_for :note, note_text
     end
 
     # Returns the command's x:data form child
     def form
-      x = command.find_first('//ns:x', :ns => X.registered_ns)
-      
-      if x
+      if x = command.find_first('//ns:x', :ns => X.registered_ns)
         x = X.new x
       else
         (self.command << (x = X.new))
       end
       x
     end
-    
-    
-
   end #Command
 
 end #Iq
 end #Stanza
-end
+end #Blather
