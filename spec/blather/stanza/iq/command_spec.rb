@@ -111,12 +111,12 @@ describe Blather::Stanza::Iq::Command do
     n.action = :cancel
     n.action.must_equal :cancel
   end
-  
+
   it 'must default action to :execute on import' do
     n = Blather::XMPPNode.import(parse_stanza(command_xml).root)
     n.action.must_equal :execute
   end
-  
+
   it 'has a status attribute' do
     n = Blather::Stanza::Iq::Command.new
     n.status.must_equal :executing
@@ -130,7 +130,7 @@ describe Blather::Stanza::Iq::Command do
     n.sessionid = "somerandomstring"
     n.sessionid.must_equal Digest::SHA1.hexdigest("somerandomstring")
   end
-  
+
   it 'has a sessionid? attribute' do
     n = Blather::Stanza::Iq::Command.new
     n.sessionid?.must_equal false
@@ -142,18 +142,18 @@ describe Blather::Stanza::Iq::Command do
     n = Blather::XMPPNode.import parse_stanza(command_xml).root
     n.allowed_actions.must_equal [:execute]
     n.add_allowed_actions [:next, :prev]
-    n.allowed_actions.must_equal [:next, :prev, :execute]
+    (n.allowed_actions - [:next, :prev, :execute]).must_be_empty
     n.remove_allowed_actions!
     n.allowed_actions.must_equal [:execute]
     n.add_allowed_actions [:next]
-    n.allowed_actions.must_equal [:next, :execute]
-    
+    (n.allowed_actions - [:next, :execute]).must_be_empty
+
     r = Blather::Stanza::Iq::Command.new
     r.allowed_actions.must_equal [:execute]
     r.add_allowed_actions [:prev]
-    r.allowed_actions.must_equal [:prev, :execute]
+    (r.allowed_actions - [:prev, :execute]).must_be_empty
   end
-  
+
   it 'has a primary_allowed_action attribute' do
     n = Blather::XMPPNode.import parse_stanza(command_xml).root
     n.primary_allowed_action.must_equal :execute
@@ -180,7 +180,7 @@ describe Blather::Stanza::Iq::Command do
     n.form.fields.size.must_equal 1
     n.form.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
     n.form.must_be_instance_of Blather::Stanza::X
-    
+
     r = Blather::Stanza::Iq::Command.new
     r.form.type = :form
     r.form.type.must_equal :form
