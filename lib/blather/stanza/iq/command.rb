@@ -222,11 +222,12 @@ class Iq
     # Add allowed actions to the command
     #
     # @param [[:prev, :next, :complete]] allowed_actions the new allowed actions
-    def add_allowed_actions(*allowed_actions)
+    def allowed_actions=(allowed_actions)
       allowed_actions = ([allowed_actions].flatten.map(&:to_sym) + [:execute]).uniq
       if (invalid_actions = allowed_actions - VALID_ACTIONS).size > 0
         raise ArgumentError, "Invalid Action(s) (#{invalid_actions*' '}), use: #{VALID_ACTIONS*' '}"
       end
+      actions.children.map(&:remove)
       allowed_actions.each { |action| actions << XMPPNode.new(action.to_s) }
     end
 
