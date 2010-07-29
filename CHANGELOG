@@ -1,3 +1,12 @@
+v0.4.11
+  Bugfix: command nodes where generating the wrong xml
+  Bugfix: x nodes where generating the wrong xml
+  Feature: ability to set identities and features on disco info nodes
+  Feature: ability to set items on disco item nodes
+
+v0.4.10
+  no change
+
 v0.4.9
   Feature: XEP-0004 x:data (benlangfeld)
   Feature: XEP-0050 Ad-Hoc commands (benlangfeld)
