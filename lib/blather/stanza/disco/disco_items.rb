@@ -37,7 +37,10 @@ class Stanza
     # Add an array of items
     # @param items the array of items, passed directly to Item.new
     def items=(items)
-      [items].flatten.each { |i| self.query << Item.new(i) }
+      query.find('//ns:item', :ns => self.class.registered_ns).each &:remove
+      if items
+        [items].flatten.each { |i| self.query << Item.new(i) }
+      end
     end
 
     # An individual Disco Item

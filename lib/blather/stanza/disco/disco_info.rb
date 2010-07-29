@@ -37,7 +37,10 @@ class Stanza
     # Add an array of identities
     # @param identities the array of identities, passed directly to Identity.new
     def identities=(identities)
-      [identities].flatten.each { |i| self.query << Identity.new(i) }
+      query.find('//ns:identity', :ns => self.class.registered_ns).each &:remove
+      if identities
+        [identities].flatten.each { |i| self.query << Identity.new(i) }
+      end
     end
 
     # List of feature objects
@@ -50,7 +53,10 @@ class Stanza
     # Add an array of features
     # @param features the array of features, passed directly to Feature.new
     def features=(features)
-      [features].flatten.each { |f| self.query << Feature.new(f) }
+      query.find('//ns:feature', :ns => self.class.registered_ns).each &:remove
+      if features
+        [features].flatten.each { |f| self.query << Feature.new(f) }
+      end
     end
 
     class Identity < XMPPNode

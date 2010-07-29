@@ -108,8 +108,10 @@ describe Blather::Stanza::Iq::DiscoItems do
     di.items.size.must_equal 0
     di.items = [{:jid => 'foo@bar/baz', :node => 'node', :name => 'name'}]
     di.items.size.must_equal 1
-    di.items = [Blather::Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name])]
+    di.items += [Blather::Stanza::Iq::DiscoItems::Item.new(*%w[foo@bar/baz node name])]
     di.items.size.must_equal 2
+    di.items = nil
+    di.items.size.must_equal 0
   end
 end
 

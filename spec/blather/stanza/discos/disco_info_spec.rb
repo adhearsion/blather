@@ -60,8 +60,10 @@ describe Blather::Stanza::Iq::DiscoInfo do
     di.identities.size.must_equal 0
     di.identities = [{:name => 'name', :type => 'type', :category => 'category'}]
     di.identities.size.must_equal 1
-    di.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
+    di.identities += [Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
     di.identities.size.must_equal 2
+    di.identities = nil
+    di.identities.size.must_equal 0
   end
 
   it 'allows adding of features' do
@@ -69,8 +71,10 @@ describe Blather::Stanza::Iq::DiscoInfo do
     di.features.size.must_equal 0
     di.features = ["feature1"]
     di.features.size.must_equal 1
-    di.features = [Blather::Stanza::Iq::DiscoInfo::Feature.new "feature2"]
+    di.features += [Blather::Stanza::Iq::DiscoInfo::Feature.new "feature2"]
     di.features.size.must_equal 2
+    di.features = nil
+    di.features.size.must_equal 0
   end
 
 end
