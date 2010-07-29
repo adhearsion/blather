@@ -21,7 +21,7 @@ class Stanza
     def self.new(type = nil, node = nil, items = [])
       new_node = super type
       new_node.node = node
-      [items].flatten.each { |item| new_node.query << Item.new(item) }
+      new_node.items = [items]
       new_node
     end
 
@@ -32,6 +32,12 @@ class Stanza
       query.find('//ns:item', :ns => self.class.registered_ns).map do |i|
         Item.new i
       end
+    end
+
+    # Add an array of items
+    # @param items the array of items, passed directly to Item.new
+    def items=(items)
+      [items].flatten.each { |i| self.query << Item.new(i) }
     end
 
     # An individual Disco Item

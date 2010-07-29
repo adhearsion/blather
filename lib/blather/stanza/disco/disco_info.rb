@@ -22,8 +22,8 @@ class Stanza
     def self.new(type = nil, node = nil, identities = [], features = [])
       new_node = super type
       new_node.node = node
-      [identities].flatten.each { |i| new_node.query << Identity.new(i) }
-      [features].flatten.each   { |f| new_node.query << Feature.new(f) }
+      new_node.identities = [identities]
+      new_node.features = [features]
       new_node
     end
 
@@ -34,11 +34,23 @@ class Stanza
       end
     end
 
+    # Add an array of identities
+    # @param identities the array of identities, passed directly to Identity.new
+    def identities=(identities)
+      [identities].flatten.each { |i| self.query << Identity.new(i) }
+    end
+
     # List of feature objects
     def features
       query.find('//ns:feature', :ns => self.class.registered_ns).map do |f|
         Feature.new f
       end
+    end
+
+    # Add an array of features
+    # @param features the array of features, passed directly to Feature.new
+    def features=(features)
+      [features].flatten.each { |f| self.query << Feature.new(f) }
     end
 
     class Identity < XMPPNode
