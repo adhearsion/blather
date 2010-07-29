@@ -8,7 +8,6 @@ def command_xml
       id='form2'>
     <command xmlns='http://jabber.org/protocol/commands'
              node='node1'
-             action='execute'
              sessionid='dqjiodmqlmakm'>
       <x xmlns='jabber:x:data' type='form'>
         <field var='field-name' type='text-single' label='description' />
@@ -86,7 +85,18 @@ describe Blather::Stanza::Iq::Command do
     c.type.must_equal :result
   end
 
-  # TODO: Deal with #reply/#reply! better?
+  it 'removes action on reply' do
+    c = Blather::XMPPNode.import parse_stanza(command_xml).root
+    c.action.must_equal :execute
+    c.reply.action.must_equal nil
+  end
+  
+  it 'removes action on reply!' do
+    c = Blather::XMPPNode.import parse_stanza(command_xml).root
+    c.action.must_equal :execute
+    c.reply!
+    c.action.must_equal nil
+  end
 
   it 'can be registered under a namespace' do
     class CommandNs < Blather::Stanza::Iq::Command; register :command_ns, nil, 'command:ns'; end
@@ -113,27 +123,53 @@ describe Blather::Stanza::Iq::Command do
     n.action.must_equal :cancel
   end
 
+  it 'must default action to :execute on import' do
+    n = Blather::XMPPNode.import(parse_stanza(command_xml).root)
+    n.action.must_equal :execute
+  end
+
   it 'has a status attribute' do
     n = Blather::Stanza::Iq::Command.new
-    n.status.must_equal nil
-    n.status = :executing
     n.status.must_equal :executing
+    n.status = :completed
+    n.status.must_equal :completed
   end
 
   it 'has a sessionid attribute' do
     n = Blather::Stanza::Iq::Command.new
-    n.sessionid.wont_be_nil
+    n.sessionid.must_equal nil
     n.sessionid = "somerandomstring"
     n.sessionid.must_equal Digest::SHA1.hexdigest("somerandomstring")
   end
 
-  it 'has an allowed_actions attribute' do
+  it 'has a sessionid? attribute' do
     n = Blather::Stanza::Iq::Command.new
+    n.sessionid?.must_equal false
+    n.new_sessionid!
+    n.sessionid?.must_equal true
+  end
+
+  it 'has an allowed_actions attribute' do
+    n = Blather::XMPPNode.import parse_stanza(command_xml).root
     n.allowed_actions.must_equal [:execute]
-    n.add_allowed_actions [:prev, :next]
-    n.allowed_actions.must_equal [:execute, :prev, :next]
-    n.remove_allowed_actions :prev
-    n.allowed_actions.must_equal [:execute, :next]
+    n.allowed_actions = [:next, :prev]
+    (n.allowed_actions - [:next, :prev, :execute]).must_be_empty
+    n.remove_allowed_actions!
+    n.allowed_actions.must_equal [:execute]
+    n.allowed_actions += [:next]
+    (n.allowed_actions - [:next, :execute]).must_be_empty
+
+    r = Blather::Stanza::Iq::Command.new
+    r.allowed_actions.must_equal [:execute]
+    r.allowed_actions += [:prev]
+    (r.allowed_actions - [:prev, :execute]).must_be_empty
+  end
+
+  it 'has a primary_allowed_action attribute' do
+    n = Blather::XMPPNode.import parse_stanza(command_xml).root
+    n.primary_allowed_action.must_equal :execute
+    n.primary_allowed_action = :next
+    n.primary_allowed_action.must_equal :next
   end
 
   it 'has a note_type attribute' do
@@ -155,5 +191,9 @@ describe Blather::Stanza::Iq::Command do
     n.form.fields.size.must_equal 1
     n.form.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
     n.form.must_be_instance_of Blather::Stanza::X
+
+    r = Blather::Stanza::Iq::Command.new
+    r.form.type = :form
+    r.form.type.must_equal :form
   end
 end

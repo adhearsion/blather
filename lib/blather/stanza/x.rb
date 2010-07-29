@@ -25,10 +25,10 @@ class Stanza
         new_node.inherit type
       when Hash
         new_node.type = type[:type]
-        new_node.add_fields([type[:fields]])
+        new_node.fields = type[:fields]
       else
         new_node.type = type
-        new_node.add_fields([fields])
+        new_node.fields = fields
       end
       new_node
     end
@@ -51,15 +51,25 @@ class Stanza
     # List of field objects
     # @return [Blather::Stanza::X::Field]
     def fields
-      self.find('ns:field', :ns => self.class.registered_ns).map do |f|
-        Field.new f
+      self.find('ns:field', :ns => self.class.registered_ns).map do |field|
+        Field.new(field)
       end
+    end
+
+    # Find a field by var
+    # @param var the var for the field you wish to find
+    def field(var)
+      fields.detect { |f| f.var == var }
     end
 
     # Add an array of fields to form
     # @param fields the array of fields, passed directly to Field.new
-    def add_fields(fields = [])
-      [fields].flatten.each { |f| self << Field.new(f) }
+    def fields=(fields)
+      remove_children :field
+      [fields].flatten.each do |field|
+        self << (f = Field.new(field))
+        f.namespace = self.namespace
+      end
     end
 
     # Check if the x is of type :cancel
@@ -94,9 +104,7 @@ class Stanza
     #
     # @return [String]
     def instructions
-      if i = self.find_first('ns:instructions', :ns => self.class.registered_ns)
-        i.children.inner_text
-      end
+      content_from 'ns:instructions', :ns => self.registered_ns
     end
 
     # Set the form's instructions
@@ -104,16 +112,18 @@ class Stanza
     # @param [String] instructions the form's instructions
     def instructions=(instructions)
       self.remove_children :instructions
-      self << "<instructions>#{instructions}</instructions>"
+      if instructions
+        self << (i = XMPPNode.new(:instructions, self.document))
+        i.namespace = self.namespace
+        i << instructions
+      end
     end
 
     # Retrieve the form's title
     #
     # @return [String]
     def title
-      if t = self.find_first('ns:title', :ns => self.class.registered_ns)
-        t.children.inner_text
-      end
+      content_from 'ns:title', :ns => self.registered_ns
     end
 
     # Set the form's title
@@ -121,7 +131,11 @@ class Stanza
     # @param [String] title the form's title
     def title=(title)
       self.remove_children :title
-      self << "<title>#{title}</title>"
+      if title
+        self << (t = XMPPNode.new(:title))
+        t.namespace = self.namespace
+        t << title
+      end
     end
 
     class Field < XMPPNode
@@ -137,12 +151,22 @@ class Stanza
       #   @option opts [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"] :type the type of the field
       #   @option opts [String] :var the variable for the field
       #   @option opts [String] :label the label for the field
+      #   @option [String, nil] :value the value for the field
+      #   @option [String, nil] :description the description for the field
+      #   @option [true, false, nil] :required the required flag for the field
+      #   @param [Array<Array, X::Field::Option>, nil] :options a list of field options.
+      #   These are passed directly to X::Field::Option.new
       # @overload new(type, var = nil, label = nil)
       #   Create a new Field by name
       #   @param [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"] type the type of the field
       #   @param [String, nil] var the variable for the field
       #   @param [String, nil] label the label for the field
-      def self.new(type, var = nil, label = nil)
+      #   @param [String, nil] value the value for the field
+      #   @param [String, nil] description the description for the field
+      #   @param [true, false, nil] required the required flag for the field
+      #   @param [Array<Array, X::Field::Option>, nil] options a list of field options.
+      #   These are passed directly to X::Field::Option.new
+      def self.new(type, var = nil, label = nil, value = nil, description = nil, required = false, options = [])
         new_node = super :field
 
         case type
@@ -152,10 +176,18 @@ class Stanza
           new_node.type = type[:type]
           new_node.var = type[:var]
           new_node.label = type[:label]
+          new_node.value = type[:value]
+          new_node.desc = type[:description]
+          new_node.required = type[:required]
+          new_node.options = type[:options]
         else
           new_node.type = type
           new_node.var = var
           new_node.label = label
+          new_node.value = value
+          new_node.desc = description
+          new_node.required = required
+          new_node.options = options
         end
         new_node
       end
@@ -203,8 +235,10 @@ class Stanza
       #
       # @param [String]
       def value
-        if v = self.find_first('value')
-          v.children.inner_text
+        if self.namespace
+          content_from 'ns:value', :ns => self.namespace.href
+        else
+          content_from :value
         end
       end
 
@@ -213,15 +247,21 @@ class Stanza
       # @param [String] value the field's value
       def value=(value)
         self.remove_children :value
-        self << "<value>#{value}</value>"
+        if value
+          self << (v = XMPPNode.new(:value))
+          v.namespace = self.namespace
+          v << value
+        end
       end
 
       # Get the field's description
       #
       # @param [String]
       def desc
-        if d = self.find_first('desc')
-          d.children.inner_text
+        if self.namespace
+          content_from 'ns:desc', :ns => self.namespace.href
+        else
+          content_from :desc
         end
       end
 
@@ -230,60 +270,50 @@ class Stanza
       # @param [String] description the field's description
       def desc=(description)
         self.remove_children :desc
-        self << "<desc>#{description}</desc>"
+        if description
+          self << (d = XMPPNode.new(:desc))
+          d.namespace = self.namespace
+          d << description
+        end
       end
 
       # Get the field's required flag
       #
       # @param [true, false]
       def required?
-        self.find_first('required') ? true : false
+        !self.find_first('required').nil?
       end
 
       # Set the field's required flag
       #
       # @param [true, false] required the field's required flag
-      def required!(required = true)
-        if self.find_first('required')
-          if required==false
-            self.remove_children :required
-          end
-        else
-          if required==true
-            self << "<required/>"
-          end
-        end
+      def required=(required)
+        self.remove_children(:required) unless required
+        self << XMPPNode.new(:required) if required
       end
 
       # Extract list of option objects
       #
       # @return [Blather::Stanza::X::Field::Option]
       def options
-        self.find('option').map do |f|
-          Option.new f
-        end
+        self.find(:option).map { |f| Option.new(f) }
       end
 
       # Add an array of options to field
       # @param options the array of options, passed directly to Option.new
-      def add_options(options = [])
-        [options].flatten.each { |o| self << Option.new(o) }
+      def options=(options)
+        remove_children :option
+        if options
+          [options].flatten.each { |o| self << Option.new(o) }
+        end
       end
 
       # Compare two Field objects by type, var and label
       # @param [X::Field] o the Field object to compare against
       # @return [true, false]
       def eql?(o)
-        unless o.is_a?(self.class)
-          raise "Cannot compare #{self.class} with #{o.class}"
-        end
-
-        o.type == self.type &&
-        o.var == self.var &&
-        o.label == self.label &&
-        o.desc == self.desc &&
-        o.required? == self.required? &&
-        o.value == self.value
+        raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)
+        ![:type, :var, :label, :desc, :required?, :value].detect { |m| o.send(m) != self.send(m) }
       end
       alias_method :==, :eql?
 
@@ -320,16 +350,22 @@ class Stanza
         # The Field Option's value
         # @return [String]
         def value
-          if v = self.find_first('value')
-            v.children.inner_text
+          if self.namespace
+            content_from 'ns:value', :ns => self.namespace.href
+          else
+            content_from :value
           end
         end
 
         # Set the Field Option's value
         # @param [String] value the new value for the field option
-        def value=(v)
+        def value=(value)
           self.remove_children :value
-          self << "<value>#{v}</value>"
+          if value
+            self << (v = XMPPNode.new(:value))
+            v.namespace = self.namespace
+            v << value
+          end
         end
 
         # The Field Option's label

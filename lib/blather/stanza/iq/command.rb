@@ -28,16 +28,27 @@ class Iq
       new_node.command
       new_node.node = node
       new_node.action = action
-      new_node.new_sessionid!
       new_node
     end
 
     # Overrides the parent method to ensure the current command node is destroyed
+    # and the action is set to execute if no action provided
     #
     # @see Blather::Stanza::Iq#inherit
     def inherit(node)
       command.remove
       super
+      self.action = :execute unless self.action
+      self
+    end
+    
+    # Overrides the parent method to ensure the reply has no action
+    #
+    # @return [self]
+    def reply!
+      super
+      self.action = nil
+      self
     end
 
     # Command node accessor
@@ -47,7 +58,7 @@ class Iq
     # @return [Blather::XMPPNode]
     def command
       c = if self.class.registered_ns
-        find_first('command_ns:command', :command_ns => self.class.registered_ns)
+        find_first('ns:command', :ns => self.class.registered_ns)
       else
         find_first('command')
       end
@@ -80,6 +91,13 @@ class Iq
       command[:sessionid]
     end
 
+    # Check if there is a sessionid set
+    #
+    # @return [true, false]
+    def sessionid?
+      !sessionid.nil?
+    end
+
     # Set the sessionid of the command
     #
     # @param [String, nil] sessionid the new sessionid
@@ -89,14 +107,14 @@ class Iq
 
     # Generate a new session ID (SHA-1 hash)
     def new_sessionid!
-      self.sessionid = "commandsession-"+id
+      self.sessionid = "commandsession-#{id}"
     end
 
     # Get the action of the command
     #
     # @return [Symbol, nil]
     def action
-      command.read_attr :action, :to_sym
+      (val = command[:action]) && val.to_sym
     end
 
     # Check if the command action is :cancel
@@ -148,7 +166,7 @@ class Iq
     #
     # @return [Symbol, nil]
     def status
-      command.read_attr :status, :to_sym
+      ((val = command[:status]) && val.to_sym) || :executing
     end
 
     # Check if the command status is :executing
@@ -177,7 +195,7 @@ class Iq
     # @param [:executing, :completed, :canceled] status the new status
     def status=(status)
       if status && !VALID_STATUS.include?(status.to_sym)
-        raise ArgumentError, "Invalid Action (#{statusn}), use: #{VALID_STATUS*' '}"
+        raise ArgumentError, "Invalid Action (#{status}), use: #{VALID_STATUS*' '}"
       end
       command[:status] = status
     end
@@ -188,10 +206,9 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def actions
-      a = find_first('actions')
-
-      unless a
-        (self << (a = XMPPNode.new('actions', self.document)))
+      unless a = self.command.find_first('ns:actions', :ns => self.class.registered_ns)
+        (self.command << (a = XMPPNode.new('actions', self.document)))
+        a.namespace = self.command.namespace
       end
       a
     end
@@ -200,33 +217,37 @@ class Iq
     #
     # @return [[Symbol]]
     def allowed_actions
-      a = []
-      a << :execute
-      actions.children.each do |action|
-        a << action.name.to_sym
+      ([:execute] + actions.children.map { |action| action.name.to_sym }).uniq
+    end
+
+    def primary_allowed_action
+      (actions[:execute] || :execute).to_sym
+    end
+
+    def primary_allowed_action=(a)
+      if a && ![:prev, :next, :complete, :execute].include?(a.to_sym)
+        raise ArgumentError, "Invalid Action (#{a}), use: #{[:prev, :next, :complete, :execute]*' '}"
       end
-      a
+      actions[:execute] = a
     end
 
     # Add allowed actions to the command
     #
     # @param [[:prev, :next, :complete]] allowed_actions the new allowed actions
-    def add_allowed_actions(allowed_actions)
-      [allowed_actions].flatten.each do |action|
-        if action && !VALID_ACTIONS.include?(action.to_sym)
-          raise ArgumentError, "Invalid Action (#{action}), use: #{VALID_ACTIONS*' '}"
-        end
-        actions << "<#{action.to_s}/>"
+    def allowed_actions=(allowed_actions)
+      allowed_actions = ([allowed_actions].flatten.map(&:to_sym) + [:execute]).uniq
+      if (invalid_actions = allowed_actions - VALID_ACTIONS).size > 0
+        raise ArgumentError, "Invalid Action(s) (#{invalid_actions*' '}), use: #{VALID_ACTIONS*' '}"
       end
+      actions.children.map(&:remove)
+      allowed_actions.each { |action| actions << XMPPNode.new(action.to_s) }
     end
 
     # Remove allowed actions from the command
     #
     # @param [[:prev, :next, :complete]] disallowed_actions the allowed actions to remove
-    def remove_allowed_actions(disallowed_actions)
-      [disallowed_actions].flatten.each do |action|
-        actions.remove_children action.to_sym
-      end
+    def remove_allowed_actions!
+      actions.remove
     end
 
     # Command note accessor
@@ -235,10 +256,9 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def note
-      n = find_first('note')
-
-      unless n
-        (self << (n = XMPPNode.new('note', self.document)))
+      unless n = self.command.find_first('ns:note', :ns => self.class.registered_ns)
+        (self.command << (n = XMPPNode.new('note', self.document)))
+        n.namespace = self.command.namespace
       end
       n
     end
@@ -247,7 +267,7 @@ class Iq
     #
     # @return [Symbol, nil]
     def note_type
-      note.read_attr :type, :to_sym
+      (val = note[:type]) && val.to_sym
     end
 
     # Check if the command status is :info
@@ -283,23 +303,29 @@ class Iq
 
     # Get the text of the command's note
     def note_text
-      content_from "note"
+      content_from :note
     end
 
     # Set the command's note text
     #
     # @param [String] note_text the command's new note text
     def note_text=(note_text)
-      set_content_for "note", note_text
+      set_content_for :note, note_text
     end
 
     # Returns the command's x:data form child
     def form
-      X.new command.find_first('//ns:x', :ns => X.registered_ns)
+      if found_x = command.find_first('ns:x', :ns => X.registered_ns)
+        x = X.new found_x
+        found_x.remove
+      else
+        x = X.new
+      end
+      self.command << x
+      x
     end
-
   end #Command
 
 end #Iq
 end #Stanza
-end
+end #Blather
