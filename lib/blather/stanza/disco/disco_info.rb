@@ -33,7 +33,7 @@ class Stanza
         Identity.new i
       end
     end
-    
+
     # Add an array of identities
     # @param identities the array of identities, passed directly to Identity.new
     def identities=(identities)
@@ -46,7 +46,7 @@ class Stanza
         Feature.new f
       end
     end
-    
+
     # Add an array of features
     # @param features the array of features, passed directly to Feature.new
     def features=(features)

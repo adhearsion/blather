@@ -102,7 +102,7 @@ describe Blather::Stanza::Iq::DiscoItems do
     di.items.size.must_equal 2
     di.items.each { |i| control.include?(i).must_equal true }
   end
-  
+
   it 'allows adding of items' do
     di = Blather::Stanza::Iq::DiscoItems.new
     di.items.size.must_equal 0

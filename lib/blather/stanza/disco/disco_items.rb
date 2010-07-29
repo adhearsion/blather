@@ -33,7 +33,7 @@ class Stanza
         Item.new i
       end
     end
-    
+
     # Add an array of items
     # @param items the array of items, passed directly to Item.new
     def items=(items)

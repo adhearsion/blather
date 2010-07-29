@@ -54,7 +54,7 @@ describe Blather::Stanza::Iq::DiscoInfo do
     n.to = 'to@jid.com'
     n.find("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoInfo.registered_ns).wont_be_empty
   end
-  
+
   it 'allows adding of identities' do
     di = Blather::Stanza::Iq::DiscoInfo.new
     di.identities.size.must_equal 0
@@ -63,7 +63,7 @@ describe Blather::Stanza::Iq::DiscoInfo do
     di.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
     di.identities.size.must_equal 2
   end
-  
+
   it 'allows adding of features' do
     di = Blather::Stanza::Iq::DiscoInfo.new
     di.features.size.must_equal 0
@@ -72,7 +72,7 @@ describe Blather::Stanza::Iq::DiscoInfo do
     di.features = [Blather::Stanza::Iq::DiscoInfo::Feature.new "feature2"]
     di.features.size.must_equal 2
   end
-  
+
 end
 
 describe 'Blather::Stanza::Iq::DiscoInfo identities' do
