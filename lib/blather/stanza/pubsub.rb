@@ -96,34 +96,35 @@ class Stanza
 
     # Get the item's payload
     #
-    # To get the XML representation use #entry
-    #
-    # @return [String, nil]
+    # @return [String, Blather::Stanza::AtomEntry, nil]
     def payload
-      self.entry.content.empty? ? nil : content
+      self.content.empty? ? nil : content
     end
 
     # Set the item's payload
     #
-    # @param [String, nil] payload the payload
+    # @param [String, Blather::Stanza::AtomEntry, nil] payload the payload
     def payload=(payload)
-      self.entry.content = payload
-    end
-
-    # Get or create the entry node
-    #
-    # @return [Blather::XMPPNode]
-    def entry
-      e = find_first('ns:entry', :ns => ATOM_NS) ||
-          find_first('entry', :ns => ATOM_NS)
-
-      unless e
-        self << (e = XMPPNode.new('entry', self.document))
-        e.namespace = ATOM_NS
+      if payload.class == AtomEntry
+        self << payload
+      else
+        self.content = payload
       end
-      e
     end
   end  # PubSubItem
+  
+  class AtomEntry < XMPPNode
+    register :entry, 'http://www.w3.org/2005/Atom'
+
+    # Create a new AtomEntry
+    #
+    # @param [String, nil] content the content of the entry
+    def self.new(content)
+      new_node = super 'entry'
+      new_node.content = content if content
+      new_node
+    end
+  end  # AtomEntry
 
 end  # Stanza
 end  # Blather
