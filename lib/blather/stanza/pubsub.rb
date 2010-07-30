@@ -103,12 +103,12 @@ class Stanza
 
     # Set the item's payload
     #
-    # @param [String, Blather::Stanza::AtomEntry, nil] payload the payload
+    # @param [String, XMPPNode, nil] payload the payload
     def payload=(payload)
-      if payload.class == AtomEntry
-        self << payload
-      else
+      if payload.class == String
         self.content = payload
+      else
+        self << payload
       end
     end
   end  # PubSubItem
