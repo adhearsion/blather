@@ -94,8 +94,8 @@ describe Blather::Stanza::X do
       {:label => 'label1', :type => 'text-single', :var => 'var1'},
     ]
 
-    control = [ Blather::Stanza::X::Field.new(*%w[text-single var label]),
-                Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
+    control = [ Blather::Stanza::X::Field.new(*%w[var text-single label]),
+                Blather::Stanza::X::Field.new(*%w[var1 text-single label1])]
 
     di = Blather::Stanza::X.new nil, fields
     di.fields.size.must_equal 2
@@ -103,8 +103,8 @@ describe Blather::Stanza::X do
   end
 
   it 'takes a list of Field objects as fields' do
-    control = [ Blather::Stanza::X::Field.new(*%w[text-single var label1]),
-                Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
+    control = [ Blather::Stanza::X::Field.new(*%w[var text-single label1]),
+                Blather::Stanza::X::Field.new(*%w[var1 text-single label1])]
 
     di = Blather::Stanza::X.new nil, control
     di.fields.size.must_equal 2
@@ -114,11 +114,11 @@ describe Blather::Stanza::X do
   it 'takes a mix of hashes and field objects as fields' do
     fields = [
       {:label => 'label', :type => 'text-single', :var => 'var'},
-      Blather::Stanza::X::Field.new(*%w[text-single var1 label1]),
+      Blather::Stanza::X::Field.new(*%w[var1 text-single label1]),
     ]
 
-    control = [ Blather::Stanza::X::Field.new(*%w[text-single var label]),
-                Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
+    control = [ Blather::Stanza::X::Field.new(*%w[var text-single label]),
+                Blather::Stanza::X::Field.new(*%w[var1 text-single label1])]
 
     di = Blather::Stanza::X.new nil, fields
     di.fields.size.must_equal 2
@@ -130,7 +130,7 @@ describe Blather::Stanza::X do
     di.fields.size.must_equal 0
     di.fields = [{:label => 'label', :type => 'text-single', :var => 'var', :required => true}]
     di.fields.size.must_equal 1
-    di.fields += [Blather::Stanza::X::Field.new(*%w[text-single var1 label1])]
+    di.fields += [Blather::Stanza::X::Field.new(*%w[var1 text-single label1])]
     di.fields.size.must_equal 2
   end
 
@@ -146,28 +146,28 @@ describe Blather::Stanza::X::Field do
   end
 
   it 'has a type attribute' do
-    n = Blather::Stanza::X::Field.new 'text-single'
+    n = Blather::Stanza::X::Field.new 'var', 'text-single'
     n.type.must_equal 'text-single'
     n.type = 'hidden'
     n.type.must_equal 'hidden'
   end
 
   it 'has a var attribute' do
-    n = Blather::Stanza::X::Field.new 'text-single', 'name'
+    n = Blather::Stanza::X::Field.new 'name', 'text-single'
     n.var.must_equal 'name'
     n.var = 'email'
     n.var.must_equal 'email'
   end
 
   it 'has a label attribute' do
-    n = Blather::Stanza::X::Field.new 'text-single', 'subject', 'Music from the time of Shakespeare'
+    n = Blather::Stanza::X::Field.new 'subject', 'text-single', 'Music from the time of Shakespeare'
     n.label.must_equal 'Music from the time of Shakespeare'
     n.label = 'Books by and about Shakespeare'
     n.label.must_equal 'Books by and about Shakespeare'
   end
 
   it 'has a desc attribute' do
-    n = Blather::Stanza::X::Field.new 'text-single', 'subject', 'Music from the time of Shakespeare'
+    n = Blather::Stanza::X::Field.new 'subject', 'text-single', 'Music from the time of Shakespeare'
     n.desc.must_equal nil
     n.desc = 'Books by and about Shakespeare'
     n.desc.must_equal 'Books by and about Shakespeare'
@@ -176,7 +176,7 @@ describe Blather::Stanza::X::Field do
   end
 
   it 'has a required? attribute' do
-    n = Blather::Stanza::X::Field.new 'text-single', 'subject', 'Music from the time of Shakespeare'
+    n = Blather::Stanza::X::Field.new 'subject', 'text-single', 'Music from the time of Shakespeare'
     n.required?.must_equal false
     n.required = true
     n.required?.must_equal true
@@ -185,7 +185,7 @@ describe Blather::Stanza::X::Field do
   end
 
   it 'has a value attribute' do
-    n = Blather::Stanza::X::Field.new 'text-single', 'subject', 'Music from the time of Shakespeare'
+    n = Blather::Stanza::X::Field.new 'subject', 'text-single', 'Music from the time of Shakespeare'
     n.value.must_equal nil
     n.value = 'book1'
     n.value.must_equal 'book1'
@@ -204,14 +204,14 @@ describe Blather::Stanza::X::Field do
   end
 
   it 'raises an error when compared against a non X::Field' do
-    a = Blather::Stanza::X::Field.new('hidden', 'secret_message')
+    a = Blather::Stanza::X::Field.new('secret_message', 'hidden')
     lambda { a == 'test' }.must_raise RuntimeError
   end
 
   it 'can determine equality' do
-    a = Blather::Stanza::X::Field.new('text-single', 'subject')
-    a.must_equal Blather::Stanza::X::Field.new('text-single', 'subject')
-    a.wont_equal Blather::Stanza::X::Field.new('text-single', 'subject1')
+    a = Blather::Stanza::X::Field.new('subject', 'text-single')
+    a.must_equal Blather::Stanza::X::Field.new('subject', 'text-single')
+    a.wont_equal Blather::Stanza::X::Field.new('subject1', 'text-single')
   end
 end
 
