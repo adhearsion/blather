@@ -65,8 +65,6 @@ class Stanza
   # This fragment is found in many places throughout the pubsub spec
   # This is a convenience class to attach methods to the node
   class PubSubItem < XMPPNode
-    ATOM_NS = 'http://www.w3.org/2005/Atom'.freeze
-
     # Create a new PubSubItem
     #
     # @param [String, nil] id the id of the stanza
@@ -96,7 +94,7 @@ class Stanza
 
     # Get the item's payload
     #
-    # @return [String, Blather::Stanza::AtomEntry, nil]
+    # @return [String, XMPPNode, nil]
     def payload
       self.content.empty? ? nil : content
     end
