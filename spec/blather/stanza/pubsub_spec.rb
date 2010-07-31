@@ -59,9 +59,4 @@ describe Blather::Stanza::PubSub::PubSubItem do
     item.payload = nil
     item.payload.must_be_nil
   end
-
-  it 'must have an entry child to item' do
-    item = Blather::Stanza::PubSub::Items::PubSubItem.new 'foo', 'payload'
-    item.find_first('ns:entry', :ns => 'http://www.w3.org/2005/Atom').wont_be_nil
-  end
 end

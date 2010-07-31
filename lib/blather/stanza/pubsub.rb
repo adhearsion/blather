@@ -65,7 +65,6 @@ class Stanza
   # This fragment is found in many places throughout the pubsub spec
   # This is a convenience class to attach methods to the node
   class PubSubItem < XMPPNode
-    ATOM_NS = 'http://www.w3.org/2005/Atom'.freeze
 
     # Create a new PubSubItem
     #
@@ -100,28 +99,14 @@ class Stanza
     #
     # @return [String, nil]
     def payload
-      self.entry.content.empty? ? nil : content
+      self.content.empty? ? nil : self.content
     end
 
     # Set the item's payload
     #
     # @param [String, nil] payload the payload
     def payload=(payload)
-      self.entry.content = payload
-    end
-
-    # Get or create the entry node
-    #
-    # @return [Blather::XMPPNode]
-    def entry
-      e = find_first('ns:entry', :ns => ATOM_NS) ||
-          find_first('entry', :ns => ATOM_NS)
-
-      unless e
-        self << (e = XMPPNode.new('entry', self.document))
-        e.namespace = ATOM_NS
-      end
-      e
+      self.content = payload
     end
   end  # PubSubItem
 
