@@ -96,33 +96,22 @@ class Stanza
     #
     # @return [String, XMPPNode, nil]
     def payload
-      self.content.empty? ? nil : content
+      children.empty? ? nil : children.to_s
     end
 
     # Set the item's payload
     #
     # @param [String, XMPPNode, nil] payload the payload
     def payload=(payload)
-      if payload.class == String
+      children.map &:remove
+      return unless payload
+      if payload.is_a?(String)
         self.content = payload
       else
         self << payload
       end
     end
   end  # PubSubItem
-  
-  class AtomEntry < XMPPNode
-    register :entry, 'http://www.w3.org/2005/Atom'
-
-    # Create a new AtomEntry
-    #
-    # @param [String, nil] content the content of the entry
-    def self.new(content)
-      new_node = super 'entry'
-      new_node.content = content if content
-      new_node
-    end
-  end  # AtomEntry
 
 end  # Stanza
 end  # Blather
