@@ -1,21 +1,27 @@
 require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
 
+def message_xml
+  <<-XML
+    <message
+        to='romeo@example.net'
+        from='juliet@example.com/balcony'
+        type='chat'
+        xml:lang='en'>
+      <body>Wherefore art thou, Romeo?</body>
+      <x xmlns='jabber:x:data' type='form'>
+        <field var='field-name' type='text-single' label='description' />
+      </x>
+    </message>
+  XML
+end
+
 describe Blather::Stanza::Message do
   it 'registers itself' do
     Blather::XMPPNode.class_from_registration(:message, nil).must_equal Blather::Stanza::Message
   end
 
   it 'must be importable' do
-    doc = parse_stanza <<-XML
-      <message
-          to='romeo@example.net'
-          from='juliet@example.com/balcony'
-          type='chat'
-          xml:lang='en'>
-        <body>Wherefore art thou, Romeo?</body>
-      </message>
-    XML
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Message
+    Blather::XMPPNode.import(parse_stanza(message_xml).root).must_be_instance_of Blather::Stanza::Message
   end
 
   it 'provides "attr_accessor" for body' do
@@ -128,5 +134,16 @@ describe Blather::Stanza::Message do
     xhtml = "<some>xhtml</some>"
     msg.xhtml = xhtml
     msg.xhtml.must_equal(xhtml)
+  end
+  
+  it 'makes a form child available' do
+    n = Blather::XMPPNode.import(parse_stanza(message_xml).root)
+    n.form.fields.size.must_equal 1
+    n.form.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
+    n.form.must_be_instance_of Blather::Stanza::X
+
+    r = Blather::Stanza::Message.new
+    r.form.type = :form
+    r.form.type.must_equal :form
   end
 end
