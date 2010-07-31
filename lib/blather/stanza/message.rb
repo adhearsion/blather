@@ -172,7 +172,7 @@ class Stanza
         klass = class_from_registration(e.element_name, ns)
       end
 
-      if klass && klass != self
+      if klass && klass != self && klass != Blather::Stanza::X
         klass.import(node)
       else
         new(node[:type]).inherit(node)
@@ -325,6 +325,18 @@ class Stanza
       parent, thread = thread.to_a.flatten if thread.is_a?(Hash)
       set_content_for :thread, thread
       find_first('thread')[:parent] = parent
+    end
+    
+    # Returns the message's x:data form child
+    def form
+      if found_x = find_first('ns:x', :ns => X.registered_ns)
+        x = X.new found_x
+        found_x.remove
+      else
+        x = X.new
+      end
+      self << x
+      x
     end
   end
 
