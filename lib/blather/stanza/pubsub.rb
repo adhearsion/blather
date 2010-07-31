@@ -65,7 +65,6 @@ class Stanza
   # This fragment is found in many places throughout the pubsub spec
   # This is a convenience class to attach methods to the node
   class PubSubItem < XMPPNode
-
     # Create a new PubSubItem
     #
     # @param [String, nil] id the id of the stanza
@@ -95,18 +94,22 @@ class Stanza
 
     # Get the item's payload
     #
-    # To get the XML representation use #entry
-    #
-    # @return [String, nil]
+    # @return [String, XMPPNode, nil]
     def payload
-      self.content.empty? ? nil : self.content
+      children.empty? ? nil : children.to_s
     end
 
     # Set the item's payload
     #
-    # @param [String, nil] payload the payload
+    # @param [String, XMPPNode, nil] payload the payload
     def payload=(payload)
-      self.content = payload
+      children.map &:remove
+      return unless payload
+      if payload.is_a?(String)
+        self.content = payload
+      else
+        self << payload
+      end
     end
   end  # PubSubItem
 
