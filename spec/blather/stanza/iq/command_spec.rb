@@ -196,4 +196,11 @@ describe Blather::Stanza::Iq::Command do
     r.form.type = :form
     r.form.type.must_equal :form
   end
+
+  it 'ensures the form child is a child of command' do
+    r = Blather::Stanza::Iq::Command.new
+    r.form
+    r.command.xpath('ns:x', :ns => Blather::Stanza::X.registered_ns).wont_be_empty
+    r.xpath('ns:x', :ns => Blather::Stanza::X.registered_ns).must_be_empty
+  end
 end

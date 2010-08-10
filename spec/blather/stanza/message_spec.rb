@@ -146,4 +146,10 @@ describe Blather::Stanza::Message do
     r.form.type = :form
     r.form.type.must_equal :form
   end
+
+  it 'ensures the form child is a direct child' do
+    r = Blather::Stanza::Message.new
+    r.form
+    r.xpath('ns:x', :ns => Blather::Stanza::X.registered_ns).wont_be_empty
+  end
 end
