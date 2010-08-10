@@ -1,3 +1,8 @@
+v0.4.12
+  API Change: Switch order of var and type arguments to X::Field.new since var is always required but type is not
+  API Change: PubSub payloads can be strings or nodes and can be set nil. PubSub#payload will always return a string
+  Feature: Add forms to Message stanzas
+
 v0.4.11
   Bugfix: command nodes where generating the wrong xml
   Bugfix: x nodes where generating the wrong xml
