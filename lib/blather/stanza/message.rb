@@ -326,17 +326,10 @@ class Stanza
       set_content_for :thread, thread
       find_first('thread')[:parent] = parent
     end
-    
+
     # Returns the message's x:data form child
     def form
-      if found_x = find_first('ns:x', :ns => X.registered_ns)
-        x = X.new found_x
-        found_x.remove
-      else
-        x = X.new
-      end
-      self << x
-      x
+      X.find_or_create self
     end
   end
 

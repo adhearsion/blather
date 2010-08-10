@@ -33,6 +33,17 @@ class Stanza
       new_node
     end
 
+    def self.find_or_create(parent)
+      if found_x = parent.find_first('//ns:x', :ns => self.registered_ns)
+        x = self.new found_x
+        found_x.remove
+      else
+        x = self.new
+      end
+      parent << x
+      x
+    end
+
     # The Form's type
     # @return [Symbol]
     def type
