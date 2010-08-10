@@ -315,7 +315,7 @@ class Iq
 
     # Returns the command's x:data form child
     def form
-      X.find_or_create self
+      X.find_or_create command
     end
   end #Command
 
