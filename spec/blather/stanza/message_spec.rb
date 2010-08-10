@@ -135,7 +135,7 @@ describe Blather::Stanza::Message do
     msg.xhtml = xhtml
     msg.xhtml.must_equal(xhtml)
   end
-  
+
   it 'makes a form child available' do
     n = Blather::XMPPNode.import(parse_stanza(message_xml).root)
     n.form.fields.size.must_equal 1
