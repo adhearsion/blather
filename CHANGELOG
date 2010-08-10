@@ -1,3 +1,6 @@
+v0.4.13
+  Bugfix: Place form child of command inside command element
+
 v0.4.12
   API Change: Switch order of var and type arguments to X::Field.new since var is always required but type is not
   API Change: PubSub payloads can be strings or nodes and can be set nil. PubSub#payload will always return a string
