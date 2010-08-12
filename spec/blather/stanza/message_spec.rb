@@ -109,8 +109,9 @@ describe Blather::Stanza::Message do
     msg = Blather::Stanza::Message.new
     msg << (h = Blather::XMPPNode.new('html', msg.document))
     h.namespace = Blather::Stanza::Message::HTML_NS
-    h << (b = Blather::XMPPNode.new('body', msg.document))
+    b = Blather::XMPPNode.new('body', msg.document)
     b.namespace = Blather::Stanza::Message::HTML_BODY_NS
+    h << b
 
     msg.xhtml_node.must_equal(b)
   end
