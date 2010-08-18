@@ -262,8 +262,9 @@ class Stanza
       end
 
       unless b = h.find_first('ns:body', :ns => HTML_BODY_NS)
-        h << (b = XMPPNode.new('body', self.document))
+        b = XMPPNode.new('body', self.document)
         b.namespace = HTML_BODY_NS
+        h << b
       end
 
       b

@@ -37,11 +37,6 @@ class Stream # :nodoc:
         node[attr.localname] = attr.value
       end
 
-      if !@receiver.stopped?
-        @current << node if @current
-        @current = node
-      end
-
       ns_keys = namespaces.map { |pre, href| pre }
       namespaces.delete_if { |pre, href| NS_TO_IGNORE.include? href }
       @namespace_definitions.push []
@@ -52,6 +47,11 @@ class Stream # :nodoc:
       end
       @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !ns_keys.include?(prefix)
       node.namespace = @namespaces[[prefix, uri]]
+
+      if !@receiver.stopped?
+        @current << node if @current
+        @current = node
+      end
 
       deliver(node) if elem == 'stream'
 
