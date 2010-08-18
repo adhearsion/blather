@@ -33,7 +33,7 @@ module Blather
     # @return [Class, nil] the class appropriate for the name/ns combination
     def self.class_from_registration(name, ns = nil)
       name = name.to_s
-      @@registrations[[name, ns]] || @@registrations[[name, nil]]
+      @@registrations[[name, ns]]
     end
 
     # Import an XML::Node to the appropriate class
