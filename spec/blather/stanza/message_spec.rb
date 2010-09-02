@@ -130,6 +130,13 @@ describe Blather::Stanza::Message do
     msg.xhtml_node.content.strip.must_equal("<some>xhtml</some>")
   end
 
+  it 'sets xhtml with more than one root node' do
+    msg = Blather::Stanza::Message.new
+    xhtml = "<i>xhtml</i> more xhtml"
+    msg.xhtml = xhtml
+    msg.xhtml_node.content.strip.must_equal("<i>xhtml</i> more xhtml")
+  end
+
   it 'has an xhtml getter' do
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml</some>"
