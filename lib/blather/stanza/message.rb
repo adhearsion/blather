@@ -282,7 +282,7 @@ class Stanza
     #
     # @param [#to_s] valid xhtml
     def xhtml=(xhtml_body)
-      self.xhtml_node.content = Nokogiri::XML(xhtml_body).to_xhtml
+      self.xhtml_node.content = Nokogiri::XML::DocumentFragment.parse(xhtml_body)
     end
 
     # Get the message subject
