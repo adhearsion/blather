@@ -1008,4 +1008,17 @@ describe Blather::Stream::Client do
     comp.expects(:send_data).with { |s| s.wont_match(/^<message[^>]*from=/); true }
     comp.send msg
   end
+  
+  it 'sends xml without formatting' do
+    client = mock()
+    client.stubs(:jid)
+    client.stubs(:jid=)
+    
+    msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
+    msg.xhtml = '<i>xhtml</i> body'
+
+    comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
+    comp.expects(:send_data).with { |s| s.wont_match(/\n/); true }
+    comp.send msg
+  end
 end
