@@ -120,21 +120,21 @@ describe Blather::Stanza::Message do
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml</some>"
     msg.xhtml = xhtml
-    msg.xhtml_node.content.strip.must_equal(xhtml)
+    msg.xhtml_node.inner_html.strip.must_equal(xhtml)
   end
 
   it 'sets valid xhtml even if the input is not valid' do
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml"
     msg.xhtml = xhtml
-    msg.xhtml_node.content.strip.must_equal("<some>xhtml</some>")
+    msg.xhtml_node.inner_html.strip.must_equal("<some>xhtml</some>")
   end
 
   it 'sets xhtml with more than one root node' do
     msg = Blather::Stanza::Message.new
     xhtml = "<i>xhtml</i> more xhtml"
     msg.xhtml = xhtml
-    msg.xhtml_node.content.strip.must_equal("<i>xhtml</i> more xhtml")
+    msg.xhtml_node.inner_html.strip.must_equal("<i>xhtml</i> more xhtml")
   end
 
   it 'has an xhtml getter' do
