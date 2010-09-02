@@ -341,13 +341,9 @@ class Stanza
     #
     # @return [Symbol]
     def chat_state
-      VALID_CHAT_STATES.each do |state|
-        if find_first("ns:#{state}", :ns => CHAT_STATE_NS)
-          return state
-        end
+      if (elem = find_first('ns:*', :ns => CHAT_STATE_NS)) && VALID_CHAT_STATES.include?(name = elem.name.to_sym)
+        name
       end
-
-      return nil
     end
 
     # Set the message chat state
@@ -358,14 +354,13 @@ class Stanza
         raise ArgumentError, "Invalid Chat State (#{chat_state}), use: #{VALID_CHAT_STATES*' '}"
       end
 
-      VALID_CHAT_STATES.each do |state|
-        if el = find_first("ns:#{state}", :ns => CHAT_STATE_NS)
-          el.remove
-        end
-      end
+      xpath('ns:*', :ns => CHAT_STATE_NS).remove
 
-      self << (state = XMPPNode.new(chat_state, self.document))
-      state.namespace = CHAT_STATE_NS
+      if chat_state
+        state = XMPPNode.new(chat_state, self.document)
+        state.namespace = CHAT_STATE_NS
+        self << state
+      end
     end
   end
 

@@ -149,6 +149,14 @@ describe Blather::Stanza::Message do
     msg.chat_state = :composing
     msg.xpath('ns:composing', :ns => Blather::Stanza::Message::CHAT_STATE_NS).wont_be_empty
   end
+
+  it 'will only add one chat state at a time' do
+    msg = Blather::Stanza::Message.new
+    msg.chat_state = :composing
+    msg.chat_state = :paused
+
+    msg.xpath('ns:*', :ns => Blather::Stanza::Message::CHAT_STATE_NS).size.must_equal(1)
+  end
   
   it 'ensures chat state setter accepts strings' do
     msg = Blather::Stanza::Message.new
