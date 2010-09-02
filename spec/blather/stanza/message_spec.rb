@@ -144,6 +144,37 @@ describe Blather::Stanza::Message do
     msg.xhtml.must_equal(xhtml)
   end
 
+  it 'has a chat state setter' do
+    msg = Blather::Stanza::Message.new
+    msg.chat_state = :composing
+    msg.xpath('ns:composing', :ns => Blather::Stanza::Message::CHAT_STATE_NS).wont_be_empty
+  end
+  
+  it 'ensures chat state setter accepts strings' do
+    msg = Blather::Stanza::Message.new
+    msg.chat_state = "gone"
+    msg.xpath('ns:gone', :ns => Blather::Stanza::Message::CHAT_STATE_NS).wont_be_empty
+  end
+
+  it 'ensures chat state is one of Blather::Stanza::Message::VALID_CHAT_STATES' do
+    lambda do
+      msg = Blather::Stanza::Message.new
+      msg.chat_state = :invalid_chat_state
+    end.must_raise(Blather::ArgumentError)
+
+    Blather::Stanza::Message::VALID_CHAT_STATES.each do |valid_chat_state|
+      msg = Blather::Stanza::Message.new
+      msg.chat_state = valid_chat_state
+      msg.chat_state.must_equal valid_chat_state
+    end
+  end
+
+  it 'has a chat state getter' do
+    msg = Blather::Stanza::Message.new
+    msg.chat_state = :paused
+    msg.chat_state.must_equal(:paused)
+  end
+
   it 'makes a form child available' do
     n = Blather::XMPPNode.import(parse_stanza(message_xml).root)
     n.form.fields.size.must_equal 1

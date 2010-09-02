@@ -159,6 +159,9 @@ class Stanza
   class Message < Stanza
     VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal].freeze
 
+    VALID_CHAT_STATES = [:active, :composing, :gone, :inactive, :paused].freeze
+    CHAT_STATE_NS = 'http://jabber.org/protocol/chatstates'.freeze
+
     HTML_NS = 'http://jabber.org/protocol/xhtml-im'.freeze
     HTML_BODY_NS = 'http://www.w3.org/1999/xhtml'.freeze
 
@@ -189,6 +192,7 @@ class Stanza
       node.to = to
       node.type = type
       node.body = body
+      node.chat_state = :active if [:chat, :groupchat].include?(type)
       node
     end
 
@@ -331,6 +335,37 @@ class Stanza
     # Returns the message's x:data form child
     def form
       X.find_or_create self
+    end
+
+    # Get the message chat state
+    #
+    # @return [Symbol]
+    def chat_state
+      VALID_CHAT_STATES.each do |state|
+        if find_first("ns:#{state}", :ns => CHAT_STATE_NS)
+          return state
+        end
+      end
+
+      return nil
+    end
+
+    # Set the message chat state
+    #
+    # @param [#to_s] chat_state the message chat state. Must be one of VALID_CHAT_STATES
+    def chat_state=(chat_state)
+      if chat_state && !VALID_CHAT_STATES.include?(chat_state.to_sym)
+        raise ArgumentError, "Invalid Chat State (#{chat_state}), use: #{VALID_CHAT_STATES*' '}"
+      end
+
+      VALID_CHAT_STATES.each do |state|
+        if el = find_first("ns:#{state}", :ns => CHAT_STATE_NS)
+          el.remove
+        end
+      end
+
+      self << (state = XMPPNode.new(chat_state, self.document))
+      state.namespace = CHAT_STATE_NS
     end
   end
 
