@@ -93,4 +93,12 @@ describe Blather::RosterItem do
     i = Blather::RosterItem.new 'n@d'
     i.groups.must_equal [nil]
   end
+
+  it 'can determine equality' do
+    item1 = Blather::RosterItem.new 'n@d'
+    item2 = Blather::RosterItem.new 'n@d'
+    item1.groups = %w[group1 group2]
+    item2.groups = %w[group1 group2]
+    (item1 == item2).must_equal true
+  end
 end

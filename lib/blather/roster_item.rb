@@ -117,6 +117,17 @@ module Blather
       n.groups = groups
       r
     end
+
+    def <=>(o)
+      self.jid.to_s <=> o.jid.to_s
+    end
+
+    def eql?(o)
+      o.is_a?(RosterItem) &&
+      o.jid == self.jid &&
+      o.groups == self.groups
+    end
+    alias_method :==, :eql?
   end #RosterItem
 
 end

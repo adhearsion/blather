@@ -90,8 +90,8 @@ module Blather
     #
     # @return [Hash<group => Array<RosterItem>>]
     def grouped
-      self.inject(Hash.new{|h,k|h[k]=[]}) do |hash, item|
-        item[1].groups.each { |group| hash[group] << item[1] }
+      @items.values.sort.inject(Hash.new{|h,k|h[k]=[]}) do |hash, item|
+        item.groups.each { |group| hash[group] << item }
         hash
       end
     end

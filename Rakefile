@@ -17,6 +17,8 @@ begin
     gem.add_dependency 'eventmachine', '>= 0.12.6'
     gem.add_dependency 'nokogiri', '>= 1.4.0'
 
+    gem.add_development_dependency 'minitest', '>= 1.7.1'
+
     gem.files = FileList['examples/**/*.rb', 'lib/**/*.rb'].to_a
 
     gem.test_files = FileList['spec/**/*.rb']

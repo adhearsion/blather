@@ -3,6 +3,7 @@ $:.unshift File.expand_path(File.join(File.dirname(__FILE__), *%w[.. lib]))
 
 require 'blather'
 require 'rubygems'
+gem 'minitest', '>=1.7.1'
 require 'minitest/spec'
 require 'mocha'
 require 'mocha/expectation_error'
