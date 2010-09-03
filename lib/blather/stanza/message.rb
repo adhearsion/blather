@@ -196,6 +196,14 @@ class Stanza
       node
     end
 
+    # Overrides the parent method to ensure the current chat state is removed
+    #
+    # @see Blather::Stanza::Iq#inherit
+    def inherit(node)
+      xpath('ns:*', :ns => CHAT_STATE_NS).remove
+      super
+    end
+
     # Check if the Message is of type :chat
     #
     # @return [true, false]
