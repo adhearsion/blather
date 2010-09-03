@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{blather}
-  s.version = "0.4.13"
+  s.version = "0.4.14"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Smick"]
-  s.date = %q{2010-08-10}
+  s.date = %q{2010-09-02}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
   s.email = %q{sprsquish@gmail.com}
   s.extra_rdoc_files = [
@@ -82,30 +82,39 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{squishtech}
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Simpler XMPP built for speed}
   s.test_files = [
-    "spec/blather/client/client_spec.rb",
-     "spec/blather/client/dsl/pubsub_spec.rb",
+    "spec/spec_helper.rb",
+     "spec/blather/errors_spec.rb",
+     "spec/blather/jid_spec.rb",
+     "spec/blather/roster_item_spec.rb",
+     "spec/blather/roster_spec.rb",
+     "spec/blather/stanza_spec.rb",
+     "spec/blather/xmpp_node_spec.rb",
+     "spec/fixtures/pubsub.rb",
+     "spec/blather/client/client_spec.rb",
      "spec/blather/client/dsl_spec.rb",
      "spec/blather/core_ext/nokogiri_spec.rb",
      "spec/blather/errors/sasl_error_spec.rb",
      "spec/blather/errors/stanza_error_spec.rb",
      "spec/blather/errors/stream_error_spec.rb",
-     "spec/blather/errors_spec.rb",
-     "spec/blather/jid_spec.rb",
-     "spec/blather/roster_item_spec.rb",
-     "spec/blather/roster_spec.rb",
+     "spec/blather/stanza/iq_spec.rb",
+     "spec/blather/stanza/message_spec.rb",
+     "spec/blather/stanza/presence_spec.rb",
+     "spec/blather/stanza/pubsub_owner_spec.rb",
+     "spec/blather/stanza/pubsub_spec.rb",
+     "spec/blather/stanza/x_spec.rb",
+     "spec/blather/stream/client_spec.rb",
+     "spec/blather/stream/component_spec.rb",
+     "spec/blather/stream/parser_spec.rb",
      "spec/blather/stanza/discos/disco_info_spec.rb",
      "spec/blather/stanza/discos/disco_items_spec.rb",
      "spec/blather/stanza/iq/command_spec.rb",
      "spec/blather/stanza/iq/query_spec.rb",
      "spec/blather/stanza/iq/roster_spec.rb",
-     "spec/blather/stanza/iq_spec.rb",
-     "spec/blather/stanza/message_spec.rb",
      "spec/blather/stanza/presence/status_spec.rb",
      "spec/blather/stanza/presence/subscription_spec.rb",
-     "spec/blather/stanza/presence_spec.rb",
      "spec/blather/stanza/pubsub/affiliations_spec.rb",
      "spec/blather/stanza/pubsub/create_spec.rb",
      "spec/blather/stanza/pubsub/event_spec.rb",
@@ -118,32 +127,26 @@ Gem::Specification.new do |s|
      "spec/blather/stanza/pubsub/unsubscribe_spec.rb",
      "spec/blather/stanza/pubsub_owner/delete_spec.rb",
      "spec/blather/stanza/pubsub_owner/purge_spec.rb",
-     "spec/blather/stanza/pubsub_owner_spec.rb",
-     "spec/blather/stanza/pubsub_spec.rb",
-     "spec/blather/stanza/x_spec.rb",
-     "spec/blather/stanza_spec.rb",
-     "spec/blather/stream/client_spec.rb",
-     "spec/blather/stream/component_spec.rb",
-     "spec/blather/stream/parser_spec.rb",
-     "spec/blather/xmpp_node_spec.rb",
-     "spec/fixtures/pubsub.rb",
-     "spec/spec_helper.rb"
+     "spec/blather/client/dsl/pubsub_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<eventmachine>, [">= 0.12.6"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.0"])
+      s.add_development_dependency(%q<minitest>, [">= 1.7.1"])
     else
       s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
       s.add_dependency(%q<nokogiri>, [">= 1.4.0"])
+      s.add_dependency(%q<minitest>, [">= 1.7.1"])
     end
   else
     s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
     s.add_dependency(%q<nokogiri>, [">= 1.4.0"])
+    s.add_dependency(%q<minitest>, [">= 1.7.1"])
   end
 end
 
