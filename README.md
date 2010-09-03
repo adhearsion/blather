@@ -169,6 +169,7 @@ than a change set made directly on master.
 * [Nolan Darilek](http://github.com/thewordnerd)
 * [Tim Carey-Smith](http://github.com/halorgium)
 * [Ben Langfeld](http://github.com/benlangfeld)
+* [Anton Mironov](http://github.com/mironov)
 
 # Copyright
 
