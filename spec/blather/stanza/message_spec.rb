@@ -11,6 +11,7 @@ def message_xml
       <x xmlns='jabber:x:data' type='form'>
         <field var='field-name' type='text-single' label='description' />
       </x>
+      <paused xmlns="http://jabber.org/protocol/chatstates"/>
     </message>
   XML
 end
@@ -181,6 +182,10 @@ describe Blather::Stanza::Message do
     msg = Blather::Stanza::Message.new
     msg.chat_state = :paused
     msg.chat_state.must_equal(:paused)
+  end
+
+  it 'imports correct chat state' do
+    Blather::XMPPNode.import(parse_stanza(message_xml).root).chat_state.must_equal :paused
   end
 
   it 'makes a form child available' do
