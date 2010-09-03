@@ -1,3 +1,10 @@
+v0.4.14
+  Tests: get specs fully passing on rubinius
+  Feature(mironov): Implement XEP-0085 Chat State Notifications
+  Bugfix(mironov): send stanzas unformatted
+	Bugfix(mironov): Message#xhtml uses inner_html so tags aren't escaped
+	Bugfix(mironov): Message#xhtml= now works with multiple root nodes
+
 v0.4.13
   Bugfix: Place form child of command inside command element
 
