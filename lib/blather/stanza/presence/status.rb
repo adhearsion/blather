@@ -193,8 +193,9 @@ class Presence
       set_content_for :status, message
     end
 
-    # Compare status based on priority
-    # raises an error if the JIDs aren't the same
+    # Compare status based on priority and state:
+    # unavailable status is always less valuable than others
+    # Raises an error if the JIDs aren't the same
     #
     # @param [Blather::Stanza::Presence::Status] o
     # @return [true,false]
@@ -202,7 +203,14 @@ class Presence
       unless self.from && o.from && self.from.stripped == o.from.stripped
         raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
       end
-      self.priority <=> o.priority
+
+      if (self.type.nil? && o.type.nil?) || (!self.type.nil? && !o.type.nil?)
+        self.priority <=> o.priority
+      elsif self.type.nil? && !o.type.nil?
+        1
+      elsif !self.type.nil? && o.type.nil?
+        -1
+      end
     end
 
   end #Status
