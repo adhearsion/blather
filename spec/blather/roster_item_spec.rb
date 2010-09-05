@@ -68,6 +68,18 @@ describe Blather::RosterItem do
     @i.status.must_equal @p3
   end
 
+  it 'returns status based on priority and state' do
+    setup_item_with_presences
+
+    @p4 = Blather::Stanza::Presence::Status.new
+    @p4.type = :unavailable
+    @p4.from = 'n@d/d'
+    @p4.priority = 15
+    @i.status = @p4
+
+    @i.status.must_equal @p3
+  end
+
   it 'returns status based on resource' do
     setup_item_with_presences
     @i.status('a').must_equal @p
@@ -84,7 +96,7 @@ describe Blather::RosterItem do
     @p2 = Blather::Stanza::Presence::Status.new(:dnd)
     @p2.from = 'n@d/b'
     @p2.priority = -1
-    
+
     @p3 = Blather::Stanza::Presence::Status.new(:dnd)
     @p3.from = 'n@d/c'
     @p3.priority = 10
