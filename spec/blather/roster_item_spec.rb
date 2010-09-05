@@ -106,6 +106,19 @@ describe Blather::RosterItem do
     @i.status = @p3
   end
 
+  it 'removes old unavailable presences' do
+    setup_item_with_presences
+
+    50.times do |i|
+      p = Blather::Stanza::Presence::Status.new
+      p.type = :unavailable
+      p.from = "n@d/#{i}"
+      @i.status = p
+    end
+
+    @i.statuses.size.must_equal 4
+  end
+
   it 'initializes groups to [nil] if the item is not part of a group' do
     i = Blather::RosterItem.new 'n@d'
     i.groups.must_equal [nil]
