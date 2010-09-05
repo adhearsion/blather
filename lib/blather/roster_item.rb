@@ -90,7 +90,7 @@ module Blather
     #
     # @param [Blather::Stanza::Status] the new status
     def status=(presence)
-      @statuses.delete_if { |s| s.from == presence.from }
+      @statuses.delete_if { |s| s.from == presence.from || s.state == :unavailable }
       @statuses << presence
       @statuses.sort!
     end
