@@ -102,7 +102,7 @@ module Blather
       top = if resource
         @statuses.detect { |s| s.from.resource == resource }
       else
-        @statuses.first
+        @statuses.last
       end
     end
 
