@@ -89,12 +89,6 @@ describe Blather::Stream::Parser do
     @client.data[0].xpath('//*[namespace-uri()="urn:ietf:params:xml:ns:xmpp-stanzas"]').size.must_equal 2
   end
 
-  it 'handles not absolute namespaces' do
-    assert_nothing_raised do
-      @parser.receive_data '<iq type="result" id="blather0007" to="n@d/r"><vCard xmlns="vcard-temp"/></iq>'
-    end
-  end
-
   it 'responds with stream:stream as a separate response' do
     data = [
       '<stream:stream xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams" to="example.com" version="1.0">',

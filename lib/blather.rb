@@ -24,7 +24,6 @@
   blather/stanza/iq/query
   blather/stanza/iq/command
   blather/stanza/iq/roster
-  blather/stanza/iq/vcard_query
   blather/stanza/disco
   blather/stanza/disco/disco_info
   blather/stanza/disco/disco_items
