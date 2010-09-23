@@ -16,7 +16,7 @@ class Stream # :nodoc:
       @namespaces = {}
       @namespace_definitions = []
       @parser = Nokogiri::XML::SAX::PushParser.new self
-      @parser.options = Nokogiri::XML::ParseOptions::DEFAULT_XML
+      @parser.options = Nokogiri::XML::ParseOptions::DEFAULT_XML | Nokogiri::XML::ParseOptions::NOENT
     end
 
     def receive_data(string)
