@@ -69,6 +69,10 @@ describe Blather::Stream::Parser do
     check_parse '<foo bar="baz"/>'
   end
 
+  it 'handles attributes with entities properly' do
+    check_parse '<a href="http://example.com?a=1&amp;b=2">example</a>'
+  end
+
   it 'handles character input' do
     check_parse '<foo>bar baz fizbuz</foo>'
   end
