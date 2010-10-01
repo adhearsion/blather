@@ -87,9 +87,9 @@ module DSL
     # Defaults to the stripped current JID
     # @param [#to_s] host the PubSub host (defaults to the initialized host)
     # @yield [Blather::Stanza] stanza the reply stanza
-    def unsubscribe(node, jid = nil, host = nil)
+    def unsubscribe(node, jid = nil, subid = nil, host = nil)
       jid ||= client.jid.stripped
-      stanza = Stanza::PubSub::Unsubscribe.new(:set, send_to(host), node, jid)
+      stanza = Stanza::PubSub::Unsubscribe.new(:set, send_to(host), node, jid, subid)
       request(stanza) { |n| yield n if block_given? }
     end
 

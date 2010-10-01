@@ -238,6 +238,16 @@ describe Blather::DSL::PubSub do
     @pubsub.unsubscribe '/path/to/node', Blather::JID.new('jid@d/r')
   end
 
+  it 'can unsubscribe with a particular subscription id' do
+    @client.expects(:write_with_handler).with do |n|
+      n.must_be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r' and @subid='subid']", :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+      n.subid.must_equal 'subid'
+      n.type.must_equal :set
+    end
+    @pubsub.unsubscribe '/path/to/node', 'jid@d/r', 'subid'
+  end
+
   it 'can purge a node' do
     @client.expects(:write_with_handler).with do |n|
       n.must_be_instance_of Blather::Stanza::PubSubOwner::Purge
