@@ -16,10 +16,12 @@ class PubSub
     # @param [String] host the host to send the request to
     # @param [String] node the node to unsubscribe from
     # @param [Blather::JID, #to_s] jid the JID of the unsubscription
-    def self.new(type = :set, host = nil, node = nil, jid = nil)
+    # @param [String] subid the subscription ID of the unsubscription
+    def self.new(type = :set, host = nil, node = nil, jid = nil, subid = nil)
       new_node = super(type, host)
       new_node.node = node
       new_node.jid = jid
+      new_node.subid = subid
       new_node
     end
 
@@ -49,6 +51,20 @@ class PubSub
     # @param [String] node
     def node=(node)
       unsubscribe[:node] = node
+    end
+
+    # Get the subscription ID to unsubscribe from
+    #
+    # @return [String]
+    def subid
+      unsubscribe[:subid]
+    end
+
+    # Set the subscription ID to unsubscribe from
+    #
+    # @param [String] node
+    def subid=(subid)
+      unsubscribe[:subid] = subid
     end
 
     # Get or create the actual unsubscribe node

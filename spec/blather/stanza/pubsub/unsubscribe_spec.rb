@@ -58,4 +58,17 @@ describe Blather::Stanza::PubSub::Unsubscribe do
     unsubscribe.find('//ns:pubsub/ns:unsubscribe[@jid="n@d/r"]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
     unsubscribe.jid.must_equal Blather::JID.new('n@d/r')
   end
+
+  it 'has a subid attribute' do
+    unsubscribe = Blather::Stanza::PubSub::Unsubscribe.new :set, 'host', 'node-name', 'jid'
+    unsubscribe.find('//ns:pubsub/ns:unsubscribe[@subid="subid"]', :ns => Blather::Stanza::PubSub.registered_ns).must_be_empty
+
+    unsubscribe = Blather::Stanza::PubSub::Unsubscribe.new :set, 'host', 'node-name', 'jid', 'subid'
+    unsubscribe.find('//ns:pubsub/ns:unsubscribe[@subid="subid"]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+    unsubscribe.subid.must_equal 'subid'
+
+    unsubscribe.subid = 'newsubid'
+    unsubscribe.find('//ns:pubsub/ns:unsubscribe[@subid="newsubid"]', :ns => Blather::Stanza::PubSub.registered_ns).wont_be_empty
+    unsubscribe.subid.must_equal 'newsubid'
+  end
 end
