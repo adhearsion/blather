@@ -164,8 +164,8 @@ def subscriptions_xml
     id='affil1'>
   <pubsub xmlns='http://jabber.org/protocol/pubsub'>
     <subscriptions>
-      <subscription node='node1' jid='francisco@denmark.lit' subscription='subscribed'/>
-      <subscription node='node2' jid='francisco@denmark.lit' subscription='subscribed'/>
+      <subscription node='node1' jid='francisco@denmark.lit' subscription='subscribed' subid='fd8237yr872h3f289j2'/>
+      <subscription node='node2' jid='francisco@denmark.lit' subscription='subscribed' subid='h8394hf8923ju'/>
       <subscription node='node3' jid='francisco@denmark.lit' subscription='unconfigured'/>
       <subscription node='node4' jid='francisco@denmark.lit' subscription='pending'/>
       <subscription node='node5' jid='francisco@denmark.lit' subscription='none'/>

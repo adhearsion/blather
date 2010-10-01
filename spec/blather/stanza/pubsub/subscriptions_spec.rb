@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
 require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
 
 def control_subscriptions
-  { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit'}, {:node => 'node2', :jid => 'francisco@denmark.lit'}],
+  { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit', :subid => 'fd8237yr872h3f289j2'}, {:node => 'node2', :jid => 'francisco@denmark.lit', :subid => 'h8394hf8923ju'}],
     :unconfigured => [{:node => 'node3', :jid => 'francisco@denmark.lit'}],
     :pending => [{:node => 'node4', :jid => 'francisco@denmark.lit'}],
     :none => [{:node => 'node5', :jid => 'francisco@denmark.lit'}] }

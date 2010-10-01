@@ -58,7 +58,7 @@ class PubSub
     # Get a hash of subscriptions
     #
     # @example
-    #   { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit'}, {:node => 'node2', :jid => 'francisco@denmark.lit'}],
+    #   { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit', :subid => 'fd8237yr872h3f289j2'}, {:node => 'node2', :jid => 'francisco@denmark.lit', :subid => 'h8394hf8923ju'}],
     #     :unconfigured => [{:node => 'node3', :jid => 'francisco@denmark.lit'}],
     #     :pending => [{:node => 'node4', :jid => 'francisco@denmark.lit'}],
     #     :none => [{:node => 'node5', :jid => 'francisco@denmark.lit'}] }
@@ -67,10 +67,12 @@ class PubSub
     def list
       subscriptions.find('//ns:subscription', :ns => self.class.registered_ns).inject({}) do |hash, item|
         hash[item[:subscription].to_sym] ||= []
-        hash[item[:subscription].to_sym] << {
+        sub = {
           :node => item[:node],
           :jid => item[:jid]
         }
+        sub[:subid] = item[:subid] if item[:subid]
+        hash[item[:subscription].to_sym] << sub
         hash
       end
     end
