@@ -116,6 +116,24 @@ class PubSub
         n.content
       end
     end
+
+    # Check if this is a subscription stanza
+    #
+    # @return [XML::Node, nil]
+    def subscription?
+      subscription_node
+    end
+
+    # Get the actual subscription node
+    #
+    # @return [Blather::XMPPNode]
+    def subscription_node
+      event_node.find_first('//ns:subscription', :ns => self.class.registered_ns)
+    end
+
+    def subscription
+      subscription_node
+    end
   end  # Event
 
 end  # PubSub

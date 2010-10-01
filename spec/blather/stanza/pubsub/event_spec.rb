@@ -81,4 +81,18 @@ describe Blather::Stanza::PubSub::Event do
     evt.purge?.wont_be_nil
     evt.node.must_equal 'princely_musings'
   end
+
+  it 'can be a subscription notification' do
+    evt = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    <message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>
+      <event xmlns='http://jabber.org/protocol/pubsub#event'>
+        <subscription jid='francisco@denmark.lit' subscription='subscribed' node='/example.com/test'/>
+      </event>
+    </message>
+    NODE
+    evt.subscription?.wont_be_nil
+    evt.subscription[:jid].must_equal 'francisco@denmark.lit'
+    evt.subscription[:subscription].must_equal 'subscribed'
+    evt.subscription[:node].must_equal '/example.com/test'
+  end
 end
