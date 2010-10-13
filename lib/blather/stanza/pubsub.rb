@@ -94,11 +94,9 @@ class Stanza
 
     # Get the item's payload
     #
-    # @param [Bool] as_string Return value as string. Returns XMPPNode object if false
     # @return [String, XMPPNode, nil]
-    def payload(as_string = false)
-      children.empty? ? nil : children
-      children.to_s if as_string
+    def payload
+      children.empty? ? nil : children.to_s
     end
 
     # Set the item's payload
