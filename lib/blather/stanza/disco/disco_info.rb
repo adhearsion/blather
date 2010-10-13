@@ -75,7 +75,7 @@ class Stanza
       #   @param [String] name the name of the Identity
       #   @param [String, nil] type the type of the Identity
       #   @param [String, nil] category the category of the Identity
-      def self.new(name, type = nil, category = nil)
+      def self.new(name, type = nil, category = nil, xml_lang = nil)
         new_node = super :identity
 
         case name
@@ -85,10 +85,12 @@ class Stanza
           new_node.name = name[:name]
           new_node.type = name[:type]
           new_node.category = name[:category]
+          new_node.xml_lang = name[:xml_lang]
         else
           new_node.name = name
           new_node.type = type
           new_node.category = category
+          new_node.xml_lang = xml_lang
         end
         new_node
       end
@@ -129,6 +131,18 @@ class Stanza
         write_attr :name, name
       end
 
+      # The Identity's xml_lang
+      # @return [String]
+      def xml_lang
+        read_attr "lang"
+      end
+
+      # Set the Identity's name
+      # @param [String] name the new name for the identity
+      def xml_lang=(xml_lang)
+        write_attr "xml:lang", xml_lang
+      end
+
       # Compare two Identity objects by name, type and category
       # @param [DiscoInfo::Identity] o the Identity object to compare against
       # @return [true, false]
@@ -139,7 +153,8 @@ class Stanza
 
         o.name == self.name &&
         o.type == self.type &&
-        o.category == self.category
+        o.category == self.category &&
+        o.xml_lang == self.xml_lang
       end
       alias_method :==, :eql?
     end # Identity

@@ -10,7 +10,8 @@ def disco_info_xml
       <identity
           category='client'
           type='pc'
-          name='Gabber'/>
+          name='Gabber'
+          xml:lang='en'/>
       <feature var='jabber:iq:time'/>
       <feature var='jabber:iq:version'/>
     </query>
@@ -182,11 +183,12 @@ end
 
 describe Blather::Stanza::Iq::DiscoInfo::Identity do
   it 'will auto-inherit nodes' do
-    n = parse_stanza "<identity name='Personal Events' type='pep' category='pubsub' node='publish' />"
+    n = parse_stanza "<identity name='Personal Events' type='pep' category='pubsub' node='publish' xml:lang='en' />"
     i = Blather::Stanza::Iq::DiscoInfo::Identity.new n.root
     i.name.must_equal 'Personal Events'
     i.type.must_equal :pep
     i.category.must_equal :pubsub
+    i.xml_lang.must_equal 'en'
   end
 
   it 'has a category attribute' do
@@ -208,6 +210,13 @@ describe Blather::Stanza::Iq::DiscoInfo::Identity do
     n.name.must_equal 'name'
     n.name = :foo
     n.name.must_equal 'foo'
+  end
+
+  it 'has an xml:lang attribute' do
+    n = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat en])
+    n.xml_lang.must_equal 'en'
+    n.xml_lang = 'de'
+    n.xml_lang.must_equal 'de'
   end
 
   it 'raises an error if equality is sent a non DiscoInfo::Identity object' do
