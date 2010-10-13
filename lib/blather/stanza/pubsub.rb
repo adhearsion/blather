@@ -92,9 +92,11 @@ class Stanza
       write_attr :id, id
     end
 
+    alias_method :payload_node, :child
+
     # Get the item's payload
     #
-    # @return [String, XMPPNode, nil]
+    # @return [String, nil]
     def payload
       children.empty? ? nil : children.to_s
     end

@@ -59,4 +59,16 @@ describe Blather::Stanza::PubSub::PubSubItem do
     item.payload = nil
     item.payload.must_be_nil
   end
+
+  it 'makes payloads readable as string' do
+    payload = Blather::XMPPNode.new 'foo'
+    item = Blather::Stanza::PubSub::Items::PubSubItem.new 'bar', payload
+    item.payload.must_equal payload.to_s
+  end
+
+  it 'makes payloads readable as node' do
+    payload = Blather::XMPPNode.new 'foo'
+    item = Blather::Stanza::PubSub::Items::PubSubItem.new 'bar', payload
+    item.payload_node.must_equal payload
+  end
 end
