@@ -3,8 +3,7 @@
   rubygems
   eventmachine
   nokogiri
-  digest/md5
-  digest/sha1
+  digest
   logger
 
   blather/core_ext/active_support
