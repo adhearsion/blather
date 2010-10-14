@@ -21,26 +21,26 @@ describe 'Blather::Stanza::Presence::C' do
   end
 
   it 'ensures hash is one of Blather::Stanza::Presence::C::VALID_HASH_TYPES' do
-    lambda { Blather::Stanza::Presence::C.new :invalid_type_name }.must_raise(Blather::ArgumentError)
+    lambda { Blather::Stanza::Presence::C.new nil, nil, :invalid_type_name }.must_raise(Blather::ArgumentError)
 
     Blather::Stanza::Presence::C::VALID_HASH_TYPES.each do |valid_hash|
-      c = Blather::Stanza::Presence::C.new valid_hash
+      c = Blather::Stanza::Presence::C.new nil, nil, valid_hash
       c.hash.must_equal valid_hash
     end
   end
 
   it 'can set a hash on creation' do
-    c = Blather::Stanza::Presence::C.new :md5
+    c = Blather::Stanza::Presence::C.new nil, nil, :md5
     c.hash.must_equal :md5
   end
 
   it 'can set a node on creation' do
-    c = Blather::Stanza::Presence::C.new nil, 'http://www.chatopus.com'
+    c = Blather::Stanza::Presence::C.new 'http://www.chatopus.com'
     c.node.must_equal 'http://www.chatopus.com'
   end
 
   it 'can set a ver on creation' do
-    c = Blather::Stanza::Presence::C.new nil, nil, 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
+    c = Blather::Stanza::Presence::C.new nil, 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
     c.ver.must_equal 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
   end
 end

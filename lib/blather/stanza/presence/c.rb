@@ -15,7 +15,7 @@ class Presence
 
     VALID_HASH_TYPES = [:md2, :md5, :"sha-1", :"sha-224", :"sha-256", :"sha-384", :"sha-512"].freeze
 
-    def self.new(hash = 'sha-1', node = nil, ver = nil)
+    def self.new(node = nil, ver = nil, hash = 'sha-1')
       new_node = super()
       new_node.c
       new_node.hash = hash
