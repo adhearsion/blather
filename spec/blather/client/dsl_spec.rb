@@ -3,7 +3,10 @@ require 'blather/client/dsl'
 
 describe Blather::DSL do
   before do
-    @client = mock()
+    @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @client.post_init @stream, Blather::JID.new('n@d/r')
     @dsl = Class.new { include Blather::DSL }.new
     Blather::Client.stubs(:new).returns(@client)
   end
@@ -124,6 +127,37 @@ describe Blather::DSL do
     expected_stanza.node = where
     @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
     @dsl.discover what, who, where
+  end
+
+  it 'provides a caps set helper' do
+    @dsl.must_respond_to :set_caps
+    node = 'http://code.google.com/p/exodus'
+    identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    features = %w{
+                  http://jabber.org/protocol/caps
+                  http://jabber.org/protocol/disco#info
+                  http://jabber.org/protocol/disco#items
+                  http://jabber.org/protocol/muc
+                }
+    @dsl.set_caps node, identities, features
+    @client.caps.node.must_equal "#{node}##{@client.caps.ver}"
+    @client.caps.identities.must_equal identities
+    @client.caps.features.map{ |f| f.var }.must_equal features
+  end
+
+  it 'provides a caps send helper' do
+    @dsl.must_respond_to :send_caps
+    @client.caps.node = 'http://code.google.com/p/exodus'
+    @client.caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @client.caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    expected_stanza = "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
+    @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
+    @dsl.send_caps
   end
 
   Blather::Stanza.handler_list.each do |handler_method|

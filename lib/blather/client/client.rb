@@ -318,10 +318,29 @@ module Blather
       end
 
       def node=(node)
+        @bare_node = node
         super "#{node}##{ver}"
       end
 
+      def identities=(identities)
+        super identities
+        regenerate_full_node
+      end
+
+      def features=(features)
+        super features
+        regenerate_full_node
+      end
+
+      def c
+        Blather::Stanza::Presence::C.new @bare_node, ver
+      end
+
       private
+
+      def regenerate_full_node
+        self.node = @bare_node
+      end
 
       def generate_ver_str(identities, features, forms = [])
         # 1.  Initialize an empty string S.

@@ -617,6 +617,7 @@ describe 'Blather::Client::Caps' do
   end
 
   it 'provides a client ver reader' do
+    @caps.must_respond_to :ver
     @caps.node = 'http://code.google.com/p/exodus'
     @caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
     @caps.features = %w{
@@ -626,5 +627,19 @@ describe 'Blather::Client::Caps' do
                           http://jabber.org/protocol/muc
                         }
     @caps.ver.must_equal 'QgayPKawpkPSDYmwT/WM94uAlu0='
+    @caps.node.must_equal "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0="
+  end
+
+  it 'can construct caps presence correctly' do
+    @caps.must_respond_to :c
+    @caps.node = 'http://code.google.com/p/exodus'
+    @caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    @caps.c.inspect.must_equal "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
   end
 end

@@ -252,6 +252,16 @@ module Blather
       client.write stanza
     end
 
+    def set_caps(node, identities, features)
+      client.caps.node = node
+      client.caps.identities = identities
+      client.caps.features = features
+    end
+
+    def send_caps
+      client.write client.caps.c
+    end
+
     # Generate a method for every stanza handler that exists.
     Blather::Stanza.handler_list.each do |handler_name|
       module_eval <<-METHOD, __FILE__, __LINE__
