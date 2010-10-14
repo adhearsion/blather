@@ -29,6 +29,7 @@
   blather/stanza/disco/disco_items
   blather/stanza/message
   blather/stanza/presence
+  blather/stanza/presence/c
   blather/stanza/presence/status
   blather/stanza/presence/subscription
 
