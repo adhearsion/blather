@@ -157,7 +157,33 @@ describe Blather::DSL do
                         }
     expected_stanza = "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
     @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
+    @client.expects(:register_handler).with(:disco_info, :type => :get, :node => "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=")
     @dsl.send_caps
+  end
+
+  it 'responds with correct disco stanza after sending caps and receiving query' do
+    @client.caps.node = 'http://code.google.com/p/exodus'
+    @client.caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @client.caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    stanza = <<-XML
+      <iq from='juliet@capulet.lit/chamber'
+          id='disco1'
+          to='romeo@montague.lit/orchard'
+          type='get'>
+        <query xmlns='http://jabber.org/protocol/disco#info'
+               node='http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0='/>
+      </iq>
+    XML
+    @stanza = Blather::Stanza.import(parse_stanza(stanza).root)
+    expected_stanza = "<iq type=\"result\" id=\"disco1\" to=\"juliet@capulet.lit/chamber\">\n  <query xmlns=\"http://jabber.org/protocol/disco#info\" node=\"http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=\">\n    <identity name=\"Exodus 0.9.1\" category=\"client\" type=\"pc\"/>\n    <feature var=\"http://jabber.org/protocol/caps\"/>\n    <feature var=\"http://jabber.org/protocol/disco#info\"/>\n    <feature var=\"http://jabber.org/protocol/disco#items\"/>\n    <feature var=\"http://jabber.org/protocol/muc\"/>\n  </query>\n</iq>"
+    @dsl.send_caps
+    @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
+    @client.receive_data @stanza
   end
 
   Blather::Stanza.handler_list.each do |handler_method|
