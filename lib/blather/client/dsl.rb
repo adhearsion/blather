@@ -259,7 +259,7 @@ module Blather
     end
 
     def send_caps
-      client.register_handler :disco_info, :type => :get, :node => "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=" do |s|
+      client.register_handler :disco_info, :type => :get, :node => client.caps.node do |s|
         r = client.caps.dup
         r.to = s.from
         r.id = s.id
