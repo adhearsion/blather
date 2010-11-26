@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
+require File.expand_path "../../spec_helper", __FILE__
 
 describe Blather::JID do
   it 'does nothing if creaded from Blather::JID' do

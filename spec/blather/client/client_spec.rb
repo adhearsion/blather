@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require File.expand_path "../../../spec_helper", __FILE__
 require 'blather/client/client'
 
 describe Blather::Client do
