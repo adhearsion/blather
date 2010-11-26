@@ -77,6 +77,7 @@ class StanzaError < BlatherError
     node << (error_node = XMPPNode.new('error'))
 
     error_node << (err = XMPPNode.new(@name, error_node.document))
+    error_node['type'] = self.type
     err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
 
     if self.text
