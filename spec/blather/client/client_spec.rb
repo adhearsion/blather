@@ -81,7 +81,7 @@ describe Blather::Client do
     disconnected = mock()
     disconnected.expects(:call)
     @client.register_handler(:disconnected) { disconnected.call }
-    @client.unbind    
+    @client.unbind
   end
 
   it 'does not call EM.stop on #unbind if a handler returns positive' do
@@ -173,6 +173,20 @@ describe Blather::Client do
       response.fail
     end
     @client.register_handler(:iq) { |_| response.iq }
+    @client.receive_data stanza
+  end
+
+  it 'can clear handlers' do
+    stanza = Blather::Stanza::Message.new
+    stanza.expects(:chat?).returns true
+
+    response = mock
+    response.expects(:call).once
+
+    @client.register_handler(:message, :chat?) { |_| response.call }
+    @client.receive_data stanza
+
+    @client.clear_handlers(:message, :chat?)
     @client.receive_data stanza
   end
 end
@@ -309,7 +323,7 @@ describe 'Blather::Client with a Component stream' do
     class MockComponent < Blather::Stream::Component; def initialize(); end; end
     @stream = MockComponent.new('')
     @stream.stubs(:send_data)
-    @client = Blather::Client.new 
+    @client = Blather::Client.new
     @client.setup('me.com', 'secret')
   end
 
@@ -325,7 +339,7 @@ describe 'Blather::Client with a Client stream' do
   before do
     class MockClientStream < Blather::Stream::Client; def initialize(); end; end
     @stream = MockClientStream.new('')
-    @client = Blather::Client.new 
+    @client = Blather::Client.new
     Blather::Stream::Client.stubs(:start).returns @stream
     @client.setup('me@me.com', 'secret').run
   end

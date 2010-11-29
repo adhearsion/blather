@@ -112,9 +112,17 @@ module Blather
       @tmp_handlers[id.to_s] = handler
     end
 
+    # Clear handlers with given guards
+    #
+    # @param [Symbol, nil] type remove filters for a specific handler
+    # @param [guards] guards take a look at the guards documentation
+    def clear_handlers(type, *guards)
+      @handlers[type].delete_if { |g, _| g == guards }
+    end
+
     # Register a handler
     #
-    # @param [Symbol, nil] handler set the filter on a specific handler
+    # @param [Symbol, nil] type set the filter on a specific handler
     # @param [guards] guards take a look at the guards documentation
     # @yield [Blather::Stanza] stanza the incomming stanza
     def register_handler(type, *guards, &handler)
