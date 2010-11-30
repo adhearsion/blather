@@ -8,12 +8,16 @@
   logger
 
   blather/core_ext/active_support
+  blather/core_ext/eventmachine
   blather/core_ext/nokogiri
 
   blather/errors
   blather/errors/sasl_error
   blather/errors/stanza_error
   blather/errors/stream_error
+  blather/file_transfer
+  blather/file_transfer/ibb
+  blather/file_transfer/bytestreams
   blather/jid
   blather/roster
   blather/roster_item
@@ -24,6 +28,9 @@
   blather/stanza/iq/query
   blather/stanza/iq/command
   blather/stanza/iq/roster
+  blather/stanza/iq/bytestreams
+  blather/stanza/iq/ibb
+  blather/stanza/iq/si
   blather/stanza/iq/vcard
   blather/stanza/disco
   blather/stanza/disco/disco_info

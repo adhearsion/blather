@@ -1,0 +1,100 @@
+require File.expand_path "../../spec_helper", __FILE__
+require 'blather/client/dsl'
+
+module MockFileReceiver
+  def post_init
+  end
+  def receive_data(data)
+  end
+  def unbind
+  end
+end
+
+def si_xml
+<<-XML
+  <iq type='set' id='offer1' to='juliet@capulet.com/balcony' from='romeo@montague.net/orchard'>
+    <si xmlns='http://jabber.org/protocol/si'
+        id='a0'
+        mime-type='text/plain'
+        profile='http://jabber.org/protocol/si/profile/file-transfer'>
+      <file xmlns='http://jabber.org/protocol/si/profile/file-transfer'
+            name='test.txt'
+            size='1022'>
+        <range/>
+      </file>
+      <feature xmlns='http://jabber.org/protocol/feature-neg'>
+        <x xmlns='jabber:x:data' type='form'>
+          <field var='stream-method' type='list-single'>
+            <option><value>http://jabber.org/protocol/bytestreams</value></option>
+            <option><value>http://jabber.org/protocol/ibb</value></option>
+          </field>
+        </x>
+      </feature>
+    </si>
+  </iq>
+XML
+end
+
+describe Blather::FileTransfer do
+  before do
+    @host = 'host.name'
+    @client = Blather::Client.setup Blather::JID.new('n@d/r'), 'pass'
+  end
+
+  it 'can select ibb' do
+    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+
+    @client.stubs(:write).with do |answer|
+      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::Ibb::NS_IBB
+      true
+    end
+
+    transfer = Blather::FileTransfer.new(@client, iq)
+    transfer.allow_bytestreams = false
+    transfer.allow_ibb = true
+    transfer.accept(MockFileReceiver)
+  end
+
+  it 'can select bytestreams' do
+    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+
+    @client.stubs(:write).with do |answer|
+      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::Bytestreams::NS_BYTESTREAMS
+      true
+    end
+
+    transfer = Blather::FileTransfer.new(@client, iq)
+    transfer.allow_bytestreams = true
+    transfer.allow_ibb = false
+    transfer.accept(MockFileReceiver)
+  end
+
+  it 'can response no-valid-streams' do
+    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+
+    @client.stubs(:write).with do |answer|
+      answer.find_first('error')['type'].must_equal "cancel"
+      answer.find_first('.//ns:no-valid-streams', :ns => 'http://jabber.org/protocol/si').wont_be_nil
+      true
+    end
+
+    transfer = Blather::FileTransfer.new(@client, iq)
+    transfer.allow_bytestreams = false
+    transfer.allow_ibb = false
+    transfer.accept(MockFileReceiver)
+  end
+
+  it 'can decline transfer' do
+    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+
+    @client.stubs(:write).with do |answer|
+      answer.find_first('error')['type'].must_equal "cancel"
+      answer.find_first('.//ns:forbidden', :ns => 'urn:ietf:params:xml:ns:xmpp-stanzas').wont_be_nil
+      answer.find_first('.//ns:text', :ns => 'urn:ietf:params:xml:ns:xmpp-stanzas').content.must_equal "Offer declined"
+      true
+    end
+
+    transfer = Blather::FileTransfer.new(@client, iq)
+    transfer.decline
+  end
+end
