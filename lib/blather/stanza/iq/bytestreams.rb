@@ -11,6 +11,15 @@ class Iq
   class Bytestreams < Query
     register :bytestreams_open, :query, NS_BYTESTREAMS
 
+    # Overrides the parent method to remove query node
+    #
+    # @see Blather::Stanza#reply
+    def reply
+      reply = super
+      reply.remove_children :query
+      reply
+    end
+
     # Get the sid of the file transfer
     #
     # @return [String]

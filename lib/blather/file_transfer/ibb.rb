@@ -21,15 +21,20 @@ module Blather
 
         @stream.register_handler :ibb_data, :from => @iq.from, :sid => @iq.sid do |iq|
           if iq.data['seq'] == @seq.to_s
-            @stream.write iq.reply
+            begin
+              @io_write << Base64.decode64(iq.data.content)
 
-            @seq += 1
-            @seq = 0 if @seq > 65535
+              @stream.write iq.reply
 
-            @io_write << Base64.decode64(iq.data.content)
+              @seq += 1
+              @seq = 0 if @seq > 65535
+            rescue Errno::EPIPE => e
+              @stream.write StanzaError.new(iq, 'not-acceptable', :cancel).to_node
+            end
           else
             @stream.write StanzaError.new(iq, 'unexpected-request', :wait).to_node
           end
+          true
         end
 
         @stream.register_handler :ibb_close, :from => @iq.from, :sid => @iq.sid do |iq|
@@ -38,9 +43,11 @@ module Blather
           @stream.clear_handlers :ibb_close, :from => @iq.from, :sid => @iq.sid
 
           @io_write.close
+          true
         end
 
         @stream.clear_handlers :ibb_open, :from => @iq.from
+        @stream.clear_handlers :ibb_open, :from => @iq.from, :sid => @iq.sid
         @stream.write @iq.reply
       end
 

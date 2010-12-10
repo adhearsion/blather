@@ -36,7 +36,9 @@ module Blather
 
         @stream.register_handler :bytestreams_open, :from => @iq.from do |iq|
           transfer = Blather::FileTransfer::Bytestreams.new(@stream, iq)
+          transfer.allow_ibb_fallback = true if @allow_ibb
           transfer.accept(handler, *params)
+          true
         end
 
         @stream.write answer
@@ -46,6 +48,7 @@ module Blather
         @stream.register_handler :ibb_open, :from => @iq.from do |iq|
           transfer = Blather::FileTransfer::Ibb.new(@stream, iq)
           transfer.accept(handler, *params)
+          true
         end
 
         @stream.write answer

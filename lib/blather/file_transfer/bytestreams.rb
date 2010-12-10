@@ -3,9 +3,14 @@ module Blather
     # SOCKS5 Bytestreams Transfer helper
     # Takes care of accepting, declining and offering file transfers through the stream
     class Bytestreams
+
+      # Set this to false if you don't want to fallback to In-Band Bytestreams
+      attr_accessor :allow_ibb_fallback
+
       def initialize(stream, iq)
         @stream = stream
         @iq = iq
+        @allow_ibb_fallback = true
       end
 
       # Accept an incoming file-transfer
@@ -40,6 +45,14 @@ module Blather
         if streamhost = @streamhosts.shift
           connect(streamhost)
         else
+          if @allow_ibb_fallback
+            @stream.register_handler :ibb_open, :from => @iq.from, :sid => @iq.sid do |iq|
+              transfer = Blather::FileTransfer::Ibb.new(@stream, iq)
+              transfer.accept(@handler, *@params)
+              true
+            end
+          end
+
           @stream.write StanzaError.new(@iq, 'item-not-found', :cancel).to_node
         end
       end
