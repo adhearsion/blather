@@ -2,7 +2,7 @@ module Blather
   class FileTransfer
     # SOCKS5 Bytestreams Transfer helper
     # Takes care of accepting, declining and offering file transfers through the stream
-    class Bytestreams
+    class S5b
 
       # Set this to false if you don't want to fallback to In-Band Bytestreams
       attr_accessor :allow_ibb_fallback
@@ -25,12 +25,12 @@ module Blather
         @params = params
 
         connect_next_streamhost
-        @stream.clear_handlers :bytestreams_open, :from => @iq.from
+        @stream.clear_handlers :s5b_open, :from => @iq.from
       end
 
       # Decline an incoming file-transfer
       def decline
-        @stream.clear_handlers :bytestreams_open, :from => @iq.from
+        @stream.clear_handlers :s5b_open, :from => @iq.from
         @stream.write StanzaError.new(@iq, 'not-acceptable', :auth).to_node
       end
 

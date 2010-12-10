@@ -50,21 +50,21 @@ describe Blather::FileTransfer do
     end
 
     transfer = Blather::FileTransfer.new(@client, iq)
-    transfer.allow_bytestreams = false
+    transfer.allow_s5b = false
     transfer.allow_ibb = true
     transfer.accept(MockFileReceiver)
   end
 
-  it 'can select bytestreams' do
+  it 'can select s5b' do
     iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
 
     @client.stubs(:write).with do |answer|
-      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::Bytestreams::NS_BYTESTREAMS
+      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
       true
     end
 
     transfer = Blather::FileTransfer.new(@client, iq)
-    transfer.allow_bytestreams = true
+    transfer.allow_s5b = true
     transfer.allow_ibb = false
     transfer.accept(MockFileReceiver)
   end
@@ -79,7 +79,7 @@ describe Blather::FileTransfer do
     end
 
     transfer = Blather::FileTransfer.new(@client, iq)
-    transfer.allow_bytestreams = false
+    transfer.allow_s5b = false
     transfer.allow_ibb = false
     transfer.accept(MockFileReceiver)
   end

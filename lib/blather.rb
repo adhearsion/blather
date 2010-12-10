@@ -17,7 +17,7 @@
   blather/errors/stream_error
   blather/file_transfer
   blather/file_transfer/ibb
-  blather/file_transfer/bytestreams
+  blather/file_transfer/s5b
   blather/jid
   blather/roster
   blather/roster_item
@@ -28,8 +28,8 @@
   blather/stanza/iq/query
   blather/stanza/iq/command
   blather/stanza/iq/roster
-  blather/stanza/iq/bytestreams
   blather/stanza/iq/ibb
+  blather/stanza/iq/s5b
   blather/stanza/iq/si
   blather/stanza/iq/vcard
   blather/stanza/disco

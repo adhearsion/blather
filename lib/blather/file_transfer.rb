@@ -6,8 +6,8 @@ module Blather
     # Set this to false if you don't want to use In-Band Bytestreams
     attr_accessor :allow_ibb
 
-    # Set this to false if you don't want to use SOCKS5Bytestreams
-    attr_accessor :allow_bytestreams
+    # Set this to false if you don't want to use SOCKS5 Bytestreams
+    attr_accessor :allow_s5b
 
     # Create a new FileTransfer
     #
@@ -15,7 +15,7 @@ module Blather
     # @param [Blather::Stanza::Iq::Si] iq a si iq used to stream-initiation
     def initialize(stream, iq = nil)
       @stream = stream
-      @allow_bytestreams = true
+      @allow_s5b = true
       @allow_ibb = true
 
       @iq = iq
@@ -31,11 +31,11 @@ module Blather
       answer.si.feature.x.type = :submit
 
       supported_methods = @iq.si.feature.x.field("stream-method").options.map(&:value)
-      if supported_methods.include?(Stanza::Iq::Bytestreams::NS_BYTESTREAMS) and @allow_bytestreams
-        answer.si.feature.x.fields = {:var => 'stream-method', :value => Stanza::Iq::Bytestreams::NS_BYTESTREAMS}
+      if supported_methods.include?(Stanza::Iq::S5b::NS_S5B) and @allow_s5b
+        answer.si.feature.x.fields = {:var => 'stream-method', :value => Stanza::Iq::S5b::NS_S5B}
 
-        @stream.register_handler :bytestreams_open, :from => @iq.from do |iq|
-          transfer = Blather::FileTransfer::Bytestreams.new(@stream, iq)
+        @stream.register_handler :s5b_open, :from => @iq.from do |iq|
+          transfer = Blather::FileTransfer::S5b.new(@stream, iq)
           transfer.allow_ibb_fallback = true if @allow_ibb
           transfer.accept(handler, *params)
           true

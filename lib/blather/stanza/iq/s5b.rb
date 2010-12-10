@@ -1,15 +1,15 @@
 module Blather
 class Stanza
 class Iq
-  NS_BYTESTREAMS = 'http://jabber.org/protocol/bytestreams'
+  NS_S5B = 'http://jabber.org/protocol/bytestreams'
 
   # # SOCKS5 Bytestreams Stanza
   #
   # [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
   #
-  # @handler :bytestreams_open
-  class Bytestreams < Query
-    register :bytestreams_open, :query, NS_BYTESTREAMS
+  # @handler :s5b_open
+  class S5b < Query
+    register :s5b_open, :query, NS_S5B
 
     # Overrides the parent method to remove query node
     #
@@ -29,7 +29,7 @@ class Iq
 
     # Get the used streamhost
     #
-    # @return [Bytestreams::StreamHostUsed]
+    # @return [S5b::StreamHostUsed]
     def streamhost_used
       StreamHostUsed.new query.find_first('.//ns:streamhost-used', :ns => self.class.registered_ns)
     end
@@ -47,7 +47,7 @@ class Iq
 
     # Get the streamhosts
     #
-    # @return [Array<Bytestreams::StreamHost>]
+    # @return [Array<S5b::StreamHost>]
     def streamhosts
       query.find('.//ns:streamhost', :ns => self.class.registered_ns).map do |s|
         StreamHost.new s
@@ -65,9 +65,9 @@ class Iq
     end
 
     class StreamHost < XMPPNode
-      register 'streamhost', NS_BYTESTREAMS
+      register 'streamhost', NS_S5B
 
-      # Create a new Bytestreams::StreamHost
+      # Create a new S5b::StreamHost
       #
       # @overload new(node)
       #   Create a new StreamHost by inheriting an existing node
@@ -153,9 +153,9 @@ class Iq
     end
 
     class StreamHostUsed < XMPPNode
-      register 'streamhost-used', NS_BYTESTREAMS
+      register 'streamhost-used', NS_S5B
 
-      # Create a new Bytestreams::StreamHostUsed
+      # Create a new S5b::StreamHostUsed
       #
       # @overload new(node)
       #   Create a new StreamHostUsed by inheriting an existing node

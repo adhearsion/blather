@@ -27,7 +27,7 @@ class Iq
   #     client.register_handler :file_transfer do |iq|
   #       transfer = Blather::FileTransfer.new(client, iq)
   #       transfer.allow_ibb = true
-  #       transfer.allow_bytestreams = false
+  #       transfer.allow_s5b = false
   #       transfer.accept(MyFileReceiver, iq)
   #     end
   #
