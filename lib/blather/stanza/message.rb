@@ -268,7 +268,7 @@ class Stanza
     #
     # @return [XML::Node]
     def xhtml_node
-      unless h = find_first('ns:html', :ns => HTML_NS)
+      unless h = find_first('ns:html', :ns => HTML_NS) || find_first('ns:html', :ns => HTML_BODY_NS)
         self << (h = XMPPNode.new('html', self.document))
         h.namespace = HTML_NS
       end
