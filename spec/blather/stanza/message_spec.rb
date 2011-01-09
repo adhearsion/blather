@@ -1,5 +1,40 @@
 require File.expand_path "../../../spec_helper", __FILE__
 
+def ichat_message_xml
+  <<-XML
+  <message from="juliet@example.com/balcony" to="romeo@example.net" type="chat" id="iChat_5FA6C6DC">
+  <body>Hello</body>
+  <html xmlns="http://www.w3.org/1999/xhtml">
+  <body style="background-color:#7bb5ee;color:#000000;">
+  <span style="font-family: 'Arial';font-size: 12px;color: #262626;">Hello</span>
+  <img alt="f5ad3a04d218d7160fa02415e02d41b3.jpg" src="message-attachments:1" width="30" height="30"/>
+  </body>
+  </html>
+
+  <x xmlns="http://www.apple.com/xmpp/message-attachments">
+  <attachment id="1">
+  <sipub xmlns="http://jabber.org/protocol/sipub" from="juliet@example.com/balcony" id="sipubid_77933F62" mime-type="binary/octet-stream" profile="http://jabber.org/protocol/si/profile/file-transfer">
+  <file xmlns="http://jabber.org/protocol/si/profile/file-transfer" xmlns:ichat="apple:profile:transfer-extensions" name="f5ad3a04d218d7160fa02415e02d41b3.jpg" size="1245" posixflags="000001A4"/>
+  </sipub>
+  </attachment>
+  </x>
+
+  <iq type="set" id="iChat_4CC32F1F" to="romeo@example.net">
+  <si xmlns="http://jabber.org/protocol/si" id="sid_60C2D273" mime-type="binary/octet-stream" profile="http://jabber.org/protocol/si/profile/file-transfer">
+  <file xmlns="http://jabber.org/protocol/si/profile/file-transfer" xmlns:ichat="apple:profile:transfer-extensions" name="f5ad3a04d218d7160fa02415e02d41b3.jpg" size="1245" posixflags="000001A4"/>
+  <feature xmlns="http://jabber.org/protocol/feature-neg">
+  <x xmlns="jabber:x:data" type="form">
+  <field type="list-single" var="stream-method">
+  <option><value>http://jabber.org/protocol/bytestreams</value></option>
+  </field>
+  </x>
+  </feature>
+  </si>
+  </iq>
+  </message>
+  XML
+end
+
 def message_xml
   <<-XML
     <message
@@ -23,6 +58,7 @@ describe Blather::Stanza::Message do
 
   it 'must be importable' do
     Blather::XMPPNode.import(parse_stanza(message_xml).root).must_be_instance_of Blather::Stanza::Message
+    Blather::XMPPNode.import(parse_stanza(ichat_message_xml).root).must_be_instance_of Blather::Stanza::Message
   end
 
   it 'provides "attr_accessor" for body' do
@@ -158,7 +194,7 @@ describe Blather::Stanza::Message do
 
     msg.xpath('ns:*', :ns => Blather::Stanza::Message::CHAT_STATE_NS).size.must_equal(1)
   end
-  
+
   it 'ensures chat state setter accepts strings' do
     msg = Blather::Stanza::Message.new
     msg.chat_state = "gone"

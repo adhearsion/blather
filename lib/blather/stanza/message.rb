@@ -175,7 +175,7 @@ class Stanza
         klass = class_from_registration(e.element_name, ns)
       end
 
-      if klass && klass != self && klass != Blather::Stanza::X
+      if klass && klass != self && ![Blather::Stanza::X, Blather::Stanza::Iq].include?(klass)
         klass.import(node)
       else
         new(node[:type]).inherit(node)
