@@ -3,12 +3,14 @@
   rubygems
   eventmachine
   nokogiri
+  ipaddr
   digest/md5
   digest/sha1
   logger
 
   blather/core_ext/active_support
   blather/core_ext/eventmachine
+  blather/core_ext/ipaddr
   blather/core_ext/nokogiri
 
   blather/errors
