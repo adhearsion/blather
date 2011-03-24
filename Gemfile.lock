@@ -1,0 +1,28 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    eventmachine (0.12.10)
+    git (1.2.5)
+    jeweler (1.5.2)
+      bundler (~> 1.0.0)
+      git (>= 1.2.5)
+      rake
+    minitest (1.7.2)
+    mocha (0.9.12)
+    nokogiri (1.4.4)
+    rake (0.8.7)
+    rcov (0.9.9)
+    yard (0.6.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.0.0)
+  eventmachine (~> 0.12.6)
+  jeweler (~> 1.5.2)
+  minitest (~> 1.7.1)
+  mocha (~> 0.9.12)
+  nokogiri (~> 1.4.0)
+  rcov (~> 0.9.9)
+  yard (~> 0.6.0)
