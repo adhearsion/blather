@@ -201,7 +201,7 @@ module Blather
       @setup << port if port
       self
     end
-    
+
     def ready?
       @state == :ready
     end

@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
-require File.join(File.dirname(__FILE__), *%w[.. lib blather client])
+require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. lib blather client]))
 require "blather/client/dsl/muc"
+
+setup 'echo@jabber.local/muc', 'echo'
 
 message :groupchat?, :body do |m|
   puts "New message: #{m.body}"

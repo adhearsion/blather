@@ -67,7 +67,9 @@ $:.unshift(File.dirname(__FILE__))
   blather/stanza/pubsub_owner/delete
   blather/stanza/pubsub_owner/purge
 
-  blather/stanza/muc/invite
+  blather/stanza/message/x
+  blather/stanza/message/muc/invite
+  blather/stanza/message/muc/status
   blather/stanza/muc/join
 
   blather/stanza/x

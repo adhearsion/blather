@@ -11,10 +11,10 @@ module MUC
       node.to        = to
       node
     end
-    
+
     class Configure < Owner
       DATA_NAMESPACE = 'jabber:x:data'
-      
+
       def data=(data = :default)
         create_data[:type] = 'submit'
         unless data.blank? || data == :default
@@ -22,19 +22,19 @@ module MUC
           data.each {|key, value|
             create_field = XMPPNode.new('field', self.document)
             create_field[:var] = key
-            
+
             create_field_value = XMPPNode.new('value', self.document)
             if [TrueClass, FalseClass].include?(value.class)
               value = value ? 1 : 0
             end
             create_field_value.content = value.to_s
-            
+
             create_field << create_field_value
             create_data  << create_field
-          }      
+          }
         end
       end
-      
+
       def data
         items = create_data.find('//ns:field', :ns => self.class.registered_ns)
         items.inject({}) do |hash, item|
@@ -46,7 +46,7 @@ module MUC
         end
       end
 
-      protected    
+      protected
         def create_data
           unless create_data = query.find_first('ns:x', :ns => DATA_NAMESPACE)
             query << (create_data = XMPPNode.new('x', self.document))
@@ -55,7 +55,7 @@ module MUC
           create_data
         end
     end
-    
+
     # <iq from='crone1@shakespeare.lit/desktop'
     #     id='begone'
     #     to='heath@chat.shakespeare.lit'
@@ -67,13 +67,13 @@ module MUC
     #   </query>
     # </iq>
     class Destroy < Owner
-      
+
       def self.new(*args)
         query = super(:set, *args)
         query.create_destroy
         query
       end
-      
+
       def reason=(reason)
         return if reason.blank?
         create_reason.content = reason
@@ -85,7 +85,7 @@ module MUC
         end
         create_reason
       end
-    
+
       def create_destroy # @private
         unless create_destroy = query.find_first('ns:destroy', :ns => self.class.registered_ns)
           query << (create_destroy = XMPPNode.new('destroy', self.document))
@@ -93,7 +93,7 @@ module MUC
         create_destroy
       end
     end
-    
+
   end #Owner
 
 end #MUC

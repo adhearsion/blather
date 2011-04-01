@@ -150,6 +150,7 @@ module Blather
 
     rescue ParseError => e
       @error = e
+      Blather.logger.debug e
       send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
       stop
     end
