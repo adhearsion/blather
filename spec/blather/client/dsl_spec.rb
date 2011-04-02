@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 require 'blather/client/dsl'
 
 describe Blather::DSL do

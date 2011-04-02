@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
-require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
+require 'spec_helper'
+require 'fixtures/pubsub'
 
 def control_affiliations
   { :owner => ['node1', 'node2'],

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 
 describe Blather::Stream::Parser do
   before do

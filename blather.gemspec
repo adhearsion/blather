@@ -31,6 +31,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<eventmachine>, [">= 0.12.6"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.0"])
       s.add_development_dependency(%q<minitest>, [">= 1.7.1"])
+      s.add_development_dependency(%q<mocha>)
+      s.add_development_dependency(%q<rake>)
     else
       s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
       s.add_dependency(%q<nokogiri>, [">= 1.4.0"])

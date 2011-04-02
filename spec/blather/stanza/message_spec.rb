@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 
 def message_xml
   <<-XML
@@ -158,7 +158,7 @@ describe Blather::Stanza::Message do
 
     msg.xpath('ns:*', :ns => Blather::Stanza::Message::CHAT_STATE_NS).size.must_equal(1)
   end
-  
+
   it 'ensures chat state setter accepts strings' do
     msg = Blather::Stanza::Message.new
     msg.chat_state = "gone"

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
+require 'spec_helper'
 
 describe Blather::Stanza::Iq::Query do
   it 'registers itself' do

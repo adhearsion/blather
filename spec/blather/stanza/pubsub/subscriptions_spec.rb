@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
-require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
+require 'spec_helper'
+require 'fixtures/pubsub'
 
 def control_subscriptions
   { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit', :subid => 'fd8237yr872h3f289j2'}, {:node => 'node2', :jid => 'francisco@denmark.lit', :subid => 'h8394hf8923ju'}],

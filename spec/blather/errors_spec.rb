@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. spec_helper])
+require 'spec_helper'
 
 describe Blather::BlatherError do
   it 'is handled by :error' do

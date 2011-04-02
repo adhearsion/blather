@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
+require 'spec_helper'
 
 def command_xml
   <<-XML
@@ -90,7 +90,7 @@ describe Blather::Stanza::Iq::Command do
     c.action.must_equal :execute
     c.reply.action.must_equal nil
   end
-  
+
   it 'removes action on reply!' do
     c = Blather::XMPPNode.import parse_stanza(command_xml).root
     c.action.must_equal :execute

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 require 'blather/client/client'
 
 describe Blather::Client do
@@ -81,7 +81,7 @@ describe Blather::Client do
     disconnected = mock()
     disconnected.expects(:call)
     @client.register_handler(:disconnected) { disconnected.call }
-    @client.unbind    
+    @client.unbind
   end
 
   it 'does not call EM.stop on #unbind if a handler returns positive' do
@@ -309,7 +309,7 @@ describe 'Blather::Client with a Component stream' do
     class MockComponent < Blather::Stream::Component; def initialize(); end; end
     @stream = MockComponent.new('')
     @stream.stubs(:send_data)
-    @client = Blather::Client.new 
+    @client = Blather::Client.new
     @client.setup('me.com', 'secret')
   end
 
@@ -325,7 +325,7 @@ describe 'Blather::Client with a Client stream' do
   before do
     class MockClientStream < Blather::Stream::Client; def initialize(); end; end
     @stream = MockClientStream.new('')
-    @client = Blather::Client.new 
+    @client = Blather::Client.new
     Blather::Stream::Client.stubs(:start).returns @stream
     @client.setup('me@me.com', 'secret').run
   end

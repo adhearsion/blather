@@ -1,11 +1,11 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 
 def stanza_error_node(type = 'cancel', error = 'internal-server-error', msg = nil)
   node = Blather::Stanza::Message.new 'error@jabber.local', 'test message', :error
 
   node << (error_node = Blather::XMPPNode.new('error'))
   error_node['type'] = type.to_s
-  
+
   error_node << (err = Blather::XMPPNode.new(error, error_node.document))
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-stanzas'
 

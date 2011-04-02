@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 
 def sasl_error_node(err_name = 'aborted')
   node = Blather::XMPPNode.new 'failure'

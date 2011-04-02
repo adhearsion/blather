@@ -1,9 +1,9 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require 'spec_helper'
 
 def stream_error_node(error = 'internal-server-error', msg = nil)
   node = Blather::XMPPNode.new('error')
   node.namespace = {'stream' => Blather::Stream::STREAM_NS}
-  
+
   node << (err = Blather::XMPPNode.new(error, node.document))
   err.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
 
