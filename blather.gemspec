@@ -13,8 +13,6 @@ Gem::Specification.new do |s|
   s.summary     = %q{Simpler XMPP built for speed}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
 
-  s.rubyforge_project = "squishtech"
-
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
@@ -27,11 +25,16 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<eventmachine>, [">= 0.12.6"])
-      s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.0"])
-      s.add_development_dependency(%q<minitest>, [">= 1.7.1"])
-      s.add_development_dependency(%q<mocha>)
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<eventmachine>, ["~> 0.12.6"])
+      s.add_runtime_dependency(%q<nokogiri>, ["~> 1.4.0"])
+
+      s.add_development_dependency(%q<minitest>, ["~> 1.7.1"])
+      s.add_development_dependency(%q<mocha>, ["~> 0.9.12"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<rcov>, ["~> 0.9.9"])
+      s.add_development_dependency(%q<yard>, ["~> 0.6.1"])
+      s.add_development_dependency(%q<bluecloth>, ["~> 2.1.0"])
       s.add_development_dependency(%q<rake>)
     else
       s.add_dependency(%q<eventmachine>, [">= 0.12.6"])

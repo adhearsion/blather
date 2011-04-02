@@ -36,7 +36,7 @@ end
 
 class Symbol  # @private
   def duplicable?; false; end
-  def to_proc; proc { |obj, *args| obj.send(self, *args) }; end
+  def to_proc; Proc.new { |*args| args.shift.__send__(self, *args) }; end
 end
 
 class Numeric  # @private
