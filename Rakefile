@@ -1,35 +1,8 @@
 require 'rubygems'
 require 'rake'
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = 'blather'
-    gem.summary = 'Simpler XMPP built for speed'
-    gem.description = 'An XMPP DSL for Ruby written on top of EventMachine and Nokogiri'
-
-    gem.email = 'sprsquish@gmail.com'
-    gem.homepage = 'http://github.com/sprsquish/blather'
-    gem.authors = ['Jeff Smick']
-
-    gem.rubyforge_project = 'squishtech'
-
-    gem.add_dependency 'eventmachine', '>= 0.12.6'
-    gem.add_dependency 'nokogiri', '>= 1.4.0'
-
-    gem.add_development_dependency 'minitest', '>= 1.7.1'
-
-    gem.files = FileList['examples/**/*.rb', 'lib/**/*.rb'].to_a
-
-    gem.test_files = FileList['spec/**/*.rb']
-
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
-end
+require 'bundler'
+Bundler::GemHelper.install_tasks
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|

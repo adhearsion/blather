@@ -3,6 +3,7 @@ Manifest
 doc
 coverage
 *.bundle
+Gemfile.lock
 mkmf.log
 *.o
 Makefile
