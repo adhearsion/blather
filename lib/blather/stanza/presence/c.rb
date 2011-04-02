@@ -6,14 +6,14 @@ class Presence
   #
   # [XEP-0115 - Entity Capabilities](http://http://xmpp.org/extensions/xep-0115.html)
   #
-  # Blather handles c nodes through this class. It provides a set of helper methods 
+  # Blather handles c nodes through this class. It provides a set of helper methods
   # to quickly deal with capabilites presence stanzas.
   #
   # @handler :c
   class C < Presence
     register :c, :c, 'http://jabber.org/protocol/caps'
 
-    VALID_HASH_TYPES = [:md2, :md5, :"sha-1", :"sha-224", :"sha-256", :"sha-384", :"sha-512"].freeze
+    VALID_HASH_TYPES = %w[md2 md5 sha-1 sha-224 sha-256 sha-384 sha-512].freeze
 
     def self.new(node = nil, ver = nil, hash = 'sha-1')
       new_node = super()
@@ -59,7 +59,7 @@ class Presence
     #
     # @param [String, nil] hash the new hash name
     def hash=(hash)
-      if hash && !VALID_HASH_TYPES.include?(hash.to_sym)
+      if hash && !VALID_HASH_TYPES.include?(hash.to_s)
         raise ArgumentError, "Invalid Hash Type (#{hash}), use: #{VALID_HASH_TYPES*' '}"
       end
       c[:hash] = hash

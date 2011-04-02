@@ -3,16 +3,23 @@
   rubygems
   eventmachine
   nokogiri
-  digest
+  ipaddr
+  digest/md5
+  digest/sha1
   logger
 
   blather/core_ext/active_support
+  blather/core_ext/eventmachine
+  blather/core_ext/ipaddr
   blather/core_ext/nokogiri
 
   blather/errors
   blather/errors/sasl_error
   blather/errors/stanza_error
   blather/errors/stream_error
+  blather/file_transfer
+  blather/file_transfer/ibb
+  blather/file_transfer/s5b
   blather/jid
   blather/roster
   blather/roster_item
@@ -23,6 +30,9 @@
   blather/stanza/iq/query
   blather/stanza/iq/command
   blather/stanza/iq/roster
+  blather/stanza/iq/ibb
+  blather/stanza/iq/s5b
+  blather/stanza/iq/si
   blather/stanza/iq/vcard
   blather/stanza/disco
   blather/stanza/disco/disco_info

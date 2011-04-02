@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper])
-require File.join(File.dirname(__FILE__), *%w[.. .. .. fixtures pubsub])
+require File.expand_path "../../../../spec_helper", __FILE__
+require File.expand_path "../../../../fixtures/pubsub", __FILE__
 
 describe Blather::Stanza::PubSub::Event do
   it 'registers itself' do

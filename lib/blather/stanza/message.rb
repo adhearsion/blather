@@ -175,7 +175,7 @@ class Stanza
         klass = class_from_registration(e.element_name, ns)
       end
 
-      if klass && klass != self && klass != Blather::Stanza::X
+      if klass && klass != self && ![Blather::Stanza::X, Blather::Stanza::Iq].include?(klass)
         klass.import(node)
       else
         new(node[:type]).inherit(node)
@@ -268,7 +268,7 @@ class Stanza
     #
     # @return [XML::Node]
     def xhtml_node
-      unless h = find_first('ns:html', :ns => HTML_NS)
+      unless h = find_first('ns:html', :ns => HTML_NS) || find_first('ns:html', :ns => HTML_BODY_NS)
         self << (h = XMPPNode.new('html', self.document))
         h.namespace = HTML_NS
       end

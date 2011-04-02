@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec_helper])
+require File.expand_path "../../../spec_helper", __FILE__
 
 def stanza_error_node(type = 'cancel', error = 'internal-server-error', msg = nil)
   node = Blather::Stanza::Message.new 'error@jabber.local', 'test message', :error

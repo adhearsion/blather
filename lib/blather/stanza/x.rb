@@ -150,6 +150,7 @@ class Stanza
     end
 
     class Field < XMPPNode
+      register :field, 'jabber:x:data'
       VALID_TYPES = [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"].freeze
 
       # Create a new X Field
@@ -292,7 +293,11 @@ class Stanza
       #
       # @param [true, false]
       def required?
-        !self.find_first('required').nil?
+        if self.namespace
+          !self.find_first('ns:required', :ns => self.namespace.href).nil?
+        else
+          !self.find_first('required').nil?
+        end
       end
 
       # Set the field's required flag
@@ -307,7 +312,11 @@ class Stanza
       #
       # @return [Blather::Stanza::X::Field::Option]
       def options
-        self.find(:option).map { |f| Option.new(f) }
+        if self.namespace
+          self.find('ns:option', :ns => self.namespace.href)
+        else
+          self.find('option')
+        end.map { |f| Option.new(f) }
       end
 
       # Add an array of options to field
@@ -329,6 +338,7 @@ class Stanza
       alias_method :==, :eql?
 
       class Option < XMPPNode
+        register :option, 'jabber:x:data'
         # Create a new X Field Option
         # @overload new(node)
         #   Imports the XML::Node to create a Field option object

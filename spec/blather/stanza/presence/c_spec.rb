@@ -25,7 +25,7 @@ describe 'Blather::Stanza::Presence::C' do
 
     Blather::Stanza::Presence::C::VALID_HASH_TYPES.each do |valid_hash|
       c = Blather::Stanza::Presence::C.new nil, nil, valid_hash
-      c.hash.must_equal valid_hash
+      c.hash.must_equal valid_hash.to_sym
     end
   end
 

@@ -1,9 +1,25 @@
+v0.4.15
+  Feature(mironov): Implement XEP-0054: vcard-temp
+  Feature(benlangfeld): Basic support for PubSub subscription notifications as PubSub events
+  Feature(mironov): Ability to clear handlers
+  Feature(mironov): Implement incoming file transfers (XEP-0096, XEP-0065, XEP-0047)
+  Bugfix(mironov): Fix for importing messages with chat states
+  Bugfix(mironov): Added Symbol#to_proc method to work on ruby 1.8.6
+  Bugfix(mironov): Fix roster items .status method to return highest priority presence
+  Bugfix(mironov): Remove old unavailable presences while adding new one
+  Bugfix(mironov): Use Nokogiri::XML::ParseOptions::NOENT to prevent double-encoding of entities
+  Bugfix(benlangfeld): Disco Info Identities should have an xml:lang attribute
+  Bugfix(mironov): Fix lookup path for ruby 1.9
+  Bugfix(mironov): stanza_error.to_node must set type of the error
+  Bugfix(mironov): Allow message to have iq child
+  Bugfix(mironov): Find xhtml body in messages sent from iChat 5.0.3
+
 v0.4.14
   Tests: get specs fully passing on rubinius
   Feature(mironov): Implement XEP-0085 Chat State Notifications
   Bugfix(mironov): send stanzas unformatted
-	Bugfix(mironov): Message#xhtml uses inner_html so tags aren't escaped
-	Bugfix(mironov): Message#xhtml= now works with multiple root nodes
+  Bugfix(mironov): Message#xhtml uses inner_html so tags aren't escaped
+  Bugfix(mironov): Message#xhtml= now works with multiple root nodes
 
 v0.4.13
   Bugfix: Place form child of command inside command element
