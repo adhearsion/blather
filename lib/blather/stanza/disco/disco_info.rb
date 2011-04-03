@@ -59,6 +59,13 @@ class Stanza
       end
     end
 
+    # Compare two DiscoInfo objects by name, type and category
+    # @param [DiscoInfo] o the Identity object to compare against
+    # @return [true, false]
+    def eql?(o, *fields)
+      super o, *(fields + [:identities, :features])
+    end
+
     class Identity < XMPPNode
       # Create a new DiscoInfo Identity
       # @overload new(node)
@@ -182,7 +189,6 @@ class Stanza
       def var=(var)
         write_attr :var, var
       end
-
 
       # Compare two DiscoInfo::Feature objects by name, type and category
       # @param [DiscoInfo::Feature] o the Identity object to compare against

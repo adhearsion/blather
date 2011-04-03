@@ -19,6 +19,13 @@ class Stanza
     def node=(node)
       query[:node] = node
     end
+
+    # Compare two Disco objects by name, type and category
+    # @param [Disco] o the Identity object to compare against
+    # @return [true, false]
+    def eql?(o, *fields)
+      super o, *(fields + [:node])
+    end
   end
 
 end # Stanza
