@@ -146,11 +146,6 @@ describe Blather::Stanza::Iq::DiscoItems::Item do
     n.name.must_equal 'Books by and about Shakespeare'
   end
 
-  it 'raises an error when compared against a non DiscoItems::Item' do
-    a = Blather::Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')
-    lambda { a == 'test' }.must_raise RuntimeError
-  end
-
   it 'can determine equality' do
     a = Blather::Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')
     a.must_equal Blather::Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')

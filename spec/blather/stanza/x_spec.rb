@@ -203,11 +203,6 @@ describe Blather::Stanza::X::Field do
     di.options.size.must_equal 2
   end
 
-  it 'raises an error when compared against a non X::Field' do
-    a = Blather::Stanza::X::Field.new('secret_message', 'hidden')
-    lambda { a == 'test' }.must_raise RuntimeError
-  end
-
   it 'can determine equality' do
     a = Blather::Stanza::X::Field.new('subject', 'text-single')
     a.must_equal Blather::Stanza::X::Field.new('subject', 'text-single')

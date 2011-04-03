@@ -121,19 +121,13 @@ class Stanza
         write_attr :name, name
       end
 
-      # Check for equality based on jid, node, and name
-      #
-      # @param [Blather::Stanza::DiscoItems::Item] o the other Item
-      def eql?(o)
-        unless o.is_a?(self.class)
-          raise "Cannot compare #{self.class} with #{o.class}"
-        end
 
-        o.jid == self.jid &&
-        o.node == self.node &&
-        o.name == self.name
+      # Compare two DiscoItems::Item objects by name, type and category
+      # @param [DiscoItems::Item] o the Identity object to compare against
+      # @return [true, false]
+      def eql?(o, *fields)
+        super o, *(fields + [:jid, :node, :name])
       end
-      alias_method :==, :eql?
     end
   end
 

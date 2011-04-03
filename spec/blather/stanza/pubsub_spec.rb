@@ -65,10 +65,4 @@ describe Blather::Stanza::PubSub::PubSubItem do
     item = Blather::Stanza::PubSub::Items::PubSubItem.new 'bar', payload
     item.payload.must_equal payload.to_s
   end
-
-  it 'makes payloads readable as node' do
-    payload = Blather::XMPPNode.new 'foo'
-    item = Blather::Stanza::PubSub::Items::PubSubItem.new 'bar', payload
-    item.payload_node.must_equal payload
-  end
 end

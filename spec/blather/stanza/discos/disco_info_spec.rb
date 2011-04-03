@@ -219,11 +219,6 @@ describe Blather::Stanza::Iq::DiscoInfo::Identity do
     n.xml_lang.must_equal 'de'
   end
 
-  it 'raises an error if equality is sent a non DiscoInfo::Identity object' do
-    a = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-    lambda { a == 'foo' }.must_raise RuntimeError
-  end
-
   it 'can determine equality' do
     a = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
     a.must_equal Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
@@ -243,11 +238,6 @@ describe Blather::Stanza::Iq::DiscoInfo::Feature do
     n.var.must_equal 'var'
     n.var = :foo
     n.var.must_equal 'foo'
-  end
-
-  it 'raises an error if equality is sent a non DiscoInfo::Feature object' do
-    a = Blather::Stanza::Iq::DiscoInfo::Feature.new('var')
-    lambda { a == 'foo' }.must_raise RuntimeError
   end
 
   it 'can determine equality' do

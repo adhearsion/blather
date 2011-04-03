@@ -213,6 +213,14 @@ module Blather
     def inspect
       self.to_xml
     end
+
+    def eql?(o, *fields)
+      o.is_a?(self.class) && fields.all? { |f| self.__send__(f) == o.__send__(f) }
+    end
+
+    def ==(o)
+      eql?(o)
+    end
   end  # XMPPNode
 
 end  # Blather

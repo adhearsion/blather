@@ -146,17 +146,9 @@ class Stanza
       # Compare two Identity objects by name, type and category
       # @param [DiscoInfo::Identity] o the Identity object to compare against
       # @return [true, false]
-      def eql?(o)
-        unless o.is_a?(self.class)
-          raise "Cannot compare #{self.class} with #{o.class}"
-        end
-
-        o.name == self.name &&
-        o.type == self.type &&
-        o.category == self.category &&
-        o.xml_lang == self.xml_lang
+      def eql?(o, *fields)
+        super o, *(fields + [:name, :type, :category, :xml_lang])
       end
-      alias_method :==, :eql?
     end # Identity
 
     class Feature < XMPPNode
@@ -191,17 +183,13 @@ class Stanza
         write_attr :var, var
       end
 
-      # Compare two Feature objects by var
-      # @param [DiscoInfo::Feature] o the Feature object to compare against
-      # @return [true, false]
-      def eql?(o)
-        unless o.is_a?(self.class)
-          raise "Cannot compare #{self.class} with #{o.class}"
-        end
 
-        o.var == self.var
+      # Compare two DiscoInfo::Feature objects by name, type and category
+      # @param [DiscoInfo::Feature] o the Identity object to compare against
+      # @return [true, false]
+      def eql?(o, *fields)
+        super o, *(fields + [:var])
       end
-      alias_method :==, :eql?
     end
   end # Feature
 
