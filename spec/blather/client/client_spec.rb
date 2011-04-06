@@ -61,6 +61,19 @@ describe Blather::Client do
     @client.run
   end
 
+  it 'knows if it is disconnected' do
+    @client.must_respond_to :connected?
+    @client.connected?.must_equal false
+  end
+
+  it 'knows if it is connected' do
+    stream = mock()
+    stream.expects(:stopped?).returns false
+    @client.setup('me.com', 'secret')
+    @client.post_init stream, Blather::JID.new('me.com')
+    @client.connected?.must_equal true
+  end
+
   it 'writes to the connection the closes when #close is called' do
     stream = mock()
     stream.expects(:close_connection_after_writing)

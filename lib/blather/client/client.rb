@@ -62,6 +62,11 @@ module Blather
       setup_initial_handlers
     end
 
+    # Check whether the client is currently connected.
+    def connected?
+      setup? && !@stream.stopped?
+    end
+
     # Get the current status. Taken from the `state` attribute of Status
     def status
       @status.state
