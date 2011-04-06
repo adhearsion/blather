@@ -331,11 +331,9 @@ class Stanza
       # Compare two Field objects by type, var and label
       # @param [X::Field] o the Field object to compare against
       # @return [true, false]
-      def eql?(o)
-        raise "Cannot compare #{self.class} with #{o.class}" unless o.is_a?(self.class)
-        ![:type, :var, :label, :desc, :required?, :value].detect { |m| o.send(m) != self.send(m) }
+      def eql?(o, *fields)
+        super o, *(fields + [:type, :var, :label, :desc, :required?, :value])
       end
-      alias_method :==, :eql?
 
       class Option < XMPPNode
         register :option, 'jabber:x:data'

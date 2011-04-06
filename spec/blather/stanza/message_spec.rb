@@ -1,4 +1,4 @@
-require File.expand_path "../../../spec_helper", __FILE__
+require 'spec_helper'
 
 def ichat_message_xml
   <<-XML

@@ -1,5 +1,5 @@
-require File.expand_path "../../../../spec_helper", __FILE__
-require File.expand_path "../../../../fixtures/pubsub", __FILE__
+require 'spec_helper'
+require 'fixtures/pubsub'
 
 def control_subscriptions
   { :subscribed => [{:node => 'node1', :jid => 'francisco@denmark.lit', :subid => 'fd8237yr872h3f289j2'}, {:node => 'node2', :jid => 'francisco@denmark.lit', :subid => 'h8394hf8923ju'}],

@@ -122,8 +122,11 @@ module Blather
       self.jid.to_s <=> o.jid.to_s
     end
 
-    def eql?(o)
-      o.is_a?(RosterItem) &&
+    # Compare two RosterItem objects by name, type and category
+    # @param [RosterItem] o the Identity object to compare against
+    # @return [true, false]
+    def eql?(o, *fields)
+      o.is_a?(self.class) &&
       o.jid == self.jid &&
       o.groups == self.groups
     end

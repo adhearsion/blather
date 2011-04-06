@@ -1,4 +1,4 @@
-require File.expand_path "../../../../spec_helper", __FILE__
+require 'spec_helper'
 
 def vcard_xml
 <<-XML
@@ -44,7 +44,7 @@ describe Blather::Stanza::Iq::Vcard do
     new_vcard["NICKNAME"] = 'Mercutio'
 
     query.vcard = new_vcard
-    
+
     query.xpath('ns:vCard', :ns => 'vcard-temp').size.must_equal 1
     query.find_first('ns:vCard/ns:NICKNAME', :ns => 'vcard-temp').content.must_equal 'Mercutio'
   end

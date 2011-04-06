@@ -1,9 +1,12 @@
-require File.expand_path "../../../spec_helper", __FILE__
+require 'spec_helper'
 require 'blather/client/dsl'
 
 describe Blather::DSL do
   before do
-    @client = mock()
+    @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @client.post_init @stream, Blather::JID.new('n@d/r')
     @dsl = Class.new { include Blather::DSL }.new
     Blather::Client.stubs(:new).returns(@client)
   end
@@ -95,7 +98,7 @@ describe Blather::DSL do
   it 'provides a "say" helper' do
     to, msg = 'me@me.com', 'hello!'
     Blather::Stanza::Message.stubs(:next_id).returns 0
-    @client.expects(:write).with { |n| n.to_s.must_equal Blather::Stanza::Message.new(to, msg).to_s }
+    @client.expects(:write).with Blather::Stanza::Message.new(to, msg)
     @dsl.say to, msg
   end
 
@@ -111,7 +114,7 @@ describe Blather::DSL do
     expected_stanza = Blather::Stanza::Disco::DiscoItems.new
     expected_stanza.to = who
     expected_stanza.node = where
-    @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
+    @client.expects(:write).with expected_stanza
     @dsl.discover what, who, where
   end
 
@@ -122,8 +125,85 @@ describe Blather::DSL do
     expected_stanza = Blather::Stanza::Disco::DiscoInfo.new
     expected_stanza.to = who
     expected_stanza.node = where
-    @client.expects(:write).with { |n| n.to_s.must_equal expected_stanza.to_s }
+    @client.expects(:write).with expected_stanza
     @dsl.discover what, who, where
+  end
+
+  it 'provides a caps set helper' do
+    @dsl.must_respond_to :set_caps
+    node = 'http://code.google.com/p/exodus'
+    identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    features = %w{
+                  http://jabber.org/protocol/caps
+                  http://jabber.org/protocol/disco#info
+                  http://jabber.org/protocol/disco#items
+                  http://jabber.org/protocol/muc
+                }
+    @dsl.set_caps node, identities, features
+    @client.caps.node.must_equal "#{node}##{@client.caps.ver}"
+    @client.caps.identities.must_equal identities
+    @client.caps.features.map{ |f| f.var }.must_equal features
+  end
+
+  it 'provides a caps send helper' do
+    @dsl.must_respond_to :send_caps
+    @client.caps.node = 'http://code.google.com/p/exodus'
+    @client.caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @client.caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    expected_stanza = Blather::Stanza.import(parse_stanza(<<-XML).root)
+      <presence>
+        <c xmlns="http://jabber.org/protocol/caps" hash="sha-1"
+           node="http://code.google.com/p/exodus"
+           ver="QgayPKawpkPSDYmwT/WM94uAlu0="
+        />
+      </presence>
+    XML
+    @client.expects(:write).with expected_stanza
+    @client.expects(:register_handler).with(:disco_info, :type => :get, :node => "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=")
+    @dsl.send_caps
+  end
+
+  it 'responds with correct disco stanza after sending caps and receiving query' do
+    @client.caps.node = 'http://code.google.com/p/exodus'
+    @client.caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @client.caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    stanza = <<-XML
+      <iq from='juliet@capulet.lit/chamber'
+          id='disco1'
+          to='romeo@montague.lit/orchard'
+          type='get'>
+        <query xmlns='http://jabber.org/protocol/disco#info'
+               node='http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0='/>
+      </iq>
+    XML
+    @stanza = Blather::Stanza.import(parse_stanza(stanza).root)
+
+    expected_stanza = Blather::Stanza.import(parse_stanza(<<-XML).root)
+      <iq type="result" id="disco1" to="juliet@capulet.lit/chamber">
+        <query xmlns="http://jabber.org/protocol/disco#info" node="http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=">
+          <identity name="Exodus 0.9.1" category="client" type="pc"/>
+          <feature var="http://jabber.org/protocol/caps"/>
+          <feature var="http://jabber.org/protocol/disco#info"/>
+          <feature var="http://jabber.org/protocol/disco#items"/>
+          <feature var="http://jabber.org/protocol/muc"/>
+        </query>
+      </iq>
+    XML
+    @dsl.send_caps
+    # client writes a Client::Cap object but it's the same as a DiscoInfo
+    # this is a hack to pass the same-class check in XMPPNode#eql?
+    @client.expects(:write).with { |n| Blather::Stanza.import(n) == expected_stanza }
+    @client.receive_data @stanza
   end
 
   Blather::Stanza.handler_list.each do |handler_method|

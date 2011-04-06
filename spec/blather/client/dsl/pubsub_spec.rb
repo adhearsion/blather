@@ -1,5 +1,5 @@
-require File.expand_path "../../../../spec_helper", __FILE__
-require File.expand_path "../../../../fixtures/pubsub", __FILE__
+require 'spec_helper'
+require 'fixtures/pubsub'
 require 'blather/client/dsl'
 
 describe Blather::DSL::PubSub do

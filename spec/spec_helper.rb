@@ -1,9 +1,6 @@
-$:.unshift File.expand_path(File.join(File.dirname(__FILE__), '..'))
-$:.unshift File.expand_path(File.join(File.dirname(__FILE__), *%w[.. lib]))
+$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
 require 'blather'
-require 'rubygems'
-gem 'minitest', '>=1.7.1'
 require 'minitest/spec'
 require 'mocha'
 require 'mocha/expectation_error'
@@ -22,22 +19,18 @@ module MiniTest
         m
       }.call
 
-      init_val = eval(stmt)
+      init_val = eval stmt
       yield
-      new_val = eval(stmt)
+      new_val = eval stmt
 
       assert_equal(args[:by], (new_val - init_val), msg) if args[:by]
       assert_equal([args[:from], args[:to]], [(init_val if args[:from]), new_val], msg) if args[:to]
       refute_equal(init_val, new_val, msg) if args.empty?
     end
-    
+
     def assert_nothing_raised(*args)
       self._assertions += 1
-      if Module === args.last
-        msg = nil
-      else
-        msg = args.pop
-      end
+      msg = Module === args.last ? nil : args.pop
       begin
         line = __LINE__; yield
       rescue Exception => e

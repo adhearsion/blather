@@ -1,0 +1,31 @@
+PATH
+  remote: .
+  specs:
+    blather (0.4.14)
+      eventmachine (~> 0.12.6)
+      nokogiri (~> 1.4.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    bluecloth (2.1.0)
+    eventmachine (0.12.10)
+    minitest (1.7.2)
+    mocha (0.9.12)
+    nokogiri (1.4.4)
+    rake (0.8.7)
+    rcov (0.9.9)
+    yard (0.6.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  blather!
+  bluecloth (~> 2.1.0)
+  bundler (~> 1.0.0)
+  minitest (~> 1.7.1)
+  mocha (~> 0.9.12)
+  rake
+  rcov (~> 0.9.9)
+  yard (~> 0.6.1)

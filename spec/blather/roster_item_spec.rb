@@ -1,4 +1,4 @@
-require File.expand_path "../../spec_helper", __FILE__
+require 'spec_helper'
 
 describe Blather::RosterItem do
   it 'can be initialized with Blather::JID' do

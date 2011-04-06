@@ -1,5 +1,5 @@
-require File.expand_path "../../../../spec_helper", __FILE__
-require File.expand_path "../../../../fixtures/pubsub", __FILE__
+require 'spec_helper'
+require 'fixtures/pubsub'
 
 def control_affiliations
   { :owner => ['node1', 'node2'],

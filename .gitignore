@@ -3,6 +3,7 @@ Manifest
 doc
 coverage
 *.bundle
+Gemfile.lock
 mkmf.log
 *.o
 Makefile
@@ -14,3 +15,4 @@ notes
 .yardoc
 *.rbc
 lib/.DS_Store
+vendor

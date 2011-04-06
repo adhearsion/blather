@@ -1,4 +1,4 @@
-require File.expand_path "../../../spec_helper", __FILE__
+require 'spec_helper'
 require 'blather/client/client'
 
 describe Blather::Client do
@@ -24,6 +24,11 @@ describe Blather::Client do
     @client.must_respond_to :status
     @client.status = :away
     @client.status.must_equal :away
+  end
+
+  it 'should have a caps handler' do
+    @client.must_respond_to :caps
+    @client.caps.must_be_kind_of Blather::Client::Caps
   end
 
   it 'can be setup' do
@@ -569,5 +574,86 @@ describe 'Blather::Client guards' do
 
   it 'raises an error when a bad guard is tried' do
     lambda { @client.register_handler(:iq, 0) {} }.must_raise RuntimeError
+  end
+end
+
+describe 'Blather::Client::Caps' do
+  before do
+    @client = Blather::Client.new
+    @stream = mock()
+    @stream.stubs(:send)
+    @client.post_init @stream, Blather::JID.new('n@d/r')
+    @caps = @client.caps
+  end
+
+  it 'must be of type result' do
+    @caps.must_respond_to :type
+    @caps.type.must_equal :result
+  end
+
+  it 'can have a client node set' do
+    @caps.must_respond_to :node=
+    @caps.node = "somenode"
+  end
+
+  it 'provides a client node reader' do
+    @caps.must_respond_to :node
+    @caps.node = "somenode"
+    @caps.node.must_equal "somenode##{@caps.ver}"
+  end
+
+  it 'can have identities set' do
+    @caps.must_respond_to :identities=
+    @caps.identities = [{:name => "name", :type => "type", :category => "cat"}]
+  end
+
+  it 'provides an identities reader' do
+    @caps.must_respond_to :identities
+    @caps.identities = [{:name => "name", :type => "type", :category => "cat"}]
+    @caps.identities.must_equal [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => "name", :type => "type", :category => "cat"})]
+  end
+
+  it 'can have features set' do
+    @caps.must_respond_to :features=
+    @caps.features.size.must_equal 0
+    @caps.features = ["feature1"]
+    @caps.features.size.must_equal 1
+    @caps.features += [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
+    @caps.features.size.must_equal 2
+    @caps.features = nil
+    @caps.features.size.must_equal 0
+  end
+
+  it 'provides a features reader' do
+    @caps.must_respond_to :features
+    @caps.features = %w{feature1 feature2}
+    @caps.features.must_equal [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature1"), Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
+  end
+
+  it 'provides a client ver reader' do
+    @caps.must_respond_to :ver
+    @caps.node = 'http://code.google.com/p/exodus'
+    @caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    @caps.ver.must_equal 'QgayPKawpkPSDYmwT/WM94uAlu0='
+    @caps.node.must_equal "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0="
+  end
+
+  it 'can construct caps presence correctly' do
+    @caps.must_respond_to :c
+    @caps.node = 'http://code.google.com/p/exodus'
+    @caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
+    @caps.features = %w{
+                          http://jabber.org/protocol/caps
+                          http://jabber.org/protocol/disco#info
+                          http://jabber.org/protocol/disco#items
+                          http://jabber.org/protocol/muc
+                        }
+    @caps.c.inspect.must_equal "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
   end
 end

@@ -1,5 +1,5 @@
-require File.expand_path "../../../spec_helper", __FILE__
-require File.expand_path "../../../fixtures/pubsub", __FILE__
+require 'spec_helper'
+require 'fixtures/pubsub'
 
 describe Blather::Stanza::PubSub do
   it 'registers itself' do
@@ -64,11 +64,5 @@ describe Blather::Stanza::PubSub::PubSubItem do
     payload = Blather::XMPPNode.new 'foo'
     item = Blather::Stanza::PubSub::Items::PubSubItem.new 'bar', payload
     item.payload.must_equal payload.to_s
-  end
-
-  it 'makes payloads readable as node' do
-    payload = Blather::XMPPNode.new 'foo'
-    item = Blather::Stanza::PubSub::Items::PubSubItem.new 'bar', payload
-    item.payload_node.must_equal payload
   end
 end

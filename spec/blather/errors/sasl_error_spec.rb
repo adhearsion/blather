@@ -1,4 +1,4 @@
-require File.expand_path "../../../spec_helper", __FILE__
+require 'spec_helper'
 
 def sasl_error_node(err_name = 'aborted')
   node = Blather::XMPPNode.new 'failure'

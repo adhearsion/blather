@@ -1,5 +1,5 @@
-require File.expand_path "../../../../spec_helper", __FILE__
-require File.expand_path "../../../../fixtures/pubsub", __FILE__
+require 'spec_helper'
+require 'fixtures/pubsub'
 
 describe Blather::Stanza::PubSub::Subscription do
   it 'registers itself' do
@@ -93,5 +93,5 @@ describe Blather::Stanza::PubSub::Subscription do
       Blather::Stanza::PubSub::Subscription.new.must_respond_to :"#{valid_type}?"
     end
   end
-  
+
 end

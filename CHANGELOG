@@ -1,3 +1,10 @@
+v0.4.16
+	Feature(benlangfeld): switch from jeweler to bundler
+	Feature(benlangfeld): add cap support (XEP-0115)
+	Bugfix(sprsquish): Better equality checking
+	Bugfix(sprsquish): Fix #to_proc
+	Bugfix(mironov): Skip private IPs by default
+
 v0.4.15
   Feature(mironov): Implement XEP-0054: vcard-temp
   Feature(benlangfeld): Basic support for PubSub subscription notifications as PubSub events

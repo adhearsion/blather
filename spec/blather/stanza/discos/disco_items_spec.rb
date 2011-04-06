@@ -1,4 +1,4 @@
-require File.expand_path "../../../../spec_helper", __FILE__
+require 'spec_helper'
 
 def disco_items_xml
   <<-XML
@@ -144,11 +144,6 @@ describe Blather::Stanza::Iq::DiscoItems::Item do
     n.name.must_equal 'Music from the time of Shakespeare'
     n.name = 'Books by and about Shakespeare'
     n.name.must_equal 'Books by and about Shakespeare'
-  end
-
-  it 'raises an error when compared against a non DiscoItems::Item' do
-    a = Blather::Stanza::Iq::DiscoItems::Item.new('foo@bar/baz')
-    lambda { a == 'test' }.must_raise RuntimeError
   end
 
   it 'can determine equality' do

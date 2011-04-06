@@ -7,10 +7,17 @@ module Blather
       # Set this to false if you don't want to fallback to In-Band Bytestreams
       attr_accessor :allow_ibb_fallback
 
+      # Set this to true if the buddies of your bot will be in the same local network
+      #
+      # Usually IM clients advertise all network addresses which they can determine.
+      # Skipping the local ones can save time if your bot is not in the same local network as it's buddies
+      attr_accessor :allow_private_ips
+
       def initialize(stream, iq)
         @stream = stream
         @iq = iq
         @allow_ibb_fallback = true
+        @allow_private_ips = false
       end
 
       # Accept an incoming file-transfer
@@ -19,6 +26,7 @@ module Blather
       # @param [Array] params the params to be passed into the handler
       def accept(handler, *params)
         @streamhosts = @iq.streamhosts
+        @streamhosts.delete_if {|s| begin IPAddr.new(s.host).private? rescue false end } unless @allow_private_ips
         @socket_address = Digest::SHA1.hexdigest("#{@iq.sid}#{@iq.from}#{@iq.to}")
 
         @handler = handler
