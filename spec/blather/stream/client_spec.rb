@@ -666,7 +666,7 @@ describe Blather::Stream::Client do
     end
   end
 
-  it 'fails when an unkown node comes through during SASL negotiation' do
+  it 'fails when an unknown node comes through during SASL negotiation' do
     @client = mock()
     @client.expects(:receive_data).with do |n|
       n.must_be_instance_of Blather::UnknownResponse
@@ -827,7 +827,7 @@ describe Blather::Stream::Client do
     end
   end
 
-  it 'will return an error if an unkown node comes through during resouce binding' do
+  it 'will return an error if an unknown node comes through during resouce binding' do
     state = nil
     @client = mock()
     @client.expects(:receive_data).with do |n|

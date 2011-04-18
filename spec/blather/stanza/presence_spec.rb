@@ -56,7 +56,7 @@ describe Blather::Stanza::Presence do
     s.type.must_equal :subscribe
   end
 
-  it 'creates a Presence object when importing a node with type equal to something unkown' do
+  it 'creates a Presence object when importing a node with type equal to something unknown' do
     n = Blather::XMPPNode.new
     n[:type] = :foo
     s = Blather::Stanza::Presence.import(n)
