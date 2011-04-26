@@ -124,7 +124,11 @@ class Stanza
       super
     end
 
-    # Overrides the parent method to ensure the reply is of type :result
+    # Overrides the parent method to ensure the reply is of type :result and that
+    # all children are removed.
+    #
+    # @param [Hash] opts options to pass to reply! Specify :remove_children => false
+    # to prevent children from being removed
     #
     # @return [self]
     def reply!(opts = {})
