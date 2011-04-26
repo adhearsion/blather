@@ -130,6 +130,7 @@ class Stanza
     def reply!
       super
       self.type = :result
+      self.children.remove
       self
     end
   end
