@@ -54,8 +54,8 @@ module Blather
 
     # Creates a copy with to and from swapped
     #
-    # @param [Hash] opts options to pass to reply! Specify :remove_children => true
-    # to force children to be removed
+    # @param [Hash] opts options to pass to reply!
+    # @option opts [Boolean] :remove_children Wether or not to remove child nodes when replying
     #
     # @return [Blather::Stanza]
     def reply(opts = {})
@@ -64,8 +64,8 @@ module Blather
 
     # Swaps from and to
     #
-    # @param [Hash] opts Misc options. Specify :remove_children => true
-    # to force children to be removed
+    # @param [Hash] opts Misc options
+    # @option opts [Boolean] :remove_children Wether or not to remove child nodes when replying
     #
     # @return [self]
     def reply!(opts = {})
