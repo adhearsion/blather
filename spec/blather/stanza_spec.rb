@@ -62,6 +62,24 @@ describe Blather::Stanza do
     r.to.must_equal f
   end
 
+  it 'does not remove the body when replying' do
+    s = Blather::Stanza.new('message')
+    s.from = f = Blather::JID.new('n@d/r')
+    s.to = t = Blather::JID.new('d@n/r')
+    s << Blather::XMPPNode.new('query', s.document)
+    r = s.reply
+    r.children.empty?.must_equal false
+  end
+
+  it 'removes the body when replying if we ask to remove it' do
+    s = Blather::Stanza.new('message')
+    s.from = f = Blather::JID.new('n@d/r')
+    s.to = t = Blather::JID.new('d@n/r')
+    s << Blather::XMPPNode.new('query', s.document)
+    r = s.reply :remove_children => true
+    r.children.empty?.must_equal true
+  end
+
   it 'provides "attr_accessor" for id' do
     s = Blather::Stanza.new('message')
     s.id.must_be_nil

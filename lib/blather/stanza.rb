@@ -55,15 +55,17 @@ module Blather
     # Creates a copy with to and from swapped
     #
     # @return [Blather::Stanza]
-    def reply
-      self.dup.reply!
+    def reply(opts = {})
+      self.dup.reply! opts
     end
 
     # Swaps from and to
     #
     # @return [self]
-    def reply!
+    def reply!(opts = {})
+      opts = {:remove_children => false}.merge opts
       self.to, self.from = self.from, self.to
+      self.children.remove if opts[:remove_children]
       self
     end
 

@@ -127,10 +127,10 @@ class Stanza
     # Overrides the parent method to ensure the reply is of type :result
     #
     # @return [self]
-    def reply!
+    def reply!(opts = {})
+      opts = {:remove_children => true}.merge opts
       super
       self.type = :result
-      self.children.remove
       self
     end
   end

@@ -45,7 +45,7 @@ class Iq
     # Overrides the parent method to ensure the reply has no action
     #
     # @return [self]
-    def reply!
+    def reply!(opts = {})
       super
       self.action = nil
       self
