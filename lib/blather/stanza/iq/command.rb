@@ -44,8 +44,11 @@ class Iq
 
     # Overrides the parent method to ensure the reply has no action
     #
+    # @param [Hash] opts options to pass to reply!
+    # @option opts [Boolean] :remove_children Wether or not to remove child nodes when replying
+    #
     # @return [self]
-    def reply!
+    def reply!(opts = {})
       super
       self.action = nil
       self

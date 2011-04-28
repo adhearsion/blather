@@ -42,4 +42,20 @@ describe Blather::Stanza::Iq do
       Blather::Stanza::Iq.new.must_respond_to :"#{valid_type}?"
     end
   end
+
+  it 'removes the body when replying' do
+    iq = Blather::Stanza::Iq.new :get, 'me@example.com'
+    iq.from = 'them@example.com'
+    iq << Blather::XMPPNode.new('query', iq.document)
+    r = iq.reply
+    r.children.empty?.must_equal true
+  end
+
+  it 'does not remove the body when replying if we ask to keep it' do
+    iq = Blather::Stanza::Iq.new :get, 'me@example.com'
+    iq.from = 'them@example.com'
+    iq << Blather::XMPPNode.new('query', iq.document)
+    r = iq.reply :remove_children => false
+    r.children.empty?.must_equal false
+  end
 end
