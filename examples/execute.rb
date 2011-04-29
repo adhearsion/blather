@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
 require 'blather/client'
 
 message :chat?, :body => 'exit' do |m|

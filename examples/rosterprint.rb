@@ -2,6 +2,7 @@
 
 # Prints out each roster entry
 
+require 'rubygems'
 require 'blather/client'
 
 when_ready do

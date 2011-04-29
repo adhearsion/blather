@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
 require 'blather/client'
 
 when_ready { puts "Connected ! send messages to #{jid.stripped}." }
