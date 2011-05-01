@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'blather/client/dsl'
 $stdout.sync = true
 

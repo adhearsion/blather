@@ -2,6 +2,7 @@
 
 # This bot will reply to every message it receives. To end the game, send 'exit'
 
+require 'rubygems'
 require 'xmpp4r/client'
 include Jabber
 
