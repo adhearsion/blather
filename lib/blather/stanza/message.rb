@@ -157,12 +157,17 @@ class Stanza
   #
   # @handler :message
   class Message < Stanza
+    # @private
     VALID_TYPES = [:chat, :error, :groupchat, :headline, :normal].freeze
 
+    # @private
     VALID_CHAT_STATES = [:active, :composing, :gone, :inactive, :paused].freeze
+    # @private
     CHAT_STATE_NS = 'http://jabber.org/protocol/chatstates'.freeze
 
+    # @private
     HTML_NS = 'http://jabber.org/protocol/xhtml-im'.freeze
+    # @private
     HTML_BODY_NS = 'http://www.w3.org/1999/xhtml'.freeze
 
     register :message

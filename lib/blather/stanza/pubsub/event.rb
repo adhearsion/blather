@@ -11,6 +11,7 @@ class PubSub
   #
   # @handler :pubsub_event
   class Event < Message
+    # @private
     SHIM_NS = 'http://jabber.org/protocol/shim'.freeze
 
     register :pubsub_event, :event, 'http://jabber.org/protocol/pubsub#event'
@@ -130,10 +131,7 @@ class PubSub
     def subscription_node
       event_node.find_first('//ns:subscription', :ns => self.class.registered_ns)
     end
-
-    def subscription
-      subscription_node
-    end
+    alias_method :subscription, :subscription_node
   end  # Event
 
 end  # PubSub

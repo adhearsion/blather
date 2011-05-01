@@ -1,7 +1,8 @@
-module Blather # :nodoc:
-class Stream # :nodoc:
+module Blather
+class Stream
 
-  class SASL < Features # :nodoc:
+  # @private
+  class SASL < Features
     class UnknownMechanism < BlatherError
       register :sasl_unknown_mechanism
     end
@@ -68,7 +69,7 @@ class Stream # :nodoc:
       when nil          then  fail!(SASLError.import(@node))
       else                    next!
       end
-      
+
       if method.is_a?(Module)
         extend method
         authenticate
@@ -170,13 +171,15 @@ class Stream # :nodoc:
       def h(s); Digest::MD5.hexdigest(s); end
     end #DigestMD5
 
-    module Plain # :nodoc:
+    # @private
+    module Plain
       def authenticate
         @stream.send auth_node('PLAIN', b64("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
       end
     end #Plain
 
-    module Anonymous # :nodoc:
+    # @private
+    module Anonymous
       def authenticate
         @stream.send auth_node('ANONYMOUS')
       end

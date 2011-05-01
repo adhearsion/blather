@@ -23,10 +23,8 @@ require 'yard'
 YARD::Tags::Library.define_tag 'Blather handler', :handler, :with_name
 YARD::Templates::Engine.register_template_path 'yard/templates'
 
-YARD::Rake::YardocTask.new do |t|
+YARD::Rake::YardocTask.new(:doc) do |t|
   t.options = ['--no-private', '-m', 'markdown', '-o', './doc/public/yard']
 end
 
-desc 'Generate documentation'
-task :doc => :yard
 task :default => :test

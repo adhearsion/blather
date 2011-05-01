@@ -46,12 +46,14 @@ module Blather
   class JID
     include Comparable
 
+    # Validating pattern for JID string
     PATTERN = /^(?:([^@]*)@)??([^@\/]*)(?:\/(.*?))?$/.freeze
 
     attr_reader :node,
                 :domain,
                 :resource
 
+    # @private
     def self.new(node, domain = nil, resource = nil)
       node.is_a?(JID) ? node : super
     end

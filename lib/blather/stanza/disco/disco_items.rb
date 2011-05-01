@@ -121,7 +121,6 @@ class Stanza
         write_attr :name, name
       end
 
-
       # Compare two DiscoItems::Item objects by name, type and category
       # @param [DiscoItems::Item] o the Identity object to compare against
       # @return [true, false]

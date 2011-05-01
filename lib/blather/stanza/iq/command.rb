@@ -11,8 +11,11 @@ class Iq
   #
   # @handler :command
   class Command < Iq
+    # @private
     VALID_ACTIONS = [:cancel, :execute, :complete, :next, :prev].freeze
+    # @private
     VALID_STATUS = [:executing, :completed, :canceled].freeze
+    # @private
     VALID_NOTE_TYPES = [:info, :warn, :error].freeze
 
     register :command, :command, 'http://jabber.org/protocol/commands'
@@ -218,17 +221,26 @@ class Iq
 
     # Get the command's allowed actions
     #
-    # @return [[Symbol]]
+    # @return [Array<Symbol>]
     def allowed_actions
       ([:execute] + actions.children.map { |action| action.name.to_sym }).uniq
     end
 
+    # Get the primary allowed action
+    #
+    # @return [Symbol]
     def primary_allowed_action
       (actions[:execute] || :execute).to_sym
     end
 
+    # Set the primary allowed action
+    #
+    # This must be one of :prev, :next, :complete or :execute
+    #
+    # @param [#to_sym] a the primary allowed action
     def primary_allowed_action=(a)
-      if a && ![:prev, :next, :complete, :execute].include?(a.to_sym)
+      a = a.to_sym
+      if a && ![:prev, :next, :complete, :execute].include?(a)
         raise ArgumentError, "Invalid Action (#{a}), use: #{[:prev, :next, :complete, :execute]*' '}"
       end
       actions[:execute] = a

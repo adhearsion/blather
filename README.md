@@ -1,4 +1,4 @@
-# Blather
+# Blather [ ![Build status](http://travis-ci.org/sprsquish/blather.png) ](http://travis-ci.org/sprsquish/blather)
 
 XMPP DSL (and more) for Ruby written on EventMachine and Nokogiri.
 

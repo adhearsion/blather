@@ -1,6 +1,8 @@
 module Blather
 module DSL
 
+  # A helper class for providing a simplified PubSub interface to the
+  # DSL
   class PubSub
     attr_accessor :host
 

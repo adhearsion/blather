@@ -10,6 +10,7 @@ class Stanza
   class X < XMPPNode
     register :x, 'jabber:x:data'
 
+    # @private
     VALID_TYPES = [:cancel, :form, :result, :submit].freeze
 
     # Create a new X node
@@ -33,6 +34,10 @@ class Stanza
       new_node
     end
 
+    # Find the X node on the parent or create a new one
+    #
+    # @param [Blather::Stanza] parent the parent node to search under
+    # @return [Blather::Stanza::X]
     def self.find_or_create(parent)
       if found_x = parent.find_first('//ns:x', :ns => self.registered_ns)
         x = self.new found_x
@@ -149,8 +154,10 @@ class Stanza
       end
     end
 
+    # Field stanza fragment
     class Field < XMPPNode
       register :field, 'jabber:x:data'
+      # @private
       VALID_TYPES = [:boolean, :fixed, :hidden, :"jid-multi", :"jid-single", :"list-multi", :"list-single", :"text-multi", :"text-private", :"text-single"].freeze
 
       # Create a new X Field
@@ -335,6 +342,7 @@ class Stanza
         super o, *(fields + [:type, :var, :label, :desc, :required?, :value])
       end
 
+      # Option stanza fragment
       class Option < XMPPNode
         register :option, 'jabber:x:data'
         # Create a new X Field Option

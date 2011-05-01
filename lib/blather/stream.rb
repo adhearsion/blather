@@ -48,8 +48,10 @@ module Blather
   #     client = Blather::Stream.start MyClient.new, "jid@domain/res", "pass"
   #     client.write "[pure xml over the wire]"
   class Stream < EventMachine::Connection
+    # Connection not found
     class NoConnection < RuntimeError; end
 
+    # @private
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :password
     attr_reader :jid

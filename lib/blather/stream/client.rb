@@ -1,6 +1,7 @@
 module Blather
 class Stream
 
+  # @private
   class Client < Stream
     LANG = 'en'
     VERSION = '1.0'

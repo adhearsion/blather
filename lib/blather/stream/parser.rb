@@ -1,9 +1,8 @@
-require 'nokogiri'
+module Blather
+class Stream
 
-module Blather # :nodoc:
-class Stream # :nodoc:
-
-  class Parser < Nokogiri::XML::SAX::Document # :nodoc:
+  # @private
+  class Parser < Nokogiri::XML::SAX::Document
     NS_TO_IGNORE = %w[jabber:client jabber:component:accept]
 
     @@debug = false

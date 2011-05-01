@@ -53,6 +53,7 @@ class Stanza
   #
   # @handler :iq
   class Iq < Stanza
+    # @private
     VALID_TYPES = [:get, :set, :result, :error].freeze
 
     register :iq

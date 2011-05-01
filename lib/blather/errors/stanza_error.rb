@@ -5,7 +5,9 @@ module Blather
 #
 # @handler :stanza_error
 class StanzaError < BlatherError
+  # @private
   STANZA_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-stanzas'
+  # @private
   VALID_TYPES = [:cancel, :continue, :modify, :auth, :wait].freeze
 
   register :stanza_error

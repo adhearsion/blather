@@ -1,7 +1,8 @@
-module Blather # :nodoc:
-class Stream # :nodoc:
+module Blather
+class Stream
 
-  class TLS < Features # :nodoc:
+  # @private
+  class TLS < Features
     class TLSFailure < BlatherError
       register :tls_failure
     end

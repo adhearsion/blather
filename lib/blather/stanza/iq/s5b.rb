@@ -1,14 +1,15 @@
 module Blather
 class Stanza
 class Iq
-  NS_S5B = 'http://jabber.org/protocol/bytestreams'
-
   # # SOCKS5 Bytestreams Stanza
   #
   # [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
   #
   # @handler :s5b_open
   class S5b < Query
+    # @private
+    NS_S5B = 'http://jabber.org/protocol/bytestreams'
+
     register :s5b_open, :query, NS_S5B
 
     # Overrides the parent method to remove query node
@@ -64,6 +65,7 @@ class Iq
       end
     end
 
+    # StreamHost Stanza
     class StreamHost < XMPPNode
       register 'streamhost', NS_S5B
 
@@ -152,6 +154,7 @@ class Iq
       end
     end
 
+    # Stream host used stanza
     class StreamHostUsed < XMPPNode
       register 'streamhost-used', NS_S5B
 

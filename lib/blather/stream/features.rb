@@ -1,7 +1,8 @@
-module Blather # :nodoc:
-class Stream # :nodoc:
+module Blather
+class Stream
 
-  class Features # :nodoc:
+  # @private
+  class Features
     @@features = {}
     def self.register(ns)
       @@features[ns] = self

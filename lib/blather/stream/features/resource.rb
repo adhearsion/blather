@@ -1,7 +1,8 @@
-module Blather # :nodoc:
-class Stream # :nodoc:
+module Blather
+class Stream
 
-  class Resource < Features # :nodoc:
+  # @private
+  class Resource < Features
     BIND_NS = 'urn:ietf:params:xml:ns:xmpp-bind'.freeze
     register BIND_NS
 

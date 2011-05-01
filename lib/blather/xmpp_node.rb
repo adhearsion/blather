@@ -210,14 +210,23 @@ module Blather
       self
     end
 
+    # The node as XML
+    #
+    # @return [String] XML representation of the node
     def inspect
       self.to_xml
     end
 
+    # Check that a set of fields are equal between nodes
+    #
+    # @param [XMPPNode] other the other node to compare against
+    # @param [*#to_s] fields the set of fields to compare
+    # @return [Fixnum<-1,0,1>]
     def eql?(o, *fields)
       o.is_a?(self.class) && fields.all? { |f| self.__send__(f) == o.__send__(f) }
     end
 
+    # @private
     def ==(o)
       eql?(o)
     end

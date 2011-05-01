@@ -28,7 +28,7 @@ describe Blather::Client do
 
   it 'should have a caps handler' do
     @client.must_respond_to :caps
-    @client.caps.must_be_kind_of Blather::Client::Caps
+    @client.caps.must_be_kind_of Blather::Stanza::Capabilities
   end
 
   it 'can be setup' do

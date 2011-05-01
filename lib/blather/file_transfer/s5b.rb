@@ -85,6 +85,7 @@ module Blather
         end
       end
 
+      # @private
       class SocketConnection < EM::P::Socks5
         include EM::Deferrable
 
@@ -96,9 +97,7 @@ module Blather
 
         def post_init
           self.succeed
-          class << self
-            include @@handler
-          end
+          (class << self; self; end).include(@@handler)
           send(:initialize, *@params)
           post_init
         end

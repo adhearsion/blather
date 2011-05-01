@@ -33,6 +33,7 @@ class Iq
   #
   # @handler :file_transfer
   class Si < Iq
+    # @private
     NS_SI = 'http://jabber.org/protocol/si'
     register :file_transfer, :si, NS_SI
 
@@ -80,6 +81,7 @@ class Iq
       reply
     end
 
+    # Si stanza fragment
     class Si < XMPPNode
       # Create a new Si::Si object
       #
@@ -166,6 +168,7 @@ class Iq
         Feature.find_or_create self
       end
 
+      # Feature stanza fragment
       class Feature < XMPPNode
         register :feature, 'http://jabber.org/protocol/feature-neg'
 
@@ -206,6 +209,7 @@ class Iq
         end
       end
 
+      # File stanza fragment
       class File < XMPPNode
         register :file, 'http://jabber.org/protocol/si/profile/file-transfer'
 
@@ -330,6 +334,7 @@ class Iq
         end
       end
 
+      # Range stanza fragment
       class Range < XMPPNode
         register :range, 'http://jabber.org/protocol/si/profile/file-transfer'
 

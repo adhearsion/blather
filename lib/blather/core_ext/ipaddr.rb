@@ -1,3 +1,4 @@
+# @private
 class IPAddr
   PrivateRanges = [
     IPAddr.new("10.0.0.0/8"),

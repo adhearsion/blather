@@ -1,8 +1,6 @@
 module Blather
 class Stanza
 class Iq
-  NS_IBB = 'http://jabber.org/protocol/ibb'
-
   # # In-Band Bytestreams Stanza
   #
   # [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
@@ -11,6 +9,8 @@ class Iq
   # @handler :ibb_data
   # @handler :ibb_close
   class Ibb < Iq
+    # @private
+    NS_IBB = 'http://jabber.org/protocol/ibb'
 
     # Overrides the parent method to remove open, close and data nodes
     #
@@ -23,6 +23,7 @@ class Iq
       reply
     end
 
+    # An Open stanza to
     class Open < Ibb
       register :ibb_open, :open, NS_IBB
 
@@ -42,6 +43,7 @@ class Iq
 
     end
 
+    # A Data stanza
     class Data < Ibb
       register :ibb_data, :data, NS_IBB
 
@@ -60,6 +62,7 @@ class Iq
       end
     end
 
+    # A Close stanza
     class Close < Ibb
       register :ibb_close, :close, NS_IBB
 

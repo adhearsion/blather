@@ -1,12 +1,14 @@
+# @private
 module Nokogiri
 module XML
 
+  # Nokogiri::Node extensions
   class Node
     # Alias #name to #element_name so we can use #name in an XMPP Stanza context
     alias_method :element_name, :name
     alias_method :element_name=, :name=
 
-    alias_method :attr_set, :[]= # :nodoc:
+    alias_method :attr_set, :[]=
     # Override Nokogiri's attribute setter to add the ability to kill an attribute
     # by setting it to nil and to be able to lookup an attribute by symbol
     #

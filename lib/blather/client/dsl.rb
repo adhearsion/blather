@@ -217,8 +217,7 @@ module Blather
     #
     # Use this to stop the propogation of the stanza though the handler chain.
     #
-    # @example
-    # Ignore all IQ stanzas
+    # @example Ignore all IQ stanzas
     #
     #     before(:iq) { halt }
     def halt
@@ -230,7 +229,8 @@ module Blather
     # Use this to jump out of the current handler and let the next registered
     # handler take care of the stanza
     #
-    # @example
+    # @example Pass a message to the next handler
+    #
     # This is contrive and should be handled with guards, but pass a message
     # to the next handler based on the content
     #
@@ -252,12 +252,18 @@ module Blather
       client.write stanza
     end
 
+    # Set the capabilities of the client
+    #
+    # @param [String] node the URI
+    # @param [Array<Hash>] identities an array of identities
+    # @param [Array<Hash>] features an array of features
     def set_caps(node, identities, features)
       client.caps.node = node
       client.caps.identities = identities
       client.caps.features = features
     end
 
+    # Send capabilities to the server
     def send_caps
       client.register_handler :disco_info, :type => :get, :node => client.caps.node do |s|
         r = client.caps.dup

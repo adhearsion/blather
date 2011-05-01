@@ -82,15 +82,18 @@ module Blather
         @transferred = 0
       end
 
+      # @private
       def post_init
         @file = File.open(@path, "w")
       end
 
+      # @private
       def receive_data(data)
         @transferred += data.size
         @file.write data
       end
 
+      # @private
       def unbind
         @file.close
         File.delete(@path) unless @transferred == @size

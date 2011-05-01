@@ -5,6 +5,7 @@ module Blather
 #
 # @handler :stream_error
 class StreamError < BlatherError
+  # @private
   STREAM_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-streams'
 
   register :stream_error

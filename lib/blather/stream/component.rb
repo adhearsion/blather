@@ -1,6 +1,7 @@
 module Blather
 class Stream
 
+  # @private
   class Component < Stream
     NAMESPACE = 'jabber:component:accept'
 

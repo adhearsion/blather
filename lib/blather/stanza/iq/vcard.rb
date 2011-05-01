@@ -69,8 +69,10 @@ class Iq
       Vcard.find_or_create self
     end
 
+    # Vcard stanza fragment
     class Vcard < XMPPNode
 
+      # @private
       VCARD_NS = 'vcard-temp'
 
       # Create a new Vcard::Vcard object

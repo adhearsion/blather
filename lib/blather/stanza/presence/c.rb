@@ -13,6 +13,7 @@ class Presence
   class C < Presence
     register :c, :c, 'http://jabber.org/protocol/caps'
 
+    # @private
     VALID_HASH_TYPES = %w[md2 md5 sha-1 sha-224 sha-256 sha-384 sha-512].freeze
 
     def self.new(node = nil, ver = nil, hash = 'sha-1')

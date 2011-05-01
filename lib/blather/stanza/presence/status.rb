@@ -75,6 +75,7 @@ class Presence
   #
   # @handler :status
   class Status < Presence
+    # @private
     VALID_STATES = [:away, :chat, :dnd, :xa].freeze
 
     include Comparable

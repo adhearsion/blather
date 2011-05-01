@@ -37,6 +37,7 @@
   blather/stanza/disco
   blather/stanza/disco/disco_info
   blather/stanza/disco/disco_items
+  blather/stanza/disco/capabilities
   blather/stanza/message
   blather/stanza/presence
   blather/stanza/presence/c
@@ -72,6 +73,7 @@
   blather/stream/features/tls
 ].each { |r| require r }
 
+# The core Blather namespace
 module Blather
   # @private
   @@logger = nil

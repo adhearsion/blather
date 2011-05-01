@@ -8,6 +8,7 @@ class PubSub
   #
   # @handler :pubsub_subscription
   class Subscription < PubSub
+    # @private
     VALID_TYPES = [:none, :pending, :subscribed, :unconfigured]
 
     register :pubsub_subscription, :subscription, self.registered_ns

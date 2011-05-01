@@ -1,7 +1,8 @@
-module Blather # :nodoc:
-class Stream # :nodoc:
+module Blather
+class Stream
 
-  class Session < Features # :nodoc:
+  # @private
+  class Session < Features
     SESSION_NS = 'urn:ietf:params:xml:ns:xmpp-session'.freeze
     register SESSION_NS
 
@@ -22,7 +23,7 @@ class Stream # :nodoc:
   private
     def check_response
       if @node[:type] == 'result'
-        succeed!        
+        succeed!
       else
         fail!(StanzaError.import(@node))
       end

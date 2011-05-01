@@ -70,6 +70,7 @@ class Stanza
   #
   # @handler :presence
   class Presence < Stanza
+    # @private
     VALID_TYPES = [ :unavailable,
                     :subscribe,
                     :subscribed,

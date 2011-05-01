@@ -3,6 +3,7 @@ module Blather
   # RosterItems hold internal representations of the user's roster
   # including each JID's status.
   class RosterItem
+    # @private
     VALID_SUBSCRIPTION_TYPES = [:both, :from, :none, :remove, :to].freeze
 
     attr_reader :jid,
@@ -12,6 +13,7 @@ module Blather
     attr_accessor :name,
                   :groups
 
+    # @private
     def self.new(item)
       return item if item.is_a?(self)
       super
@@ -118,8 +120,12 @@ module Blather
       r
     end
 
-    def <=>(o)
-      self.jid.to_s <=> o.jid.to_s
+    # Compare two RosterItems by their JID
+    #
+    # @param [Blather::JID] other the JID to compare against
+    # @return [Fixnum<-1, 0, 1>]
+    def <=>(other)
+      JID.new(self.jid) <=> JID.new(other.jid)
     end
 
     # Compare two RosterItem objects by name, type and category
@@ -130,7 +136,11 @@ module Blather
       o.jid == self.jid &&
       o.groups == self.groups
     end
-    alias_method :==, :eql?
+
+    # @private
+    def ==(o)
+      eql?(o)
+    end
   end #RosterItem
 
 end

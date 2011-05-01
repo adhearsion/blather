@@ -1,4 +1,6 @@
+# @private
 module EventMachine
+  # @private
   module Protocols
     # Basic SOCKS v5 client implementation
     #
@@ -16,6 +18,7 @@ module EventMachine
     #
     # EM.connect socks_host, socks_port, MyConn, host, port
     #
+    # @private
     class Socks5 < Connection
       def initialize(host, port)
         @host = host

@@ -66,8 +66,9 @@ class Stanza
       super o, *(fields + [:identities, :features])
     end
 
+    # DiscoInfo::Identity
     class Identity < XMPPNode
-      # Create a new DiscoInfo Identity
+      # Create a new DiscoInfo::Identity
       # @overload new(node)
       #   Imports the XML::Node to create a Identity object
       #   @param [XML::Node] node the node object to import
@@ -158,6 +159,7 @@ class Stanza
       end
     end # Identity
 
+    # DiscoInfo::Feature
     class Feature < XMPPNode
       # Create a new DiscoInfo::Feature object
       # @overload new(node)

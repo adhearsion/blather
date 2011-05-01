@@ -5,6 +5,7 @@ module Blather
 #
 # @handler :sasl_error
 class SASLError < BlatherError
+  # @private
   SASL_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
   class_inheritable_accessor :err_name

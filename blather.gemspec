@@ -21,29 +21,15 @@ Gem::Specification.new do |s|
   s.rdoc_options = %w{--charset=UTF-8}
   s.extra_rdoc_files = %w{LICENSE README.md}
 
-  if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 3
+  s.add_dependency("eventmachine", ["~> 0.12.6"])
+  s.add_dependency("nokogiri", [">= 1.4.0"])
+  s.add_dependency("minitest", [">= 1.7.1"])
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<eventmachine>, ["~> 0.12.6"])
-      s.add_runtime_dependency(%q<nokogiri>, ["~> 1.4.0"])
-
-      s.add_development_dependency(%q<minitest>, ["~> 1.7.1"])
-      s.add_development_dependency(%q<mocha>, ["~> 0.9.12"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_development_dependency(%q<rcov>, ["~> 0.9.9"])
-      s.add_development_dependency(%q<yard>, ["~> 0.6.1"])
-      s.add_development_dependency(%q<bluecloth>, ["~> 2.1.0"])
-      s.add_development_dependency(%q<rake>)
-    else
-      s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
-      s.add_dependency(%q<nokogiri>, [">= 1.4.0"])
-      s.add_dependency(%q<minitest>, [">= 1.7.1"])
-    end
-  else
-    s.add_dependency(%q<eventmachine>, [">= 0.12.6"])
-    s.add_dependency(%q<nokogiri>, [">= 1.4.0"])
-    s.add_dependency(%q<minitest>, [">= 1.7.1"])
-  end
+  s.add_development_dependency("minitest", ["~> 1.7.1"])
+  s.add_development_dependency("mocha", ["~> 0.9.12"])
+  s.add_development_dependency("bundler", ["~> 1.0.0"])
+  s.add_development_dependency("rcov", ["~> 0.9.9"])
+  s.add_development_dependency("yard", ["~> 0.6.1"])
+  s.add_development_dependency("bluecloth", ["~> 2.1.0"])
+  s.add_development_dependency("rake")
 end

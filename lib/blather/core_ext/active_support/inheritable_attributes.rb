@@ -4,7 +4,9 @@
 # their parents' attributes, instead of just a pointer to the same. This means that the child can add elements
 # to, for example, an array without those additions being shared with either their parent, siblings, or
 # children, which is unlike the regular class-level attributes that are shared across the entire hierarchy.
-class Class  # @private
+#
+# @private
+class Class
   def class_inheritable_reader(*syms)
     syms.each do |sym|
       next if sym.is_a?(Hash)
