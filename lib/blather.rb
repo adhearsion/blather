@@ -8,7 +8,9 @@
   digest/sha1
   logger
 
-  blather/core_ext/active_support
+  active_support/core_ext/class/inheritable_attributes
+  active_support/core_ext/object/blank
+
   blather/core_ext/eventmachine
   blather/core_ext/ipaddr
   blather/core_ext/nokogiri
