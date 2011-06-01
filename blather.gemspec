@@ -8,7 +8,6 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Jeff Smick"]
   s.email       = %q{sprsquish@gmail.com}
-  s.date        = %q{2010-09-02}
   s.homepage    = "http://github.com/sprsquish/blather"
   s.summary     = %q{Simpler XMPP built for speed}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
