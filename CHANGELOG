@@ -1,9 +1,16 @@
+v0.5.0
+  Feature(radsaq): Add a #connected? method on Blather::Client
+  Feature(benlangfeld)[API change]: Allow the removal of child nodes from an IQ reply
+  Bugfix(zlu): Use rubygems properly in examples
+  Bugfix(benlangfeld): Remove code borrowed from ActiveSupport and instead depend on it to avoid version conflicts
+  Documentation(sprsquish)
+
 v0.4.16
-	Feature(benlangfeld): switch from jeweler to bundler
-	Feature(benlangfeld): add cap support (XEP-0115)
-	Bugfix(sprsquish): Better equality checking
-	Bugfix(sprsquish): Fix #to_proc
-	Bugfix(mironov): Skip private IPs by default
+  Feature(benlangfeld): switch from jeweler to bundler
+  Feature(benlangfeld): add cap support (XEP-0115)
+  Bugfix(sprsquish): Better equality checking
+  Bugfix(sprsquish): Fix #to_proc
+  Bugfix(mironov): Skip private IPs by default
 
 v0.4.15
   Feature(mironov): Implement XEP-0054: vcard-temp
