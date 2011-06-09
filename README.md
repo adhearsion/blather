@@ -173,4 +173,4 @@ than a change set made directly on master.
 
 # Copyright
 
-Copyright (c) 2009 Jeff Smick. See LICENSE for details.
+Copyright (c) 2011 Jeff Smick. See LICENSE for details.
