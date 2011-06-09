@@ -2,7 +2,7 @@
 %w[
   rubygems
   eventmachine
-  nokogiri
+  niceogiri
   ipaddr
   digest/md5
   digest/sha1
@@ -13,7 +13,6 @@
 
   blather/core_ext/eventmachine
   blather/core_ext/ipaddr
-  blather/core_ext/nokogiri
 
   blather/errors
   blather/errors/sasl_error

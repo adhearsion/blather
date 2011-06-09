@@ -19,7 +19,7 @@ XMPP DSL (and more) for Ruby written on EventMachine and Nokogiri.
 
 ## Installation
 
-    sudo gem install blather
+    gem install blather
 
 ## Example
 
@@ -173,4 +173,4 @@ than a change set made directly on master.
 
 # Copyright
 
-Copyright (c) 2009 Jeff Smick. See LICENSE for details.
+Copyright (c) 2011 Jeff Smick. See LICENSE for details.

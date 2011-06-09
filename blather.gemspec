@@ -8,7 +8,6 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Jeff Smick"]
   s.email       = %q{sprsquish@gmail.com}
-  s.date        = %q{2010-09-02}
   s.homepage    = "http://github.com/sprsquish/blather"
   s.summary     = %q{Simpler XMPP built for speed}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
@@ -23,6 +22,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency("eventmachine", ["~> 0.12.6"])
   s.add_dependency("nokogiri", [">= 1.4.0"])
+  s.add_dependency("niceogiri", [">= 0.0.3"])
   s.add_dependency("minitest", [">= 1.7.1"])
   s.add_dependency("activesupport", [">= 3.0.7"])
 
