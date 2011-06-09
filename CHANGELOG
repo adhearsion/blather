@@ -1,3 +1,7 @@
+v0.5.1
+  Feature(benlangfeld): Abstract out Nokogiri extensions and helpers into new Niceogiri gem for better sharing
+  Documentation(benlangfeld)
+
 v0.5.0
   Feature(radsaq): Add a #connected? method on Blather::Client
   Feature(benlangfeld)[API change]: Allow the removal of child nodes from an IQ reply
