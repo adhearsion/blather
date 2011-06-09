@@ -1,4 +1,7 @@
-v0.5.1
+v0.5.2
+  Bugfix(benlangfeld): Remove specs for the Nokogiri extensions which were moved out
+
+v0.5.1 - yanked
   Feature(benlangfeld): Abstract out Nokogiri extensions and helpers into new Niceogiri gem for better sharing
   Documentation(benlangfeld)
 
