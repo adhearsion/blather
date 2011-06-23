@@ -28,10 +28,11 @@
 
   blather/stanza
   blather/stanza/iq
-  blather/stanza/iq/query
   blather/stanza/iq/command
-  blather/stanza/iq/roster
   blather/stanza/iq/ibb
+  blather/stanza/iq/ping
+  blather/stanza/iq/query
+  blather/stanza/iq/roster
   blather/stanza/iq/s5b
   blather/stanza/iq/si
   blather/stanza/iq/vcard
