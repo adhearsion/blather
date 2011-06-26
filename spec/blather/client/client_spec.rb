@@ -291,6 +291,13 @@ describe 'Blather::Client default handlers' do
   #   @client.receive_data get
   # end
 
+  it 'responds to s2c pings with a pong' do
+    ping = Blather::Stanza::Iq::Ping.new :get
+    pong = ping.reply
+    @client.expects(:write).with { |n| n.to_s.must_equal pong.to_s }
+    @client.receive_data ping
+  end
+
   it 'handles status changes by updating the roster if the status is from a Blather::JID in the roster' do
     jid = 'friend@jabber.local'
     status = Blather::Stanza::Presence::Status.new :away

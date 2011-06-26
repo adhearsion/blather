@@ -226,6 +226,10 @@ module Blather
       #   write StanzaError.new(iq, 'service-unavailable', :cancel).to_node
       # end
 
+      register_handler :ping, :type => :get do |ping|
+        write ping.reply
+      end
+
       register_handler :status do |status|
         roster[status.from].status = status if roster[status.from]
         nil
