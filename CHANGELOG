@@ -1,3 +1,6 @@
+v0.5.3
+  Feature(benlangfeld): Add XMPP Ping (XEP-0199) support
+
 v0.5.2
   Bugfix(benlangfeld): Remove specs for the Nokogiri extensions which were moved out
 
