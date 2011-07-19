@@ -9,6 +9,9 @@ module Blather
     # Set this to false if you don't want to use SOCKS5 Bytestreams
     attr_accessor :allow_s5b
 
+    # Set this to true if you want SOCKS5 Bytestreams to attempt to use private network addresses
+    attr_accessor :allow_private_ips
+    
     # Create a new FileTransfer
     #
     # @param [Blather::Stream] stream the stream the file transfer should use
@@ -37,6 +40,7 @@ module Blather
         @stream.register_handler :s5b_open, :from => @iq.from do |iq|
           transfer = Blather::FileTransfer::S5b.new(@stream, iq)
           transfer.allow_ibb_fallback = true if @allow_ibb
+          transfer.allow_private_ips = true if @allow_private_ips
           transfer.accept(handler, *params)
           true
         end
