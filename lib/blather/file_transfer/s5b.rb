@@ -97,7 +97,10 @@ module Blather
 
         def post_init
           self.succeed
-          (class << self; self; end).include(@@handler)
+          
+          class << self
+            include @@handler
+          end
           send(:initialize, *@params)
           post_init
         end
