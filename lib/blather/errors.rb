@@ -4,7 +4,7 @@ module Blather
   #
   # @handler :error
   class BlatherError < StandardError
-    class_inheritable_array :handler_hierarchy
+    class_attribute :handler_hierarchy
     self.handler_hierarchy ||= []
 
     # @private
@@ -15,7 +15,7 @@ module Blather
     # @param [Symbol] handler the handler name
     def self.register(handler)
       @@handler_list << handler
-      self.handler_hierarchy.unshift handler
+      self.handler_hierarchy = [handler] + self.handler_hierarchy
     end
 
     # The list of registered handlers
