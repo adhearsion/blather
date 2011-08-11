@@ -9,7 +9,8 @@ module Blather
     # @private
     @@registrations = {}
 
-    class_inheritable_accessor :registered_ns, :registered_name
+    class_attribute :registered_ns, :registered_name
+    #class_inheritable_accessor :registered_ns, :registered_name
 
     # Register a new stanza class to a name and/or namespace
     #
