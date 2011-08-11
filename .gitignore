@@ -16,3 +16,4 @@ notes
 *.rbc
 lib/.DS_Store
 vendor
+.rvmrc
