@@ -1009,7 +1009,7 @@ describe Blather::Stream::Client do
     comp.send msg
   end
 
-  #TODO 'fails due tohttps://github.com/sprsquish/blather/issues/55'
+  #TODO 'fails due to https://github.com/sprsquish/blather/issues/55'
   it 'sends xml without formatting' do
     client = mock()
     client.stubs(:jid)
