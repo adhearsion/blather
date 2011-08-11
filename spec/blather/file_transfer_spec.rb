@@ -8,6 +8,8 @@ module MockFileReceiver
   end
   def unbind
   end
+  def send(data, params)
+  end
 end
 
 def si_xml
@@ -68,6 +70,21 @@ describe Blather::FileTransfer do
     transfer.allow_ibb = false
     transfer.accept(MockFileReceiver)
   end
+  
+  it 'can allow s5b private ips' do
+    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+
+    @client.stubs(:write).with do |answer|
+      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
+      true
+    end
+
+    transfer = Blather::FileTransfer.new(@client, iq)
+    transfer.allow_s5b = true
+    transfer.allow_private_ips = true
+    transfer.allow_ibb = false
+    transfer.accept(MockFileReceiver)
+  end
 
   it 'can response no-valid-streams' do
     iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
@@ -96,5 +113,25 @@ describe Blather::FileTransfer do
 
     transfer = Blather::FileTransfer.new(@client, iq)
     transfer.decline
+  end
+  
+  it 'can s5b post_init include the handler' do
+    class TestS5B < Blather::FileTransfer::S5b::SocketConnection
+      def initialize()
+        super("0.0.0.0", 1, MockFileReceiver, nil)
+        restore_methods
+        self.post_init()
+      end
+
+      def self.new(*args)
+        allocate.instance_eval do
+          initialize(*args)
+          self
+        end
+      end
+    end
+    assert_nothing_raised do
+      TestS5B.new()
+    end
   end
 end

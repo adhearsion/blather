@@ -1,3 +1,9 @@
+v0.5.4
+  Bugfix(fyafighter): Regression related to earlier refactoring: https://github.com/sprsquish/blather/issues/53
+  Feature(fyafighter): Make it much easier to allow private network addresses
+  Bugfix(benlangfeld): Fix the Nokogiri dependency to the 1.4.x series, due to a bug in 1.5.x
+  Bugfix(zlu): Replace class_inheritable_attribute with class_attribute because it is deprecated in ActiveSupport 3.1
+
 v0.5.3
   Feature(benlangfeld): Add XMPP Ping (XEP-0199) support
 
