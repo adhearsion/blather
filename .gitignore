@@ -14,5 +14,5 @@ rdoc
 notes
 .yardoc
 *.rbc
-lib/.DS_Store
 vendor
+.rvmrc

@@ -8,7 +8,7 @@
   digest/sha1
   logger
 
-  active_support/core_ext/class/inheritable_attributes
+  active_support/core_ext/class/attribute
   active_support/core_ext/object/blank
 
   blather/core_ext/eventmachine
