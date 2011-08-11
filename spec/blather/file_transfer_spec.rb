@@ -70,6 +70,21 @@ describe Blather::FileTransfer do
     transfer.allow_ibb = false
     transfer.accept(MockFileReceiver)
   end
+  
+  it 'can allow s5b private ips' do
+    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+
+    @client.stubs(:write).with do |answer|
+      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
+      true
+    end
+
+    transfer = Blather::FileTransfer.new(@client, iq)
+    transfer.allow_s5b = true
+    transfer.allow_private_ips = true
+    transfer.allow_ibb = false
+    transfer.accept(MockFileReceiver)
+  end
 
   it 'can response no-valid-streams' do
     iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
