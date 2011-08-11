@@ -8,6 +8,8 @@ module MockFileReceiver
   end
   def unbind
   end
+  def send(data, params)
+  end
 end
 
 def si_xml
@@ -96,5 +98,25 @@ describe Blather::FileTransfer do
 
     transfer = Blather::FileTransfer.new(@client, iq)
     transfer.decline
+  end
+  
+  it 'can s5b post_init include the handler' do
+    class TestS5B < Blather::FileTransfer::S5b::SocketConnection
+      def initialize()
+        super("0.0.0.0", 1, MockFileReceiver, nil)
+        restore_methods
+        self.post_init()
+      end
+
+      def self.new(*args)
+        allocate.instance_eval do
+          initialize(*args)
+          self
+        end
+      end
+    end
+    assert_nothing_raised do
+      TestS5B.new()
+    end
   end
 end
