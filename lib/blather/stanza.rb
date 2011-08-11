@@ -12,7 +12,7 @@ module Blather
     # @private
     @@handler_list = []
 
-    class_inheritable_array :handler_hierarchy
+    class_attribute :handler_hierarchy
 
     # Registers a callback onto the callback stack
     #
@@ -24,7 +24,7 @@ module Blather
     def self.register(handler, name = nil, ns = nil)
       @@handler_list << handler
       self.handler_hierarchy ||= [:stanza]
-      self.handler_hierarchy.unshift handler
+      self.handler_hierarchy = [handler] + self.handler_hierarchy
 
       name = name || self.registered_name || handler
       super name, ns
