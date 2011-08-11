@@ -8,7 +8,8 @@ class SASLError < BlatherError
   # @private
   SASL_ERR_NS = 'urn:ietf:params:xml:ns:xmpp-sasl'
 
-  class_inheritable_accessor :err_name
+  class_attribute :err_name
+  #class_inheritable_accessor :err_name
   # @private
   @@registrations = {}
 
