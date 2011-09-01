@@ -32,8 +32,6 @@ $:.unshift(File.dirname(__FILE__))
   blather/stanza/iq
   blather/stanza/iq/command
   blather/stanza/iq/ibb
-  blather/stanza/iq/muc/admin
-  blather/stanza/iq/muc/owner
   blather/stanza/iq/ping
   blather/stanza/iq/query
   blather/stanza/iq/roster
@@ -67,10 +65,11 @@ $:.unshift(File.dirname(__FILE__))
   blather/stanza/pubsub_owner/delete
   blather/stanza/pubsub_owner/purge
 
+  blather/stanza/iq/muc/admin
+  blather/stanza/iq/muc/owner
   blather/stanza/message/x
   blather/stanza/message/muc/invite
   blather/stanza/message/muc/status
-  blather/stanza/muc/join
 
   blather/stanza/x
 
