@@ -4,56 +4,25 @@ class Iq
 module MUC
 
   class Owner < Query
-    register :owner, :owner, 'http://jabber.org/protocol/muc#owner'
+    register :owner, :query, 'http://jabber.org/protocol/muc#owner'
 
-    def self.new(type = nil, to = nil)
-      node           = super(type)
-      node.to        = to
+    def self.new(type = nil, to = nil, config = nil)
+      node    = super(type)
+      node.to = to
+      if config
+        node.form.type  = :submit
+        node.config     = config
+      end
       node
     end
 
-    class Configure < Owner
-      DATA_NAMESPACE = 'jabber:x:data'
+    # Returns the command's x:data form child
+    def form
+      X.find_or_create query
+    end
 
-      def data=(data = :default)
-        create_data[:type] = 'submit'
-        unless data.blank? || data == :default
-          raise "Invalid data format" unless data.is_a?(Hash)
-          data.each {|key, value|
-            create_field = XMPPNode.new('field', self.document)
-            create_field[:var] = key
-
-            create_field_value = XMPPNode.new('value', self.document)
-            if [TrueClass, FalseClass].include?(value.class)
-              value = value ? 1 : 0
-            end
-            create_field_value.content = value.to_s
-
-            create_field << create_field_value
-            create_data  << create_field
-          }
-        end
-      end
-
-      def data
-        items = create_data.find('//ns:field', :ns => self.class.registered_ns)
-        items.inject({}) do |hash, item|
-          key       = item[:var]
-          value     = item.find_first('ns:value', :ns => self.class.registered_ns)
-          value     = value.content
-          hash[key] = value
-          hash
-        end
-      end
-
-      protected
-        def create_data
-          unless create_data = query.find_first('ns:x', :ns => DATA_NAMESPACE)
-            query << (create_data = XMPPNode.new('x', self.document))
-            create_data.namespace = DATA_NAMESPACE
-          end
-          create_data
-        end
+    def config=(config)
+      form.fields = config
     end
 
     # <iq from='crone1@shakespeare.lit/desktop'
@@ -75,8 +44,7 @@ module MUC
       end
 
       def reason=(reason)
-        return if reason.blank?
-        create_reason.content = reason
+        create_reason.content = reason unless reason.blank?
       end
 
       def create_reason # @private

@@ -67,7 +67,6 @@ $:.unshift(File.dirname(__FILE__))
 
   blather/stanza/iq/muc/admin
   blather/stanza/iq/muc/owner
-  blather/stanza/message/x
   blather/stanza/message/muc/invite
   blather/stanza/message/muc/status
 
