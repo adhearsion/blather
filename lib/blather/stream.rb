@@ -162,11 +162,13 @@ module Blather
     
     # Called by EM to verify the peer certificate. If a certificate store directory 
     # has not been configured don't worry about peer verification. At least it is encrypted
+    # We Log the certificate so that you can add it to the trusted store easily if desired
     # @private
     def ssl_verify_peer(pem)
       # EM is supposed to close the connection when this returns false,
       # but it only does that for inbound connections, not when we
-      # make a connection to another server.
+      # make a connection to another server. 
+      Blather.logger.debug("Checking SSL cert: #{pem}")
       return true if !@@store
       @@store.trusted?(pem).tap do |trusted|
         p trusted
