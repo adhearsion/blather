@@ -7,6 +7,7 @@
   digest/md5
   digest/sha1
   logger
+  openssl
 
   active_support/core_ext/class/attribute
   active_support/core_ext/object/blank

@@ -31,20 +31,12 @@ optparse = OptionParser.new do |opts|
     options[:log] = log
   end
   
-  opts.on('--certs=[CERTS]', 'Read in trusted certificates in order to ensure secure communication with the server') do |certs|
+  opts.on('--certs=[CERTS DIRECTORY]', 'The directory path where the trusted certificates are stored') do |certs|
     if !File.directory?(certs)
       $stderr.puts "The certs directory path (#{certs}) is no good."
       exit 1
     end
-    options[:log] = log
-  end
-
-  opts.on('--log=[LOG]', 'Write to the [LOG] file instead of stdout/stderr') do |log|
-    if !File.writable?(File.dirname(log))
-      $stderr.puts "Unable to write log file to #{log}"
-      exit 1
-    end
-    options[:log] = log
+    options[:certs] = certs
   end
   
   opts.on_tail('-h', '--help', 'Show this message') do
