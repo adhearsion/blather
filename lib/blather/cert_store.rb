@@ -3,12 +3,14 @@
 module Blather
 
   # An X509 certificate store that validates certificate trust chains.
-  # This uses the conf/certs/*.crt files as the list of trusted root
+  # This uses the #{cert_directory}/*.crt files as the list of trusted root
   # CA certificates.
-  class Store
+  class CertStore
     @@certs = nil
+    @cert_directory = nil
 
-    def initialize
+    def initialize(cert_directory)
+      @cert_directory = cert_directory
       @store = OpenSSL::X509::Store.new
       certs.each {|c| @store.add_cert(c) }
     end
@@ -33,13 +35,13 @@ module Blather
       end
     end
 
-    # Return the trusted root CA certificates installed in conf/certs. These
+    # Return the trusted root CA certificates installed in the @cert_directory. These
     # certificates are used to start the trust chain needed to validate certs
     # we receive from clients and servers.
     def certs
       unless @@certs
         pattern = /-{5}BEGIN CERTIFICATE-{5}\n.*?-{5}END CERTIFICATE-{5}\n/m
-        dir = File.join(VINES_ROOT, 'conf', 'certs')
+        dir = @cert_directory
         certs = Dir[File.join(dir, '*.crt')].map {|f| File.read(f) }
         certs = certs.map {|c| c.scan(pattern) }.flatten
         certs.map! {|c| OpenSSL::X509::Certificate.new(c) }

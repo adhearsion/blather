@@ -14,6 +14,7 @@
   blather/core_ext/eventmachine
   blather/core_ext/ipaddr
 
+  blather/cert_store
   blather/errors
   blather/errors/sasl_error
   blather/errors/stanza_error
