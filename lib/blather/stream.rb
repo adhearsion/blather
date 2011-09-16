@@ -171,7 +171,6 @@ module Blather
       Blather.logger.debug("Checking SSL cert: #{pem}")
       return true if !@@store
       @@store.trusted?(pem).tap do |trusted|
-        p trusted
         close_connection unless trusted
       end
     end
