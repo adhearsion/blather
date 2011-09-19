@@ -55,6 +55,7 @@ module Blather
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :password
     attr_reader :jid
+    @@store = nil
 
     # Start the stream between client and server
     #
@@ -66,8 +67,13 @@ module Blather
     # to use the domain on the JID
     # @param [Fixnum, nil] port the port to connect on. Default is the XMPP
     # default of 5222
-    def self.start(client, jid, pass, host = nil, port = 5222)
+    # @param [String, nil] certs the trusted cert store in pem format to verify 
+    # communication with the server is trusted.
+    def self.start(client, jid, pass, host = nil, port = 5222, certs_directory = nil)
       jid = JID.new jid
+      if certs_directory
+        @@store = CertStore.new(certs_directory)
+      end
       if host
         connect host, port, self, client, jid, pass
       else
@@ -152,6 +158,21 @@ module Blather
       @error = e
       send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
       stop
+    end
+    
+    # Called by EM to verify the peer certificate. If a certificate store directory 
+    # has not been configured don't worry about peer verification. At least it is encrypted
+    # We Log the certificate so that you can add it to the trusted store easily if desired
+    # @private
+    def ssl_verify_peer(pem)
+      # EM is supposed to close the connection when this returns false,
+      # but it only does that for inbound connections, not when we
+      # make a connection to another server. 
+      Blather.logger.debug("Checking SSL cert: #{pem}")
+      return true if !@@store
+      @@store.trusted?(pem).tap do |trusted|
+        close_connection unless trusted
+      end
     end
 
     # Called by EM after the connection has started

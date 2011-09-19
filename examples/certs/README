@@ -1,0 +1,20 @@
+The certs/ directory contains the TLS certificates required for encrypting
+client to server XMPP connections.
+
+The ca-bundle.crt file contains root Certificate Authority (CA) certificates.
+These are used to validate certificates presented during TLS handshake
+negotiation. The source for this file is the cacert.pem file available
+at http://curl.haxx.se/docs/caextract.html.
+
+Any self-signed CA certificate placed in this directory will be considered
+a trusted certificate. For example, let's say you're running the wonderland.lit
+XMPP server and would like to and verify the ssl cert during TLS.  
+The wonderland.lit server hasn't purchased a legitimate TLS certificate
+from a CA known in ca-bundle.crt. Instead, they've created a self-signed
+certificate and sent it to you. Place the certificate in this directory
+with a name of wonderland.lit.crt and it will be trusted. Trusted TLS connections 
+from wonderland.lit will now work.
+
+Alternatively, you can purchase a TLS certificate from a CA (e.g. Go Daddy,
+VeriSign, etc.) and place it in this directory. This will avoid the hassles
+of managing self-signed certificates.

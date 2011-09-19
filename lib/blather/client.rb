@@ -30,7 +30,15 @@ optparse = OptionParser.new do |opts|
     end
     options[:log] = log
   end
-
+  
+  opts.on('--certs=[CERTS DIRECTORY]', 'The directory path where the trusted certificates are stored') do |certs|
+    if !File.directory?(certs)
+      $stderr.puts "The certs directory path (#{certs}) is no good."
+      exit 1
+    end
+    options[:certs] = certs
+  end
+  
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
     exit

@@ -116,8 +116,8 @@ module Blather
     # @param [String] host (optional) the host to connect to (can be an IP). If
     # this is `nil` the domain on the JID will be used
     # @param [Fixnum, String] (optional) port the port to connect on
-    def setup(jid, password, host = nil, port = nil)
-      client.setup(jid, password, host, port)
+    def setup(jid, password, host = nil, port = nil, certs = nil)
+      client.setup(jid, password, host, port, certs)
     end
 
     # Shutdown the connection.
