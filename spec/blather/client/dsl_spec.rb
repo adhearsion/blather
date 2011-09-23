@@ -73,6 +73,11 @@ describe Blather::DSL do
     @dsl.handle type, *guards
   end
 
+  it 'sets up handler methods' do
+    @client.expects(:register_handler).with :presence, :unavailable?
+    @dsl.presence :unavailable?
+  end
+
   it 'provides a helper for ready state' do
     @client.expects(:register_handler).with :ready
     @dsl.when_ready
