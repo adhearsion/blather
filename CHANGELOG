@@ -1,4 +1,7 @@
-v0.5.5
+v0.5.6
+  Changes from 0.5.5, this time without a bug when using the namespaced DSL approach
+
+v0.5.5 (yanked)
   Bugfix(benlangfeld/kibs): ActiveSupport was overriding the presence DSL method
   Feature(fyafighter): Adds SSL peer verification to TLS
 
