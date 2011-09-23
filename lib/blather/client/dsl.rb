@@ -85,7 +85,7 @@ module Blather
 
     def self.append_features(o)
       Blather::Stanza.handler_list.each do |handler_name|
-        o.__send__ :remove_method, handler_name if o.method_defined? handler_name
+        o.__send__ :remove_method, handler_name if !o.is_a?(Class) && o.method_defined?(handler_name)
       end
       super
     end

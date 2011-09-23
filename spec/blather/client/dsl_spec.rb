@@ -1,4 +1,4 @@
-require '../../spec_helper'
+require 'spec_helper'
 require 'blather/client/dsl'
 
 describe Blather::DSL do
@@ -71,6 +71,11 @@ describe Blather::DSL do
     guards = [:chat?, {:body => 'exit'}]
     @client.expects(:register_handler).with type, *guards
     @dsl.handle type, *guards
+  end
+
+  it 'sets up handler methods' do
+    @client.expects(:register_handler).with :presence, :unavailable?
+    @dsl.presence :unavailable?
   end
 
   it 'provides a helper for ready state' do
