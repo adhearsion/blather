@@ -83,6 +83,13 @@ module Blather
 
     autoload :PubSub, File.expand_path(File.join(File.dirname(__FILE__), *%w[dsl pubsub]))
 
+    def self.append_features(o)
+      Blather::Stanza.handler_list.each do |handler_name|
+        o.__send__ :remove_method, handler_name if o.method_defined? handler_name
+      end
+      super
+    end
+
     # The actual client connection
     #
     # @return [Blather::Client]
@@ -116,8 +123,8 @@ module Blather
     # @param [String] host (optional) the host to connect to (can be an IP). If
     # this is `nil` the domain on the JID will be used
     # @param [Fixnum, String] (optional) port the port to connect on
-    def setup(jid, password, host = nil, port = nil)
-      client.setup(jid, password, host, port)
+    def setup(jid, password, host = nil, port = nil, certs = nil)
+      client.setup(jid, password, host, port, certs)
     end
 
     # Shutdown the connection.

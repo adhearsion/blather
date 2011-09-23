@@ -1,3 +1,7 @@
+v0.5.5
+  Bugfix(benlangfeld/kibs): ActiveSupport was overriding the presence DSL method
+  Feature(fyafighter): Adds SSL peer verification to TLS
+
 v0.5.4
   Bugfix(fyafighter): Regression related to earlier refactoring: https://github.com/sprsquish/blather/issues/53
   Feature(fyafighter): Make it much easier to allow private network addresses

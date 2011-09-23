@@ -7,6 +7,7 @@
   digest/md5
   digest/sha1
   logger
+  openssl
 
   active_support/core_ext/class/attribute
   active_support/core_ext/object/blank
@@ -14,6 +15,7 @@
   blather/core_ext/eventmachine
   blather/core_ext/ipaddr
 
+  blather/cert_store
   blather/errors
   blather/errors/sasl_error
   blather/errors/stanza_error
