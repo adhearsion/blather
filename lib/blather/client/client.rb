@@ -45,8 +45,8 @@ module Blather
     # @param [Fixnum, String] port the port to connect to.
     #
     # @return [Blather::Client]
-    def self.setup(jid, password, host = nil, port = nil)
-      self.new.setup(jid, password, host, port)
+    def self.setup(jid, password, host = nil, port = nil, certs = nil)
+      self.new.setup(jid, password, host, port, certs)
     end
 
     def initialize  # @private
@@ -194,11 +194,12 @@ module Blather
     end
 
     # @private
-    def setup(jid, password, host = nil, port = nil)
+    def setup(jid, password, host = nil, port = nil, certs = nil)
       @jid = JID.new(jid)
       @setup = [@jid, password]
       @setup << host if host
       @setup << port if port
+      @setup << certs if certs
       self
     end
 

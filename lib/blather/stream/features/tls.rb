@@ -15,7 +15,7 @@ class Stream
       when 'starttls'
         @stream.send "<starttls xmlns='#{TLS_NS}'/>"
       when 'proceed'
-        @stream.start_tls
+        @stream.start_tls(:verify_peer => true)
         @stream.start
 #        succeed!
       else

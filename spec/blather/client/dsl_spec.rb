@@ -1,4 +1,4 @@
-require 'spec_helper'
+require '../../spec_helper'
 require 'blather/client/dsl'
 
 describe Blather::DSL do
@@ -12,23 +12,35 @@ describe Blather::DSL do
   end
 
   it 'wraps the setup' do
-    args = ['jid', 'pass', 'host', 0000]
+    args = ['jid', 'pass', 'host', 0000, nil]
     @client.expects(:setup).with *args
     @dsl.setup *args
   end
 
   it 'allows host to be nil in setup' do
     args = ['jid', 'pass']
-    @client.expects(:setup).with *(args + [nil, nil])
+    @client.expects(:setup).with *(args + [nil, nil, nil])
     @dsl.setup *args
   end
 
   it 'allows port to be nil in setup' do
     args = ['jid', 'pass', 'host']
-    @client.expects(:setup).with *(args + [nil])
+    @client.expects(:setup).with *(args + [nil, nil])
     @dsl.setup *args
   end
 
+  it 'allows certs to be nil in setup' do
+    args = ['jid', 'pass', 'host', 'port']
+    @client.expects(:setup).with *(args + [nil])
+    @dsl.setup *args
+  end
+  
+  it 'accepts certs in setup' do
+    args = ['jid', 'pass', 'host', 'port', 'certs']
+    @client.expects(:setup).with *(args)
+    @dsl.setup *args
+  end
+  
   it 'stops when shutdown is called' do
     @client.expects(:close)
     @dsl.shutdown
