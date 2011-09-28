@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "bundler", ["~> 1.0.0"]
   s.add_development_dependency "rcov", ["~> 0.9.9"]
   s.add_development_dependency "yard", ["~> 0.6.1"]
+  s.add_development_dependency "bluecloth", ["~> 2.1.0"]
   s.add_development_dependency "rake"
   s.add_development_dependency "guard-minitest"
 end
