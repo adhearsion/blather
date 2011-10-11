@@ -2,13 +2,18 @@
 $:.push File.expand_path("../lib", __FILE__)
 require "blather/version"
 
-def rbx?
-  defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
+module RubyVersion
+  def rbx?
+    defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
+  end
+
+  def jruby?
+    RUBY_PLATFORM =~ /java/
+  end
 end
 
-def jruby?
-  RUBY_PLATFORM =~ /java/
-end
+include RubyVersion
+Gem::Specification.extend RubyVersion
 
 Gem::Specification.new do |s|
   s.name        = "blather"
