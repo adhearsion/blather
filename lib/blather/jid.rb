@@ -83,9 +83,6 @@ module Blather
         @node, @domain, @resource = @node.to_s.scan(PATTERN).first
       end
 
-      @node.downcase!   if @node
-      @domain.downcase! if @domain
-
       raise ArgumentError, 'Node too long' if (@node || '').length > 1023
       raise ArgumentError, 'Domain too long' if (@domain || '').length > 1023
       raise ArgumentError, 'Resource too long' if (@resource || '').length > 1023
@@ -129,7 +126,7 @@ module Blather
     # @param [#to_s] other a JID to comare against
     # @return [Fixnum<-1, 0, 1>]
     def <=>(other)
-      to_s <=> other.to_s
+      to_s.downcase <=> other.to_s.downcase
     end
     alias_method :eql?, :==
 

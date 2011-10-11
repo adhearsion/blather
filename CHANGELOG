@@ -1,3 +1,7 @@
+v0.5.8
+  Bugfix(benlangfeld): JIDs now maintain case, but still compare case insensitively
+  Bugfix(jmazzi): Development dependencies now resolve correctly on JRuby and Rubinius
+
 v0.5.7
   Bugfix(benlangfeld): Don't install BlueCloth as a development dependency when on JRuby
 
