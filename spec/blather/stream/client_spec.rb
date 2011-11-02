@@ -16,15 +16,17 @@ describe Blather::Stream::Client do
     @client.stubs(:post_init) unless @client.respond_to?(:post_init)
     @client.stubs(:jid=) unless @client.respond_to?(:jid=)
 
+    port = 50000 - rand(1000)
+
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
     EventMachine::run {
       EM.add_timer(0.5) { EM.stop if EM.reactor_running? }
 
       # Mocked server
-      EventMachine::start_server '127.0.0.1', 12345, ServerMock
+      EventMachine::start_server '127.0.0.1', port, ServerMock
 
       # Blather::Stream connection
-      EM.connect('127.0.0.1', 12345, Blather::Stream::Client, @client, @jid || Blather::JID.new('n@d/r'), 'pass') { |c| @stream = c }
+      EM.connect('127.0.0.1', port, Blather::Stream::Client, @client, @jid || Blather::JID.new('n@d/r'), 'pass') { |c| @stream = c }
     }
   end
 

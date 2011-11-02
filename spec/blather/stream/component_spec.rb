@@ -14,13 +14,15 @@ describe Blather::Stream::Component do
     @client.stubs(:unbind) unless @client.respond_to?(:unbind)
     @client.stubs(:jid=) unless @client.respond_to?(:jid=)
 
+    port = 50000 - rand(1000)
+
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
     EventMachine::run {
       # Mocked server
-      EventMachine::start_server '127.0.0.1', 12345, ServerMock
+      EventMachine::start_server '127.0.0.1', port, ServerMock
 
       # Blather::Stream connection
-      EM.connect('127.0.0.1', 12345, Blather::Stream::Component, @client, @jid || 'comp.id', 'secret') { |c| @stream = c }
+      EM.connect('127.0.0.1', port, Blather::Stream::Component, @client, @jid || 'comp.id', 'secret') { |c| @stream = c }
     }
   end
 
