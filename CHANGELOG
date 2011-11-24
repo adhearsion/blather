@@ -1,3 +1,7 @@
+v0.5.9
+  Bugfix(benlangfeld): Failed connections now raise a Blather::Stream::ConnectionFailed exception
+  Bugfix(crohr): Blather now supports EventMachine 1.0
+
 v0.5.8
   Bugfix(benlangfeld): JIDs now maintain case, but still compare case insensitively
   Bugfix(jmazzi): Development dependencies now resolve correctly on JRuby and Rubinius

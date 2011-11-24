@@ -14,13 +14,15 @@ describe Blather::Stream::Component do
     @client.stubs(:unbind) unless @client.respond_to?(:unbind)
     @client.stubs(:jid=) unless @client.respond_to?(:jid=)
 
+    port = 50000 - rand(1000)
+
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
     EventMachine::run {
       # Mocked server
-      EventMachine::start_server '127.0.0.1', 12345, ServerMock
+      EventMachine::start_server '127.0.0.1', port, ServerMock
 
       # Blather::Stream connection
-      EM.connect('127.0.0.1', 12345, Blather::Stream::Component, @client, @jid || 'comp.id', 'secret') { |c| @stream = c }
+      EM.connect('127.0.0.1', port, Blather::Stream::Component, @client, @jid || 'comp.id', 'secret') { |c| @stream = c }
     }
   end
 
@@ -53,6 +55,17 @@ describe Blather::Stream::Component do
 
       end
     end
+  end
+
+  it 'raises a NoConnection exception if the connection is unbound before it can be completed' do
+    @client = mock
+    proc do
+      EventMachine::run {
+        EM.add_timer(0.5) { EM.stop if EM.reactor_running? }
+
+        Blather::Stream::Component.start @client, @jid || Blather::JID.new('n@d/r'), 'pass', '127.0.0.1', 50000 - rand(1000)
+      }
+    end.must_raise Blather::Stream::ConnectionFailed
   end
 
   it 'starts the stream once the connection is complete' do

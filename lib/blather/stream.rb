@@ -50,6 +50,7 @@ module Blather
   class Stream < EventMachine::Connection
     # Connection not found
     class NoConnection < RuntimeError; end
+    class ConnectionFailed < RuntimeError; end
 
     # @private
     STREAM_NS = 'http://etherx.jabber.org/streams'
@@ -143,6 +144,7 @@ module Blather
     # this kicks off the starttls/authorize/bind process
     # @private
     def connection_completed
+      @connected = true
 #      @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
       start
     end
@@ -178,13 +180,14 @@ module Blather
     # Called by EM after the connection has started
     # @private
     def post_init
-      @connected = true
+      @inited = true
     end
 
     # Called by EM when the connection is closed
     # @private
     def unbind
-      raise NoConnection unless @connected
+      raise NoConnection unless @inited
+      raise ConnectionFailed unless @connected
 
 #      @keepalive.cancel
       @state = :stopped
