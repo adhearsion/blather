@@ -123,7 +123,7 @@ module Blather
     # @param [#to_xml, #to_s] stanza the stanza to send over the wire
     def send(stanza)
       data = stanza.respond_to?(:to_xml) ? stanza.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML) : stanza.to_s
-      Blather.logger.debug "SENDING: (#{caller[1]}) #{data}"
+      Blather.log "SENDING: (#{caller[1]}) #{data}"
       send_data data
     end
 
@@ -152,8 +152,8 @@ module Blather
     # Called by EM with data from the wire
     # @private
     def receive_data(data)
-      Blather.logger.debug "\n#{'-'*30}\n"
-      Blather.logger.debug "STREAM IN: #{data}"
+      Blather.log "\n#{'-'*30}\n"
+      Blather.log "STREAM IN: #{data}"
       @parser << data
 
     rescue ParseError => e
@@ -170,7 +170,7 @@ module Blather
       # EM is supposed to close the connection when this returns false,
       # but it only does that for inbound connections, not when we
       # make a connection to another server. 
-      Blather.logger.debug("Checking SSL cert: #{pem}")
+      Blather.log "Checking SSL cert: #{pem}"
       return true if !@@store
       @@store.trusted?(pem).tap do |trusted|
         close_connection unless trusted
@@ -198,7 +198,7 @@ module Blather
     # Called by the parser with parsed nodes
     # @private
     def receive(node)
-      Blather.logger.debug "RECEIVING (#{node.element_name}) #{node}"
+      Blather.log "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
       if @node.namespace && @node.namespace.prefix == 'stream'
@@ -227,7 +227,7 @@ module Blather
     # Ensure the JID gets attached to the client
     # @private
     def jid=(new_jid)
-      Blather.logger.debug "NEW JID: #{new_jid}"
+      Blather.log "NEW JID: #{new_jid}"
       @jid = JID.new new_jid
     end
 
