@@ -19,14 +19,14 @@ class Stream
     end
 
     def receive_data(string)
-      Blather.logger.debug "PARSING: (#{string})" if @@debug
+      Blather.log "PARSING: (#{string})" if @@debug
       @parser << string
       self
     end
     alias_method :<<, :receive_data
 
     def start_element_namespace(elem, attrs, prefix, uri, namespaces)
-      Blather.logger.debug "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
+      Blather.log "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
 
       args = [elem]
       args << @current.document if @current
@@ -64,7 +64,7 @@ class Stream
     end
 
     def end_element_namespace(elem, prefix, uri)
-      Blather.logger.debug "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
+      Blather.log "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if elem == 'stream'
         node = XMPPNode.new('end')
@@ -79,12 +79,12 @@ class Stream
     end
 
     def characters(chars = '')
-      Blather.logger.debug "CHARS: #{chars}" if @@debug
+      Blather.log "CHARS: #{chars}" if @@debug
       @current << Nokogiri::XML::Text.new(chars, @current.document) if @current
     end
 
     def warning(msg)
-      Blather.logger.debug "PARSE WARNING: #{msg}" if @@debug
+      Blather.log "PARSE WARNING: #{msg}" if @@debug
     end
 
     def error(msg)

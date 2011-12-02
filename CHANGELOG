@@ -1,3 +1,7 @@
+v0.5.10
+  Feature(juandebravo): Allow configuring the wire log level
+  Bugfix(benlangfeld): Checking connection status before the stream is established
+
 v0.5.9
   Bugfix(benlangfeld): Failed connections now raise a Blather::Stream::ConnectionFailed exception
   Bugfix(crohr): Blather now supports EventMachine 1.0

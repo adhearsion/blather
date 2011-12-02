@@ -64,7 +64,7 @@ module Blather
 
     # Check whether the client is currently connected.
     def connected?
-      setup? && !@stream.stopped?
+      setup? && !@stream.nil? && !@stream.stopped?
     end
 
     # Get the current status. Taken from the `state` attribute of Status
