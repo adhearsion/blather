@@ -1,3 +1,5 @@
+require 'cgi'
+
 module Blather
 class Stream
 
@@ -8,6 +10,7 @@ class Stream
     end
 
     MECHANISMS = %w[
+      x-facebook-platform
       digest-md5
       plain
       anonymous
@@ -66,6 +69,7 @@ class Stream
       when 'digest-md5' then  DigestMD5
       when 'plain'      then  Plain
       when 'anonymous'  then  Anonymous
+      when 'x-facebook-platform' then  FacebookPlatform
       when nil          then  fail!(SASLError.import(@node))
       else                    next!
       end
@@ -112,18 +116,19 @@ class Stream
       ##
       # Decodes digest strings 'foo=bar,baz="faz"'
       # into {'foo' => 'bar', 'baz' => 'faz'}
-      def decode_challenge
+      def decode_challenge(separator = ',')
         text = @node.content.unpack('m').first
         res = {}
 
-        text.split(',').each do |statement|
+        text.split(separator).each do |statement|
           key, value = statement.split('=')
           res[key] = value.delete('"') unless key.empty?
         end
         Blather.log "CHALLENGE DECODE: #{res.inspect}"
-
+        
         @nonce ||= res['nonce']
         @realm ||= res['realm']
+        res
       end
 
       ##
@@ -184,6 +189,41 @@ class Stream
         @stream.send auth_node('ANONYMOUS')
       end
     end #Anonymous
+    
+    module FacebookPlatform
+      include DigestMD5
+
+      def authenticate
+        raise BlatherError, 'No Facebook API Key specified' unless FB_API_KEY
+        @stream.send auth_node('X-FACEBOOK-PLATFORM')
+      end
+
+      def challenge
+        result = decode_challenge('&')
+        raise BlatherError, 'Wrong Facebook Version' unless result['version'] == '1'
+        @nonce = result['nonce']
+
+        @response = {
+          'method' => result['method'],
+          'nonce' => result['nonce'],
+          'access_token' => @pass,
+          'api_key' => FB_API_KEY,  #fixme
+          'call_id' => '0',
+          'v' => '1.0'
+        }
+        
+        Blather.log "FB CHALLENGE RESPONSE: #{@response.inspect}"
+        response_string = @response.map{|k,v| "#{CGI.escape(k)}=#{CGI.escape(v)}"}.join("&")
+
+        Blather.log "FB CH RESP TXT: #{response_string}"
+        
+        node = XMPPNode.new 'response'
+        node.namespace = SASL_NS
+        node.content = b64(response_string)
+        
+        @stream.send(node)
+      end
+    end
   end #SASL
 
 end #Stream

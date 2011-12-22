@@ -432,6 +432,40 @@ describe Blather::Stream::Client do
       end
     end
   end
+  
+  it 'will connect via X-FACEBOOK-PLATFORM when asked' do
+    FB_API_KEY='1'
+    Time.any_instance.stubs(:to_f).returns(1.1)
+    state = nil
+
+    mocked_server(4) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>X-FACEBOOK-PLATFORM</mechanism></mechanisms></stream:features>"
+        val.must_match(/stream:stream/)
+
+      when :started
+        state = :auth_sent
+        server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>dmVyc2lvbj0xJm1ldGhvZD1hdXRoLnhtcHBfbG9naW4mbm9uY2U9RUI3RDZDNDIwMzNFMTI3Q0FCRjBBRjE1MDZCMTI3MUQ=</challenge>"
+        val.must_match(/auth.*X-FACEBOOK\-PLATFORM/)
+
+      when :auth_sent
+        state = :response1
+        server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>dmVyc2lvbj0xJm1ldGhvZD1hdXRoLnhtcHBfbG9naW4mbm9uY2U9RUI3RDZDNDIwMzNFMTI3Q0FCRjBBRjE1MDZCMTI3MUQ=</challenge>"
+        val.must_equal('<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl">bWV0aG9kPWF1dGgueG1wcF9sb2dpbiZub25jZT1FQjdENkM0MjAzM0UxMjdDQUJGMEFGMTUwNkIxMjcxRCZhY2Nlc3NfdG9rZW49cGFzcyZhcGlfa2V5PTEmY2FsbF9pZD0wJnY9MS4w</response>')
+      
+      when :response1
+        EM.stop
+        state = :complete
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
 
   it 'will connect via SSL ANONYMOUS when asked' do
     state = nil
