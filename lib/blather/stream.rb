@@ -50,11 +50,13 @@ module Blather
   class Stream < EventMachine::Connection
     # Connection not found
     class NoConnection < RuntimeError; end
+    class ConnectionFailed < RuntimeError; end
 
     # @private
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :password
     attr_reader :jid
+    @@store = nil
 
     # Start the stream between client and server
     #
@@ -66,8 +68,13 @@ module Blather
     # to use the domain on the JID
     # @param [Fixnum, nil] port the port to connect on. Default is the XMPP
     # default of 5222
-    def self.start(client, jid, pass, host = nil, port = 5222)
+    # @param [String, nil] certs the trusted cert store in pem format to verify 
+    # communication with the server is trusted.
+    def self.start(client, jid, pass, host = nil, port = 5222, certs_directory = nil)
       jid = JID.new jid
+      if certs_directory
+        @@store = CertStore.new(certs_directory)
+      end
       if host
         connect host, port, self, client, jid, pass
       else
@@ -116,7 +123,7 @@ module Blather
     # @param [#to_xml, #to_s] stanza the stanza to send over the wire
     def send(stanza)
       data = stanza.respond_to?(:to_xml) ? stanza.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML) : stanza.to_s
-      Blather.logger.debug "SENDING: (#{caller[1]}) #{data}"
+      Blather.log "SENDING: (#{caller[1]}) #{data}"
       send_data data
     end
 
@@ -137,6 +144,7 @@ module Blather
     # this kicks off the starttls/authorize/bind process
     # @private
     def connection_completed
+      @connected = true
 #      @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
       start
     end
@@ -144,8 +152,8 @@ module Blather
     # Called by EM with data from the wire
     # @private
     def receive_data(data)
-      Blather.logger.debug "\n#{'-'*30}\n"
-      Blather.logger.debug "STREAM IN: #{data}"
+      Blather.log "\n#{'-'*30}\n"
+      Blather.log "STREAM IN: #{data}"
       @parser << data
 
     rescue ParseError => e
@@ -154,17 +162,33 @@ module Blather
       send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
       stop
     end
+    
+    # Called by EM to verify the peer certificate. If a certificate store directory 
+    # has not been configured don't worry about peer verification. At least it is encrypted
+    # We Log the certificate so that you can add it to the trusted store easily if desired
+    # @private
+    def ssl_verify_peer(pem)
+      # EM is supposed to close the connection when this returns false,
+      # but it only does that for inbound connections, not when we
+      # make a connection to another server. 
+      Blather.log "Checking SSL cert: #{pem}"
+      return true if !@@store
+      @@store.trusted?(pem).tap do |trusted|
+        close_connection unless trusted
+      end
+    end
 
     # Called by EM after the connection has started
     # @private
     def post_init
-      @connected = true
+      @inited = true
     end
 
     # Called by EM when the connection is closed
     # @private
     def unbind
-      raise NoConnection unless @connected
+      raise NoConnection unless @inited
+      raise ConnectionFailed unless @connected
 
 #      @keepalive.cancel
       @state = :stopped
@@ -175,7 +199,7 @@ module Blather
     # Called by the parser with parsed nodes
     # @private
     def receive(node)
-      Blather.logger.debug "RECEIVING (#{node.element_name}) #{node}"
+      Blather.log "RECEIVING (#{node.element_name}) #{node}"
       @node = node
 
       if @node.namespace && @node.namespace.prefix == 'stream'
@@ -204,7 +228,7 @@ module Blather
     # Ensure the JID gets attached to the client
     # @private
     def jid=(new_jid)
-      Blather.logger.debug "NEW JID: #{new_jid}"
+      Blather.log "NEW JID: #{new_jid}"
       @jid = JID.new new_jid
     end
 

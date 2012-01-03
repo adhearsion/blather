@@ -9,6 +9,7 @@ $:.unshift(File.dirname(__FILE__))
   digest/md5
   digest/sha1
   logger
+  openssl
 
   active_support/core_ext/class/attribute
   active_support/core_ext/object/blank
@@ -16,6 +17,7 @@ $:.unshift(File.dirname(__FILE__))
   blather/core_ext/eventmachine
   blather/core_ext/ipaddr
 
+  blather/cert_store
   blather/errors
   blather/errors/sasl_error
   blather/errors/stanza_error
@@ -84,22 +86,31 @@ $:.unshift(File.dirname(__FILE__))
   blather/stream/features/tls
 ].each { |r| require r }
 
-# The core Blather namespace
 module Blather
-  # @private
   @@logger = nil
 
-  # Get or create an instance of Logger
-  def self.logger
-    unless @@logger
-      self.logger = Logger.new($stdout)
-      self.logger.level = Logger::INFO
+  class << self
+
+    # Default logger level. Any internal call to log() will forward the log message to
+    # the default log level
+    attr_accessor :default_log_level
+    
+    def logger
+      @@logger ||= Logger.new($stdout).tap {|logger| logger.level = Logger::INFO }
     end
-    @@logger
+
+    def logger=(logger)
+      @@logger = logger
+    end
+
+    def default_log_level
+      @default_log_level ||= :debug # by default is debug (as it used to be)
+    end
+
+    def log(message)
+      logger.send self.default_log_level, message
+    end
+
   end
 
-  # Set the Logger
-  def self.logger=(logger)
-    @@logger = logger
-  end
 end

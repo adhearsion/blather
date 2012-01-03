@@ -4,13 +4,13 @@ require 'blather/client/client'
 describe Blather::Client do
   before do
     @client = Blather::Client.new
-    @stream = mock()
+    @stream = mock
     @stream.stubs(:send)
     @jid = Blather::JID.new('n@d/r')
-    @client.post_init @stream, @jid
   end
 
   it 'provides a Blather::JID reader' do
+    @client.post_init @stream, @jid
     @client.must_respond_to :jid
     @client.jid.must_equal @jid
   end
@@ -21,6 +21,7 @@ describe Blather::Client do
   end
 
   it 'provides a status reader' do
+    @client.post_init @stream, @jid
     @client.must_respond_to :status
     @client.status = :away
     @client.status.must_equal :away
@@ -67,11 +68,18 @@ describe Blather::Client do
   end
 
   it 'knows if it is connected' do
-    stream = mock()
+    stream = mock
     stream.expects(:stopped?).returns false
     @client.setup('me.com', 'secret')
     @client.post_init stream, Blather::JID.new('me.com')
     @client.connected?.must_equal true
+  end
+
+  describe 'if it has been setup but not connected yet' do
+    it 'should consider itself disconnected' do
+      @client.setup('me.com', 'secret')
+      @client.connected?.must_equal false
+    end
   end
 
   it 'writes to the connection the closes when #close is called' do

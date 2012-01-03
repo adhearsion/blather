@@ -16,3 +16,4 @@ notes
 *.rbc
 vendor
 .rvmrc
+.rbx
