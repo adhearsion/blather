@@ -123,8 +123,9 @@ module Blather
     # @param [String] host (optional) the host to connect to (can be an IP). If
     # this is `nil` the domain on the JID will be used
     # @param [Fixnum, String] (optional) port the port to connect on
-    def setup(jid, password, host = nil, port = nil, certs = nil)
-      client.setup(jid, password, host, port, certs)
+    # @param [Fixnum] (optional) connection_timeout the time to wait for connection to succeed before timing out
+    def setup(jid, password, host = nil, port = nil, certs = nil, connection_timeout = nil)
+      client.setup(jid, password, host, port, certs, connection_timeout)
     end
 
     # Shutdown the connection.
