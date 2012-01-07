@@ -51,6 +51,7 @@ module Blather
     # Connection not found
     class NoConnection < RuntimeError; end
     class ConnectionFailed < RuntimeError; end
+    class ConnectionTimeout < RuntimeError; end
 
     # @private
     STREAM_NS = 'http://etherx.jabber.org/streams'
@@ -70,13 +71,15 @@ module Blather
     # default of 5222
     # @param [String, nil] certs the trusted cert store in pem format to verify 
     # communication with the server is trusted.
-    def self.start(client, jid, pass, host = nil, port = 5222, certs_directory = nil)
+    # @param [Fixnum, nil] connect_timeout the number of seconds for which to wait for a successful connection
+    def self.start(client, jid, pass, host = nil, port = nil, certs_directory = nil, connect_timeout = nil)
       jid = JID.new jid
+      port ||= 5222
       if certs_directory
         @@store = CertStore.new(certs_directory)
       end
       if host
-        connect host, port, self, client, jid, pass
+        connect host, port, self, client, jid, pass, connect_timeout
       else
         require 'resolv'
         srv = []
@@ -88,7 +91,7 @@ module Blather
         end
 
         if srv.empty?
-          connect jid.domain, port, self, client, jid, pass
+          connect jid.domain, port, self, client, jid, pass, connect_timeout
         else
           srv.sort! do |a,b|
             (a.priority != b.priority) ? (a.priority <=> b.priority) :
@@ -96,7 +99,7 @@ module Blather
           end
 
           srv.detect do |r|
-            not connect(r.target.to_s, r.port, self, client, jid, pass) === false
+            not connect(r.target.to_s, r.port, self, client, jid, pass, connect_timeout) === false
           end
         end
       end
@@ -106,8 +109,8 @@ module Blather
     # Stream will raise +NoConnection+ if it receives #unbind before #post_init
     # this catches that and returns false prompting for another attempt
     # @private
-    def self.connect(host, port, conn, client, jid, pass)
-      EM.connect host, port, conn, client, jid, pass
+    def self.connect(host, port, conn, client, jid, pass, connect_timeout = nil)
+      EM.connect host, port, conn, client, jid, pass, connect_timeout
     rescue NoConnection
       false
     end
@@ -129,7 +132,7 @@ module Blather
 
     # Called by EM.connect to initialize stream variables
     # @private
-    def initialize(client, jid, pass)
+    def initialize(client, jid, pass, connect_timeout = nil)
       super()
 
       @error = nil
@@ -138,12 +141,18 @@ module Blather
       self.jid = jid
       @to = self.jid.domain
       @password = pass
+      @connect_timeout = connect_timeout || 180
     end
 
     # Called when EM completes the connection to the server
     # this kicks off the starttls/authorize/bind process
     # @private
     def connection_completed
+      if @connect_timeout
+        EM::Timer.new @connect_timeout do
+          raise ConnectionTimeout, "Stream timed out after #{@connect_timeout} seconds." unless started?
+        end
+      end
       @connected = true
 #      @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
       start
