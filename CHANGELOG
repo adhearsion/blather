@@ -1,3 +1,11 @@
+v0.5.12
+  Bugfix(benlangfeld): Allow specifying the connection timeout in DSL setup
+
+v0.5.11
+  Feature(benlangfeld): Allow specifying a connection timeout
+    * Raise Blather::Stream::ConnectionTimeout if timeout is exceeded
+    * Default to 180 seconds
+
 v0.5.10
   Feature(juandebravo): Allow configuring the wire log level
   Bugfix(benlangfeld): Checking connection status before the stream is established
