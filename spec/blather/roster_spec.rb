@@ -77,7 +77,7 @@ describe Blather::Roster do
   end
 
   it 'cycles through the items using #each' do
-    @roster.map { |i| i }.sort.must_equal(@roster.items.sort)
+    @roster.map { |i| i }.sort.must_equal(@roster.items.values.sort)
   end
 
   it 'returns a duplicate of items through #items' do
