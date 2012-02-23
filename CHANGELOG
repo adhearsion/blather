@@ -1,3 +1,7 @@
+develop
+  Bugfix(theozaurus): Disable connection timeout timer if client deliberately disconnects
+  Bugfix(mtrudel): Fix Roster#each to return roster_items as per documentation
+
 v0.5.12
   Bugfix(benlangfeld): Allow specifying the connection timeout in DSL setup
 
