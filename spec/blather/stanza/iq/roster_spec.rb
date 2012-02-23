@@ -80,7 +80,7 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
     n[:subscription] = 'both'
 
     i = Blather::Stanza::Iq::Roster::RosterItem.new n
-    i.jid.must_equal Blather::JID.new('n@d/r').stripped
+    i.jid.must_equal Blather::JID.new('n@d/r')
     i.subscription.must_equal :both
   end
 
