@@ -92,7 +92,7 @@ class Iq
       #
       # @return [Blather::JID, nil]
       def jid
-        (j = self[:jid]) ? JID.new(j) : nil
+        (j = self[:jid]) ? JID.new(j).stripped : nil
       end
 
       # Set the JID of the item
