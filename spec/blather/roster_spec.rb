@@ -76,8 +76,12 @@ describe Blather::Roster do
     @roster.must_respond_to :each
   end
 
-  it 'cycles through the items using #each' do
+  it 'cycles through all the items using #each' do
     @roster.map { |i| i }.sort.must_equal(@roster.items.values.sort)
+  end
+
+  it 'yields RosterItems from #each' do
+    @roster.map { |i| i.must_be_kind_of Blather::RosterItem }
   end
 
   it 'returns a duplicate of items through #items' do
