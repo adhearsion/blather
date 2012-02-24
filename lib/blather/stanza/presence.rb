@@ -95,7 +95,7 @@ class Stanza
       if klass && klass != self
         klass.import(node)
       else
-        klass = case node['type']
+        klass ||= case node['type']
           when nil, 'unavailable' then Status
           when /subscribe/        then Subscription
           else self
