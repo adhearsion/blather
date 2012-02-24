@@ -56,6 +56,15 @@ describe Blather::Stanza::Presence do
     s.type.must_equal :subscribe
   end
 
+  it 'creates a MUC object when importing a node with a form in the MUC namespace' do
+    n = Blather::XMPPNode.new
+    x = Blather::XMPPNode.new 'x'
+    x.namespace = "http://jabber.org/protocol/muc"
+    n << x
+    s = Blather::Stanza::Presence.import(n)
+    s.must_be_kind_of Blather::Stanza::Presence::MUC
+  end
+
   it 'creates a Presence object when importing a node with type equal to something unknown' do
     n = Blather::XMPPNode.new
     n[:type] = :foo
