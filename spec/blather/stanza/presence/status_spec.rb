@@ -51,7 +51,7 @@ describe Blather::Stanza::Presence::Status do
 
   it 'returns :available if <show/> is blank' do
     status = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
-      <presence><show/><presence/>
+      <presence><show/></presence>
     NODE
     status.state.must_equal :available
   end
