@@ -375,6 +375,49 @@ class Stanza
         self << state
       end
     end
+
+    def delay
+      if d = find_first('ns:delay', :ns => "urn:xmpp:delay")
+        Delay.new d
+      end
+    end
+
+    def delayed?
+      !!delay
+    end
+
+    class Delay < XMPPNode
+      def self.new(stamp = nil, from = nil, description = nil)
+        new_node = super :delay
+
+        case stamp
+        when Nokogiri::XML::Node
+          new_node.inherit stamp
+        when Hash
+          new_node.stamp = stamp[:stamp]
+          new_node.from = stamp[:from]
+          new_node.description = stamp[:description]
+        else
+          new_node.stamp = stamp
+          new_node.from = from
+          new_node.description = description
+        end
+        new_node
+      end
+
+      def from
+        read_attr :from
+      end
+
+      def stamp
+        s = read_attr :stamp
+        s && Time.parse(s)
+      end
+
+      def description
+        content.strip
+      end
+    end
   end
 
 end
