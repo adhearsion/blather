@@ -1,4 +1,5 @@
 develop
+  Feature(benlangfeld): Very basic MUC and delayed message support
   Bugfix(theozaurus): Disable connection timeout timer if client deliberately disconnects
   Bugfix(mtrudel): Fix Roster#each to return roster_items as per documentation
 
