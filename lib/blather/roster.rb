@@ -76,7 +76,7 @@ module Blather
     #
     # @yield [Blather::RosterItem] yields each RosterItem
     def each(&block)
-      items.each &block
+      items.values.each &block
     end
 
     # Get a duplicate of all RosterItems

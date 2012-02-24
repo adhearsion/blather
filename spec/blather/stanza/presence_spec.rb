@@ -35,25 +35,39 @@ describe Blather::Stanza::Presence do
   end
 
   it 'creates a Status object when importing a node with type == nil' do
-    s = Blather::Stanza::Presence.import(Blather::XMPPNode.new)
+    s = Blather::Stanza::Presence.import(parse_stanza('<presence/>').root)
     s.must_be_kind_of Blather::Stanza::Presence::Status
     s.state.must_equal :available
   end
 
   it 'creates a Status object when importing a node with type == "unavailable"' do
-    n = Blather::XMPPNode.new
-    n[:type] = :unavailable
-    s = Blather::Stanza::Presence.import(n)
+    s = Blather::Stanza::Presence.import(parse_stanza('<presence type="unavailable"/>').root)
     s.must_be_kind_of Blather::Stanza::Presence::Status
     s.state.must_equal :unavailable
   end
 
   it 'creates a Subscription object when importing a node with type == "subscribe"' do
-    n = Blather::XMPPNode.new
-    n[:type] = :subscribe
-    s = Blather::Stanza::Presence.import(n)
+    s = Blather::Stanza::Presence.import(parse_stanza('<presence type="subscribe"/>').root)
     s.must_be_kind_of Blather::Stanza::Presence::Subscription
     s.type.must_equal :subscribe
+  end
+
+  it 'creates a MUC object when importing a node with a form in the MUC namespace' do
+    n = Blather::XMPPNode.new
+    x = Blather::XMPPNode.new 'x'
+    x.namespace = "http://jabber.org/protocol/muc"
+    n << x
+    s = Blather::Stanza::Presence.import(n)
+    s.must_be_kind_of Blather::Stanza::Presence::MUC
+  end
+
+  it 'creates a MUCUser object when importing a node with a form in the MUC#user namespace' do
+    n = Blather::XMPPNode.new
+    x = Blather::XMPPNode.new 'x'
+    x.namespace = "http://jabber.org/protocol/muc#user"
+    n << x
+    s = Blather::Stanza::Presence.import(n)
+    s.must_be_kind_of Blather::Stanza::Presence::MUCUser
   end
 
   it 'creates a Presence object when importing a node with type equal to something unknown' do

@@ -47,6 +47,8 @@
   blather/stanza/presence/c
   blather/stanza/presence/status
   blather/stanza/presence/subscription
+  blather/stanza/presence/muc
+  blather/stanza/presence/muc_user
 
   blather/stanza/pubsub
   blather/stanza/pubsub/affiliations
@@ -85,7 +87,7 @@ module Blather
     # Default logger level. Any internal call to log() will forward the log message to
     # the default log level
     attr_accessor :default_log_level
-    
+
     def logger
       @@logger ||= Logger.new($stdout).tap {|logger| logger.level = Logger::INFO }
     end

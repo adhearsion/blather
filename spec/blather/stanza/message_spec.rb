@@ -51,6 +51,23 @@ def message_xml
   XML
 end
 
+def delayed_message_xml
+  <<-XML
+    <message
+        from='coven@chat.shakespeare.lit/firstwitch'
+        id='162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2'
+        to='hecate@shakespeare.lit/broom'
+        type='groupchat'>
+      <body>Thrice the brinded cat hath mew'd.</body>
+      <delay xmlns='urn:xmpp:delay'
+         from='coven@chat.shakespeare.lit'
+         stamp='2002-10-13T23:58:37Z'>
+        Too slow
+      </delay>
+    </message>
+  XML
+end
+
 describe Blather::Stanza::Message do
   it 'registers itself' do
     Blather::XMPPNode.class_from_registration(:message, nil).must_equal Blather::Stanza::Message
@@ -244,5 +261,22 @@ describe Blather::Stanza::Message do
     r = Blather::Stanza::Message.new
     r.form
     r.xpath('ns:x', :ns => Blather::Stanza::X.registered_ns).wont_be_empty
+  end
+
+  it 'is not delayed' do
+    n = Blather::XMPPNode.import(parse_stanza(message_xml).root)
+    n.delay.must_equal nil
+    n.delayed?.must_equal false
+  end
+
+  describe "with a delay" do
+    it "is delayed" do
+      n = Blather::XMPPNode.import(parse_stanza(delayed_message_xml).root)
+      n.delayed?.must_equal true
+      n.delay.must_be_instance_of Blather::Stanza::Message::Delay
+      n.delay.from.must_equal 'coven@chat.shakespeare.lit'
+      n.delay.stamp.must_equal Time.new(2002, 10, 13, 23, 58, 37, 0)
+      n.delay.description.must_equal "Too slow"
+    end
   end
 end
