@@ -11,6 +11,7 @@ def muc_user_xml
               role='participant'/>
         <status code='100'/>
         <status code='110'/>
+        <password>foobar</password>
       </x>
     </presence>
   XML
@@ -28,6 +29,7 @@ describe 'Blather::Stanza::Presence::MUCUser' do
     muc_user.jid.must_equal 'hag66@shakespeare.lit/pda'
     muc_user.role.must_equal :participant
     muc_user.status_codes.must_equal [100, 110]
+    muc_user.password.must_equal 'foobar'
   end
 
   it 'ensures a form node is present on create' do
@@ -72,5 +74,14 @@ describe 'Blather::Stanza::Presence::MUCUser' do
     muc_user.status_codes.must_equal [100, 110]
     muc_user.status_codes = [500]
     muc_user.status_codes.must_equal [500]
+  end
+
+  it "must be able to set the password" do
+    muc_user = Blather::Stanza::Presence::MUCUser.new
+    muc_user.password.must_equal nil
+    muc_user.password = 'barbaz'
+    muc_user.password.must_equal 'barbaz'
+    muc_user.password = 'hello_world'
+    muc_user.password.must_equal 'hello_world'
   end
 end

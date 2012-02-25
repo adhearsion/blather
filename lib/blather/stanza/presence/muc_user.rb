@@ -52,6 +52,14 @@ class Presence
       end
     end
 
+    def password
+      find_password_node && password_node.content
+    end
+
+    def password=(var)
+      password_node.content = var
+    end
+
     def muc_user
       unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
         self << (muc_user = XMPPNode.new('x', self.document))
@@ -73,6 +81,17 @@ class Presence
       muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
         Status.new status
       end
+    end
+
+    def password_node
+      unless pw = find_password_node
+        muc_user << (pw = XMPPNode.new('password', self.document))
+      end
+      pw
+    end
+
+    def find_password_node
+      muc_user.find_first 'ns:password', :ns => self.class.registered_ns
     end
 
     class Item < XMPPNode
