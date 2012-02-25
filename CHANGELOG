@@ -1,5 +1,8 @@
 develop
 
+v0.6.1
+  Bugfix(benlangfeld): Ensure MUC presence nodes (joining) have a form element on creation
+
 v0.6.0
   Feature(benlangfeld): Very basic MUC and delayed message support
   Bugfix(theozaurus): Disable connection timeout timer if client deliberately disconnects

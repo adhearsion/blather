@@ -18,4 +18,18 @@ describe 'Blather::Stanza::Presence::MUC' do
   it 'must be importable' do
     c = Blather::XMPPNode.import(parse_stanza(muc_xml).root).must_be_instance_of Blather::Stanza::Presence::MUC
   end
+
+  it 'ensures a form node is present on create' do
+    c = Blather::Stanza::Presence::MUC.new
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).wont_be_empty
+  end
+
+  it 'ensures a form node exists when calling #muc' do
+    c = Blather::Stanza::Presence::MUC.new
+    c.remove_children :x
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).must_be_empty
+
+    c.muc.wont_be_nil
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).wont_be_empty
+  end
 end
