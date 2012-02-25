@@ -30,6 +30,20 @@ describe 'Blather::Stanza::Presence::MUCUser' do
     muc_user.status_codes.must_equal [100, 110]
   end
 
+  it 'ensures a form node is present on create' do
+    c = Blather::Stanza::Presence::MUCUser.new
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUCUser.registered_ns).wont_be_empty
+  end
+
+  it 'ensures a form node exists when calling #muc' do
+    c = Blather::Stanza::Presence::MUCUser.new
+    c.remove_children :x
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUCUser.registered_ns).must_be_empty
+
+    c.muc_user.wont_be_nil
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUCUser.registered_ns).wont_be_empty
+  end
+
   it "must be able to set the affiliation" do
     muc_user = Blather::Stanza::Presence::MUCUser.new
     muc_user.affiliation.must_equal nil

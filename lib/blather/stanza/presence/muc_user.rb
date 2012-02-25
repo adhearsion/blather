@@ -5,6 +5,18 @@ class Presence
   class MUCUser < Status
     register :muc_user, :x, "http://jabber.org/protocol/muc#user"
 
+    def self.new(*args)
+      new_node = super
+      new_node.muc_user
+      new_node
+    end
+
+    def inherit(node)
+      muc_user.remove
+      super
+      self
+    end
+
     def affiliation
       item.affiliation
     end
@@ -40,29 +52,28 @@ class Presence
       end
     end
 
-    private
-      def muc_user
-        unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
-          self << (muc_user = XMPPNode.new('x', self.document))
-          muc_user.namespace = self.class.registered_ns
-        end
-        muc_user
+    def muc_user
+      unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
+        self << (muc_user = XMPPNode.new('x', self.document))
+        muc_user.namespace = self.class.registered_ns
       end
+      muc_user
+    end
 
-      def item
-        if item = muc_user.find_first('ns:item', :ns => self.class.registered_ns)
-          Item.new item
-        else
-          muc_user << (item = Item.new nil, nil, nil, self.document)
-          item
-        end
+    def item
+      if item = muc_user.find_first('ns:item', :ns => self.class.registered_ns)
+        Item.new item
+      else
+        muc_user << (item = Item.new nil, nil, nil, self.document)
+        item
       end
+    end
 
-      def status
-        muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
-          Status.new status
-        end
+    def status
+      muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
+        Status.new status
       end
+    end
 
     class Item < XMPPNode
       def self.new(affiliation = nil, role = nil, jid = nil, document = nil)
