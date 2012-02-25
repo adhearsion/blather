@@ -60,6 +60,10 @@ class Presence
       password_node.content = var
     end
 
+    def invite?
+      !!invite
+    end
+
     def muc_user
       unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
         self << (muc_user = XMPPNode.new('x', self.document))
@@ -92,6 +96,15 @@ class Presence
 
     def find_password_node
       muc_user.find_first 'ns:password', :ns => self.class.registered_ns
+    end
+
+    def invite
+      if invite = muc_user.find_first('ns:invite', :ns => self.class.registered_ns)
+        Invite.new invite
+      else
+        muc_user << (invite = Invite.new nil, nil, nil, self.document)
+        invite
+      end
     end
 
     class Item < XMPPNode
@@ -164,6 +177,60 @@ class Presence
 
       def code=(val)
         write_attr :code, val
+      end
+    end
+
+    class Invite < XMPPNode
+      def self.new(to = nil, from = nil, reason = nil, document = nil)
+        new_node = super :invite, document
+
+        case to
+        when self
+          to.document ||= document
+          return to
+        when Nokogiri::XML::Node
+          new_node.inherit to
+        when Hash
+          new_node.to = to[:to]
+          new_node.from = to[:from]
+          new_node.reason = to[:reason]
+        else
+          new_node.to = to
+          new_node.from = from
+          new_node.reason = reason
+        end
+        new_node
+      end
+
+      def to
+        read_attr :to
+      end
+
+      def to=(val)
+        write_attr :to, val
+      end
+
+      def from
+        read_attr :from
+      end
+
+      def from=(val)
+        write_attr :from, val
+      end
+
+      def reason
+        reason_node.content.strip
+      end
+
+      def reason=(val)
+        reason_node.content = val
+      end
+
+      def reason_node
+        unless reason = find_first('ns:reason', :ns => MUCUser.registered_ns)
+          self << (reason = XMPPNode.new('reason', self.document))
+        end
+        reason
       end
     end
   end # MUC

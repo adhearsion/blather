@@ -17,6 +17,23 @@ def muc_user_xml
   XML
 end
 
+def muc_invite_xml
+  <<-XML
+  <message
+        from='coven@chat.shakespeare.lit'
+        id='nzd143v8'
+        to='hecate@shakespeare.lit'>
+      <x xmlns='http://jabber.org/protocol/muc#user'>
+        <invite to='hecate@shakespeare.lit' from='crone1@shakespeare.lit/desktop'>
+          <reason>
+            Hey Hecate, this is the place for all good witches!
+          </reason>
+        </invite>
+      </x>
+    </message>
+  XML
+end
+
 describe 'Blather::Stanza::Presence::MUCUser' do
   it 'registers itself' do
     Blather::XMPPNode.class_from_registration(:x, 'http://jabber.org/protocol/muc#user' ).must_equal Blather::Stanza::Presence::MUCUser
@@ -83,5 +100,44 @@ describe 'Blather::Stanza::Presence::MUCUser' do
     muc_user.password.must_equal 'barbaz'
     muc_user.password = 'hello_world'
     muc_user.password.must_equal 'hello_world'
+  end
+
+  describe "with an invite element" do
+    it "should be an #invite?" do
+      muc_user = Blather::XMPPNode.import(parse_stanza(muc_invite_xml).root)
+      muc_user.invite?.must_equal true
+    end
+
+    it "should know the invite attributes properly" do
+      muc_user = Blather::XMPPNode.import(parse_stanza(muc_invite_xml).root)
+      invite = muc_user.invite
+      invite.to.must_equal 'hecate@shakespeare.lit'
+      invite.from.must_equal 'crone1@shakespeare.lit/desktop'
+      invite.reason.must_equal 'Hey Hecate, this is the place for all good witches!'
+    end
+
+    it "must be able to set the to jid" do
+      muc_user = Blather::Stanza::Presence::MUCUser.new
+      invite = muc_user.invite
+      invite.to.must_equal nil
+      invite.to = 'foo@bar.com'
+      invite.to.must_equal 'foo@bar.com'
+    end
+
+    it "must be able to set the from jid" do
+      muc_user = Blather::Stanza::Presence::MUCUser.new
+      invite = muc_user.invite
+      invite.from.must_equal nil
+      invite.from = 'foo@bar.com'
+      invite.from.must_equal 'foo@bar.com'
+    end
+
+    it "must be able to set the reason" do
+      muc_user = Blather::Stanza::Presence::MUCUser.new
+      invite = muc_user.invite
+      invite.reason.must_equal ''
+      invite.reason = 'Please join'
+      invite.reason.must_equal 'Please join'
+    end
   end
 end
