@@ -201,9 +201,9 @@ class Presence
       end
     end
 
-    class Invite < XMPPNode
-      def self.new(to = nil, from = nil, reason = nil, document = nil)
-        new_node = super :invite, document
+    class InviteBase < XMPPNode
+      def self.new(element_name, to = nil, from = nil, reason = nil, document = nil)
+        new_node = super element_name, document
 
         case to
         when self
@@ -255,57 +255,15 @@ class Presence
       end
     end
 
-    class Decline < XMPPNode
-      def self.new(to = nil, from = nil, reason = nil, document = nil)
-        new_node = super :decline, document
-
-        case to
-        when self
-          to.document ||= document
-          return to
-        when Nokogiri::XML::Node
-          new_node.inherit to
-        when Hash
-          new_node.to = to[:to]
-          new_node.from = to[:from]
-          new_node.reason = to[:reason]
-        else
-          new_node.to = to
-          new_node.from = from
-          new_node.reason = reason
-        end
-        new_node
+    class Invite < InviteBase
+      def self.new(*args)
+        new_node = super :invite, *args
       end
+    end
 
-      def to
-        read_attr :to
-      end
-
-      def to=(val)
-        write_attr :to, val
-      end
-
-      def from
-        read_attr :from
-      end
-
-      def from=(val)
-        write_attr :from, val
-      end
-
-      def reason
-        reason_node.content.strip
-      end
-
-      def reason=(val)
-        reason_node.content = val
-      end
-
-      def reason_node
-        unless reason = find_first('ns:reason', :ns => MUCUser.registered_ns)
-          self << (reason = XMPPNode.new('reason', self.document))
-        end
-        reason
+    class Decline < InviteBase
+      def self.new(*args)
+        new_node = super :decline, *args
       end
     end
   end # MUC
