@@ -61,7 +61,7 @@ class Presence
     end
 
     def invite?
-      !!invite
+      !!find_invite_node
     end
 
     def muc_user
@@ -99,12 +99,16 @@ class Presence
     end
 
     def invite
-      if invite = muc_user.find_first('ns:invite', :ns => self.class.registered_ns)
+      if invite = find_invite_node
         Invite.new invite
       else
         muc_user << (invite = Invite.new nil, nil, nil, self.document)
         invite
       end
+    end
+
+    def find_invite_node
+      muc_user.find_first 'ns:invite', :ns => self.class.registered_ns
     end
 
     class Item < XMPPNode

@@ -102,6 +102,11 @@ describe 'Blather::Stanza::Presence::MUCUser' do
     muc_user.password.must_equal 'hello_world'
   end
 
+  it "should not be an #invite?" do
+    muc_user = Blather::Stanza::Presence::MUCUser.new
+    muc_user.invite?.must_equal false
+  end
+
   describe "with an invite element" do
     it "should be an #invite?" do
       muc_user = Blather::XMPPNode.import(parse_stanza(muc_invite_xml).root)
