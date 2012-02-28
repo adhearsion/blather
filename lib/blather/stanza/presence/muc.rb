@@ -11,6 +11,12 @@ class Presence
       new_node
     end
 
+    def inherit(node)
+      muc.remove
+      super
+      self
+    end
+
     def muc
       unless muc = find_first('ns:x', :ns => self.class.registered_ns)
         self << (muc = XMPPNode.new('x', self.document))

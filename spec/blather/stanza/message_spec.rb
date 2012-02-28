@@ -275,7 +275,7 @@ describe Blather::Stanza::Message do
       n.delayed?.must_equal true
       n.delay.must_be_instance_of Blather::Stanza::Message::Delay
       n.delay.from.must_equal 'coven@chat.shakespeare.lit'
-      n.delay.stamp.must_equal Time.new(2002, 10, 13, 23, 58, 37, 0)
+      n.delay.stamp.must_equal Time.utc(2002, 10, 13, 23, 58, 37, 0)
       n.delay.description.must_equal "Too slow"
     end
   end

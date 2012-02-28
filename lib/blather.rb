@@ -43,6 +43,7 @@
   blather/stanza/disco/disco_items
   blather/stanza/disco/capabilities
   blather/stanza/message
+  blather/stanza/message/muc_user
   blather/stanza/presence
   blather/stanza/presence/c
   blather/stanza/presence/status

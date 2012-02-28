@@ -1,9 +1,11 @@
+require 'blather/stanza/muc/muc_user_base'
+
 module Blather
 class Stanza
 class Presence
 
   class MUCUser < Status
-    register :muc_user, :x, "http://jabber.org/protocol/muc#user"
+    include Blather::Stanza::MUC::MUCUserBase
 
     def affiliation
       item.affiliation
@@ -40,29 +42,20 @@ class Presence
       end
     end
 
-    private
-      def muc_user
-        unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
-          self << (muc_user = XMPPNode.new('x', self.document))
-          muc_user.namespace = self.class.registered_ns
-        end
-        muc_user
+    def item
+      if item = muc_user.find_first('ns:item', :ns => self.class.registered_ns)
+        Item.new item
+      else
+        muc_user << (item = Item.new nil, nil, nil, self.document)
+        item
       end
+    end
 
-      def item
-        if item = muc_user.find_first('ns:item', :ns => self.class.registered_ns)
-          Item.new item
-        else
-          muc_user << (item = Item.new nil, nil, nil, self.document)
-          item
-        end
+    def status
+      muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
+        Status.new status
       end
-
-      def status
-        muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
-          Status.new status
-        end
-      end
+    end
 
     class Item < XMPPNode
       def self.new(affiliation = nil, role = nil, jid = nil, document = nil)
