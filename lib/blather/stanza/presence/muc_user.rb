@@ -1,21 +1,11 @@
+require 'blather/stanza/muc/muc_user_base'
+
 module Blather
 class Stanza
 class Presence
 
   class MUCUser < Status
-    register :muc_user, :x, "http://jabber.org/protocol/muc#user"
-
-    def self.new(*args)
-      new_node = super
-      new_node.muc_user
-      new_node
-    end
-
-    def inherit(node)
-      muc_user.remove
-      super
-      self
-    end
+    include Blather::Stanza::MUC::MUCUserBase
 
     def affiliation
       item.affiliation
@@ -52,22 +42,6 @@ class Presence
       end
     end
 
-    def password
-      find_password_node && password_node.content
-    end
-
-    def password=(var)
-      password_node.content = var
-    end
-
-    def muc_user
-      unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
-        self << (muc_user = XMPPNode.new('x', self.document))
-        muc_user.namespace = self.class.registered_ns
-      end
-      muc_user
-    end
-
     def item
       if item = muc_user.find_first('ns:item', :ns => self.class.registered_ns)
         Item.new item
@@ -81,17 +55,6 @@ class Presence
       muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
         Status.new status
       end
-    end
-
-    def password_node
-      unless pw = find_password_node
-        muc_user << (pw = XMPPNode.new('password', self.document))
-      end
-      pw
-    end
-
-    def find_password_node
-      muc_user.find_first 'ns:password', :ns => self.class.registered_ns
     end
 
     class Item < XMPPNode

@@ -1,29 +1,11 @@
+require 'blather/stanza/muc/muc_user_base'
+
 module Blather
 class Stanza
 class Message
 
   class MUCUser < Message
-    register :muc_user, :x, "http://jabber.org/protocol/muc#user"
-
-    def self.new(*args)
-      new_node = super
-      new_node.muc_user
-      new_node
-    end
-
-    def inherit(node)
-      muc_user.remove
-      super
-      self
-    end
-
-    def password
-      find_password_node && password_node.content
-    end
-
-    def password=(var)
-      password_node.content = var
-    end
+    include Blather::Stanza::MUC::MUCUserBase
 
     def invite?
       !!find_invite_node
@@ -31,25 +13,6 @@ class Message
 
     def invite_decline?
       !!find_decline_node
-    end
-
-    def muc_user
-      unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
-        self << (muc_user = XMPPNode.new('x', self.document))
-        muc_user.namespace = self.class.registered_ns
-      end
-      muc_user
-    end
-
-    def password_node
-      unless pw = find_password_node
-        muc_user << (pw = XMPPNode.new('password', self.document))
-      end
-      pw
-    end
-
-    def find_password_node
-      muc_user.find_first 'ns:password', :ns => self.class.registered_ns
     end
 
     def invite
