@@ -1,6 +1,6 @@
 develop
   Feature(benlangfeld): Add password support to MUCUser
-  Feature(benlangfeld): Add support for invitation elements to MUCUser presence
+  Feature(benlangfeld): Add support for invitation elements to MUCUser messages
   Feature(benlangfeld): Add support for MUC invite declines
   Bugfix(benlangfeld): Don't implicitly create an invite node when checking invite status
   Bugfix(benlangfeld): Ensure that form nodes are not duplicated on muc/muc_user presence stanzas
