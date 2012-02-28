@@ -7,6 +7,8 @@ class Presence
   class MUCUser < Status
     include Blather::Stanza::MUC::MUCUserBase
 
+    register :muc_user_presence, :x, "http://jabber.org/protocol/muc#user"
+
     def affiliation
       item.affiliation
     end

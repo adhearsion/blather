@@ -5,7 +5,6 @@ class MUC
   module MUCUserBase
     def self.included(klass)
       klass.extend ClassMethods
-      klass.register :muc_user, :x, "http://jabber.org/protocol/muc#user"
     end
 
     module ClassMethods
