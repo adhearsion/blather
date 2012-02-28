@@ -50,6 +50,11 @@ describe 'Blather::Stanza::Message::MUCUser' do
     c.xpath('ns:x', :ns => Blather::Stanza::Message::MUCUser.registered_ns).wont_be_empty
   end
 
+  it 'ensures the message type is :normal' do
+    m = Blather::Stanza::Message::MUCUser.new
+    m.normal?.must_equal true
+  end
+
   it "must be able to set the password" do
     muc_user = Blather::Stanza::Message::MUCUser.new
     muc_user.password.must_equal nil

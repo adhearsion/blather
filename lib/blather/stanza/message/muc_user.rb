@@ -7,6 +7,10 @@ class Message
   class MUCUser < Message
     include Blather::Stanza::MUC::MUCUserBase
 
+    def self.new(to = nil, body = nil, type = :normal)
+      super
+    end
+
     def invite?
       !!find_invite_node
     end
