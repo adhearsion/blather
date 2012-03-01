@@ -25,13 +25,10 @@ class Presence
       new_node
     end
 
-    def self.import(node)
-      self.new.inherit(node)
-    end
-
     # @private
     def inherit(node)
-      inherit_attrs node.attributes
+      c.remove
+      super
       self
     end
 
@@ -53,7 +50,7 @@ class Presence
     #
     # @return [Symbol, nil]
     def hash
-      c[:hash].to_sym
+      c[:hash] && c[:hash].to_sym
     end
 
     # Set the name of the hash
@@ -86,14 +83,8 @@ class Presence
     #
     # @return [Blather::XMPPNode]
     def c
-      c = if self.class.registered_ns
-        find_first('ns:c', :ns => self.class.registered_ns)
-      else
-        find_first('c')
-      end
-
-      unless c
-        (self << (c = XMPPNode.new('c', self.document)))
+      unless c = find_first('ns:c', :ns => self.class.registered_ns)
+        self << (c = XMPPNode.new('c', self.document))
         c.namespace = self.class.registered_ns
       end
       c

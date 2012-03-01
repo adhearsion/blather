@@ -17,7 +17,11 @@ describe 'Blather::Stanza::Presence::C' do
   end
 
   it 'must be importable' do
-    c = Blather::XMPPNode.parse(c_xml).must_be_instance_of Blather::Stanza::Presence::C
+    c = Blather::XMPPNode.parse c_xml
+    c.must_be_instance_of Blather::Stanza::Presence::C
+    c.hash.must_equal :'sha-1'
+    c.node.must_equal 'http://www.chatopus.com'
+    c.ver.must_equal 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
   end
 
   it 'ensures hash is one of Blather::Stanza::Presence::C::VALID_HASH_TYPES' do

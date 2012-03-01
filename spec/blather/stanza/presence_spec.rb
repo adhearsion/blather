@@ -33,6 +33,20 @@ describe Blather::Stanza::Presence do
     end
   end
 
+  it 'creates a C object when importing a node with a c child' do
+    string = <<-XML
+      <presence from='bard@shakespeare.lit/globe'>
+        <c xmlns='http://jabber.org/protocol/caps'
+           hash='sha-1'
+           node='http://www.chatopus.com'
+           ver='zHyEOgxTrkpSdGcQKH8EFPLsriY='/>
+      </presence>
+    XML
+    s = Blather::Stanza::Presence.parse string
+    s.must_be_kind_of Blather::Stanza::Presence::C
+    s.node.must_equal 'http://www.chatopus.com'
+  end
+
   it 'creates a Status object when importing a node with type == nil' do
     s = Blather::Stanza::Presence.parse('<presence/>')
     s.must_be_kind_of Blather::Stanza::Presence::Status

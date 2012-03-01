@@ -13,6 +13,20 @@ describe Blather::Stanza::Presence::Status do
     Blather::XMPPNode.parse('<presence/>').must_be_instance_of Blather::Stanza::Presence::Status
   end
 
+  it 'must be importable with show, status and priority children' do
+    n = Blather::XMPPNode.parse <<-XML
+      <presence from='bard@shakespeare.lit/globe'>
+        <show>chat</show>
+        <status>Talk to me!</status>
+        <priority>10</priority>
+      </presence>
+    XML
+    n.must_be_instance_of Blather::Stanza::Presence::Status
+    n.state.must_equal :chat
+    n.message.must_equal 'Talk to me!'
+    n.priority.must_equal 10
+  end
+
   it 'can set state on creation' do
     status = Blather::Stanza::Presence::Status.new :away
     status.state.must_equal :away

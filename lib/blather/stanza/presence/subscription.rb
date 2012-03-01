@@ -25,12 +25,6 @@ class Presence
       node
     end
 
-    # @private
-    def inherit(node)
-      inherit_attrs node.attributes
-      self
-    end
-
     # Set the to value on the stanza
     #
     # @param [Blather::JID, #to_s] to a JID to subscribe to
