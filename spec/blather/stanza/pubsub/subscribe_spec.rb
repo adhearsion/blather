@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSub::Subscribe do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(subscribe_xml).root).must_be_instance_of Blather::Stanza::PubSub::Subscribe
+    Blather::XMPPNode.parse(subscribe_xml).must_be_instance_of Blather::Stanza::PubSub::Subscribe
   end
 
   it 'ensures an subscribe node is present on create' do

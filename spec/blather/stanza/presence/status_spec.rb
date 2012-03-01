@@ -6,13 +6,11 @@ describe Blather::Stanza::Presence::Status do
   end
 
   it 'must be importable as unavailable' do
-    doc = parse_stanza '<presence type="unavailable"/>'
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Presence::Status
+    Blather::XMPPNode.parse('<presence type="unavailable"/>').must_be_instance_of Blather::Stanza::Presence::Status
   end
 
   it 'must be importable as nil' do
-    doc = parse_stanza '<presence/>'
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Presence::Status
+    Blather::XMPPNode.parse('<presence/>').must_be_instance_of Blather::Stanza::Presence::Status
   end
 
   it 'can set state on creation' do
@@ -50,7 +48,7 @@ describe Blather::Stanza::Presence::Status do
   end
 
   it 'returns :available if <show/> is blank' do
-    status = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    status = Blather::XMPPNode.parse(<<-NODE)
       <presence><show/></presence>
     NODE
     status.state.must_equal :available

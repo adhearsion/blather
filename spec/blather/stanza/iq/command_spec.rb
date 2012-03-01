@@ -23,7 +23,7 @@ describe Blather::Stanza::Iq::Command do
   end
 
   it 'must be importable' do
-    Blather::XMPPNode.import(parse_stanza(command_xml).root).must_be_instance_of Blather::Stanza::Iq::Command
+    Blather::XMPPNode.parse(command_xml).must_be_instance_of Blather::Stanza::Iq::Command
   end
 
   it 'ensures a command node is present on create' do
@@ -86,13 +86,13 @@ describe Blather::Stanza::Iq::Command do
   end
 
   it 'removes action on reply' do
-    c = Blather::XMPPNode.import parse_stanza(command_xml).root
+    c = Blather::XMPPNode.parse command_xml
     c.action.must_equal :execute
     c.reply.action.must_equal nil
   end
 
   it 'removes action on reply!' do
-    c = Blather::XMPPNode.import parse_stanza(command_xml).root
+    c = Blather::XMPPNode.parse command_xml
     c.action.must_equal :execute
     c.reply!
     c.action.must_equal nil
@@ -124,7 +124,7 @@ describe Blather::Stanza::Iq::Command do
   end
 
   it 'must default action to :execute on import' do
-    n = Blather::XMPPNode.import(parse_stanza(command_xml).root)
+    n = Blather::XMPPNode.parse(command_xml)
     n.action.must_equal :execute
   end
 
@@ -150,7 +150,7 @@ describe Blather::Stanza::Iq::Command do
   end
 
   it 'has an allowed_actions attribute' do
-    n = Blather::XMPPNode.import parse_stanza(command_xml).root
+    n = Blather::XMPPNode.parse command_xml
     n.allowed_actions.must_equal [:execute]
     n.allowed_actions = [:next, :prev]
     (n.allowed_actions - [:next, :prev, :execute]).must_be_empty
@@ -166,7 +166,7 @@ describe Blather::Stanza::Iq::Command do
   end
 
   it 'has a primary_allowed_action attribute' do
-    n = Blather::XMPPNode.import parse_stanza(command_xml).root
+    n = Blather::XMPPNode.parse command_xml
     n.primary_allowed_action.must_equal :execute
     n.primary_allowed_action = :next
     n.primary_allowed_action.must_equal :next
@@ -187,7 +187,7 @@ describe Blather::Stanza::Iq::Command do
   end
 
   it 'makes a form child available' do
-    n = Blather::XMPPNode.import(parse_stanza(command_xml).root)
+    n = Blather::XMPPNode.parse(command_xml)
     n.form.fields.size.must_equal 1
     n.form.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
     n.form.must_be_instance_of Blather::Stanza::X

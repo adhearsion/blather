@@ -6,8 +6,7 @@ describe Blather::Stanza::Presence do
   end
 
   it 'must be importable' do
-    doc = parse_stanza '<presence type="probe"/>'
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Presence
+    Blather::XMPPNode.parse('<presence type="probe"/>').must_be_instance_of Blather::Stanza::Presence
   end
 
   it 'ensures type is one of Blather::Stanza::Presence::VALID_TYPES' do
@@ -35,19 +34,19 @@ describe Blather::Stanza::Presence do
   end
 
   it 'creates a Status object when importing a node with type == nil' do
-    s = Blather::Stanza::Presence.import(parse_stanza('<presence/>').root)
+    s = Blather::Stanza::Presence.parse('<presence/>')
     s.must_be_kind_of Blather::Stanza::Presence::Status
     s.state.must_equal :available
   end
 
   it 'creates a Status object when importing a node with type == "unavailable"' do
-    s = Blather::Stanza::Presence.import(parse_stanza('<presence type="unavailable"/>').root)
+    s = Blather::Stanza::Presence.parse('<presence type="unavailable"/>')
     s.must_be_kind_of Blather::Stanza::Presence::Status
     s.state.must_equal :unavailable
   end
 
   it 'creates a Subscription object when importing a node with type == "subscribe"' do
-    s = Blather::Stanza::Presence.import(parse_stanza('<presence type="subscribe"/>').root)
+    s = Blather::Stanza::Presence.parse('<presence type="subscribe"/>')
     s.must_be_kind_of Blather::Stanza::Presence::Subscription
     s.type.must_equal :subscribe
   end

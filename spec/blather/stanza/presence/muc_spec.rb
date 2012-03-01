@@ -16,7 +16,7 @@ describe 'Blather::Stanza::Presence::MUC' do
   end
 
   it 'must be importable' do
-    c = Blather::XMPPNode.import(parse_stanza(muc_xml).root)
+    c = Blather::XMPPNode.parse(muc_xml)
     c.must_be_instance_of Blather::Stanza::Presence::MUC
     c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).count.must_equal 1
   end

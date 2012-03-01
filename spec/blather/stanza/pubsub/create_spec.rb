@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSub::Create do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(<<-NODE).root).must_be_instance_of Blather::Stanza::PubSub::Create
+    Blather::XMPPNode.parse(<<-NODE).must_be_instance_of Blather::Stanza::PubSub::Create
     <iq type='set'
         from='hamlet@denmark.lit/elsinore'
         to='pubsub.shakespeare.lit'

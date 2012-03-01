@@ -74,8 +74,8 @@ describe Blather::Stanza::Message do
   end
 
   it 'must be importable' do
-    Blather::XMPPNode.import(parse_stanza(message_xml).root).must_be_instance_of Blather::Stanza::Message
-    Blather::XMPPNode.import(parse_stanza(ichat_message_xml).root).must_be_instance_of Blather::Stanza::Message
+    Blather::XMPPNode.parse(message_xml).must_be_instance_of Blather::Stanza::Message
+    Blather::XMPPNode.parse(ichat_message_xml).must_be_instance_of Blather::Stanza::Message
   end
 
   it 'provides "attr_accessor" for body' do
@@ -199,7 +199,7 @@ describe Blather::Stanza::Message do
   end
 
   it 'finds xhtml body when html wrapper has wrong namespace' do
-    msg = Blather::XMPPNode.import(parse_stanza(ichat_message_xml).root)
+    msg = Blather::XMPPNode.parse(ichat_message_xml)
     msg.xhtml.must_equal "<span style=\"font-family: 'Arial';font-size: 12px;color: #262626;\">Hello</span>\n  <img alt=\"f5ad3a04d218d7160fa02415e02d41b3.jpg\" src=\"message-attachments:1\" width=\"30\" height=\"30\"></img>"
   end
 
@@ -243,11 +243,11 @@ describe Blather::Stanza::Message do
   end
 
   it 'imports correct chat state' do
-    Blather::XMPPNode.import(parse_stanza(message_xml).root).chat_state.must_equal :paused
+    Blather::XMPPNode.parse(message_xml).chat_state.must_equal :paused
   end
 
   it 'makes a form child available' do
-    n = Blather::XMPPNode.import(parse_stanza(message_xml).root)
+    n = Blather::XMPPNode.parse(message_xml)
     n.form.fields.size.must_equal 1
     n.form.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
     n.form.must_be_instance_of Blather::Stanza::X
@@ -264,14 +264,14 @@ describe Blather::Stanza::Message do
   end
 
   it 'is not delayed' do
-    n = Blather::XMPPNode.import(parse_stanza(message_xml).root)
+    n = Blather::XMPPNode.parse(message_xml)
     n.delay.must_equal nil
     n.delayed?.must_equal false
   end
 
   describe "with a delay" do
     it "is delayed" do
-      n = Blather::XMPPNode.import(parse_stanza(delayed_message_xml).root)
+      n = Blather::XMPPNode.parse(delayed_message_xml)
       n.delayed?.must_equal true
       n.delay.must_be_instance_of Blather::Stanza::Message::Delay
       n.delay.from.must_equal 'coven@chat.shakespeare.lit'

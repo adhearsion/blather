@@ -31,8 +31,7 @@ describe Blather::Stanza::Iq::Si do
   end
 
   it 'can be imported' do
-    doc = parse_stanza si_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse si_xml
     node.must_be_instance_of Blather::Stanza::Iq::Si
     node.si.must_be_instance_of Blather::Stanza::Iq::Si::Si
   end
@@ -52,8 +51,7 @@ describe Blather::Stanza::Iq::Si do
   end
 
   it 'ensures a si node is replaced when calling #si=' do
-    doc = parse_stanza si_xml
-    iq = Blather::XMPPNode.import(doc.root)
+    iq = Blather::XMPPNode.parse si_xml
 
     new_si = Blather::Stanza::Iq::Si::Si.new
     new_si.id = 'a1'
@@ -85,8 +83,7 @@ describe Blather::Stanza::Iq::Si::Si::File do
   end
 
   it 'can be initialized with node' do
-    doc = parse_stanza si_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse si_xml
 
     file = Blather::Stanza::Iq::Si::Si::File.new node.find_first('.//ns:file', :ns => 'http://jabber.org/protocol/si/profile/file-transfer')
     file.name.must_equal 'test.txt'

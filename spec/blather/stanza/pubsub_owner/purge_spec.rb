@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSubOwner::Purge do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(<<-NODE).root).must_be_instance_of Blather::Stanza::PubSubOwner::Purge
+    Blather::XMPPNode.parse(<<-NODE).must_be_instance_of Blather::Stanza::PubSubOwner::Purge
     <iq type='set'
         from='hamlet@denmark.lit/elsinore'
         to='pubsub.shakespeare.lit'

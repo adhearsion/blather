@@ -14,7 +14,7 @@ describe Blather::Stanza::PubSub::Subscriptions do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(subscriptions_xml).root).must_be_instance_of Blather::Stanza::PubSub::Subscriptions
+    Blather::XMPPNode.parse(subscriptions_xml).must_be_instance_of Blather::Stanza::PubSub::Subscriptions
   end
 
   it 'ensures an subscriptions node is present on create' do

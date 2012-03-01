@@ -7,8 +7,7 @@ describe Blather::Stanza::Presence::Subscription do
 
   [:subscribe, :subscribed, :unsubscribe, :unsubscribed].each do |type|
     it "must be importable as #{type}" do
-      doc = parse_stanza "<presence type='#{type}'/>"
-      Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Presence::Subscription
+      Blather::XMPPNode.parse("<presence type='#{type}'/>").must_be_instance_of Blather::Stanza::Presence::Subscription
     end
   end
 

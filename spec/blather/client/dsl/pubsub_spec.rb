@@ -287,7 +287,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a list of affiliations when requesting affiliations' do
-    affiliations = Blather::XMPPNode.import(parse_stanza(affiliations_xml).root)
+    affiliations = Blather::XMPPNode.parse(affiliations_xml)
     response = mock()
     response.expects(:call).with { |n| n.must_equal affiliations.list }
     @client.stubs(:write).with do |n|
@@ -299,7 +299,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a list of subscriptions when requesting subscriptions' do
-    subscriptions = Blather::XMPPNode.import(parse_stanza(subscriptions_xml).root)
+    subscriptions = Blather::XMPPNode.parse(subscriptions_xml)
     response = mock()
     response.expects(:call).with { |n| n.must_equal subscriptions.list }
     @client.stubs(:write).with do |n|
@@ -311,7 +311,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a list of node items when requesting nodes' do
-    nodes = Blather::XMPPNode.import(parse_stanza(<<-NODES).root)
+    nodes = Blather::XMPPNode.parse(<<-NODES)
     <iq type='result'
         from='pubsub.shakespeare.lit'
         to='francisco@denmark.lit/barracks'
@@ -337,7 +337,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a DiscoInfo node when requesting a node' do
-    node = Blather::XMPPNode.import(parse_stanza(<<-NODES).root)
+    node = Blather::XMPPNode.parse(<<-NODES)
     <iq type='result'
         from='pubsub.shakespeare.lit'
         to='francisco@denmark.lit/barracks'
@@ -359,7 +359,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a set of items when requesting items' do
-    items = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
+    items = Blather::XMPPNode.parse(items_all_nodes_xml)
     response = mock()
     response.expects(:call).with { |n| n.map{|i|i.to_s}.must_equal items.items.map{|i|i.to_s} }
     @client.stubs(:write).with do |n|
@@ -371,7 +371,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns aa subscription node when subscribing' do
-    subscription = Blather::XMPPNode.import(parse_stanza(subscription_xml).root)
+    subscription = Blather::XMPPNode.parse(subscription_xml)
     response = mock()
     response.expects(:call).with { |n| n.must_equal subscription }
     @client.stubs(:write).with do |n|
@@ -383,7 +383,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns aa unsubscribe node when unsubscribing' do
-    unsubscribe = Blather::XMPPNode.import(parse_stanza(unsubscribe_xml).root)
+    unsubscribe = Blather::XMPPNode.parse(unsubscribe_xml)
     response = mock()
     response.expects(:call).with { |n| n.must_equal unsubscribe }
     @client.stubs(:write).with do |n|
@@ -395,7 +395,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a publish result when publishing to a node' do
-    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    result = Blather::XMPPNode.parse(<<-NODE)
     <iq type='result'
         from='pubsub.shakespeare.lit'
         to='hamlet@denmark.lit/blogbot'
@@ -418,7 +418,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a create result when creating a node' do
-    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    result = Blather::XMPPNode.parse(<<-NODE)
     <iq type='result'
         from='pubsub.shakespeare.lit'
         to='hamlet@denmark.lit/elsinore'
@@ -439,7 +439,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a purge result when purging a node' do
-    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    result = Blather::XMPPNode.parse(<<-NODE)
     <iq type='result'
         from='pubsub.shakespeare.lit'
         id='purge1'/>
@@ -455,7 +455,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   end
 
   it 'returns a delete result when deleting a node' do
-    result = Blather::XMPPNode.import(parse_stanza(<<-NODE).root)
+    result = Blather::XMPPNode.parse(<<-NODE)
     <iq type='result'
         from='pubsub.shakespeare.lit'
         id='delete1'/>

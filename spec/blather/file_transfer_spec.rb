@@ -44,7 +44,7 @@ describe Blather::FileTransfer do
   end
 
   it 'can select ibb' do
-    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+    iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
       answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::Ibb::NS_IBB
@@ -58,7 +58,7 @@ describe Blather::FileTransfer do
   end
 
   it 'can select s5b' do
-    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+    iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
       answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
@@ -70,9 +70,9 @@ describe Blather::FileTransfer do
     transfer.allow_ibb = false
     transfer.accept(MockFileReceiver)
   end
-  
+
   it 'can allow s5b private ips' do
-    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+    iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
       answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
@@ -87,7 +87,7 @@ describe Blather::FileTransfer do
   end
 
   it 'can response no-valid-streams' do
-    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+    iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
       answer.find_first('error')['type'].must_equal "cancel"
@@ -102,7 +102,7 @@ describe Blather::FileTransfer do
   end
 
   it 'can decline transfer' do
-    iq = Blather::XMPPNode.import(parse_stanza(si_xml).root)
+    iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
       answer.find_first('error')['type'].must_equal "cancel"
@@ -114,7 +114,7 @@ describe Blather::FileTransfer do
     transfer = Blather::FileTransfer.new(@client, iq)
     transfer.decline
   end
-  
+
   it 'can s5b post_init include the handler' do
     class TestS5B < Blather::FileTransfer::S5b::SocketConnection
       def initialize()

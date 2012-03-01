@@ -16,8 +16,7 @@ describe Blather::Stanza::Iq::Vcard do
   end
 
   it 'can be imported' do
-    doc = parse_stanza vcard_xml
-    query = Blather::XMPPNode.import(doc.root)
+    query = Blather::XMPPNode.parse vcard_xml
     query.must_be_instance_of Blather::Stanza::Iq::Vcard
     query.vcard.must_be_instance_of Blather::Stanza::Iq::Vcard::Vcard
   end
@@ -37,8 +36,7 @@ describe Blather::Stanza::Iq::Vcard do
   end
 
   it 'ensures a vcard node is replaced when calling #vcard=' do
-    doc = parse_stanza vcard_xml
-    query = Blather::XMPPNode.import(doc.root)
+    query = Blather::XMPPNode.parse vcard_xml
 
     new_vcard = Blather::Stanza::Iq::Vcard::Vcard.new
     new_vcard["NICKNAME"] = 'Mercutio'
@@ -87,8 +85,7 @@ describe Blather::Stanza::Iq::Vcard::Vcard do
   end
 
   it 'can update vcard elements' do
-    doc = parse_stanza vcard_xml
-    query = Blather::XMPPNode.import(doc.root)
+    query = Blather::XMPPNode.parse vcard_xml
     query.vcard['NICKNAME'].must_equal 'Romeo'
     query.vcard['NICKNAME'] = 'Mercutio'
     query.vcard['NICKNAME'].must_equal 'Mercutio'

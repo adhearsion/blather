@@ -15,7 +15,7 @@ describe Blather::Stanza::PubSub::Affiliations do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(affiliations_xml).root).must_be_instance_of Blather::Stanza::PubSub::Affiliations
+    Blather::XMPPNode.parse(affiliations_xml).must_be_instance_of Blather::Stanza::PubSub::Affiliations
   end
 
   it 'ensures an affiliations node is present on create' do
@@ -50,7 +50,7 @@ describe Blather::Stanza::PubSub::Affiliations do
   end
 
   it 'will iterate over each affiliation' do
-    Blather::XMPPNode.import(parse_stanza(affiliations_xml).root).each do |type, nodes|
+    Blather::XMPPNode.parse(affiliations_xml).each do |type, nodes|
       nodes.must_equal control_affiliations[type]
     end
   end

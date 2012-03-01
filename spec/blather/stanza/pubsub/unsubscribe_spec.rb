@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSub::Unsubscribe do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(unsubscribe_xml).root).must_be_instance_of Blather::Stanza::PubSub::Unsubscribe
+    Blather::XMPPNode.parse(unsubscribe_xml).must_be_instance_of Blather::Stanza::PubSub::Unsubscribe
   end
 
   it 'ensures an unsubscribe node is present on create' do

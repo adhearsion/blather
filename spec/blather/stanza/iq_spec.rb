@@ -6,8 +6,8 @@ describe Blather::Stanza::Iq do
   end
 
   it 'must be importable' do
-    doc = parse_stanza "<iq from='juliet@example.com/balcony' type='set' id='roster_4'></iq>"
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Iq
+    string = "<iq from='juliet@example.com/balcony' type='set' id='roster_4'></iq>"
+    Blather::XMPPNode.parse(string).must_be_instance_of Blather::Stanza::Iq
   end
 
   it 'creates a new Iq stanza defaulted as a get' do

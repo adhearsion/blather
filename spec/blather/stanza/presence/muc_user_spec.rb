@@ -19,7 +19,7 @@ end
 
 describe 'Blather::Stanza::Presence::MUCUser' do
   it 'must be importable' do
-    muc_user = Blather::XMPPNode.import(parse_stanza(muc_user_xml).root)
+    muc_user = Blather::XMPPNode.parse(muc_user_xml)
     muc_user.must_be_instance_of Blather::Stanza::Presence::MUCUser
     muc_user.affiliation.must_equal :none
     muc_user.jid.must_equal 'hag66@shakespeare.lit/pda'

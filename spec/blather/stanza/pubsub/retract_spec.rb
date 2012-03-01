@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSub::Retract do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(retract_xml).root).must_be_instance_of Blather::Stanza::PubSub::Retract
+    Blather::XMPPNode.parse(retract_xml).must_be_instance_of Blather::Stanza::PubSub::Retract
   end
 
   it 'ensures an retract node is present on create' do
@@ -68,7 +68,7 @@ describe Blather::Stanza::PubSub::Retract do
   end
 
   it 'will iterate over each retraction' do
-    Blather::XMPPNode.import(parse_stanza(retract_xml).root).each do |i|
+    Blather::XMPPNode.parse(retract_xml).each do |i|
       i.must_include "ae890ac52d0df67ed7cfdf51b644e901"
     end
   end

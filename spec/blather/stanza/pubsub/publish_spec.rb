@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSub::Publish do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(publish_xml).root).must_be_instance_of Blather::Stanza::PubSub::Publish
+    Blather::XMPPNode.parse(publish_xml).must_be_instance_of Blather::Stanza::PubSub::Publish
   end
 
   it 'ensures an publish node is present on create' do

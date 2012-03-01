@@ -26,7 +26,7 @@ describe Blather::Stanza::PubSub do
   end
 
   it 'ensures newly inherited items are PubSubItem objects' do
-    pubsub = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
+    pubsub = Blather::XMPPNode.parse(items_all_nodes_xml)
     pubsub.items.map { |i| i.class }.uniq.must_equal [Blather::Stanza::PubSub::PubSubItem]
   end
 end

@@ -178,7 +178,7 @@ describe Blather::DSL do
                           http://jabber.org/protocol/disco#items
                           http://jabber.org/protocol/muc
                         }
-    expected_stanza = Blather::Stanza.import(parse_stanza(<<-XML).root)
+    expected_stanza = Blather::Stanza.parse(<<-XML)
       <presence>
         <c xmlns="http://jabber.org/protocol/caps" hash="sha-1"
            node="http://code.google.com/p/exodus"
@@ -209,9 +209,9 @@ describe Blather::DSL do
                node='http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0='/>
       </iq>
     XML
-    @stanza = Blather::Stanza.import(parse_stanza(stanza).root)
+    @stanza = Blather::Stanza.parse(stanza)
 
-    expected_stanza = Blather::Stanza.import(parse_stanza(<<-XML).root)
+    expected_stanza = Blather::Stanza.parse(<<-XML)
       <iq type="result" id="disco1" to="juliet@capulet.lit/chamber">
         <query xmlns="http://jabber.org/protocol/disco#info" node="http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=">
           <identity name="Exodus 0.9.1" category="client" type="pc"/>

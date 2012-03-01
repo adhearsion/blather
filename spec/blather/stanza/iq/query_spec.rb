@@ -6,14 +6,14 @@ describe Blather::Stanza::Iq::Query do
   end
 
   it 'can be imported' do
-    doc = parse_stanza <<-XML
+    string = <<-XML
       <iq from='juliet@example.com/balcony' type='set' id='roster_4'>
         <query>
           <item jid='nurse@example.com' subscription='remove'/>
         </query>
       </iq>
     XML
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Iq::Query
+    Blather::XMPPNode.parse(string).must_be_instance_of Blather::Stanza::Iq::Query
   end
 
   it 'ensures a query node is present on create' do

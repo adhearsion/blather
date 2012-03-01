@@ -7,7 +7,7 @@ describe Blather::Stanza::PubSub::Items do
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root).must_be_instance_of Blather::Stanza::PubSub::Items
+    Blather::XMPPNode.parse(items_all_nodes_xml).must_be_instance_of Blather::Stanza::PubSub::Items
   end
 
   it 'ensures an items node is present on create' do
@@ -30,7 +30,7 @@ describe Blather::Stanza::PubSub::Items do
   end
 
   it 'ensures newly inherited items are PubSubItem objects' do
-    items = Blather::XMPPNode.import(parse_stanza(items_all_nodes_xml).root)
+    items = Blather::XMPPNode.parse(items_all_nodes_xml)
     items.map { |i| i.class }.uniq.must_equal [Blather::Stanza::PubSub::PubSubItem]
   end
 

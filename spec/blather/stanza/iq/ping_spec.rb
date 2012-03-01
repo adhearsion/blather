@@ -14,8 +14,7 @@ describe Blather::Stanza::Iq::Ping do
   end
 
   it 'can be imported' do
-    doc = parse_stanza ping_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ping_xml
     node.must_be_instance_of Blather::Stanza::Iq::Ping
   end
 

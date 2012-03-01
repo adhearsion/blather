@@ -71,12 +71,12 @@ describe 'Blather::Stanza::Message::MUCUser' do
 
   describe "with an invite element" do
     it "should be an #invite?" do
-      muc_user = Blather::XMPPNode.import(parse_stanza(muc_invite_xml).root)
+      muc_user = Blather::XMPPNode.parse(muc_invite_xml)
       muc_user.invite?.must_equal true
     end
 
     it "should know the invite attributes properly" do
-      muc_user = Blather::XMPPNode.import(parse_stanza(muc_invite_xml).root)
+      muc_user = Blather::XMPPNode.parse(muc_invite_xml)
       muc_user.must_be_instance_of Blather::Stanza::Message::MUCUser
       invite = muc_user.invite
       invite.to.must_equal 'hecate@shakespeare.lit'
@@ -112,13 +112,13 @@ describe 'Blather::Stanza::Message::MUCUser' do
 
   describe "with a decline element" do
     it "should be an #invite_decline?" do
-      muc_user = Blather::XMPPNode.import(parse_stanza(muc_decline_xml).root)
+      muc_user = Blather::XMPPNode.parse(muc_decline_xml)
       muc_user.must_be_instance_of Blather::Stanza::Message::MUCUser
       muc_user.invite_decline?.must_equal true
     end
 
     it "should know the decline attributes properly" do
-      muc_user = Blather::XMPPNode.import(parse_stanza(muc_decline_xml).root)
+      muc_user = Blather::XMPPNode.parse(muc_decline_xml)
       decline = muc_user.decline
       decline.to.must_equal 'crone1@shakespeare.lit'
       decline.from.must_equal 'hecate@shakespeare.lit'

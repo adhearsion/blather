@@ -27,7 +27,7 @@ describe Blather::Stanza::Iq::DiscoItems do
   end
 
   it 'must be importable' do
-    Blather::XMPPNode.import(parse_stanza(disco_items_xml).root).must_be_instance_of Blather::Stanza::Iq::DiscoItems
+    Blather::XMPPNode.parse(disco_items_xml).must_be_instance_of Blather::Stanza::Iq::DiscoItems
   end
 
   it 'is constructed properly' do

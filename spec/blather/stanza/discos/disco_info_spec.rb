@@ -25,8 +25,7 @@ describe Blather::Stanza::Iq::DiscoInfo do
   end
 
   it 'must be importable' do
-    doc = parse_stanza disco_info_xml
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Iq::DiscoInfo
+    Blather::XMPPNode.parse(disco_info_xml).must_be_instance_of Blather::Stanza::Iq::DiscoInfo
   end
 
   it 'has a node attribute' do

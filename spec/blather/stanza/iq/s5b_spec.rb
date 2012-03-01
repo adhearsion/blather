@@ -27,20 +27,17 @@ describe Blather::Stanza::Iq::S5b do
   end
 
   it 'can be imported' do
-    doc = parse_stanza s5b_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse s5b_open_xml
     node.must_be_instance_of Blather::Stanza::Iq::S5b
   end
 
   it 'can get sid' do
-    doc = parse_stanza s5b_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse s5b_open_xml
     node.sid.must_equal 'vxf9n471bn46'
   end
 
   it 'can get streamhosts' do
-    doc = parse_stanza s5b_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse s5b_open_xml
     node.streamhosts.size.must_equal 2
   end
 

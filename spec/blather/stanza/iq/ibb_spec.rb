@@ -48,26 +48,22 @@ describe Blather::Stanza::Iq::Ibb::Open do
   end
 
   it 'can be imported' do
-    doc = parse_stanza ibb_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_open_xml
     node.must_be_instance_of Blather::Stanza::Iq::Ibb::Open
   end
 
   it 'has open node' do
-    doc = parse_stanza ibb_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_open_xml
     node.open.must_be_kind_of Nokogiri::XML::Element
   end
 
   it 'can get sid' do
-    doc = parse_stanza ibb_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_open_xml
     node.sid.must_equal 'i781hf64'
   end
 
   it 'deleted open node on reply' do
-    doc = parse_stanza ibb_open_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_open_xml
     reply = node.reply
     reply.open.must_be_nil
   end
@@ -79,26 +75,22 @@ describe Blather::Stanza::Iq::Ibb::Data do
   end
 
   it 'can be imported' do
-    doc = parse_stanza ibb_data_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_data_xml
     node.must_be_instance_of Blather::Stanza::Iq::Ibb::Data
   end
 
   it 'has data node' do
-    doc = parse_stanza ibb_data_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_data_xml
     node.data.must_be_kind_of Nokogiri::XML::Element
   end
 
   it 'can get sid' do
-    doc = parse_stanza ibb_data_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_data_xml
     node.sid.must_equal 'i781hf64'
   end
 
   it 'deleted data node on reply' do
-    doc = parse_stanza ibb_data_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_data_xml
     reply = node.reply
     reply.data.must_be_nil
   end
@@ -110,26 +102,22 @@ describe Blather::Stanza::Iq::Ibb::Close do
   end
 
   it 'can be imported' do
-    doc = parse_stanza ibb_close_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_close_xml
     node.must_be_instance_of Blather::Stanza::Iq::Ibb::Close
   end
 
   it 'has close node' do
-    doc = parse_stanza ibb_close_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_close_xml
     node.close.must_be_kind_of Nokogiri::XML::Element
   end
 
   it 'can get sid' do
-    doc = parse_stanza ibb_close_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_close_xml
     node.sid.must_equal 'i781hf64'
   end
 
   it 'deleted close node on reply' do
-    doc = parse_stanza ibb_close_xml
-    node = Blather::XMPPNode.import(doc.root)
+    node = Blather::XMPPNode.parse ibb_close_xml
     reply = node.reply
     reply.close.must_be_nil
   end

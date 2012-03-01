@@ -36,8 +36,7 @@ describe Blather::Stanza::Iq::Roster do
   end
 
   it 'can be created with #import' do
-    doc = parse_stanza roster_xml
-    Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Iq::Roster
+    Blather::XMPPNode.parse(roster_xml).must_be_instance_of Blather::Stanza::Iq::Roster
   end
 end
 
