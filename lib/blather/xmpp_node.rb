@@ -50,6 +50,14 @@ module Blather
       end
     end
 
+    # Parse a string as XML and import to the appropriate class
+    #
+    # @param [String] string the string to parse
+    # @return the appropriate object based on the node name and namespace
+    def self.parse(string)
+      import Nokogiri::XML(string).root
+    end
+
     # Create a new Node object
     #
     # @param [String, nil] name the element name

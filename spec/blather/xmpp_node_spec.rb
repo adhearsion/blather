@@ -34,4 +34,14 @@ describe Blather::XMPPNode do
     n = Blather::XMPPNode.new('foo')
     n.to_stanza.must_be_kind_of StanzaConvert
   end
+
+  it 'can parse a string and import it' do
+    class StanzaParse < Blather::XMPPNode; register 'foo'; end
+    string = '<foo/>'
+    n = Nokogiri::XML(string).root
+    i = Blather::XMPPNode.import n
+    i.must_be_kind_of StanzaParse
+    p = Blather::XMPPNode.parse string
+    p.must_be_kind_of StanzaParse
+  end
 end
