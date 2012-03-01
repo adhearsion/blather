@@ -4,60 +4,69 @@ module Blather
 class Stanza
 class Presence
 
-  class MUCUser < Status
+  class MUCUser < Presence
     include Blather::Stanza::MUC::MUCUserBase
 
-    register :muc_user_presence, :x, "http://jabber.org/protocol/muc#user"
-
-    def affiliation
-      item.affiliation
+    def self.decorator_modules
+      super + [Blather::Stanza::MUC::MUCUserBase]
     end
 
-    def affiliation=(val)
-      item.affiliation = val
-    end
+    register :muc_user_presence, :x, MUC_USER_NAMESPACE
 
-    def role
-      item.role
-    end
+    module InstanceMethods
 
-    def role=(val)
-      item.role = val
-    end
+      def affiliation
+        item.affiliation
+      end
 
-    def jid
-      item.jid
-    end
+      def affiliation=(val)
+        item.affiliation = val
+      end
 
-    def jid=(val)
-      item.jid = val
-    end
+      def role
+        item.role
+      end
 
-    def status_codes
-      status.map &:code
-    end
+      def role=(val)
+        item.role = val
+      end
 
-    def status_codes=(val)
-      muc_user.remove_children :status
-      val.each do |code|
-        muc_user << Status.new(code)
+      def jid
+        item.jid
+      end
+
+      def jid=(val)
+        item.jid = val
+      end
+
+      def status_codes
+        status.map &:code
+      end
+
+      def status_codes=(val)
+        muc_user.remove_children :status
+        val.each do |code|
+          muc_user << Status.new(code)
+        end
+      end
+
+      def item
+        if item = muc_user.find_first('ns:item', :ns => MUCUser.registered_ns)
+          Item.new item
+        else
+          muc_user << (item = Item.new nil, nil, nil, self.document)
+          item
+        end
+      end
+
+      def status
+        muc_user.find('ns:status', :ns => MUCUser.registered_ns).map do |status|
+          Status.new status
+        end
       end
     end
 
-    def item
-      if item = muc_user.find_first('ns:item', :ns => self.class.registered_ns)
-        Item.new item
-      else
-        muc_user << (item = Item.new nil, nil, nil, self.document)
-        item
-      end
-    end
-
-    def status
-      muc_user.find('ns:status', :ns => self.class.registered_ns).map do |status|
-        Status.new status
-      end
-    end
+    include InstanceMethods
 
     class Item < XMPPNode
       def self.new(affiliation = nil, role = nil, jid = nil, document = nil)

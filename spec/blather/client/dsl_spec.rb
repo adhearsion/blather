@@ -188,6 +188,8 @@ describe Blather::DSL do
     XML
     @client.expects(:write).with expected_stanza
     @client.expects(:register_handler).with(:disco_info, :type => :get, :node => "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=")
+    puts @client.caps.c.class
+    puts expected_stanza.class
     @dsl.send_caps
   end
 

@@ -11,19 +11,23 @@ class Presence
       new_node
     end
 
-    def inherit(node)
-      muc.remove
-      super
-      self
+    module InstanceMethods
+      def inherit(node)
+        muc.remove
+        super
+        self
+      end
+
+      def muc
+        unless muc = find_first('ns:x', :ns => MUC.registered_ns)
+          self << (muc = XMPPNode.new('x', self.document))
+          muc.namespace = self.class.registered_ns
+        end
+        muc
+      end
     end
 
-    def muc
-      unless muc = find_first('ns:x', :ns => self.class.registered_ns)
-        self << (muc = XMPPNode.new('x', self.document))
-        muc.namespace = self.class.registered_ns
-      end
-      muc
-    end
+    include InstanceMethods
   end # MUC
 
 end # Presence

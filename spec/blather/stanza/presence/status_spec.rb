@@ -6,11 +6,11 @@ describe Blather::Stanza::Presence::Status do
   end
 
   it 'must be importable as unavailable' do
-    Blather::XMPPNode.parse('<presence type="unavailable"/>').must_be_instance_of Blather::Stanza::Presence::Status
+    Blather::XMPPNode.parse('<presence type="unavailable"/>').must_be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
   end
 
   it 'must be importable as nil' do
-    Blather::XMPPNode.parse('<presence/>').must_be_instance_of Blather::Stanza::Presence::Status
+    Blather::XMPPNode.parse('<presence/>').must_be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
   end
 
   it 'must be importable with show, status and priority children' do
@@ -21,7 +21,7 @@ describe Blather::Stanza::Presence::Status do
         <priority>10</priority>
       </presence>
     XML
-    n.must_be_instance_of Blather::Stanza::Presence::Status
+    n.must_be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
     n.state.must_equal :chat
     n.message.must_equal 'Talk to me!'
     n.priority.must_equal 10

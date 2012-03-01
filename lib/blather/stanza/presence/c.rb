@@ -22,73 +22,78 @@ class Presence
       new_node.hash = hash
       new_node.node = node
       new_node.ver = ver
-      new_node
+      parse new_node.to_xml
     end
 
-    # @private
-    def inherit(node)
-      c.remove
-      super
-      self
-    end
+    module InstanceMethods
 
-    # Get the name of the node
-    #
-    # @return [String, nil]
-    def node
-      c[:node]
-    end
-
-    # Set the name of the node
-    #
-    # @param [String, nil] node the new node name
-    def node=(node)
-      c[:node] = node
-    end
-
-    # Get the name of the hash
-    #
-    # @return [Symbol, nil]
-    def hash
-      c[:hash] && c[:hash].to_sym
-    end
-
-    # Set the name of the hash
-    #
-    # @param [String, nil] hash the new hash name
-    def hash=(hash)
-      if hash && !VALID_HASH_TYPES.include?(hash.to_s)
-        raise ArgumentError, "Invalid Hash Type (#{hash}), use: #{VALID_HASH_TYPES*' '}"
+      # @private
+      def inherit(node)
+        c.remove
+        super
+        self
       end
-      c[:hash] = hash
-    end
 
-    # Get the ver
-    #
-    # @return [String, nil]
-    def ver
-      c[:ver]
-    end
-
-    # Set the ver
-    #
-    # @param [String, nil] ver the new ver
-    def ver=(ver)
-      c[:ver] = ver
-    end
-
-    # C node accessor
-    # If a c node exists it will be returned.
-    # Otherwise a new node will be created and returned
-    #
-    # @return [Blather::XMPPNode]
-    def c
-      unless c = find_first('ns:c', :ns => self.class.registered_ns)
-        self << (c = XMPPNode.new('c', self.document))
-        c.namespace = self.class.registered_ns
+      # Get the name of the node
+      #
+      # @return [String, nil]
+      def node
+        c[:node]
       end
-      c
+
+      # Set the name of the node
+      #
+      # @param [String, nil] node the new node name
+      def node=(node)
+        c[:node] = node
+      end
+
+      # Get the name of the hash
+      #
+      # @return [Symbol, nil]
+      def hash
+        c[:hash] && c[:hash].to_sym
+      end
+
+      # Set the name of the hash
+      #
+      # @param [String, nil] hash the new hash name
+      def hash=(hash)
+        if hash && !VALID_HASH_TYPES.include?(hash.to_s)
+          raise ArgumentError, "Invalid Hash Type (#{hash}), use: #{VALID_HASH_TYPES*' '}"
+        end
+        c[:hash] = hash
+      end
+
+      # Get the ver
+      #
+      # @return [String, nil]
+      def ver
+        c[:ver]
+      end
+
+      # Set the ver
+      #
+      # @param [String, nil] ver the new ver
+      def ver=(ver)
+        c[:ver] = ver
+      end
+
+      # C node accessor
+      # If a c node exists it will be returned.
+      # Otherwise a new node will be created and returned
+      #
+      # @return [Blather::XMPPNode]
+      def c
+        unless c = find_first('ns:c', :ns => C.registered_ns)
+          self << (c = XMPPNode.new('c', self.document))
+          c.namespace = self.class.registered_ns
+        end
+        c
+      end
     end
+
+    include InstanceMethods
   end # C
 end #Presence
 end #Stanza

@@ -18,7 +18,7 @@ describe 'Blather::Stanza::Presence::C' do
 
   it 'must be importable' do
     c = Blather::XMPPNode.parse c_xml
-    c.must_be_instance_of Blather::Stanza::Presence::C
+    c.must_be_kind_of Blather::Stanza::Presence::C::InstanceMethods
     c.hash.must_equal :'sha-1'
     c.node.must_equal 'http://www.chatopus.com'
     c.ver.must_equal 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
@@ -46,5 +46,11 @@ describe 'Blather::Stanza::Presence::C' do
   it 'can set a ver on creation' do
     c = Blather::Stanza::Presence::C.new nil, 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
     c.ver.must_equal 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
+  end
+
+  it 'is equal on import and creation' do
+    p = Blather::XMPPNode.parse c_xml
+    c = Blather::Stanza::Presence::C.new 'http://www.chatopus.com', 'zHyEOgxTrkpSdGcQKH8EFPLsriY=', 'sha-1'
+    p.must_equal c
   end
 end

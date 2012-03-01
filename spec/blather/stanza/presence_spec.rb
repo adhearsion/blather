@@ -43,26 +43,41 @@ describe Blather::Stanza::Presence do
       </presence>
     XML
     s = Blather::Stanza::Presence.parse string
-    s.must_be_kind_of Blather::Stanza::Presence::C
+    s.must_be_kind_of Blather::Stanza::Presence::C::InstanceMethods
     s.node.must_equal 'http://www.chatopus.com'
   end
 
   it 'creates a Status object when importing a node with type == nil' do
     s = Blather::Stanza::Presence.parse('<presence/>')
-    s.must_be_kind_of Blather::Stanza::Presence::Status
+    s.must_be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
     s.state.must_equal :available
   end
 
   it 'creates a Status object when importing a node with type == "unavailable"' do
     s = Blather::Stanza::Presence.parse('<presence type="unavailable"/>')
-    s.must_be_kind_of Blather::Stanza::Presence::Status
+    s.must_be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
     s.state.must_equal :unavailable
   end
 
   it 'creates a Subscription object when importing a node with type == "subscribe"' do
     s = Blather::Stanza::Presence.parse('<presence type="subscribe"/>')
-    s.must_be_kind_of Blather::Stanza::Presence::Subscription
+    s.must_be_kind_of Blather::Stanza::Presence::Subscription::InstanceMethods
     s.type.must_equal :subscribe
+  end
+
+  it 'behaves like a C and a Status when both types of children are present' do
+    string = <<-XML
+      <presence from='bard@shakespeare.lit/globe'>
+        <show>chat</show>
+        <c xmlns='http://jabber.org/protocol/caps'
+           hash='sha-1'
+           node='http://www.chatopus.com'
+           ver='zHyEOgxTrkpSdGcQKH8EFPLsriY='/>
+      </presence>
+    XML
+    s = Blather::Stanza::Presence.parse string
+    s.state.must_equal :chat
+    s.node.must_equal 'http://www.chatopus.com'
   end
 
   it 'creates a MUC object when importing a node with a form in the MUC namespace' do
@@ -71,7 +86,7 @@ describe Blather::Stanza::Presence do
     x.namespace = "http://jabber.org/protocol/muc"
     n << x
     s = Blather::Stanza::Presence.import(n)
-    s.must_be_kind_of Blather::Stanza::Presence::MUC
+    s.must_be_kind_of Blather::Stanza::Presence::MUC::InstanceMethods
   end
 
   it 'creates a MUCUser object when importing a node with a form in the MUC#user namespace' do
@@ -80,7 +95,7 @@ describe Blather::Stanza::Presence do
     x.namespace = "http://jabber.org/protocol/muc#user"
     n << x
     s = Blather::Stanza::Presence.import(n)
-    s.must_be_kind_of Blather::Stanza::Presence::MUCUser
+    s.must_be_kind_of Blather::Stanza::Presence::MUCUser::InstanceMethods
   end
 
   it 'creates a Presence object when importing a node with type equal to something unknown' do

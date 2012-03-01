@@ -85,27 +85,25 @@ class Stanza
     # either a Status or Subscription object is created based
     # on the type attribute.
     # If neither is found it instantiates a Presence object
-    def self.import(node) # :nodoc:
-      klass = nil
+    def self.import(node, *decorators) # :nodoc:
       node.children.detect do |e|
         ns = e.namespace ? e.namespace.href : nil
-        klass = class_from_registration(e.element_name, ns)
+        klass = class_from_registration e.element_name, ns
+        decorators << klass if klass
       end
 
-      if klass && klass != self
-        klass.import(node)
-      else
-        klass ||= case node['type']
-          when nil, 'unavailable' then Status
-          when /subscribe/        then Subscription
-          else self
-        end
-        klass.new.inherit(node)
+      case node['type']
+      when nil, 'unavailable'
+        decorators << Status
+      when /subscribe/
+        decorators << Subscription
       end
+
+      super
     end
 
     # Ensure element_name is "presence" for all subclasses
-    def self.new
+    def self.new(*args)
       super :presence
     end
 
