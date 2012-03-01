@@ -43,7 +43,7 @@ end
 describe Blather::Stanza::Iq::Roster::RosterItem do
   it 'can be initialized with just a Blather::JID' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new 'n@d/r'
-    i.jid.must_equal Blather::JID.new('n@d/r')
+    i.jid.must_equal Blather::JID.new('n@d/r').stripped
   end
 
   it 'can be initialized with a name' do
@@ -67,7 +67,7 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
                 :subscription => :both,
                 :ask          => :subscribe }
     i = Blather::Stanza::Iq::Roster::RosterItem.new control
-    i.jid.must_equal Blather::JID.new(control[:jid])
+    i.jid.must_equal Blather::JID.new(control[:jid]).stripped
     i.name.must_equal control[:name]
     i.subscription.must_equal control[:subscription]
     i.ask.must_equal control[:ask]
@@ -116,7 +116,7 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
     i.jid.must_be_nil
     i.must_respond_to :jid=
     i.jid = 'n@d/r'
-    i.jid.must_equal Blather::JID.new('n@d/r')
+    i.jid.must_equal Blather::JID.new('n@d/r').stripped
   end
 
   it 'has a name attribute' do
