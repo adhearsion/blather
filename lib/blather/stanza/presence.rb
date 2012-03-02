@@ -86,7 +86,7 @@ class Stanza
     # on the type attribute.
     # If neither is found it instantiates a Presence object
     def self.import(node, *decorators) # :nodoc:
-      node.children.detect do |e|
+      node.children.each do |e|
         ns = e.namespace ? e.namespace.href : nil
         klass = class_from_registration e.element_name, ns
         decorators << klass if klass

@@ -65,7 +65,34 @@ describe Blather::Stanza::Presence do
     s.type.must_equal :subscribe
   end
 
-  it 'behaves like a C and a Status when both types of children are present' do
+  it 'creates a MUC object when importing a node with a form in the MUC namespace' do
+    string = <<-XML
+      <presence from='bard@shakespeare.lit/globe'>
+        <x xmlns='http://jabber.org/protocol/muc'/>
+      </presence>
+    XML
+    s = Blather::Stanza::Presence.parse string
+    s.must_be_kind_of Blather::Stanza::Presence::MUC::InstanceMethods
+  end
+
+  it 'creates a MUCUser object when importing a node with a form in the MUC#user namespace' do
+    string = <<-XML
+      <presence from='bard@shakespeare.lit/globe'>
+        <x xmlns='http://jabber.org/protocol/muc#user'/>
+      </presence>
+    XML
+    s = Blather::Stanza::Presence.parse string
+    s.must_be_kind_of Blather::Stanza::Presence::MUCUser::InstanceMethods
+  end
+
+  it 'creates a Presence object when importing a node with type equal to something unknown' do
+    string = "<presence from='bard@shakespeare.lit/globe' type='foo'/>"
+    s = Blather::Stanza::Presence.parse string
+    s.must_be_kind_of Blather::Stanza::Presence
+    s.type.must_equal :foo
+  end
+
+  it 'behaves like a C, a Status, and a MUCUser when all types of children are present' do
     string = <<-XML
       <presence from='bard@shakespeare.lit/globe'>
         <show>chat</show>
@@ -73,36 +100,19 @@ describe Blather::Stanza::Presence do
            hash='sha-1'
            node='http://www.chatopus.com'
            ver='zHyEOgxTrkpSdGcQKH8EFPLsriY='/>
+        <x xmlns='http://jabber.org/protocol/muc#user'>
+          <item affiliation='none'
+                jid='hag66@shakespeare.lit/pda'
+                role='participant'/>
+          <status code='100'/>
+          <status code='110'/>
+          <password>foobar</password>
+        </x>
       </presence>
     XML
     s = Blather::Stanza::Presence.parse string
     s.state.must_equal :chat
     s.node.must_equal 'http://www.chatopus.com'
-  end
-
-  it 'creates a MUC object when importing a node with a form in the MUC namespace' do
-    n = Blather::XMPPNode.new
-    x = Blather::XMPPNode.new 'x'
-    x.namespace = "http://jabber.org/protocol/muc"
-    n << x
-    s = Blather::Stanza::Presence.import(n)
-    s.must_be_kind_of Blather::Stanza::Presence::MUC::InstanceMethods
-  end
-
-  it 'creates a MUCUser object when importing a node with a form in the MUC#user namespace' do
-    n = Blather::XMPPNode.new
-    x = Blather::XMPPNode.new 'x'
-    x.namespace = "http://jabber.org/protocol/muc#user"
-    n << x
-    s = Blather::Stanza::Presence.import(n)
-    s.must_be_kind_of Blather::Stanza::Presence::MUCUser::InstanceMethods
-  end
-
-  it 'creates a Presence object when importing a node with type equal to something unknown' do
-    n = Blather::XMPPNode.new
-    n[:type] = :foo
-    s = Blather::Stanza::Presence.import(n)
-    s.must_be_kind_of Blather::Stanza::Presence
-    s.type.must_equal :foo
+    s.role.must_equal :participant
   end
 end
