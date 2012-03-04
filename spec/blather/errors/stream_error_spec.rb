@@ -23,13 +23,13 @@ end
 describe 'Blather::StreamError' do
   it 'can import a node' do
     err = stream_error_node 'internal-server-error', 'the message'
-    Blather::StreamError.must_respond_to :import
+    Blather::StreamError.should respond_to :import
     e = Blather::StreamError.import err
-    e.must_be_kind_of Blather::StreamError
+    e.should be_kind_of Blather::StreamError
 
-    e.name.must_equal :internal_server_error
-    e.text.must_equal 'the message'
-    e.extras.must_equal err.find('descendant::*[name()="extra-error"]', 'blather:stream:error').map {|n|n}
+    e.name.should == :internal_server_error
+    e.text.should == 'the message'
+    e.extras.should == err.find('descendant::*[name()="extra-error"]', 'blather:stream:error').map {|n|n}
   end
 end
 
@@ -41,36 +41,36 @@ describe 'Blather::StreamError when instantiated' do
   end
 
   it 'provides a err_name attribute' do
-    @err.must_respond_to :name
-    @err.name.must_equal @err_name.gsub('-','_').to_sym
+    @err.should respond_to :name
+    @err.name.should == @err_name.gsub('-','_').to_sym
   end
 
   it 'provides a text attribute' do
-    @err.must_respond_to :text
-    @err.text.must_equal @msg
+    @err.should respond_to :text
+    @err.text.should == @msg
   end
 
   it 'provides an extras attribute' do
-    @err.must_respond_to :extras
-    @err.extras.must_be_instance_of Array
-    @err.extras.size.must_equal 1
-    @err.extras.first.element_name.must_equal 'extra-error'
+    @err.should respond_to :extras
+    @err.extras.should be_instance_of Array
+    @err.extras.size.should == 1
+    @err.extras.first.element_name.should == 'extra-error'
   end
 
   it 'describes itself' do
-    @err.to_s.must_match(/#{@type}/)
-    @err.to_s.must_match(/#{@msg}/)
+    @err.to_s.should match(/#{@type}/)
+    @err.to_s.should match(/#{@msg}/)
 
-    @err.inspect.must_match(/#{@type}/)
-    @err.inspect.must_match(/#{@msg}/)
+    @err.inspect.should match(/#{@type}/)
+    @err.inspect.should match(/#{@msg}/)
   end
 
   it 'can be turned into xml' do
-    @err.must_respond_to :to_xml
+    @err.should respond_to :to_xml
     doc = parse_stanza @err.to_xml
-    doc.xpath("//err_ns:internal-server-error", :err_ns => Blather::StreamError::STREAM_ERR_NS).wont_be_empty
-    doc.xpath("//err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => Blather::StreamError::STREAM_ERR_NS).wont_be_empty
-    doc.xpath("//err_ns:extra-error[.='Blather Error']", :err_ns => 'blather:stream:error').wont_be_empty
+    doc.xpath("//err_ns:internal-server-error", :err_ns => Blather::StreamError::STREAM_ERR_NS).should_not be_empty
+    doc.xpath("//err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => Blather::StreamError::STREAM_ERR_NS).should_not be_empty
+    doc.xpath("//err_ns:extra-error[.='Blather Error']", :err_ns => 'blather:stream:error').should_not be_empty
   end
 end
 
@@ -102,7 +102,7 @@ describe 'Each XMPP stream error type' do
     ].each do |error_type|
       it "handles the name for #{error_type}" do
         e = Blather::StreamError.import stream_error_node(error_type)
-        e.name.must_equal error_type.gsub('-','_').to_sym
+        e.name.should == error_type.gsub('-','_').to_sym
       end
     end
 end

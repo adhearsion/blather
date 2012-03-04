@@ -17,16 +17,16 @@ describe Blather::Stream::Parser do
 
   def check_parse(data)
     @parser.receive_data data
-    @client.data.size.must_equal 1
-    @client.data[0].to_s.gsub(/\n\s*/,'').must_equal data
+    @client.data.size.should == 1
+    @client.data[0].to_s.gsub(/\n\s*/,'').should == data
   end
 
   it 'handles fragmented parsing' do
     @parser.receive_data '<foo>'
     @parser.receive_data '<bar/>'
     @parser.receive_data '</foo>'
-    @client.data.size.must_equal 1
-    @client.data[0].to_s.gsub(/\n\s*/,'').must_equal '<foo><bar/></foo>'
+    @client.data.size.should == 1
+    @client.data[0].to_s.gsub(/\n\s*/,'').should == '<foo><bar/></foo>'
   end
 
   it 'handles a basic example' do
@@ -88,15 +88,15 @@ describe Blather::Stream::Parser do
       "</message>",
     ]
     data.each { |d| @parser.receive_data d }
-    @client.data.size.must_equal 1
-    @client.data[0].to_s.split("\n").map{|n|n.strip}.must_equal data
-    @client.data[0].xpath('//*[namespace-uri()="urn:ietf:params:xml:ns:xmpp-stanzas"]').size.must_equal 2
+    @client.data.size.should == 1
+    @client.data[0].to_s.split("\n").map{|n|n.strip}.should == data
+    @client.data[0].xpath('//*[namespace-uri()="urn:ietf:params:xml:ns:xmpp-stanzas"]').size.should == 2
   end
 
   it 'handles not absolute namespaces' do
-    assert_nothing_raised do
+    lambda do
       @parser.receive_data '<iq type="result" id="blather0007" to="n@d/r"><vCard xmlns="vcard-temp"/></iq>'
-    end
+    end.should_not raise_error
   end
 
   it 'responds with stream:stream as a separate response' do
@@ -105,19 +105,19 @@ describe Blather::Stream::Parser do
       '<foo/>'
     ]
     data.each { |d| @parser.receive_data d }
-    @client.data.size.must_equal 2
-    @client.data[0].document.xpath('/stream:stream[@to="example.com" and @version="1.0"]', 'xmlns' => 'jabber:client', 'stream' => 'http://etherx.jabber.org/streams').size.must_equal 1
-    @client.data[1].to_s.must_equal '<foo/>'
+    @client.data.size.should == 2
+    @client.data[0].document.xpath('/stream:stream[@to="example.com" and @version="1.0"]', 'xmlns' => 'jabber:client', 'stream' => 'http://etherx.jabber.org/streams').size.should == 1
+    @client.data[1].to_s.should == '<foo/>'
   end
 
   it 'response with stream:end when receiving </stream:stream>' do
     @parser.receive_data '<stream:stream xmlns:stream="http://etherx.jabber.org/streams"/>'
-    @client.data.size.must_equal 2
-    @client.data[1].to_s.must_equal '<stream:end xmlns:stream="http://etherx.jabber.org/streams"/>'
+    @client.data.size.should == 2
+    @client.data[1].to_s.should == '<stream:end xmlns:stream="http://etherx.jabber.org/streams"/>'
   end
 
   it 'raises ParseError when an error is sent' do
-    lambda { @parser.receive_data "<stream:stream>" }.must_raise(Blather::ParseError)
+    lambda { @parser.receive_data "<stream:stream>" }.should raise_error(Blather::ParseError)
   end
 
   it 'handles stream stanzas without an issue' do
@@ -126,9 +126,9 @@ describe Blather::Stream::Parser do
       '<stream:features/>'
     ]
     data.each { |d| @parser.receive_data d }
-    @client.data.size.must_equal 2
-    @client.data[0].document.xpath('/stream:stream[@to="example.com" and @version="1.0"]', 'xmlns' => 'jabber:client', 'stream' => 'http://etherx.jabber.org/streams').size.must_equal 1
-    @client.data[1].to_s.must_equal '<stream:features xmlns:stream="http://etherx.jabber.org/streams"/>'
+    @client.data.size.should == 2
+    @client.data[0].document.xpath('/stream:stream[@to="example.com" and @version="1.0"]', 'xmlns' => 'jabber:client', 'stream' => 'http://etherx.jabber.org/streams').size.should == 1
+    @client.data[1].to_s.should == '<stream:features xmlns:stream="http://etherx.jabber.org/streams"/>'
   end
 
   it 'ignores the client namespace on stanzas' do
@@ -137,9 +137,9 @@ describe Blather::Stream::Parser do
       "<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml'>exit</body></html>",
       "</message>"
     ].each { |d| @parser.receive_data d }
-    @client.data.size.must_equal 1
-    @client.data[0].document.xpath('/message/body[.="exit"]').wont_be_empty
-    @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').wont_be_empty
+    @client.data.size.should == 1
+    @client.data[0].document.xpath('/message/body[.="exit"]').should_not be_empty
+    @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').should_not be_empty
   end
 
   it 'ignores the component namespace on stanzas' do
@@ -148,8 +148,8 @@ describe Blather::Stream::Parser do
       "<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml'>exit</body></html>",
       "</message>"
     ].each { |d| @parser.receive_data d }
-    @client.data.size.must_equal 1
-    @client.data[0].document.xpath('/message/body[.="exit"]').wont_be_empty
-    @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').wont_be_empty
+    @client.data.size.should == 1
+    @client.data[0].document.xpath('/message/body[.="exit"]').should_not be_empty
+    @client.data[0].document.xpath('/message/im:html/xhtml:body[.="exit"]', 'im' => 'http://jabber.org/protocol/xhtml-im', 'xhtml' => 'http://www.w3.org/1999/xhtml').should_not be_empty
   end
 end

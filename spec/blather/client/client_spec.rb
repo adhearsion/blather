@@ -11,41 +11,41 @@ describe Blather::Client do
 
   it 'provides a Blather::JID reader' do
     @client.post_init @stream, @jid
-    @client.must_respond_to :jid
-    @client.jid.must_equal @jid
+    @client.should respond_to :jid
+    @client.jid.should == @jid
   end
 
   it 'provides a reader for the roster' do
-    @client.must_respond_to :roster
-    @client.roster.must_be_kind_of Blather::Roster
+    @client.should respond_to :roster
+    @client.roster.should be_kind_of Blather::Roster
   end
 
   it 'provides a status reader' do
     @client.post_init @stream, @jid
-    @client.must_respond_to :status
+    @client.should respond_to :status
     @client.status = :away
-    @client.status.must_equal :away
+    @client.status.should == :away
   end
 
   it 'should have a caps handler' do
-    @client.must_respond_to :caps
-    @client.caps.must_be_kind_of Blather::Stanza::Capabilities
+    @client.should respond_to :caps
+    @client.caps.should be_kind_of Blather::Stanza::Capabilities
   end
 
   it 'can be setup' do
-    @client.must_respond_to :setup
-    @client.setup('me@me.com', 'pass').must_equal @client
+    @client.should respond_to :setup
+    @client.setup('me@me.com', 'pass').should == @client
   end
 
   it 'knows if it has been setup' do
-    @client.must_respond_to :setup?
-    @client.setup?.must_equal false
+    @client.should respond_to :setup?
+    @client.setup?.should == false
     @client.setup 'me@me.com', 'pass'
-    @client.setup?.must_equal true
+    @client.setup?.should == true
   end
 
   it 'cannot be run before being setup' do
-    lambda { @client.run }.must_raise RuntimeError
+    lambda { @client.run }.should raise_error RuntimeError
   end
 
   it 'starts up a Component connection when setup without a node' do
@@ -63,8 +63,8 @@ describe Blather::Client do
   end
 
   it 'knows if it is disconnected' do
-    @client.must_respond_to :connected?
-    @client.connected?.must_equal false
+    @client.should respond_to :connected?
+    @client.connected?.should == false
   end
 
   it 'knows if it is connected' do
@@ -72,13 +72,13 @@ describe Blather::Client do
     stream.expects(:stopped?).returns false
     @client.setup('me.com', 'secret')
     @client.post_init stream, Blather::JID.new('me.com')
-    @client.connected?.must_equal true
+    @client.connected?.should == true
   end
 
   describe 'if it has been setup but not connected yet' do
     it 'should consider itself disconnected' do
       @client.setup('me.com', 'secret')
-      @client.connected?.must_equal false
+      @client.connected?.should == false
     end
   end
 
@@ -151,7 +151,7 @@ describe Blather::Client do
     response.expects(:call)
     @client.expects(:write).with do |s|
       @client.receive_data stanza
-      s.must_equal stanza
+      s.should == stanza
     end
     @client.write_with_handler(stanza) { |_| response.call }
   end
@@ -242,24 +242,24 @@ describe 'Blather::Client#status=' do
 
   it 'updates the state when not sending to a Blather::JID' do
     @stream.stubs(:write)
-    @client.status.wont_equal :away
+    @client.status.should_not equal :away
     @client.status = :away, 'message'
-    @client.status.must_equal :away
+    @client.status.should == :away
   end
 
   it 'does not update the state when sending to a Blather::JID' do
     @stream.stubs(:write)
-    @client.status.wont_equal :away
+    @client.status.should_not equal :away
     @client.status = :away, 'message', 'me@me.com'
-    @client.status.wont_equal :away
+    @client.status.should_not equal :away
   end
 
   it 'writes the new status to the stream' do
     Blather::Stanza::Presence::Status.stubs(:next_id).returns 0
     status = [:away, 'message']
     @stream.expects(:send).with do |s|
-      s.must_be_kind_of Blather::Stanza::Presence::Status
-      s.to_s.must_equal Blather::Stanza::Presence::Status.new(*status).to_s
+      s.should be_kind_of Blather::Stanza::Presence::Status
+      s.to_s.should == Blather::Stanza::Presence::Status.new(*status).to_s
     end
     @client.status = status
   end
@@ -275,7 +275,7 @@ describe 'Blather::Client default handlers' do
 
   it 're-raises errors' do
     err = Blather::BlatherError.new
-    lambda { @client.receive_data err }.must_raise Blather::BlatherError
+    lambda { @client.receive_data err }.should raise_error Blather::BlatherError
   end
 
   # it 'responds to iq:get with a "service-unavailable" error' do
@@ -288,21 +288,21 @@ describe 'Blather::Client default handlers' do
   # it 'responds to iq:get with a "service-unavailable" error' do
   #   get = Blather::Stanza::Iq.new :get
   #   err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
-  #   @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
+  #   @client.expects(:write).with { |n| n.to_s.should == err.to_s }
   #   @client.receive_data get
   # end
 
   # it 'responds to iq:set with a "service-unavailable" error' do
   #   get = Blather::Stanza::Iq.new :set
   #   err = Blather::StanzaError.new(get, 'service-unavailable', :cancel).to_node
-  #   @client.expects(:write).with { |n| n.to_s.must_equal err.to_s }
+  #   @client.expects(:write).with { |n| n.to_s.should == err.to_s }
   #   @client.receive_data get
   # end
 
   it 'responds to s2c pings with a pong' do
     ping = Blather::Stanza::Iq::Ping.new :get
     pong = ping.reply
-    @client.expects(:write).with { |n| n.to_s.must_equal pong.to_s }
+    @client.expects(:write).with { |n| n.to_s.should == pong.to_s }
     @client.receive_data ping
   end
 
@@ -378,7 +378,7 @@ describe 'Blather::Client with a Client stream' do
   end
 
   it 'sends a request for the roster when post_init is called' do
-    @stream.expects(:send).with { |stanza| stanza.must_be_kind_of Blather::Stanza::Iq::Roster }
+    @stream.expects(:send).with { |stanza| stanza.should be_kind_of Blather::Stanza::Iq::Roster }
     @client.post_init @stream, Blather::JID.new('n@d/r')
   end
 
@@ -402,7 +402,7 @@ describe 'Blather::Client filters' do
   end
 
   it 'raises an error when an invalid filter type is registered' do
-    lambda { @client.register_filter(:invalid) {} }.must_raise RuntimeError
+    lambda { @client.register_filter(:invalid) {} }.should raise_error RuntimeError
   end
 
   it 'can be guarded' do
@@ -426,11 +426,11 @@ describe 'Blather::Client filters' do
   it 'runs them in order' do
     stanza = Blather::Stanza::Iq.new
     count = 0
-    @client.register_filter(:before) { |_| count.must_equal 0; count = 1 }
-    @client.register_filter(:before) { |_| count.must_equal 1; count = 2 }
-    @client.register_handler(:iq) { |_| count.must_equal 2; count = 3 }
-    @client.register_filter(:after) { |_| count.must_equal 3; count = 4 }
-    @client.register_filter(:after) { |_| count.must_equal 4 }
+    @client.register_filter(:before) { |_| count.should == 0; count = 1 }
+    @client.register_filter(:before) { |_| count.should == 1; count = 2 }
+    @client.register_handler(:iq) { |_| count.should == 2; count = 3 }
+    @client.register_filter(:after) { |_| count.should == 3; count = 4 }
+    @client.register_filter(:after) { |_| count.should == 4 }
     @client.receive_data stanza
   end
 
@@ -581,9 +581,9 @@ describe 'Blather::Client guards' do
 
   it 'can be an xpath and will send the result to the handler' do
     @response.expects(:call).with do |stanza, xpath|
-      xpath.must_be_instance_of Nokogiri::XML::NodeSet
-      xpath.wont_be_empty
-      stanza.must_equal @stanza
+      xpath.should be_instance_of Nokogiri::XML::NodeSet
+      xpath.should_not be_empty
+      stanza.should == @stanza
     end
     @client.register_handler(:iq, "/iq[@id='#{@stanza.id}']") { |stanza, xpath| @response.call stanza, xpath }
     @client.receive_data @stanza
@@ -592,16 +592,16 @@ describe 'Blather::Client guards' do
   it 'can be an xpath with namespaces and will send the result to the handler' do
     @stanza = Blather::Stanza.parse('<message><foo xmlns="http://bar.com"></message>')
     @response.expects(:call).with do |stanza, xpath|
-      xpath.must_be_instance_of Nokogiri::XML::NodeSet
-      xpath.wont_be_empty
-      stanza.must_equal @stanza
+      xpath.should be_instance_of Nokogiri::XML::NodeSet
+      xpath.should_not be_empty
+      stanza.should == @stanza
     end
     @client.register_handler(:message, "/message/bar:foo", :bar => 'http://bar.com') { |stanza, xpath| @response.call stanza, xpath }
     @client.receive_data @stanza
   end
 
   it 'raises an error when a bad guard is tried' do
-    lambda { @client.register_handler(:iq, 0) {} }.must_raise RuntimeError
+    lambda { @client.register_handler(:iq, 0) {} }.should raise_error RuntimeError
   end
 end
 
@@ -615,51 +615,51 @@ describe 'Blather::Client::Caps' do
   end
 
   it 'must be of type result' do
-    @caps.must_respond_to :type
-    @caps.type.must_equal :result
+    @caps.should respond_to :type
+    @caps.type.should == :result
   end
 
   it 'can have a client node set' do
-    @caps.must_respond_to :node=
+    @caps.should respond_to :node=
     @caps.node = "somenode"
   end
 
   it 'provides a client node reader' do
-    @caps.must_respond_to :node
+    @caps.should respond_to :node
     @caps.node = "somenode"
-    @caps.node.must_equal "somenode##{@caps.ver}"
+    @caps.node.should == "somenode##{@caps.ver}"
   end
 
   it 'can have identities set' do
-    @caps.must_respond_to :identities=
+    @caps.should respond_to :identities=
     @caps.identities = [{:name => "name", :type => "type", :category => "cat"}]
   end
 
   it 'provides an identities reader' do
-    @caps.must_respond_to :identities
+    @caps.should respond_to :identities
     @caps.identities = [{:name => "name", :type => "type", :category => "cat"}]
-    @caps.identities.must_equal [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => "name", :type => "type", :category => "cat"})]
+    @caps.identities.should == [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => "name", :type => "type", :category => "cat"})]
   end
 
   it 'can have features set' do
-    @caps.must_respond_to :features=
-    @caps.features.size.must_equal 0
+    @caps.should respond_to :features=
+    @caps.features.size.should == 0
     @caps.features = ["feature1"]
-    @caps.features.size.must_equal 1
+    @caps.features.size.should == 1
     @caps.features += [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
-    @caps.features.size.must_equal 2
+    @caps.features.size.should == 2
     @caps.features = nil
-    @caps.features.size.must_equal 0
+    @caps.features.size.should == 0
   end
 
   it 'provides a features reader' do
-    @caps.must_respond_to :features
+    @caps.should respond_to :features
     @caps.features = %w{feature1 feature2}
-    @caps.features.must_equal [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature1"), Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
+    @caps.features.should == [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature1"), Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
   end
 
   it 'provides a client ver reader' do
-    @caps.must_respond_to :ver
+    @caps.should respond_to :ver
     @caps.node = 'http://code.google.com/p/exodus'
     @caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
     @caps.features = %w{
@@ -668,12 +668,12 @@ describe 'Blather::Client::Caps' do
                           http://jabber.org/protocol/disco#items
                           http://jabber.org/protocol/muc
                         }
-    @caps.ver.must_equal 'QgayPKawpkPSDYmwT/WM94uAlu0='
-    @caps.node.must_equal "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0="
+    @caps.ver.should == 'QgayPKawpkPSDYmwT/WM94uAlu0='
+    @caps.node.should == "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0="
   end
 
   it 'can construct caps presence correctly' do
-    @caps.must_respond_to :c
+    @caps.should respond_to :c
     @caps.node = 'http://code.google.com/p/exodus'
     @caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
     @caps.features = %w{
@@ -682,6 +682,6 @@ describe 'Blather::Client::Caps' do
                           http://jabber.org/protocol/disco#items
                           http://jabber.org/protocol/muc
                         }
-    @caps.c.inspect.must_equal "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
+    @caps.c.inspect.should == "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
   end
 end

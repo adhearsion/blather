@@ -47,7 +47,7 @@ describe Blather::FileTransfer do
     iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
-      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::Ibb::NS_IBB
+      answer.si.feature.x.field('stream-method').value.should == Blather::Stanza::Iq::Ibb::NS_IBB
       true
     end
 
@@ -61,7 +61,7 @@ describe Blather::FileTransfer do
     iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
-      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
+      answer.si.feature.x.field('stream-method').value.should == Blather::Stanza::Iq::S5b::NS_S5B
       true
     end
 
@@ -75,7 +75,7 @@ describe Blather::FileTransfer do
     iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
-      answer.si.feature.x.field('stream-method').value.must_equal Blather::Stanza::Iq::S5b::NS_S5B
+      answer.si.feature.x.field('stream-method').value.should == Blather::Stanza::Iq::S5b::NS_S5B
       true
     end
 
@@ -90,8 +90,8 @@ describe Blather::FileTransfer do
     iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
-      answer.find_first('error')['type'].must_equal "cancel"
-      answer.find_first('.//ns:no-valid-streams', :ns => 'http://jabber.org/protocol/si').wont_be_nil
+      answer.find_first('error')['type'].should == "cancel"
+      answer.find_first('.//ns:no-valid-streams', :ns => 'http://jabber.org/protocol/si').should_not be_nil
       true
     end
 
@@ -105,9 +105,9 @@ describe Blather::FileTransfer do
     iq = Blather::XMPPNode.parse(si_xml)
 
     @client.stubs(:write).with do |answer|
-      answer.find_first('error')['type'].must_equal "cancel"
-      answer.find_first('.//ns:forbidden', :ns => 'urn:ietf:params:xml:ns:xmpp-stanzas').wont_be_nil
-      answer.find_first('.//ns:text', :ns => 'urn:ietf:params:xml:ns:xmpp-stanzas').content.must_equal "Offer declined"
+      answer.find_first('error')['type'].should == "cancel"
+      answer.find_first('.//ns:forbidden', :ns => 'urn:ietf:params:xml:ns:xmpp-stanzas').should_not be_nil
+      answer.find_first('.//ns:text', :ns => 'urn:ietf:params:xml:ns:xmpp-stanzas').content.should == "Offer declined"
       true
     end
 
@@ -130,8 +130,6 @@ describe Blather::FileTransfer do
         end
       end
     end
-    assert_nothing_raised do
-      TestS5B.new()
-    end
+    lambda { TestS5B.new }.should_not raise_error
   end
 end

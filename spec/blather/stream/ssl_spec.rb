@@ -6,27 +6,27 @@ describe Blather::CertStore do
     @cert = File.open("./test.crt", 'w') {|f| f.write(@pem) }
     @store = Blather::CertStore.new("./")
   end
-  
+
   after do
     File.delete("./test.crt")
   end
-  
+
   it 'can verify valid cert' do
     @store.trusted?(@pem).tap do |trusted|
-      trusted.must_equal true
+      trusted.should == true
     end
   end
-  
+
   it 'can verify invalid cert' do
     @store.trusted?(@pem.gsub("L", "a")).tap do |trusted|
-      trusted.must_equal nil
+      trusted.should == nil
     end
   end
-  
+
   it 'can verify without a cert store' do
     @store = Blather::CertStore.new("../")
     @store.trusted?(@pem).tap do |trusted|
-      trusted.must_equal true
+      trusted.should == true
     end
   end
 end
