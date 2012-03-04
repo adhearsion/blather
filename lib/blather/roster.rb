@@ -86,6 +86,13 @@ module Blather
       @items.dup
     end
 
+    # Number of items in the roster
+    #
+    # @return [Integer] the number of items in the roster
+    def length
+      @items.length
+    end
+
     # A hash of items keyed by group
     #
     # @return [Hash<group => Array<RosterItem>>]

@@ -4,68 +4,68 @@ describe Blather::RosterItem do
   it 'can be initialized with Blather::JID' do
     jid = Blather::JID.new(jid)
     i = Blather::RosterItem.new jid
-    i.jid.must_equal jid
+    i.jid.should == jid
   end
 
   it 'can be initialized with an Iq::RosterItem' do
     jid = 'n@d/r'
     i = Blather::RosterItem.new Blather::Stanza::Iq::Roster::RosterItem.new(jid)
-    i.jid.must_equal Blather::JID.new(jid).stripped
+    i.jid.should == Blather::JID.new(jid).stripped
   end
 
   it 'can be initialized with a string' do
     jid = 'n@d/r'
     i = Blather::RosterItem.new jid
-    i.jid.must_equal Blather::JID.new(jid).stripped
+    i.jid.should == Blather::JID.new(jid).stripped
   end
 
   it 'returns the same object when intialized with a Blather::RosterItem' do
     control = Blather::RosterItem.new 'n@d/r'
-    Blather::RosterItem.new(control).must_be_same_as control
+    Blather::RosterItem.new(control).should be control
   end
 
   it 'has a Blather::JID setter that strips the Blather::JID' do
     jid = Blather::JID.new('n@d/r')
     i = Blather::RosterItem.new nil
     i.jid = jid
-    i.jid.must_equal jid.stripped
+    i.jid.should == jid.stripped
   end
 
   it 'has a subscription setter that forces a symbol' do
     i = Blather::RosterItem.new nil
     i.subscription = 'remove'
-    i.subscription.must_equal :remove
+    i.subscription.should == :remove
   end
 
   it 'forces the type of subscription' do
-    proc { Blather::RosterItem.new(nil).subscription = 'foo' }.must_raise Blather::ArgumentError
+    proc { Blather::RosterItem.new(nil).subscription = 'foo' }.should raise_error Blather::ArgumentError
   end
 
   it 'returns :none if the subscription field is blank' do
-    Blather::RosterItem.new(nil).subscription.must_equal :none
+    Blather::RosterItem.new(nil).subscription.should == :none
   end
 
   it 'ensure #ask is a symbol' do
     i = Blather::RosterItem.new(nil)
     i.ask = 'subscribe'
-    i.ask.must_equal :subscribe
+    i.ask.should == :subscribe
   end
 
   it 'forces #ask to be :subscribe or nothing at all' do
-    proc { Blather::RosterItem.new(nil).ask = 'foo' }.must_raise Blather::ArgumentError
+    proc { Blather::RosterItem.new(nil).ask = 'foo' }.should raise_error Blather::ArgumentError
   end
 
   it 'generates a stanza with #to_stanza' do
     jid = Blather::JID.new('n@d/r')
     i = Blather::RosterItem.new jid
     s = i.to_stanza
-    s.must_be_kind_of Blather::Stanza::Iq::Roster
-    s.items.first.jid.must_equal jid.stripped
+    s.should be_kind_of Blather::Stanza::Iq::Roster
+    s.items.first.jid.should == jid.stripped
   end
 
   it 'returns status based on priority' do
     setup_item_with_presences
-    @i.status.must_equal @p3
+    @i.status.should == @p3
   end
 
   it 'returns status based on priority and state' do
@@ -77,12 +77,12 @@ describe Blather::RosterItem do
     @p4.priority = 15
     @i.status = @p4
 
-    @i.status.must_equal @p3
+    @i.status.should == @p3
   end
 
   it 'returns status based on resource' do
     setup_item_with_presences
-    @i.status('a').must_equal @p
+    @i.status('a').should == @p
   end
 
   def setup_item_with_presences
@@ -116,12 +116,12 @@ describe Blather::RosterItem do
       @i.status = p
     end
 
-    @i.statuses.size.must_equal 4
+    @i.statuses.size.should == 4
   end
 
   it 'initializes groups to [nil] if the item is not part of a group' do
     i = Blather::RosterItem.new 'n@d'
-    i.groups.must_equal [nil]
+    i.groups.should == [nil]
   end
 
   it 'can determine equality' do
@@ -129,6 +129,6 @@ describe Blather::RosterItem do
     item2 = Blather::RosterItem.new 'n@d'
     item1.groups = %w[group1 group2]
     item2.groups = %w[group1 group2]
-    (item1 == item2).must_equal true
+    (item1 == item2).should == true
   end
 end

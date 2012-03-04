@@ -70,67 +70,67 @@ end
 
 describe Blather::Stanza::Message do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:message, nil).must_equal Blather::Stanza::Message
+    Blather::XMPPNode.class_from_registration(:message, nil).should == Blather::Stanza::Message
   end
 
   it 'must be importable' do
-    Blather::XMPPNode.parse(message_xml).must_be_instance_of Blather::Stanza::Message
-    Blather::XMPPNode.parse(ichat_message_xml).must_be_instance_of Blather::Stanza::Message
+    Blather::XMPPNode.parse(message_xml).should be_instance_of Blather::Stanza::Message
+    Blather::XMPPNode.parse(ichat_message_xml).should be_instance_of Blather::Stanza::Message
   end
 
   it 'provides "attr_accessor" for body' do
     s = Blather::Stanza::Message.new
-    s.body.must_be_nil
-    s.find('body').must_be_empty
+    s.body.should be_nil
+    s.find('body').should be_empty
 
     s.body = 'test message'
-    s.body.wont_be_nil
-    s.find('body').wont_be_empty
+    s.body.should_not be_nil
+    s.find('body').should_not be_empty
   end
 
   it 'provides "attr_accessor" for subject' do
     s = Blather::Stanza::Message.new
-    s.subject.must_be_nil
-    s.find('subject').must_be_empty
+    s.subject.should be_nil
+    s.find('subject').should be_empty
 
     s.subject = 'test subject'
-    s.subject.wont_be_nil
-    s.find('subject').wont_be_empty
+    s.subject.should_not be_nil
+    s.find('subject').should_not be_empty
   end
 
   it 'provides "attr_accessor" for thread' do
     s = Blather::Stanza::Message.new
-    s.thread.must_be_nil
-    s.find('thread').must_be_empty
+    s.thread.should be_nil
+    s.find('thread').should be_empty
 
     s.thread = 1234
-    s.thread.wont_be_nil
-    s.find('thread').wont_be_empty
+    s.thread.should_not be_nil
+    s.find('thread').should_not be_empty
   end
 
   it 'can set a parent attribute for thread' do
     s = Blather::Stanza::Message.new
-    s.thread.must_be_nil
-    s.find('thread').must_be_empty
+    s.thread.should be_nil
+    s.find('thread').should be_empty
 
     s.thread = {4321 => 1234}
-    s.thread.must_equal '1234'
-    s.parent_thread.must_equal '4321'
-    s.find('thread[@parent="4321"]').wont_be_empty
+    s.thread.should == '1234'
+    s.parent_thread.should == '4321'
+    s.find('thread[@parent="4321"]').should_not be_empty
   end
 
   it 'ensures type is one of Blather::Stanza::Message::VALID_TYPES' do
-    lambda { Blather::Stanza::Message.new nil, nil, :invalid_type_name }.must_raise(Blather::ArgumentError)
+    lambda { Blather::Stanza::Message.new nil, nil, :invalid_type_name }.should raise_error(Blather::ArgumentError)
 
     Blather::Stanza::Message::VALID_TYPES.each do |valid_type|
       msg = Blather::Stanza::Message.new nil, nil, valid_type
-      msg.type.must_equal valid_type
+      msg.type.should == valid_type
     end
   end
 
   Blather::Stanza::Message::VALID_TYPES.each do |valid_type|
     it "provides a helper (#{valid_type}?) for type #{valid_type}" do
-      Blather::Stanza::Message.new.must_respond_to :"#{valid_type}?"
+      Blather::Stanza::Message.new.should respond_to :"#{valid_type}?"
     end
   end
 
@@ -140,10 +140,10 @@ describe Blather::Stanza::Message do
       {:html_ns => Blather::Stanza::Message::HTML_NS}
     ]
     msg = Blather::Stanza::Message.new
-    msg.find_first(*search_args).must_be_nil
+    msg.find_first(*search_args).should be_nil
 
     msg.xhtml_node
-    msg.find_first(*search_args).wont_be_nil
+    msg.find_first(*search_args).should_not be_nil
   end
 
   it 'ensures a body node exists when asked for xhtml_node' do
@@ -153,10 +153,10 @@ describe Blather::Stanza::Message do
       :body_ns => Blather::Stanza::Message::HTML_BODY_NS}
     ]
     msg = Blather::Stanza::Message.new
-    msg.find_first(*search_args).must_be_nil
+    msg.find_first(*search_args).should be_nil
 
     msg.xhtml_node
-    msg.find_first(*search_args).wont_be_nil
+    msg.find_first(*search_args).should_not be_nil
   end
 
   it 'returns an existing node when asked for xhtml_node' do
@@ -167,46 +167,46 @@ describe Blather::Stanza::Message do
     b.namespace = Blather::Stanza::Message::HTML_BODY_NS
     h << b
 
-    msg.xhtml_node.must_equal(b)
+    msg.xhtml_node.should ==(b)
   end
 
   it 'has an xhtml setter' do
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml</some>"
     msg.xhtml = xhtml
-    msg.xhtml_node.inner_html.strip.must_equal(xhtml)
+    msg.xhtml_node.inner_html.strip.should ==(xhtml)
   end
 
   it 'sets valid xhtml even if the input is not valid' do
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml"
     msg.xhtml = xhtml
-    msg.xhtml_node.inner_html.strip.must_equal("<some>xhtml</some>")
+    msg.xhtml_node.inner_html.strip.should ==("<some>xhtml</some>")
   end
 
   it 'sets xhtml with more than one root node' do
     msg = Blather::Stanza::Message.new
     xhtml = "<i>xhtml</i> more xhtml"
     msg.xhtml = xhtml
-    msg.xhtml_node.inner_html.strip.must_equal("<i>xhtml</i> more xhtml")
+    msg.xhtml_node.inner_html.strip.should ==("<i>xhtml</i> more xhtml")
   end
 
   it 'has an xhtml getter' do
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml</some>"
     msg.xhtml = xhtml
-    msg.xhtml.must_equal(xhtml)
+    msg.xhtml.should ==(xhtml)
   end
 
   it 'finds xhtml body when html wrapper has wrong namespace' do
     msg = Blather::XMPPNode.parse(ichat_message_xml)
-    msg.xhtml.must_equal "<span style=\"font-family: 'Arial';font-size: 12px;color: #262626;\">Hello</span>\n  <img alt=\"f5ad3a04d218d7160fa02415e02d41b3.jpg\" src=\"message-attachments:1\" width=\"30\" height=\"30\"></img>"
+    msg.xhtml.should == "<span style=\"font-family: 'Arial';font-size: 12px;color: #262626;\">Hello</span>\n  <img alt=\"f5ad3a04d218d7160fa02415e02d41b3.jpg\" src=\"message-attachments:1\" width=\"30\" height=\"30\"></img>"
   end
 
   it 'has a chat state setter' do
     msg = Blather::Stanza::Message.new
     msg.chat_state = :composing
-    msg.xpath('ns:composing', :ns => Blather::Stanza::Message::CHAT_STATE_NS).wont_be_empty
+    msg.xpath('ns:composing', :ns => Blather::Stanza::Message::CHAT_STATE_NS).should_not be_empty
   end
 
   it 'will only add one chat state at a time' do
@@ -214,69 +214,69 @@ describe Blather::Stanza::Message do
     msg.chat_state = :composing
     msg.chat_state = :paused
 
-    msg.xpath('ns:*', :ns => Blather::Stanza::Message::CHAT_STATE_NS).size.must_equal(1)
+    msg.xpath('ns:*', :ns => Blather::Stanza::Message::CHAT_STATE_NS).size.should ==(1)
   end
 
   it 'ensures chat state setter accepts strings' do
     msg = Blather::Stanza::Message.new
     msg.chat_state = "gone"
-    msg.xpath('ns:gone', :ns => Blather::Stanza::Message::CHAT_STATE_NS).wont_be_empty
+    msg.xpath('ns:gone', :ns => Blather::Stanza::Message::CHAT_STATE_NS).should_not be_empty
   end
 
   it 'ensures chat state is one of Blather::Stanza::Message::VALID_CHAT_STATES' do
     lambda do
       msg = Blather::Stanza::Message.new
       msg.chat_state = :invalid_chat_state
-    end.must_raise(Blather::ArgumentError)
+    end.should raise_error(Blather::ArgumentError)
 
     Blather::Stanza::Message::VALID_CHAT_STATES.each do |valid_chat_state|
       msg = Blather::Stanza::Message.new
       msg.chat_state = valid_chat_state
-      msg.chat_state.must_equal valid_chat_state
+      msg.chat_state.should == valid_chat_state
     end
   end
 
   it 'has a chat state getter' do
     msg = Blather::Stanza::Message.new
     msg.chat_state = :paused
-    msg.chat_state.must_equal(:paused)
+    msg.chat_state.should ==(:paused)
   end
 
   it 'imports correct chat state' do
-    Blather::XMPPNode.parse(message_xml).chat_state.must_equal :paused
+    Blather::XMPPNode.parse(message_xml).chat_state.should == :paused
   end
 
   it 'makes a form child available' do
     n = Blather::XMPPNode.parse(message_xml)
-    n.form.fields.size.must_equal 1
-    n.form.fields.map { |f| f.class }.uniq.must_equal [Blather::Stanza::X::Field]
-    n.form.must_be_instance_of Blather::Stanza::X
+    n.form.fields.size.should == 1
+    n.form.fields.map { |f| f.class }.uniq.should == [Blather::Stanza::X::Field]
+    n.form.should be_instance_of Blather::Stanza::X
 
     r = Blather::Stanza::Message.new
     r.form.type = :form
-    r.form.type.must_equal :form
+    r.form.type.should == :form
   end
 
   it 'ensures the form child is a direct child' do
     r = Blather::Stanza::Message.new
     r.form
-    r.xpath('ns:x', :ns => Blather::Stanza::X.registered_ns).wont_be_empty
+    r.xpath('ns:x', :ns => Blather::Stanza::X.registered_ns).should_not be_empty
   end
 
   it 'is not delayed' do
     n = Blather::XMPPNode.parse(message_xml)
-    n.delay.must_equal nil
-    n.delayed?.must_equal false
+    n.delay.should == nil
+    n.delayed?.should == false
   end
 
   describe "with a delay" do
     it "is delayed" do
       n = Blather::XMPPNode.parse(delayed_message_xml)
-      n.delayed?.must_equal true
-      n.delay.must_be_instance_of Blather::Stanza::Message::Delay
-      n.delay.from.must_equal 'coven@chat.shakespeare.lit'
-      n.delay.stamp.must_equal Time.utc(2002, 10, 13, 23, 58, 37, 0)
-      n.delay.description.must_equal "Too slow"
+      n.delayed?.should == true
+      n.delay.should be_instance_of Blather::Stanza::Message::Delay
+      n.delay.from.should == 'coven@chat.shakespeare.lit'
+      n.delay.stamp.should == Time.utc(2002, 10, 13, 23, 58, 37, 0)
+      n.delay.description.should == "Too slow"
     end
   end
 end

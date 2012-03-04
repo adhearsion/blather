@@ -46,12 +46,12 @@ describe Blather::Stream::Component do
       when nil
         state = :started
         server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' id='12345'>"
-        val.must_match(/stream:stream/)
+        val.should match(/stream:stream/)
 
       when :started
         server.send_data '<handshake/>'
         EM.stop
-        val.must_equal "<handshake>#{Digest::SHA1.hexdigest('12345'+"secret")}</handshake>"
+        val.should == "<handshake>#{Digest::SHA1.hexdigest('12345'+"secret")}</handshake>"
 
       end
     end
@@ -65,11 +65,11 @@ describe Blather::Stream::Component do
 
         Blather::Stream::Component.start @client, @jid || Blather::JID.new('n@d/r'), 'pass', '127.0.0.1', 50000 - rand(1000)
       }
-    end.must_raise Blather::Stream::ConnectionFailed
+    end.should raise_error Blather::Stream::ConnectionFailed
   end
 
   it 'starts the stream once the connection is complete' do
-    mocked_server(1) { |val, _| EM.stop; val.must_match(/stream:stream/) }
+    mocked_server(1) { |val, _| EM.stop; val.should match(/stream:stream/) }
   end
 
   it 'sends stanzas to the client when the stream is ready' do
@@ -85,12 +85,12 @@ describe Blather::Stream::Component do
       when nil
         state = :started
         server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:component:accept' xmlns:stream='http://etherx.jabber.org/streams' id='12345'>"
-        val.must_match(/stream:stream/)
+        val.should match(/stream:stream/)
 
       when :started
         server.send_data '<handshake/>'
         server.send_data "<message to='comp.id' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
-        val.must_equal "<handshake>#{Digest::SHA1.hexdigest('12345'+"secret")}</handshake>"
+        val.should == "<handshake>#{Digest::SHA1.hexdigest('12345'+"secret")}</handshake>"
 
       end
     end
@@ -102,7 +102,7 @@ describe Blather::Stream::Component do
     client.stubs(:jid=)
     msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
     comp = Blather::Stream::Component.new nil, client, 'jid.com', 'pass'
-    comp.expects(:send_data).with { |s| s.must_match(/^<message[^>]*from="jid\.com"/) }
+    comp.expects(:send_data).with { |s| s.should match(/^<message[^>]*from="jid\.com"/) }
     comp.send msg
   end
 end
