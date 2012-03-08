@@ -1,4 +1,5 @@
 develop
+  Feature(benlangfeld): Stanza handlers are now executed outside of the EM reactor, so it is not blocked on stanza processing
 
 v0.6.2
   Feature(benlangfeld): Add password support to MUCUser
