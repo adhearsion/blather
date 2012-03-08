@@ -1,5 +1,10 @@
 develop
   Feature(benlangfeld): Stanza handlers are now executed outside of the EM reactor, so it is not blocked on stanza processing
+  Bugfix(benlangfeld): MUC user presence and messages now have separate handler names
+  Feature(benlangfeld): Stanzas may now be imported from a string using `XMPPNode.parse`
+  Bugfix(benlangfeld): All `Blather::Stanza::Presence::C` attributes are now accessible on importing
+  Bugfix(benlangfeld): Presence stanzas are now composed on import, including all children
+  Bugfix(mtrudel): JIDs in roster item stanzas are now stripped of resources
 
 v0.6.2
   Feature(benlangfeld): Add password support to MUCUser
