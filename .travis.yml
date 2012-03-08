@@ -13,5 +13,6 @@ gemfile:
   - spec/gemfiles/Gemfile.nokogiri-1.5.1
 branches:
   only:
-    - master
-    - develop
+    - travis-matrix
+#    - master
+#    - develop
