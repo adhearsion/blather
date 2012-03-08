@@ -59,7 +59,7 @@ module Blather
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
 
-      @handler_queue = GirlFriday::WorkQueue.new :handle_stanza, :size => 1 do |stanza|
+      @handler_queue = GirlFriday::WorkQueue.new :handle_stanza, :size => 5 do |stanza|
         handle_data stanza
       end
 
