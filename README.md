@@ -170,6 +170,7 @@ than a change set made directly on master.
 * [Tim Carey-Smith](http://github.com/halorgium)
 * [Ben Langfeld](http://github.com/benlangfeld)
 * [Anton Mironov](http://github.com/mironov)
+* [Thibaut Barrère](http://github.com/thbar)
 
 # Copyright
 

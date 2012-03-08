@@ -8,6 +8,9 @@ rvm:
   - rbx-18mode
   - rbx-19mode
   - jruby
+gemfile:
+  - spec/gemfiles/Gemfile.nokogiri-1.4.7
+  - spec/gemfiles/Gemfile.nokogiri-1.5.1
 
 branches:
   only:
