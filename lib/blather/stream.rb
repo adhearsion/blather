@@ -161,8 +161,6 @@ module Blather
     # Called by EM with data from the wire
     # @private
     def receive_data(data)
-      Blather.log "\n#{'-'*30}\n"
-      Blather.log "STREAM IN: #{data}"
       @parser << data
 
     rescue ParseError => e
@@ -237,7 +235,7 @@ module Blather
     # Ensure the JID gets attached to the client
     # @private
     def jid=(new_jid)
-      Blather.log "NEW JID: #{new_jid}"
+      Blather.log "USING JID: #{new_jid}"
       @jid = JID.new new_jid
     end
 
