@@ -1,3 +1,5 @@
+require 'blather/stream/features/sasl/x_facebook_platform'
+
 module Blather
 class Stream
 
@@ -8,6 +10,7 @@ class Stream
     end
 
     MECHANISMS = %w[
+      x-facebook-platform
       digest-md5
       plain
       anonymous
@@ -63,6 +66,7 @@ class Stream
 
     def authenticate_with(method)
       method = case method
+      when 'x-facebook-platform' then XFacebookPlatform
       when 'digest-md5' then  DigestMD5
       when 'plain'      then  Plain
       when 'anonymous'  then  Anonymous
