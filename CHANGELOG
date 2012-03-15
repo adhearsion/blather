@@ -1,4 +1,6 @@
 develop
+  Change(benlangfeld): Drop Ruby 1.8.7 compatability
+  Change(bklang): Remove the wire log, which duplicated the parsed logging
   Feature(benlangfeld): Stanza handlers are now executed outside of the EM reactor, so it is not blocked on stanza processing
   Bugfix(benlangfeld): MUC user presence and messages now have separate handler names
   Feature(benlangfeld): Stanzas may now be imported from a string using `XMPPNode.parse`
