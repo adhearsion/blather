@@ -162,14 +162,8 @@ than a change set made directly on master.
 
 # Author
 
-[Jeff Smick](http://github.com/sprsquish)
-
-### Contributors
-
-* [Nolan Darilek](http://github.com/thewordnerd)
-* [Tim Carey-Smith](http://github.com/halorgium)
-* [Ben Langfeld](http://github.com/benlangfeld)
-* [Anton Mironov](http://github.com/mironov)
+* [Jeff Smick](http://github.com/sprsquish)
+* [Other Contributors](https://github.com/sprsquish/blather/contributors)
 
 # Copyright
 
