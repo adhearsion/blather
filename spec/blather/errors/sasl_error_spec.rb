@@ -10,9 +10,9 @@ end
 
 describe Blather::SASLError do
   it 'can import a node' do
-    Blather::SASLError.must_respond_to :import
+    Blather::SASLError.should respond_to :import
     e = Blather::SASLError.import sasl_error_node
-    e.must_be_kind_of Blather::SASLError
+    e.should be_kind_of Blather::SASLError
   end
 
   describe 'each XMPP SASL error type' do
@@ -26,7 +26,7 @@ describe Blather::SASLError do
     ].each do |error_type|
       it "handles the name for #{error_type}" do
         e = Blather::SASLError.import sasl_error_node(error_type)
-        e.name.must_equal error_type.gsub('-','_').to_sym
+        e.name.should == error_type.gsub('-','_').to_sym
       end
     end
   end

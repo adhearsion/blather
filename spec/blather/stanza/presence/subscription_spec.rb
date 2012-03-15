@@ -2,29 +2,28 @@ require 'spec_helper'
 
 describe Blather::Stanza::Presence::Subscription do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:subscription, nil).must_equal Blather::Stanza::Presence::Subscription
+    Blather::XMPPNode.class_from_registration(:subscription, nil).should == Blather::Stanza::Presence::Subscription
   end
 
   [:subscribe, :subscribed, :unsubscribe, :unsubscribed].each do |type|
     it "must be importable as #{type}" do
-      doc = parse_stanza "<presence type='#{type}'/>"
-      Blather::XMPPNode.import(doc.root).must_be_instance_of Blather::Stanza::Presence::Subscription
+      Blather::XMPPNode.parse("<presence type='#{type}'/>").should be_kind_of Blather::Stanza::Presence::Subscription::InstanceMethods
     end
   end
 
   it 'can set to on creation' do
     sub = Blather::Stanza::Presence::Subscription.new 'a@b'
-    sub.to.to_s.must_equal 'a@b'
+    sub.to.to_s.should == 'a@b'
   end
 
   it 'can set a type on creation' do
     sub = Blather::Stanza::Presence::Subscription.new nil, :subscribed
-    sub.type.must_equal :subscribed
+    sub.type.should == :subscribed
   end
 
   it 'strips Blather::JIDs when setting #to' do
     sub = Blather::Stanza::Presence::Subscription.new 'a@b/c'
-    sub.to.to_s.must_equal 'a@b'
+    sub.to.to_s.should == 'a@b'
   end
 
   it 'generates an approval using #approve!' do
@@ -32,8 +31,8 @@ describe Blather::Stanza::Presence::Subscription do
     sub = Blather::Stanza::Presence::Subscription.new
     sub.from = jid
     sub.approve!
-    sub.to.must_equal jid
-    sub.type.must_equal :subscribed
+    sub.to.should == jid
+    sub.type.should == :subscribed
   end
 
   it 'generates a refusal using #refuse!' do
@@ -41,8 +40,8 @@ describe Blather::Stanza::Presence::Subscription do
     sub = Blather::Stanza::Presence::Subscription.new
     sub.from = jid
     sub.refuse!
-    sub.to.must_equal jid
-    sub.type.must_equal :unsubscribed
+    sub.to.should == jid
+    sub.type.should == :unsubscribed
   end
 
   it 'generates an unsubscript using #unsubscribe!' do
@@ -50,8 +49,8 @@ describe Blather::Stanza::Presence::Subscription do
     sub = Blather::Stanza::Presence::Subscription.new
     sub.from = jid
     sub.unsubscribe!
-    sub.to.must_equal jid
-    sub.type.must_equal :unsubscribe
+    sub.to.should == jid
+    sub.type.should == :unsubscribe
   end
 
   it 'generates a cancellation using #cancel!' do
@@ -59,8 +58,8 @@ describe Blather::Stanza::Presence::Subscription do
     sub = Blather::Stanza::Presence::Subscription.new
     sub.from = jid
     sub.cancel!
-    sub.to.must_equal jid
-    sub.type.must_equal :unsubscribed
+    sub.to.should == jid
+    sub.type.should == :unsubscribed
   end
 
   it 'generates a request using #request!' do
@@ -68,15 +67,15 @@ describe Blather::Stanza::Presence::Subscription do
     sub = Blather::Stanza::Presence::Subscription.new
     sub.from = jid
     sub.request!
-    sub.to.must_equal jid
-    sub.type.must_equal :subscribe
+    sub.to.should == jid
+    sub.type.should == :subscribe
   end
 
   it 'has a #request? helper' do
     sub = Blather::Stanza::Presence::Subscription.new
-    sub.must_respond_to :request?
+    sub.should respond_to :request?
     sub.type = :subscribe
-    sub.request?.must_equal true
+    sub.request?.should == true
   end
 
   it "successfully routes chained actions" do
@@ -87,9 +86,9 @@ describe Blather::Stanza::Presence::Subscription do
     sub.to = to
     sub.cancel!
     sub.unsubscribe!
-    sub.type.must_equal :unsubscribe
-    sub.to.must_equal from
-    sub.from.must_equal to
+    sub.type.should == :unsubscribe
+    sub.to.should == from
+    sub.from.should == to
   end
 
   it "will inherit only another node's attributes" do
@@ -97,9 +96,9 @@ describe Blather::Stanza::Presence::Subscription do
     inheritable[:bar] = 'baz'
 
     sub = Blather::Stanza::Presence::Subscription.new
-    sub.must_respond_to :inherit
+    sub.should respond_to :inherit
 
     sub.inherit inheritable
-    sub[:bar].must_equal 'baz'
+    sub[:bar].should == 'baz'
   end
 end

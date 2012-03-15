@@ -25,74 +25,73 @@ class Presence
       node
     end
 
-    # @private
-    def inherit(node)
-      inherit_attrs node.attributes
-      self
+    module InstanceMethods
+
+      # Set the to value on the stanza
+      #
+      # @param [Blather::JID, #to_s] to a JID to subscribe to
+      def to=(to)
+        super JID.new(to).stripped
+      end
+
+      # Transform the stanza into an approve stanza
+      # makes approving requests simple
+      #
+      # @example approve an incoming request
+      #   subscription(:request?) { |s| write_to_stream s.approve! }
+      # @return [self]
+      def approve!
+        self.type = :subscribed
+        reply_if_needed!
+      end
+
+      # Transform the stanza into a refuse stanza
+      # makes refusing requests simple
+      #
+      # @example refuse an incoming request
+      #   subscription(:request?) { |s| write_to_stream s.refuse! }
+      # @return [self]
+      def refuse!
+        self.type = :unsubscribed
+        reply_if_needed!
+      end
+
+      # Transform the stanza into an unsubscribe stanza
+      # makes unsubscribing simple
+      #
+      # @return [self]
+      def unsubscribe!
+        self.type = :unsubscribe
+        reply_if_needed!
+      end
+
+      # Transform the stanza into a cancel stanza
+      # makes canceling simple
+      #
+      # @return [self]
+      def cancel!
+        self.type = :unsubscribed
+        reply_if_needed!
+      end
+
+      # Transform the stanza into a request stanza
+      # makes requests simple
+      #
+      # @return [self]
+      def request!
+        self.type = :subscribe
+        reply_if_needed!
+      end
+
+      # Check if the stanza is a request
+      #
+      # @return [true, false]
+      def request?
+        self.type == :subscribe
+      end
     end
 
-    # Set the to value on the stanza
-    #
-    # @param [Blather::JID, #to_s] to a JID to subscribe to
-    def to=(to)
-      super JID.new(to).stripped
-    end
-
-    # Transform the stanza into an approve stanza
-    # makes approving requests simple
-    #
-    # @example approve an incoming request
-    #   subscription(:request?) { |s| write_to_stream s.approve! }
-    # @return [self]
-    def approve!
-      self.type = :subscribed
-      reply_if_needed!
-    end
-
-    # Transform the stanza into a refuse stanza
-    # makes refusing requests simple
-    #
-    # @example refuse an incoming request
-    #   subscription(:request?) { |s| write_to_stream s.refuse! }
-    # @return [self]
-    def refuse!
-      self.type = :unsubscribed
-      reply_if_needed!
-    end
-
-    # Transform the stanza into an unsubscribe stanza
-    # makes unsubscribing simple
-    #
-    # @return [self]
-    def unsubscribe!
-      self.type = :unsubscribe
-      reply_if_needed!
-    end
-
-    # Transform the stanza into a cancel stanza
-    # makes canceling simple
-    #
-    # @return [self]
-    def cancel!
-      self.type = :unsubscribed
-      reply_if_needed!
-    end
-
-    # Transform the stanza into a request stanza
-    # makes requests simple
-    #
-    # @return [self]
-    def request!
-      self.type = :subscribe
-      reply_if_needed!
-    end
-
-    # Check if the stanza is a request
-    #
-    # @return [true, false]
-    def request?
-      self.type == :subscribe
-    end
+    include InstanceMethods
 
   end #Subscription
 

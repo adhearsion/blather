@@ -12,26 +12,26 @@ end
 
 describe 'Blather::Stanza::Presence::MUC' do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:x, 'http://jabber.org/protocol/muc' ).must_equal Blather::Stanza::Presence::MUC
+    Blather::XMPPNode.class_from_registration(:x, 'http://jabber.org/protocol/muc' ).should == Blather::Stanza::Presence::MUC
   end
 
   it 'must be importable' do
-    c = Blather::XMPPNode.import(parse_stanza(muc_xml).root)
-    c.must_be_instance_of Blather::Stanza::Presence::MUC
-    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).count.must_equal 1
+    c = Blather::XMPPNode.parse(muc_xml)
+    c.should be_kind_of Blather::Stanza::Presence::MUC::InstanceMethods
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).count.should == 1
   end
 
   it 'ensures a form node is present on create' do
     c = Blather::Stanza::Presence::MUC.new
-    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).wont_be_empty
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).should_not be_empty
   end
 
   it 'ensures a form node exists when calling #muc' do
     c = Blather::Stanza::Presence::MUC.new
     c.remove_children :x
-    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).must_be_empty
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).should be_empty
 
-    c.muc.wont_be_nil
-    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).wont_be_empty
+    c.muc.should_not be_nil
+    c.xpath('ns:x', :ns => Blather::Stanza::Presence::MUC.registered_ns).should_not be_empty
   end
 end

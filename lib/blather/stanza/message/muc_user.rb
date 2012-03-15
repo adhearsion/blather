@@ -7,6 +7,8 @@ class Message
   class MUCUser < Message
     include Blather::Stanza::MUC::MUCUserBase
 
+    register :muc_user_message, :x, "http://jabber.org/protocol/muc#user"
+
     def self.new(to = nil, body = nil, type = :normal)
       super
     end

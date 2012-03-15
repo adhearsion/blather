@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe Blather do
-  
+
   describe "while accessing to Logger object" do
     it "should return a Logger instance" do
-      Blather.logger.must_be_instance_of Logger
+      Blather.logger.should be_instance_of Logger
     end
 
     it "should config log level to info by default" do
-      Blather.logger.level.must_equal 1
+      Blather.logger.level.should == 1
     end
   end
 
@@ -21,7 +21,7 @@ describe Blather do
       Blather.logger.expects(:debug).with("foo bar").once
       Blather.log "foo bar"
     end
-    
+
     %w<debug info error fatal>.each do |val|
       it "should forward to #{val} if configured that default level" do
         Blather.logger.expects(val.to_sym).with("foo bar").once

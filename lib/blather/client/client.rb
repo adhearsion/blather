@@ -59,6 +59,10 @@ module Blather
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
 
+      @handler_queue = GirlFriday::WorkQueue.new :handle_stanza, :size => 5 do |stanza|
+        handle_data stanza
+      end
+
       setup_initial_handlers
     end
 
@@ -181,6 +185,10 @@ module Blather
 
     # @private
     def receive_data(stanza)
+      @handler_queue << stanza
+    end
+
+    def handle_data(stanza)
       catch(:halt) do
         run_filters :before, stanza
         handle_stanza stanza

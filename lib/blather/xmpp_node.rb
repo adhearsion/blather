@@ -40,14 +40,22 @@ module Blather
     # elements of the XML::Node
     # @param [XML::Node] node the node to import
     # @return the appropriate object based on the node name and namespace
-    def self.import(node)
+    def self.import(node, *decorators)
       ns = (node.namespace.href if node.namespace)
       klass = class_from_registration(node.element_name, ns)
       if klass && klass != self
-        klass.import(node)
+        klass.import(node, *decorators)
       else
-        new(node.element_name).inherit(node)
+        new(node.element_name).decorate(*decorators).inherit(node)
       end
+    end
+
+    # Parse a string as XML and import to the appropriate class
+    #
+    # @param [String] string the string to parse
+    # @return the appropriate object based on the node name and namespace
+    def self.parse(string)
+      import Nokogiri::XML(string).root
     end
 
     # Create a new Node object
@@ -58,6 +66,19 @@ module Blather
     # @return a new object with the registered name and namespace
     def self.new(name = registered_name, doc = nil)
       super name, doc, BASE_NAMES.include?(name.to_s) ? nil : self.registered_ns
+    end
+
+    def self.decorator_modules
+      [self::InstanceMethods]
+    end
+
+    def decorate(*decorators)
+      decorators.each do |decorator|
+        decorator.decorator_modules.each do |mod|
+          extend mod
+        end
+      end
+      self
     end
 
     # Turn the object into a proper stanza

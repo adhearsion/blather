@@ -3,9 +3,10 @@ class Stanza
 class MUC
 
   module MUCUserBase
+    MUC_USER_NAMESPACE = "http://jabber.org/protocol/muc#user"
+
     def self.included(klass)
       klass.extend ClassMethods
-      klass.register :muc_user, :x, "http://jabber.org/protocol/muc#user"
     end
 
     module ClassMethods
@@ -29,7 +30,7 @@ class MUC
     end
 
     def muc_user
-      unless muc_user = find_first('ns:x', :ns => self.class.registered_ns)
+      unless muc_user = find_first('ns:x', :ns => MUC_USER_NAMESPACE)
         self << (muc_user = XMPPNode.new('x', self.document))
         muc_user.namespace = self.class.registered_ns
       end
@@ -44,7 +45,7 @@ class MUC
     end
 
     def find_password_node
-      muc_user.find_first 'ns:password', :ns => self.class.registered_ns
+      muc_user.find_first 'ns:password', :ns => MUC_USER_NAMESPACE
     end
   end # MUCUserBase
 

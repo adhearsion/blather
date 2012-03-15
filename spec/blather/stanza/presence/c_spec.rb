@@ -13,34 +13,44 @@ end
 
 describe 'Blather::Stanza::Presence::C' do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:c, 'http://jabber.org/protocol/caps' ).must_equal Blather::Stanza::Presence::C
+    Blather::XMPPNode.class_from_registration(:c, 'http://jabber.org/protocol/caps' ).should == Blather::Stanza::Presence::C
   end
 
   it 'must be importable' do
-    c = Blather::XMPPNode.import(parse_stanza(c_xml).root).must_be_instance_of Blather::Stanza::Presence::C
+    c = Blather::XMPPNode.parse c_xml
+    c.should be_kind_of Blather::Stanza::Presence::C::InstanceMethods
+    c.hash.should == :'sha-1'
+    c.node.should == 'http://www.chatopus.com'
+    c.ver.should == 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
   end
 
   it 'ensures hash is one of Blather::Stanza::Presence::C::VALID_HASH_TYPES' do
-    lambda { Blather::Stanza::Presence::C.new nil, nil, :invalid_type_name }.must_raise(Blather::ArgumentError)
+    lambda { Blather::Stanza::Presence::C.new nil, nil, :invalid_type_name }.should raise_error(Blather::ArgumentError)
 
     Blather::Stanza::Presence::C::VALID_HASH_TYPES.each do |valid_hash|
       c = Blather::Stanza::Presence::C.new nil, nil, valid_hash
-      c.hash.must_equal valid_hash.to_sym
+      c.hash.should == valid_hash.to_sym
     end
   end
 
   it 'can set a hash on creation' do
     c = Blather::Stanza::Presence::C.new nil, nil, :md5
-    c.hash.must_equal :md5
+    c.hash.should == :md5
   end
 
   it 'can set a node on creation' do
     c = Blather::Stanza::Presence::C.new 'http://www.chatopus.com'
-    c.node.must_equal 'http://www.chatopus.com'
+    c.node.should == 'http://www.chatopus.com'
   end
 
   it 'can set a ver on creation' do
     c = Blather::Stanza::Presence::C.new nil, 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
-    c.ver.must_equal 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
+    c.ver.should == 'zHyEOgxTrkpSdGcQKH8EFPLsriY='
+  end
+
+  it 'is equal on import and creation' do
+    p = Blather::XMPPNode.parse c_xml
+    c = Blather::Stanza::Presence::C.new 'http://www.chatopus.com', 'zHyEOgxTrkpSdGcQKH8EFPLsriY=', 'sha-1'
+    p.should == c
   end
 end
