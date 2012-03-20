@@ -126,7 +126,7 @@ module Blather
     # @param [#to_xml, #to_s] stanza the stanza to send over the wire
     def send(stanza)
       data = stanza.respond_to?(:to_xml) ? stanza.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML) : stanza.to_s
-      Blather.log "SENDING: (#{caller[1]}) #{data}"
+      Blather.log "SENDING: (#{caller[1]}) #{stanza}"
       send_data data
     end
 
