@@ -69,7 +69,7 @@ module Blather
     # to use the domain on the JID
     # @param [Fixnum, nil] port the port to connect on. Default is the XMPP
     # default of 5222
-    # @param [String, nil] certs the trusted cert store in pem format to verify 
+    # @param [String, nil] certs the trusted cert store in pem format to verify
     # communication with the server is trusted.
     # @param [Fixnum, nil] connect_timeout the number of seconds for which to wait for a successful connection
     def self.start(client, jid, pass, host = nil, port = nil, certs_directory = nil, connect_timeout = nil)
@@ -168,15 +168,15 @@ module Blather
       send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
       stop
     end
-    
-    # Called by EM to verify the peer certificate. If a certificate store directory 
+
+    # Called by EM to verify the peer certificate. If a certificate store directory
     # has not been configured don't worry about peer verification. At least it is encrypted
     # We Log the certificate so that you can add it to the trusted store easily if desired
     # @private
     def ssl_verify_peer(pem)
       # EM is supposed to close the connection when this returns false,
       # but it only does that for inbound connections, not when we
-      # make a connection to another server. 
+      # make a connection to another server.
       Blather.log "Checking SSL cert: #{pem}"
       return true if !@@store
       @@store.trusted?(pem).tap do |trusted|
