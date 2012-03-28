@@ -39,7 +39,7 @@ class PubSub
 
     # Get or create the actual create node on the stanza
     #
-    # @return [Balther::XMPPNode]
+    # @return [Blather::XMPPNode]
     def create_node
       unless create_node = pubsub.find_first('ns:create', :ns => self.class.registered_ns)
         self.pubsub << (create_node = XMPPNode.new('create', self.document))
