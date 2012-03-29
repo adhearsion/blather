@@ -238,6 +238,165 @@ Some parts of Blather will allow you to do stupid things that don't conform to X
 spec. You should exercise caution and read the relevant specifications (indicated in
 the preamble to most relevant classes).
 
+## Spec compliance
+
+Blather provides support in one way or another for many XMPP specifications. Below is a list of specifications and the status of support for them in Blather. This list *may not be correct*. If the list indicates a lack of support for a specification you wish to use, you are encouraged to check that this is correct. Likewise, if you find an overstatement of Blather's spec compliance, please point this out. Also note that even without built-in support for a specification, you can still manually construct and parse stanzas alongside use of Blather's built-in helpers.
+
+Specification | Support | Notes
+------------- | ------- | -----
+RFC 6120      | Full    |
+RFC 6121      | Full    |
+RFC 6122      | Full    |
+XEP-0001      | N/A     |
+XEP-0002      | N/A     |
+XEP-0004      | Partial |
+XEP-0009      | None    |
+XEP-0012      | None    |
+XEP-0013      | None    |
+XEP-0016      | None    |
+XEP-0019      | N/A     |
+XEP-0020      | Partial |
+XEP-0027      | None    |
+XEP-0030      | Partial |
+XEP-0033      | None    |
+XEP-0045      | Partial |
+XEP-0047      | None    |
+XEP-0048      | None    |
+XEP-0049      | None    |
+XEP-0050      | Partial |
+XEP-0053      | None    |
+XEP-0054      | None    |
+XEP-0055      | None    |
+XEP-0059      | None    |
+XEP-0060      | Partial |
+XEP-0065      | None    |
+XEP-0066      | None    |
+XEP-0068      | None    |
+XEP-0070      | None    |
+XEP-0071      | Partial |
+XEP-0072      | None    |
+XEP-0076      | None    |
+XEP-0077      | None    |
+XEP-0079      | None    |
+XEP-0080      | None    |
+XEP-0082      | None    |
+XEP-0083      | None    |
+XEP-0084      | None    |
+XEP-0085      | Partial |
+XEP-0092      | None    |
+XEP-0095      | Partial |
+XEP-0096      | Partial |
+XEP-0100      | None    |
+XEP-0106      | None    |
+XEP-0107      | None    |
+XEP-0108      | None    |
+XEP-0114      | None    |
+XEP-0115      | Partial |
+XEP-0118      | None    |
+XEP-0122      | None    |
+XEP-0124      | None    |
+XEP-0126      | None    |
+XEP-0127      | None    |
+XEP-0128      | None    |
+XEP-0130      | None    |
+XEP-0131      | None    |
+XEP-0132      | None    |
+XEP-0133      | None    |
+XEP-0134      | None    |
+XEP-0136      | None    |
+XEP-0137      | None    |
+XEP-0138      | None    |
+XEP-0141      | None    |
+XEP-0143      | None    |
+XEP-0144      | N/A     |
+XEP-0145      | None    |
+XEP-0146      | None    |
+XEP-0147      | None    |
+XEP-0148      | None    |
+XEP-0149      | None    |
+XEP-0153      | None    |
+XEP-0155      | None    |
+XEP-0156      | None    |
+XEP-0157      | None    |
+XEP-0158      | None    |
+XEP-0160      | None    |
+XEP-0163      | Partial |
+XEP-0166      | None    |
+XEP-0167      | None    |
+XEP-0169      | None    |
+XEP-0170      | None    |
+XEP-0171      | None    |
+XEP-0172      | None    |
+XEP-0174      | None    |
+XEP-0175      | None    |
+XEP-0176      | None    |
+XEP-0177      | None    |
+XEP-0178      | None    |
+XEP-0182      | N/A     |
+XEP-0183      | None    |
+XEP-0184      | None    |
+XEP-0185      | None    |
+XEP-0191      | None    |
+XEP-0198      | None    |
+XEP-0199      | Partial |
+XEP-0201      | None    |
+XEP-0202      | None    |
+XEP-0203      | Partial |
+XEP-0205      | None    |
+XEP-0206      | None    |
+XEP-0207      | None    |
+XEP-0220      | None    |
+XEP-0221      | None    |
+XEP-0222      | None    |
+XEP-0223      | None    |
+XEP-0224      | None    |
+XEP-0227      | None    |
+XEP-0229      | None    |
+XEP-0231      | None    |
+XEP-0233      | None    |
+XEP-0234      | None    |
+XEP-0239      | None    |
+XEP-0242      | None    |
+XEP-0243      | None    |
+XEP-0245      | None    |
+XEP-0249      | None    |
+XEP-0256      | None    |
+XEP-0258      | None    |
+XEP-0260      | None    |
+XEP-0261      | None    |
+XEP-0262      | None    |
+XEP-0263      | None    |
+XEP-0266      | None    |
+XEP-0267      | None    |
+XEP-0270      | None    |
+XEP-0273      | None    |
+XEP-0277      | None    |
+XEP-0278      | None    |
+XEP-0280      | None    |
+XEP-0288      | None    |
+XEP-0292      | None    |
+XEP-0293      | None    |
+XEP-0294      | None    |
+XEP-0295      | None    |
+XEP-0296      | None    |
+XEP-0297      | None    |
+XEP-0298      | None    |
+XEP-0299      | None    |
+XEP-0300      | None    |
+XEP-0301      | None    |
+XEP-0302      | None    |
+XEP-0303      | None    |
+XEP-0304      | None    |
+XEP-0305      | None    |
+XEP-0306      | None    |
+XEP-0307      | None    |
+XEP-0308      | None    |
+XEP-0309      | None    |
+XEP-0310      | None    |
+XEP-0311      | None    |
+XEP-0312      | None    |
+
+
 # Contributions
 
 All contributions are welcome, even encouraged. However, contributions must be
