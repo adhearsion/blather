@@ -10,7 +10,6 @@ XMPP DSL (and more) for Ruby written on EventMachine and Nokogiri.
 
 ## Project Pages
 
-* [Docs](http://blather.squishtech.com)
 * [GitHub](https://github.com/sprsquish/blather)
 * [Gemcutter](http://gemcutter.org/gems/blather)
 * [Google Group](http://groups.google.com/group/xmpp-blather)
@@ -23,9 +22,7 @@ XMPP DSL (and more) for Ruby written on EventMachine and Nokogiri.
 
 ## Example
 
-See the examples directory for more advanced examples.
-
-This will auto-accept any subscription requests and echo back any chat messages.
+Blather comes with a DSL that makes writing XMPP bots quick and easy. See the examples directory for more advanced examples.
 
 ```ruby
 require 'rubygems'
@@ -46,7 +43,31 @@ end
 
 ## Handlers
 
-Setup handlers by calling their names as methods.
+Handlers let Blather know how you'd like each type of stanza to be well.. handled. Each type of stanza has an associated handler which is part of a handler hierarchy. In the example above we're handling message and subscription stanzas.
+
+XMPP is built on top of three main stanza types (presence, message, and iq). All other stanzas are built on these three base types. This creates a natural hierarchy of handlers. For example a subscription stanza is a type of presence stanza and can be processed by a subscription handler or a presence handler. Likewise, a PubSub::Items stanza has its own identifier :pubsub_items but it's also a :pubsub_node, :iq and :staza. Any or each of these could be used to handle the PubSub::Items stanza. If you've done any DOM programming you'll be familiar with this.
+
+Incoming stanzas will be handled by the first handler found. Unlike the DOM this will stop the handling bubble unless the handler returns false.
+
+The entire handler hierarchy can be seen below.
+
+### Example
+
+Here we have a presence handler and a subscription handler. When this script receives a subscription stanza the subscription handler will be notified first. If that handler doesn't know what to do it can return false and let the stanza bubble up to the presence handler.
+
+```ruby
+# Handle all presence stanzas
+presence do |stanza|
+  # do stuff
+end
+
+# Handle all subscription stanzas
+subscription do |stanza|
+  # do stuff
+end
+```
+
+Additionally, handlers may be 'guarded'. That is, they may have conditions set declaratively, against which the stanza must match in order to trigger the handler.
 
 ```ruby
 # Will only be called for messages where #chat? responds positively
@@ -78,7 +99,9 @@ disconnected { client.connect }
 
 ### Handler Guards
 
-Guards act like AND statements. Each condition must be met if the handler is to
+Guards are a concept borrowed from Erlang. They help to better compartmentalize handlers.
+
+There are a number of guard types and one bit of special syntax. Guards act like AND statements. Each condition must be met if the handler is to
 be used.
 
 ```ruby
@@ -124,7 +147,12 @@ message [{:body => 'foo'}, {:body => 'baz'}]
 #   Runs the xpath query on the stanza and checks for results
 #   This guard type cannot be combined with other guards
 #   Equivalent to !stanza.find('/iq/ns:pubsub', :ns => 'pubsub:namespace').empty?
-iq '/iq/ns:pubsub', :ns => 'pubsub:namespace'
+#   It also passes two arguments into the handler block: the stanza and the result
+#   of the xpath query.
+iq '/iq/ns:pubsub', :ns => 'pubsub:namespace' do |stanza, xpath_result|
+  # stanza will be the original stanza
+  # xpath_result will be the pubsub node in the stanza
+end
 ```
 
 ### Filters
@@ -143,6 +171,45 @@ before(nil, :id => 1) { |s| "I'll only be run when the stanza's ID == 1" }
 # ... handlers
 
 after { |s| "I'm run after everything" }
+```
+
+### Handlers Hierarchy
+
+```
+stanza
+|- iq
+|  |- pubsub_node
+|  |  |- pubsub_affiliations
+|  |  |- pubsub_create
+|  |  |- pubsub_items
+|  |  |- pubsub_publish
+|  |  |- pubsub_retract
+|  |  |- pubsub_subscribe
+|  |  |- pubsub_subscription
+|  |  |- pubsub_subscriptions
+|  |  `- pubsub_unsubscribe
+|  |- pubsub_owner
+|  |  |- pubsub_delete
+|  |  `- pubsub_purge
+|  `- query
+|     |- disco_info
+|     |- disco_items
+|     `- roster
+|- message
+|  `- pubsub_event
+`- presence
+   |- status
+   `- subscription
+
+error
+|- argument_error
+|- parse_error
+|- sasl_error
+|- sasl_unknown_mechanism
+|- stanza_error
+|- stream_error
+|- tls_failure
+`- unknown_response_error
 ```
 
 ## On the Command Line:
