@@ -213,7 +213,7 @@ error
 `- unknown_response_error
 ```
 
-## On the Command Line:
+## On the Command Line
 
 Default usage is:
 
@@ -232,7 +232,7 @@ Command line options:
 -v, --version     Show version
 ```
 
-## Health warning:
+## Health warning
 
 Some parts of Blather will allow you to do stupid things that don't conform to XMPP
 spec. You should exercise caution and read the relevant specifications (indicated in
