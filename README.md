@@ -27,6 +27,7 @@ See the examples directory for more advanced examples.
 
 This will auto-accept any subscription requests and echo back any chat messages.
 
+```ruby
     require 'rubygems'
     require 'blather/client'
 
@@ -41,19 +42,23 @@ This will auto-accept any subscription requests and echo back any chat messages.
     message :chat?, :body do |m|
       write_to_stream m.reply
     end
+```
 
 ## Handlers
 
 Setup handlers by calling their names as methods.
 
+```ruby
     # Will only be called for messages where #chat? responds positively
     # and #body == 'exit'
     message :chat?, :body => 'exit'
+```
 
 ### Non-Stanza Handlers
 
 So far there are two non-stanza related handlers.
 
+```ruby
     # Called after the connection has been connected. It's good for initializing
     # your system.
     # DSL:
@@ -69,17 +74,21 @@ So far there are two non-stanza related handlers.
     client.register_handler(:disconnected) {}
     # The following will reconnect every time the connection is lost:
     disconnected { client.connect }
+```
 
 ### Handler Guards
 
 Guards act like AND statements. Each condition must be met if the handler is to
 be used.
 
+```ruby
     # Equivalent to saying (stanza.chat? && stanza.body)
     message :chat?, :body
+```
 
 The different types of guards are:
 
+```ruby
     # Symbol
     #   Checks for a non-false reply to calling the symbol on the stanza
     #   Equivalent to stanza.chat?
@@ -116,6 +125,7 @@ The different types of guards are:
     #   This guard type cannot be combined with other guards
     #   Equivalent to !stanza.find('/iq/ns:pubsub', :ns => 'pubsub:namespace').empty?
     iq '/iq/ns:pubsub', :ns => 'pubsub:namespace'
+```
 
 ### Filters
 
@@ -123,6 +133,7 @@ Blather provides before and after filters that work much the way regular
 handlers work. Filters come in a before and after flavor. They're called in
 order of definition and can be guarded like handlers.
 
+```ruby
     before { |s| "I'm run before any handler" }
     before { |s| "I'm run next" }
 
@@ -132,6 +143,7 @@ order of definition and can be guarded like handlers.
     # ... handlers
 
     after { |s| "I'm run after everything" }
+```
 
 ## On the Command Line:
 
