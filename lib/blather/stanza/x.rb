@@ -331,7 +331,7 @@ class Stanza
       def options=(options)
         remove_children :option
         if options
-          [options].flatten.each { |o| self << Option.new(o) }
+          Array(options).each { |o| self << Option.new(o) }
         end
       end
 
