@@ -300,10 +300,10 @@ class Stanza
       #
       # @param [true, false]
       def required?
-        if self.namespace
-          !self.find_first('ns:required', :ns => self.namespace.href).nil?
+        !!if self.namespace
+          self.find_first 'ns:required', :ns => self.namespace.href
         else
-          !self.find_first('required').nil?
+          self.find_first 'required'
         end
       end
 
