@@ -50,7 +50,8 @@ class StreamError < BlatherError
   #
   # @return [Blather::XMPPNode]
   def to_node
-    node = XMPPNode.new('stream:error')
+    node = XMPPNode.new('error')
+    node.namespace = {'stream' => Blather::Stream::STREAM_NS}
 
     node << (err = XMPPNode.new(@name, node.document))
     err.namespace = 'urn:ietf:params:xml:ns:xmpp-streams'
