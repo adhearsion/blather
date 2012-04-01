@@ -311,8 +311,10 @@ class Stanza
       #
       # @param [true, false] required the field's required flag
       def required=(required)
-        self.remove_children(:required) unless required
-        self << XMPPNode.new(:required) if required
+        return self.remove_children(:required) unless required
+
+        self << (r = XMPPNode.new(:required))
+        r.namespace = self.namespace
       end
 
       # Extract list of option objects
