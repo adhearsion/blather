@@ -48,6 +48,8 @@ class Iq
     # This is a convenience class to attach methods to the node
     class RosterItem < XMPPNode
 
+      register :item, Roster.registered_ns
+
       # Create a new RosterItem
       # @overload new(XML::Node)
       #   Create a RosterItem by inheriting a node
