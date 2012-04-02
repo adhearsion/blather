@@ -113,11 +113,11 @@ module Blather
     #
     # @return [Blather::Stanza::Iq::Roster]
     def to_stanza(type = nil)
-      r = Stanza::Iq::Roster.new type
-      n = Stanza::Iq::Roster::RosterItem.new jid, name, subscription, ask
-      r.query << n
-      n.groups = groups
-      r
+      Stanza::Iq::Roster.new type, to_node
+    end
+
+    def to_node
+      Stanza::Iq::Roster::RosterItem.new jid, name, subscription, ask, groups
     end
 
     # Compare two RosterItems by their JID
