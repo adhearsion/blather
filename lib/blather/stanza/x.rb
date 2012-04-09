@@ -300,10 +300,10 @@ class Stanza
       #
       # @param [true, false]
       def required?
-        if self.namespace
-          !self.find_first('ns:required', :ns => self.namespace.href).nil?
+        !!if self.namespace
+          self.find_first 'ns:required', :ns => self.namespace.href
         else
-          !self.find_first('required').nil?
+          self.find_first 'required'
         end
       end
 
@@ -311,8 +311,10 @@ class Stanza
       #
       # @param [true, false] required the field's required flag
       def required=(required)
-        self.remove_children(:required) unless required
-        self << XMPPNode.new(:required) if required
+        return self.remove_children(:required) unless required
+
+        self << (r = XMPPNode.new(:required))
+        r.namespace = self.namespace
       end
 
       # Extract list of option objects
@@ -331,7 +333,7 @@ class Stanza
       def options=(options)
         remove_children :option
         if options
-          [options].flatten.each { |o| self << Option.new(o) }
+          Array(options).each { |o| self << Option.new(o) }
         end
       end
 

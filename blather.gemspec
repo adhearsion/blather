@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w{LICENSE README.md}
 
   s.add_dependency "eventmachine", [">= 0.12.6"]
-  s.add_dependency "nokogiri", ["~> 1.4.0"]
+  s.add_dependency "nokogiri", ["~> 1.4"]
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 3.0.7"]
   s.add_dependency "girl_friday"
