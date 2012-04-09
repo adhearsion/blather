@@ -137,6 +137,10 @@ describe Blather::Stanza::X do
 end
 
 describe Blather::Stanza::X::Field do
+  subject { Blather::Stanza::X::Field.new nil }
+
+  its(:namespace) { subject.href.should be == 'jabber:x:data' }
+
   it 'will auto-inherit nodes' do
     n = parse_stanza "<field type='text-single' var='music' label='Music from the time of Shakespeare' />"
     i = Blather::Stanza::X::Field.new n.root
@@ -193,13 +197,10 @@ describe Blather::Stanza::X::Field do
     n.value.should == 'book2'
   end
 
-  # Option child elements
-  it 'allows adding of options' do
+  it 'allows setting options' do
     di = Blather::Stanza::X::Field.new nil
     di.options.size.should == 0
-    di.options += [{:label => 'Person', :value => 'person'}]
-    di.options.size.should == 1
-    di.options += [Blather::Stanza::X::Field::Option.new(*%w[person1 Person1])]
+    di.options = [{:label => 'Person', :value => 'person'}, Blather::Stanza::X::Field::Option.new(*%w[person1 Person1])]
     di.options.size.should == 2
   end
 
