@@ -45,24 +45,28 @@ describe Blather::Stanza::Presence do
     s = Blather::Stanza::Presence.parse string
     s.should be_kind_of Blather::Stanza::Presence::C::InstanceMethods
     s.node.should == 'http://www.chatopus.com'
+    s.handler_hierarchy.should include(:c)
   end
 
   it 'creates a Status object when importing a node with type == nil' do
     s = Blather::Stanza::Presence.parse('<presence/>')
     s.should be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
     s.state.should == :available
+    s.handler_hierarchy.should include(Blather::Stanza::Presence::Status.registered_name.to_sym)
   end
 
   it 'creates a Status object when importing a node with type == "unavailable"' do
     s = Blather::Stanza::Presence.parse('<presence type="unavailable"/>')
     s.should be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
     s.state.should == :unavailable
+    s.handler_hierarchy.should include(Blather::Stanza::Presence::Status.registered_name.to_sym)
   end
 
   it 'creates a Subscription object when importing a node with type == "subscribe"' do
     s = Blather::Stanza::Presence.parse('<presence type="subscribe"/>')
     s.should be_kind_of Blather::Stanza::Presence::Subscription::InstanceMethods
     s.type.should == :subscribe
+    s.handler_hierarchy.should include(Blather::Stanza::Presence::Subscription.registered_name.to_sym)
   end
 
   it 'creates a MUC object when importing a node with a form in the MUC namespace' do
@@ -90,6 +94,7 @@ describe Blather::Stanza::Presence do
     s = Blather::Stanza::Presence.parse string
     s.should be_kind_of Blather::Stanza::Presence
     s.type.should == :foo
+    s.handler_hierarchy.should include(Blather::Stanza::Presence.registered_name.to_sym)
   end
 
   it 'behaves like a C, a Status, and a MUCUser when all types of children are present' do
@@ -114,5 +119,7 @@ describe Blather::Stanza::Presence do
     s.state.should == :chat
     s.node.should == 'http://www.chatopus.com'
     s.role.should == :participant
+    s.handler_hierarchy.should include(Blather::Stanza::Presence::C.registered_name.to_sym)
+    s.handler_hierarchy.should include(Blather::Stanza::Presence::Status.registered_name.to_sym)
   end
 end
