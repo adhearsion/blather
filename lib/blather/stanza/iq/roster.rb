@@ -48,6 +48,8 @@ class Iq
     # This is a convenience class to attach methods to the node
     class RosterItem < XMPPNode
 
+      register :item, Roster.registered_ns
+
       # Create a new RosterItem
       # @overload new(XML::Node)
       #   Create a RosterItem by inheriting a node
@@ -61,6 +63,7 @@ class Iq
       #   the RosterItem must be one of
       #   Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
       #   @option opts [:subscribe, nil] :ask the ask value of the RosterItem
+      #   @option opts [Array<#to_s>] :groups the group names the RosterItem is a member of
       # @overload new(jid = nil, name = nil, subscription = nil, ask = nil)
       #   @param [Blather::JID, String, nil] jid the JID of the item
       #   @param [String, nil] name the alias to give the JID
@@ -68,7 +71,8 @@ class Iq
       #   RosterItem must be one of
       #   Blather::RosterItem::VALID_SUBSCRIPTION_TYPES
       #   @param [:subscribe, nil] ask the ask value of the RosterItem
-      def self.new(jid = nil, name = nil, subscription = nil, ask = nil)
+      #   @param [Array<#to_s>] groups the group names the RosterItem is a member of
+      def self.new(jid = nil, name = nil, subscription = nil, ask = nil, groups = nil)
         new_node = super :item
 
         case jid
@@ -79,11 +83,13 @@ class Iq
           new_node.name = jid[:name]
           new_node.subscription = jid[:subscription]
           new_node.ask = jid[:ask]
+          new_node.groups = jid[:groups]
         else
           new_node.jid = jid
           new_node.name = name
           new_node.subscription = subscription
           new_node.ask = ask
+          new_node.groups = groups
         end
         new_node
       end
