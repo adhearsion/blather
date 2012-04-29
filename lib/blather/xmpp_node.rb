@@ -77,6 +77,8 @@ module Blather
         decorator.decorator_modules.each do |mod|
           extend mod
         end
+
+        @handler_hierarchy.unshift decorator.handler_hierarchy.first
       end
       self
     end

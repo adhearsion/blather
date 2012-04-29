@@ -1,6 +1,13 @@
-# develop
+# [develop](https://github.com/sprsquish/blather/compare/master...develop)
 
-# v0.7.0
+# [v0.7.1](https://github.com/sprsquish/blather/compare/v0.7.0...v0.7.1) - [2012-04-29](https://rubygems.org/gems/blather/versions/0.7.1)
+  * Documentation updates
+  * Bugfix(benlangfeld): Relax Nokogiri dependency to allow 1.5
+  * Bugfix(benlangfeld): Fix some nokogiri 1.5 related bugs on JRuby (some remain)
+  * Bugfix(benlangfeld): Set namespaces correctly on some tricky nodes
+  * Bugfix(benlangfeld): Ensure all presence sub-types trigger the correct handlers
+
+# [v0.7.0](https://github.com/sprsquish/blather/compare/v0.6.2...v0.7.0) - [2012-03-15](https://rubygems.org/gems/blather/versions/0.7.0)
   * Change(benlangfeld): Drop Ruby 1.8.7 compatability
   * Change(bklang): Remove the wire log, which duplicated the parsed logging
   * Feature(benlangfeld): Stanza handlers are now executed outside of the EM reactor, so it is not blocked on stanza processing
@@ -10,34 +17,34 @@
   * Bugfix(benlangfeld): Presence stanzas are now composed on import, including all children
   * Bugfix(mtrudel): JIDs in roster item stanzas are now stripped of resources
 
-# v0.6.2
-  * Feature(benlangfeld): Add password support to MUCUser
-  * Feature(benlangfeld): Add support for invitation elements to MUCUser messages
+# [v0.6.2](https://github.com/sprsquish/blather/compare/v0.6.1...v0.6.2) - [2012-02-28](https://rubygems.org/gems/blather/versions/0.6.2)
+  * Feature(benlangfeld): Add password support to `MUCUser`
+  * Feature(benlangfeld): Add support for invitation elements to `MUCUser` messages
   * Feature(benlangfeld): Add support for MUC invite declines
   * Bugfix(benlangfeld): Don't implicitly create an invite node when checking invite status
   * Bugfix(benlangfeld): Ensure that form nodes are not duplicated on muc/muc_user presence stanzas
 
-# v0.6.1
+# [v0.6.1](https://github.com/sprsquish/blather/compare/v0.6.0...v0.6.1) - [2012-02-25](https://rubygems.org/gems/blather/versions/0.6.1)
   * Bugfix(benlangfeld): Ensure MUC presence nodes (joining) have a form element on creation
 
-# v0.6.0
+# [v0.6.0](https://github.com/sprsquish/blather/compare/v0.5.12...v0.6.0) - [2012-02-24](https://rubygems.org/gems/blather/versions/0.6.0)
   * Feature(benlangfeld): Very basic MUC and delayed message support
   * Bugfix(theozaurus): Disable connection timeout timer if client deliberately disconnects
-  * Bugfix(mtrudel): Fix Roster#each to return roster_items as per documentation
+  * Bugfix(mtrudel): Fix `Roster#each` to return roster_items as per documentation
 
-# v0.5.12
+# [v0.5.12](https://github.com/sprsquish/blather/compare/v0.5.11...v0.5.12) - [2012-01-06](https://rubygems.org/gems/blather/versions/0.5.12)
   * Bugfix(benlangfeld): Allow specifying the connection timeout in DSL setup
 
-# v0.5.11
+# [v0.5.11](https://github.com/sprsquish/blather/compare/v0.5.10...v0.5.11) - [2012-01-06](https://rubygems.org/gems/blather/versions/0.5.11)
   * Feature(benlangfeld): Allow specifying a connection timeout
-    * Raise Blather::Stream::ConnectionTimeout if timeout is exceeded
+    * Raise `Blather::Stream::ConnectionTimeout` if timeout is exceeded
     * Default to 180 seconds
 
-# v0.5.10
+# [v0.5.10](https://github.com/sprsquish/blather/compare/v0.5.9...v0.5.10) - [2011-12-02](https://rubygems.org/gems/blather/versions/0.5.10)
   * Feature(juandebravo): Allow configuring the wire log level
   * Bugfix(benlangfeld): Checking connection status before the stream is established
 
-# v0.5.9
+# [v0.5.9](https://github.com/sprsquish/blather/compare/v0.5.8...v0.5.9) - [2011-11-24](https://rubygems.org/gems/blather/versions/0.5.9)
   * Bugfix(benlangfeld): Failed connections now raise a Blather::Stream::ConnectionFailed exception
   * Bugfix(crohr): Blather now supports EventMachine 1.0
 

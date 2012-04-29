@@ -13,6 +13,7 @@ module Blather
     @@handler_list = []
 
     class_attribute :handler_hierarchy
+    attr_writer :handler_hierarchy
 
     # Registers a callback onto the callback stack
     #
@@ -28,6 +29,15 @@ module Blather
 
       name = name || self.registered_name || handler
       super name, ns
+    end
+
+    def initialize(*args)
+      super
+      @handler_hierarchy = []
+    end
+
+    def handler_hierarchy
+      @handler_hierarchy + self.class.handler_hierarchy
     end
 
     # The handler stack for the current stanza class
