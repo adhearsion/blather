@@ -1,5 +1,12 @@
 # [develop](https://github.com/sprsquish/blather/compare/master...develop)
 
+# [v0.7.1](https://github.com/sprsquish/blather/compare/v0.7.0...v0.7.1) - [2012-04-29](https://rubygems.org/gems/blather/versions/0.7.1)
+  * Documentation updates
+  * Bugfix(benlangfeld): Relax Nokogiri dependency to allow 1.5
+  * Bugfix(benlangfeld): Fix some nokogiri 1.5 related bugs on JRuby (some remain)
+  * Bugfix(benlangfeld): Set namespaces correctly on some tricky nodes
+  * Bugfix(benlangfeld): Ensure all presence sub-types trigger the correct handlers
+
 # [v0.7.0](https://github.com/sprsquish/blather/compare/v0.6.2...v0.7.0) - [2012-03-15](https://rubygems.org/gems/blather/versions/0.7.0)
   * Change(benlangfeld): Drop Ruby 1.8.7 compatability
   * Change(bklang): Remove the wire log, which duplicated the parsed logging
