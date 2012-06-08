@@ -47,4 +47,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "yard", ["~> 0.6.1"]
   s.add_development_dependency "jruby-openssl", ["~> 0.7.4"] if jruby?
   s.add_development_dependency "bluecloth" unless jruby? || rbx?
+  s.add_development_dependency "countdownlatch"
 end
