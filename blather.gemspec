@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
   s.add_dependency "nokogiri", ["~> 1.4"]
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]
-  s.add_dependency "girl_friday"
 
   s.add_development_dependency "bundler", ["~> 1.0"]
   s.add_development_dependency "rake"

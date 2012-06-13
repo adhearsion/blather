@@ -8,7 +8,6 @@
   digest/sha1
   logger
   openssl
-  girl_friday
 
   active_support/core_ext/class/attribute
   active_support/core_ext/object/blank
