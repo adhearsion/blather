@@ -28,6 +28,27 @@ class Stream
     end
 
     def next!
+      # FIX for Tigase bind error
+      # The problem is that Tigase sends such stanza:
+      # <features>
+      #   <ver xmlns="urn:xmpp:features:rosterver"/>
+      #   <session xmlns="urn:ietf:params:xml:ns:xmpp-session"/>
+      #   <bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/>
+      # </features>
+      # And what Blather does it sends session iq immediately without binding
+      # In normal query should be <bind/> note before <session/>
+      # So what I fixed here is just sorting <bind/> before <session/>
+
+      bind = @features.children.detect do |node|
+        node.name == 'bind' && node.namespace.href == 'urn:ietf:params:xml:ns:xmpp-bind'
+      end
+      session = @features.children.detect do |node|
+        node.name == 'session' && node.namespace.href == 'urn:ietf:params:xml:ns:xmpp-session'
+      end
+      if bind && session && @features.children.last != session
+        @features.children.after session
+      end
+
       @idx = @idx ? @idx+1 : 0
       if stanza = @features.children[@idx]
         if stanza.namespaces['xmlns'] && (klass = self.class.from_namespace(stanza.namespaces['xmlns']))
