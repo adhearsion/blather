@@ -77,6 +77,7 @@ class Presence
   class Status < Presence
     # @private
     VALID_STATES = [:away, :chat, :dnd, :xa].freeze
+    VALID_TYPES = [:unavailable].freeze
 
     include Comparable
 
@@ -128,17 +129,6 @@ class Presence
       # @return [true, false]
       def xa?
         self.state == :xa
-      end
-
-      # Set the type attribute
-      # Ensures type is nil or :unavailable
-      #
-      # @param [<:unavailable, nil>] type the type
-      def type=(type)
-        if type && type.to_sym != :unavailable
-          raise ArgumentError, "Invalid type (#{type}). Must be nil or unavailable"
-        end
-        super
       end
 
       # Set the state

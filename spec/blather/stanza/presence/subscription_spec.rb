@@ -27,11 +27,9 @@ describe Blather::Stanza::Presence::Subscription do
   end
 
   it 'generates an approval using #approve!' do
-    jid = Blather::JID.new 'a@b'
-    sub = Blather::Stanza::Presence::Subscription.new
-    sub.from = jid
+    sub = Blather::Stanza.import Nokogiri::XML('<presence from="a@b" type="subscribe"><status/></presence>').root
     sub.approve!
-    sub.to.should == jid
+    sub.to.should == 'a@b'
     sub.type.should == :subscribed
   end
 
