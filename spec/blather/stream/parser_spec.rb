@@ -94,7 +94,7 @@ describe Blather::Stream::Parser do
     ]
     process *data
     client.data.size.should == 1
-    client.data[0].to_s.split("\n").map{|n|n.strip}.should == data
+    Nokogiri::XML(client.data[0].to_s.gsub(/\n\s*/, '')).to_s.should == Nokogiri::XML(data.join).to_s
     client.data[0].xpath('//*[namespace-uri()="urn:ietf:params:xml:ns:xmpp-stanzas"]').size.should == 2
   end
 
