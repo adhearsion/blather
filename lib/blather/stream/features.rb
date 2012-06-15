@@ -31,7 +31,21 @@ class Stream
       @idx = @idx ? @idx+1 : 0
       if stanza = @features.children[@idx]
         if stanza.namespaces['xmlns'] && (klass = self.class.from_namespace(stanza.namespaces['xmlns']))
-          @feature = klass.new @stream, proc { next! }, @fail
+          @feature = klass.new(
+            @stream,
+            proc {
+              if klass == Blather::Stream::Register
+                @idx = 0
+                stanza = @features.children.first
+                klass = self.class.from_namespace(stanza.namespaces['xmlns'])
+                @feature = klass.new @stream, proc { next! }, @fail
+                @feature.receive_data stanza
+              else
+                next!
+              end
+            },
+            (klass == Blather::Stream::SASL && @features && !@features.children.find { |v| v.element_name == "register" }.nil?) ? proc { next! } : @fail
+          )
           @feature.receive_data stanza
         else
           next!
