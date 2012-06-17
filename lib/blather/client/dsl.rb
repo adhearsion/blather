@@ -206,12 +206,23 @@ module Blather
       client.write stanza
     end
 
+    # Helper method to join a conference.
+    #
+    # @param [Blather::JID, #to_s] join the conference at this JID.
+    # @param [#to_s] the nickname to join the conference as.
+    def join(conference, nickname)
+      join = Blather::Stanza::Presence::MUC.new
+      join.to = "#{conference}/#{nickname}"
+      client.write join
+    end
+
     # Helper method to make sending basic messages easier
     #
     # @param [Blather::JID, #to_s] to the JID of the message recipient
     # @param [#to_s] msg the message to send
-    def say(to, msg)
-      client.write Blather::Stanza::Message.new(to, msg)
+    # @param [#to_sym] the stanza method to use
+    def say(to, msg, using = :chat)
+      client.write Blather::Stanza::Message.new(to, msg, using)
     end
 
     # The JID according to the server
