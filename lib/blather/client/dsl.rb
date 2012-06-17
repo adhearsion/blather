@@ -206,12 +206,32 @@ module Blather
       client.write stanza
     end
 
+    # Helper method to join a MUC room
+    #
+    # @overload join(room_jid, nickname)
+    #   @param [Blather::JID, #to_s] room the JID of the room to join
+    #   @param [#to_s] nickname the nickname to join the room as
+    # @overload join(room_jid, nickname)
+    #   @param [#to_s] room the name of the room to join
+    #   @param [Blather::JID, #to_s] service the service domain the room is hosted at
+    #   @param [#to_s] nickname the nickname to join the room as
+    def join(room, service, nickname = nil)
+      join = Blather::Stanza::Presence::MUC.new
+      join.to = if nickname
+        "#{room}@#{service}/#{nickname}"
+      else
+        "#{room}/#{service}"
+      end
+      client.write join
+    end
+
     # Helper method to make sending basic messages easier
     #
     # @param [Blather::JID, #to_s] to the JID of the message recipient
     # @param [#to_s] msg the message to send
-    def say(to, msg)
-      client.write Blather::Stanza::Message.new(to, msg)
+    # @param [#to_sym] the stanza method to use
+    def say(to, msg, using = :chat)
+      client.write Blather::Stanza::Message.new(to, msg, using)
     end
 
     # The JID according to the server
