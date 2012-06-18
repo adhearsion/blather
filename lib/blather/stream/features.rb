@@ -34,9 +34,9 @@ class Stream
           @feature = klass.new(
             @stream,
             proc {
-              if klass == Blather::Stream::Register
-                @idx = 0
-                stanza = @features.children.first
+              if (klass == Blather::Stream::Register && @features && !@features.children.find { |v| v.element_name == "mechanisms" }.nil?)
+                stanza = @features.children.find { |v| v.element_name == "mechanisms" }
+                @idx = @features.children.index(stanza)
                 klass = self.class.from_namespace(stanza.namespaces['xmlns'])
                 @feature = klass.new @stream, proc { next! }, @fail
                 @feature.receive_data stanza

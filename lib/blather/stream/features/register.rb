@@ -16,7 +16,7 @@ module Blather
 
         if error_node
           fail!(error_node)
-        elsif stanza['type'] == 'result' && stanza.content.empty?
+        elsif stanza['type'] == 'result' && (stanza.content.empty? || !stanza.children.find { |v| v.element_name == "query" }.nil?)
           succeed!
         else
           @stream.send register_node
