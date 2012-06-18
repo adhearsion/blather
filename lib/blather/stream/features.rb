@@ -34,17 +34,15 @@ class Stream
           @feature = klass.new(
             @stream,
             proc {
-              if (klass == Blather::Stream::Register && @features && !@features.children.find { |v| v.element_name == "mechanisms" }.nil?)
-                stanza = @features.children.find { |v| v.element_name == "mechanisms" }
+              if (klass == Blather::Stream::Register && stanza = query_feature(:mechanisms))
                 @idx = @features.children.index(stanza)
-                klass = self.class.from_namespace(stanza.namespaces['xmlns'])
-                @feature = klass.new @stream, proc { next! }, @fail
+                @feature = Blather::Stream::SASL.new @stream, proc { next! }, @fail
                 @feature.receive_data stanza
               else
                 next!
               end
             },
-            (klass == Blather::Stream::SASL && @features && !@features.children.find { |v| v.element_name == "register" }.nil?) ? proc { next! } : @fail
+            (klass == Blather::Stream::SASL && feature?(:register)) ? proc { next! } : @fail
           )
           @feature.receive_data stanza
         else
@@ -61,6 +59,10 @@ class Stream
 
     def fail!(msg)
       @fail.call msg
+    end
+
+    def feature?(feature)
+      @features && @features.children.find { |v| v.element_name == feature.to_s }
     end
   end
 

@@ -12,18 +12,18 @@ module Blather
       end
 
       def receive_data(stanza)
-        error_node = stanza.xpath('//error').first
+        error_node = stanza.xpath("//error").first
 
         if error_node
           fail!(error_node)
         elsif stanza['type'] == 'result' && (stanza.content.empty? || !stanza.children.find { |v| v.element_name == "query" }.nil?)
           succeed!
         else
-          @stream.send register_node
+          @stream.send register_query
         end
       end
 
-      def register_node
+      def register_query
         node = Blather::Stanza::Iq::Query.new(:set)
         query_node = node.xpath('//query').first
         query_node['xmlns'] = 'jabber:iq:register'
