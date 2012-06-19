@@ -34,7 +34,7 @@ class Stream
           @feature = klass.new(
             @stream,
             proc {
-              if (klass == Blather::Stream::Register && stanza = query_feature(:mechanisms))
+              if (klass == Blather::Stream::Register && stanza = feature?(:mechanisms))
                 @idx = @features.children.index(stanza)
                 @feature = Blather::Stream::SASL.new @stream, proc { next! }, @fail
                 @feature.receive_data stanza

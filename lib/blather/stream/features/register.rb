@@ -27,12 +27,10 @@ module Blather
         node = Blather::Stanza::Iq::Query.new(:set)
         query_node = node.xpath('//query').first
         query_node['xmlns'] = 'jabber:iq:register'
-        username_node = Nokogiri::XML::Node.new('username', node)
-        username_node.content = @jid.node
-        password_node = Nokogiri::XML::Node.new('password', node)
-        password_node.content = @pass
-        query_node.add_child(username_node)
-        query_node.add_child(password_node)
+        Nokogiri::XML::Builder.with(query_node) do |xml|
+          xml.username @jid.node
+          xml.password @pass
+        end
         node
       end
     end
