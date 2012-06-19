@@ -15,7 +15,7 @@ module Blather
         error_node = stanza.xpath("//error").first
 
         if error_node
-          fail!(error_node)
+          fail!(BlatherError.new(stanza))
         elsif stanza['type'] == 'result' && (stanza.content.empty? || !stanza.children.find { |v| v.element_name == "query" }.nil?)
           succeed!
         else
