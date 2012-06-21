@@ -121,9 +121,11 @@ module DSL
     #
     # @param [#to_s] node the node to create
     # @param [#to_s] host the PubSub host (defaults to the initialized host)
+    # @param [optional, Blather::Stanza::X] configuration the additional configuration to be set to created node
     # @yield [Blather::Stanza] stanza the reply stanza
-    def create(node, host = nil)
+    def create(node, host = nil, configuration = nil)
       stanza = Stanza::PubSub::Create.new(:set, send_to(host), node)
+      stanza.configure_node << configuration if configuration
       request(stanza) { |n| yield n if block_given? }
     end
 

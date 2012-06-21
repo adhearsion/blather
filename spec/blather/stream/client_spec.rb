@@ -1033,4 +1033,58 @@ describe Blather::Stream::Client do
     comp.expects(:send_data).with { |s| s.should_not match(/\n/); true }
     comp.send msg
   end
+
+  it 'tries to register if initial authentication failed but in-band registration enabled' do
+    state = nil
+    mocked_server(4) do |val, server|
+      case state
+      when nil
+        state = :sasl_failed
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms><register xmlns='http://jabber.org/features/iq-register'/></stream:features>"
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized /></failure>"
+        val.should match(/stream:stream/)
+      when :sasl_failed
+        state = :registered
+        server.send_data "<iq type='result'/>"
+        val.should match(/jabber:iq:register/)
+      when :registered
+        state = :authenticated
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.should match(/mechanism="PLAIN"/)
+      when :authenticated
+        EM.stop
+        val.should match(/stream:stream/)
+      else
+        EM.stop
+        false
+      end
+    end
+  end
+
+  it 'fails when in-band registration failed' do
+    state = nil
+    @client = mock()
+    @client.expects(:receive_data).with { |n| n.should be_instance_of Blather::BlatherError }
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :sasl_failed
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms><register xmlns='http://jabber.org/features/iq-register'/></stream:features>"
+        server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><not-authorized /></failure>"
+        val.should match(/stream:stream/)
+      when :sasl_failed
+        state = :registration_failed
+        server.send_data "<iq type='error'><query /><error code='409' type='cancel'><conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
+        val.should match(/jabber:iq:register/)
+      when :registration_failed
+        EM.stop
+        val.should match(/\/stream:stream/)
+      else
+        EM.stop
+        false
+      end
+    end
+  end
 end
