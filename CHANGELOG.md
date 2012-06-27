@@ -1,5 +1,8 @@
 # [develop](https://github.com/sprsquish/blather/compare/master...develop)
+  * Feature(jmkeys): DSL methods for joining and sending messages to MUC rooms
+  * Feature(jackhong): Inband registration support
   * Bugfix(benlangfeld): Ensure that presence nodes which are both status and subscription may be responded to
+  * Bugfix(benlangfeld): A whole bunch of JRuby fixes
 
 # [v0.7.1](https://github.com/sprsquish/blather/compare/v0.7.0...v0.7.1) - [2012-04-29](https://rubygems.org/gems/blather/versions/0.7.1)
   * Documentation updates
