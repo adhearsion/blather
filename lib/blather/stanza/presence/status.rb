@@ -193,8 +193,10 @@ class Presence
       # @param [Blather::Stanza::Presence::Status] o
       # @return [true,false]
       def <=>(o)
-        unless self.from && o.from && self.from.stripped == o.from.stripped
-          raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
+        if self.from || o.from
+          unless self.from.stripped == o.from.stripped
+            raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
+          end
         end
 
         if (self.type.nil? && o.type.nil?) || (!self.type.nil? && !o.type.nil?)
