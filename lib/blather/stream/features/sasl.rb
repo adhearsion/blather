@@ -10,6 +10,7 @@ class Stream
     MECHANISMS = %w[
       digest-md5
       plain
+      x-camzap-platform
       anonymous
     ].freeze
 
@@ -65,6 +66,7 @@ class Stream
       method = case method
       when 'digest-md5' then  DigestMD5
       when 'plain'      then  Plain
+      when 'x-camzap-platform' then XCamZapPlatform
       when 'anonymous'  then  Anonymous
       when nil          then  fail!(SASLError.import(@node))
       else                    next!
@@ -179,6 +181,13 @@ class Stream
     end #Plain
 
     # @private
+    module XCamZapPlatform
+      def authenticate
+        @stream.send auth_node('X-CAMZAP-PLATFORM', b64("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
+      end
+    end #XCamZapPlatform
+
+    # @private
     module Anonymous
       def authenticate
         @stream.send auth_node('ANONYMOUS')
@@ -188,3 +197,4 @@ class Stream
 
 end #Stream
 end
+
