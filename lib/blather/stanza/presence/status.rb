@@ -77,6 +77,7 @@ class Presence
   class Status < Presence
     # @private
     VALID_STATES = [:away, :chat, :dnd, :xa].freeze
+    VALID_TYPES = [:unavailable].freeze
 
     include Comparable
 
@@ -128,17 +129,6 @@ class Presence
       # @return [true, false]
       def xa?
         self.state == :xa
-      end
-
-      # Set the type attribute
-      # Ensures type is nil or :unavailable
-      #
-      # @param [<:unavailable, nil>] type the type
-      def type=(type)
-        if type && type.to_sym != :unavailable
-          raise ArgumentError, "Invalid type (#{type}). Must be nil or unavailable"
-        end
-        super
       end
 
       # Set the state
@@ -203,8 +193,10 @@ class Presence
       # @param [Blather::Stanza::Presence::Status] o
       # @return [true,false]
       def <=>(o)
-        unless self.from && o.from && self.from.stripped == o.from.stripped
-          raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
+        if self.from || o.from
+          unless self.from.stripped == o.from.stripped
+            raise ArgumentError, "Cannot compare status from different JIDs: #{[self.from, o.from].inspect}"
+          end
         end
 
         if (self.type.nil? && o.type.nil?) || (!self.type.nil? && !o.type.nil?)

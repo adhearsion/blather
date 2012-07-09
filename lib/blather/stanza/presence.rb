@@ -99,7 +99,7 @@ class Stanza
         decorators << Subscription
       end
 
-      super
+      super node, *decorators
     end
 
     # Ensure element_name is "presence" for all subclasses

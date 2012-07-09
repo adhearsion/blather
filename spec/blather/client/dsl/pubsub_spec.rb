@@ -268,6 +268,26 @@ describe Blather::DSL::PubSub do
     @pubsub.create '/path/to/node'
   end
 
+  it 'can create a node with configuration' do
+    pubsub_configure = Blather::Stanza::X.new({
+      :type => :submit,
+      :fields => [
+        { :var => "FORM_TYPE", :type => 'hidden', :value => "http://jabber.org/protocol/pubsub#node_config" },
+        { :var => "pubsub#persist_items", :value => "0" },
+        { :var => "pubsub#max_items", :value => "0" },
+        { :var => "pubsub#notify_retract",  :value => "0" },
+        { :var => "pubsub#publish_model", :value => "open" }]
+    })
+    @client.expects(:write_with_handler).with do |n|
+      n.should be_instance_of Blather::Stanza::PubSub::Create
+      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.to.should == Blather::JID.new(@host)
+      n.type.should == :set
+      n.configure_node.should == pubsub_configure
+    end
+    @pubsub.create '/path/to/node', nil, pubsub_configure
+  end
+
   it 'can delete a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSubOwner::Delete

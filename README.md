@@ -290,7 +290,7 @@ XEP-0100      | None    |
 XEP-0106      | None    |
 XEP-0107      | None    |
 XEP-0108      | None    |
-XEP-0114      | None    |
+XEP-0114      | Full    |
 XEP-0115      | Partial |
 XEP-0118      | None    |
 XEP-0122      | None    |

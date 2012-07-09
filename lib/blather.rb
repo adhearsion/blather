@@ -79,6 +79,7 @@
   blather/stream/features/sasl
   blather/stream/features/session
   blather/stream/features/tls
+  blather/stream/features/register
 ].each { |r| require r }
 
 module Blather

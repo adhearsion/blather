@@ -118,11 +118,31 @@ describe Blather::DSL do
     @dsl.write_to_stream stanza
   end
 
+  describe "#join" do
+    context "providing room and service as separate args" do
+      it "should join to a muc room with a specified nick" do
+        presence = Blather::Stanza::Presence::MUC.new
+        presence.to = "rabbit_hole@wonderland.lit/alice"
+        @client.expects(:write).with presence
+        @dsl.join 'rabbit_hole', 'wonderland.lit', 'alice'
+      end
+    end
+
+    context "providing a room JID" do
+      it "should join to a muc room with a specified nick" do
+        presence = Blather::Stanza::Presence::MUC.new
+        presence.to = "rabbit_hole@wonderland.lit/alice"
+        @client.expects(:write).with presence
+        @dsl.join 'rabbit_hole@wonderland.lit', 'alice'
+      end
+    end
+  end
+
   it 'provides a "say" helper' do
-    to, msg = 'me@me.com', 'hello!'
+    to, msg, type = 'me@me.com', 'hello!', :groupchat
     Blather::Stanza::Message.stubs(:next_id).returns 0
-    @client.expects(:write).with Blather::Stanza::Message.new(to, msg)
-    @dsl.say to, msg
+    @client.expects(:write).with Blather::Stanza::Message.new(to, msg, type)
+    @dsl.say to, msg, type
   end
 
   it 'provides a JID accessor' do

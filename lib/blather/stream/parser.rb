@@ -48,7 +48,7 @@ class Stream
       @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !ns_keys.include?(prefix)
       node.namespace = @namespaces[[prefix, uri]]
 
-      if !@receiver.stopped?
+      unless @receiver.stopped?
         @current << node if @current
         @current = node
       end

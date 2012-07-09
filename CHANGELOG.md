@@ -1,5 +1,11 @@
 # [develop](https://github.com/sprsquish/blather/compare/master...develop)
 
+# [v0.8.0](https://github.com/sprsquish/blather/compare/v0.7.1...v0.8.0) - [2012-07-09](https://rubygems.org/gems/blather/versions/0.8.0)
+  * Feature(jmkeys): DSL methods for joining and sending messages to MUC rooms
+  * Feature(jackhong): Inband registration support
+  * Bugfix(benlangfeld): Ensure that presence nodes which are both status and subscription may be responded to
+  * Bugfix(benlangfeld): A whole bunch of JRuby fixes
+
 # [v0.7.1](https://github.com/sprsquish/blather/compare/v0.7.0...v0.7.1) - [2012-04-29](https://rubygems.org/gems/blather/versions/0.7.1)
   * Documentation updates
   * Bugfix(benlangfeld): Relax Nokogiri dependency to allow 1.5

@@ -682,6 +682,6 @@ describe 'Blather::Client::Caps' do
                           http://jabber.org/protocol/disco#items
                           http://jabber.org/protocol/muc
                         }
-    @caps.c.inspect.should == "<presence>\n  <c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/>\n</presence>"
+    Nokogiri::XML(@caps.c.to_xml).to_s.should == Nokogiri::XML("<presence><c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/></presence>").to_s
   end
 end
