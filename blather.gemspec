@@ -19,9 +19,9 @@ Gem::Specification.new do |s|
   s.name        = "blather"
   s.version     = Blather::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Jeff Smick"]
-  s.email       = %q{sprsquish@gmail.com}
-  s.homepage    = "http://github.com/sprsquish/blather"
+  s.authors     = ["Jeff Smick", "Ben Langfeld"]
+  s.email       = %q{blather@adhearsion.com}
+  s.homepage    = "http://adhearsion.com/blather"
   s.summary     = %q{Simpler XMPP built for speed}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
 
