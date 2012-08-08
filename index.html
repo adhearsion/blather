@@ -1,0 +1,1062 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blather by adhearsion</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Blather</h1>
+        <p>XMPP/Jabber Library and DSL for Ruby written on EventMachine and Nokogiri.</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/adhearsion/blather" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/adhearsion/blather/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/adhearsion/blather/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>Blather <a href="http://travis-ci.org/adhearsion/blather"> <img src="http://travis-ci.org/adhearsion/blather.png" alt="Build status"></a>
+</h1>
+
+<p>XMPP DSL (and more) for Ruby written on <a href="http://rubyeventmachine.com/">EventMachine</a> and <a href="http://nokogiri.org/">Nokogiri</a>.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>evented architecture</li>
+<li>uses Nokogiri</li>
+<li>simplified starting point</li>
+</ul><h2>Project Pages</h2>
+
+<ul>
+<li><a href="https://github.com/adhearsion/blather">GitHub</a></li>
+<li><a href="http://gemcutter.org/gems/blather">Gemcutter</a></li>
+<li><a href="http://rdoc.info/gems/blather/file/README.md">API Documentation</a></li>
+<li><a href="http://groups.google.com/group/xmpp-blather">Google Group</a></li>
+</ul><h1>Usage</h1>
+
+<h2>Installation</h2>
+
+<pre><code>gem install blather
+</code></pre>
+
+<h2>Example</h2>
+
+<p>Blather comes with a DSL that makes writing XMPP bots quick and easy. See the examples directory for more advanced examples.</p>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s1">'rubygems'</span>
+<span class="nb">require</span> <span class="s1">'blather/client'</span>
+
+<span class="n">setup</span> <span class="s1">'echo@jabber.local'</span><span class="p">,</span> <span class="s1">'echo'</span>
+
+<span class="c1"># Auto approve subscription requests</span>
+<span class="n">subscription</span> <span class="ss">:request?</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+  <span class="n">write_to_stream</span> <span class="n">s</span><span class="o">.</span><span class="n">approve!</span>
+<span class="k">end</span>
+
+<span class="c1"># Echo back what was said</span>
+<span class="n">message</span> <span class="ss">:chat?</span><span class="p">,</span> <span class="ss">:body</span> <span class="k">do</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span>
+  <span class="n">write_to_stream</span> <span class="n">m</span><span class="o">.</span><span class="n">reply</span>
+<span class="k">end</span>
+</pre></div>
+
+<h2>Handlers</h2>
+
+<p>Handlers let Blather know how you'd like each type of stanza to be well.. handled. Each type of stanza has an associated handler which is part of a handler hierarchy. In the example above we're handling message and subscription stanzas.</p>
+
+<p>XMPP is built on top of three main stanza types (presence, message, and iq). All other stanzas are built on these three base types. This creates a natural hierarchy of handlers. For example a subscription stanza is a type of presence stanza and can be processed by a subscription handler or a presence handler. Likewise, a PubSub::Items stanza has its own identifier :pubsub_items but it's also a :pubsub_node, :iq and :staza. Any or each of these could be used to handle the PubSub::Items stanza. If you've done any DOM programming you'll be familiar with this.</p>
+
+<p>Incoming stanzas will be handled by the first handler found. Unlike the DOM this will stop the handling bubble unless the handler returns false.</p>
+
+<p>The entire handler hierarchy can be seen below.</p>
+
+<h3>Example</h3>
+
+<p>Here we have a presence handler and a subscription handler. When this script receives a subscription stanza the subscription handler will be notified first. If that handler doesn't know what to do it can return false and let the stanza bubble up to the presence handler.</p>
+
+<div class="highlight"><pre><span class="c1"># Handle all presence stanzas</span>
+<span class="n">presence</span> <span class="k">do</span> <span class="o">|</span><span class="n">stanza</span><span class="o">|</span>
+  <span class="c1"># do stuff</span>
+<span class="k">end</span>
+
+<span class="c1"># Handle all subscription stanzas</span>
+<span class="n">subscription</span> <span class="k">do</span> <span class="o">|</span><span class="n">stanza</span><span class="o">|</span>
+  <span class="c1"># do stuff</span>
+<span class="k">end</span>
+</pre></div>
+
+<p>Additionally, handlers may be 'guarded'. That is, they may have conditions set declaratively, against which the stanza must match in order to trigger the handler.</p>
+
+<div class="highlight"><pre><span class="c1"># Will only be called for messages where #chat? responds positively</span>
+<span class="c1"># and #body == 'exit'</span>
+<span class="n">message</span> <span class="ss">:chat?</span><span class="p">,</span> <span class="ss">:body</span> <span class="o">=&gt;</span> <span class="s1">'exit'</span>
+</pre></div>
+
+<h3>Non-Stanza Handlers</h3>
+
+<p>So far there are two non-stanza related handlers.</p>
+
+<div class="highlight"><pre><span class="c1"># Called after the connection has been connected. It's good for initializing</span>
+<span class="c1"># your system.</span>
+<span class="c1"># DSL:</span>
+<span class="n">when_ready</span> <span class="p">{}</span>
+<span class="c1"># Client:</span>
+<span class="n">client</span><span class="o">.</span><span class="n">register_handler</span><span class="p">(</span><span class="ss">:ready</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="c1"># Called after the connection has been terminated. Good for teardown or</span>
+<span class="c1"># automatic reconnection.</span>
+<span class="c1"># DSL:</span>
+<span class="n">disconnected</span> <span class="p">{}</span>
+<span class="c1"># Client</span>
+<span class="n">client</span><span class="o">.</span><span class="n">register_handler</span><span class="p">(</span><span class="ss">:disconnected</span><span class="p">)</span> <span class="p">{}</span>
+<span class="c1"># The following will reconnect every time the connection is lost:</span>
+<span class="n">disconnected</span> <span class="p">{</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span> <span class="p">}</span>
+</pre></div>
+
+<h3>Handler Guards</h3>
+
+<p>Guards are a concept borrowed from Erlang. They help to better compartmentalize handlers.</p>
+
+<p>There are a number of guard types and one bit of special syntax. Guards act like AND statements. Each condition must be met if the handler is to
+be used.</p>
+
+<div class="highlight"><pre><span class="c1"># Equivalent to saying (stanza.chat? &amp;&amp; stanza.body)</span>
+<span class="n">message</span> <span class="ss">:chat?</span><span class="p">,</span> <span class="ss">:body</span>
+</pre></div>
+
+<p>The different types of guards are:</p>
+
+<div class="highlight"><pre><span class="c1"># Symbol</span>
+<span class="c1">#   Checks for a non-false reply to calling the symbol on the stanza</span>
+<span class="c1">#   Equivalent to stanza.chat?</span>
+<span class="n">message</span> <span class="ss">:chat?</span>
+
+<span class="c1"># Hash with any value (:body =&gt; 'exit')</span>
+<span class="c1">#   Calls the key on the stanza and checks for equality</span>
+<span class="c1">#   Equivalent to stanza.body == 'exit'</span>
+<span class="n">message</span> <span class="ss">:body</span> <span class="o">=&gt;</span> <span class="s1">'exit'</span>
+
+<span class="c1"># Hash with regular expression (:body =&gt; /exit/)</span>
+<span class="c1">#   Calls the key on the stanza and checks for a match</span>
+<span class="c1">#   Equivalent to stanza.body.match /exit/</span>
+<span class="n">message</span> <span class="ss">:body</span> <span class="o">=&gt;</span> <span class="sr">/exit/</span>
+
+<span class="c1"># Hash with array (:name =&gt; [:gone, :forbidden])</span>
+<span class="c1">#   Calls the key on the stanza and check for inclusion in the array</span>
+<span class="c1">#   Equivalent to [:gone, :forbidden].include?(stanza.name)</span>
+<span class="n">stanza_error</span> <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:gone</span><span class="p">,</span> <span class="ss">:fobidden</span><span class="o">]</span>
+
+<span class="c1"># Proc</span>
+<span class="c1">#   Calls the proc passing in the stanza</span>
+<span class="c1">#   Checks that the ID is modulo 3</span>
+<span class="n">message</span> <span class="nb">proc</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">}</span>
+
+<span class="c1"># Array</span>
+<span class="c1">#   Use arrays with the previous types effectively turns the guard into</span>
+<span class="c1">#   an OR statement.</span>
+<span class="c1">#   Equivalent to stanza.body == 'foo' || stanza.body == 'baz'</span>
+<span class="n">message</span> <span class="o">[</span><span class="p">{</span><span class="ss">:body</span> <span class="o">=&gt;</span> <span class="s1">'foo'</span><span class="p">},</span> <span class="p">{</span><span class="ss">:body</span> <span class="o">=&gt;</span> <span class="s1">'baz'</span><span class="p">}</span><span class="o">]</span>
+
+<span class="c1"># XPath</span>
+<span class="c1">#   Runs the xpath query on the stanza and checks for results</span>
+<span class="c1">#   This guard type cannot be combined with other guards</span>
+<span class="c1">#   Equivalent to !stanza.find('/iq/ns:pubsub', :ns =&gt; 'pubsub:namespace').empty?</span>
+<span class="c1">#   It also passes two arguments into the handler block: the stanza and the result</span>
+<span class="c1">#   of the xpath query.</span>
+<span class="n">iq</span> <span class="s1">'/iq/ns:pubsub'</span><span class="p">,</span> <span class="ss">:ns</span> <span class="o">=&gt;</span> <span class="s1">'pubsub:namespace'</span> <span class="k">do</span> <span class="o">|</span><span class="n">stanza</span><span class="p">,</span> <span class="n">xpath_result</span><span class="o">|</span>
+  <span class="c1"># stanza will be the original stanza</span>
+  <span class="c1"># xpath_result will be the pubsub node in the stanza</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>Filters</h3>
+
+<p>Blather provides before and after filters that work much the way regular
+handlers work. Filters come in a before and after flavor. They're called in
+order of definition and can be guarded like handlers.</p>
+
+<div class="highlight"><pre><span class="n">before</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="s2">"I'm run before any handler"</span> <span class="p">}</span>
+<span class="n">before</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="s2">"I'm run next"</span> <span class="p">}</span>
+
+<span class="n">before</span><span class="p">(</span><span class="ss">:message</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="s2">"I'm only run in front of message stanzas"</span> <span class="p">}</span>
+<span class="n">before</span><span class="p">(</span><span class="kp">nil</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="s2">"I'll only be run when the stanza's ID == 1"</span> <span class="p">}</span>
+
+<span class="c1"># ... handlers</span>
+
+<span class="n">after</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="s2">"I'm run after everything"</span> <span class="p">}</span>
+</pre></div>
+
+<h3>Handlers Hierarchy</h3>
+
+<pre><code>stanza
+|- iq
+|  |- pubsub_node
+|  |  |- pubsub_affiliations
+|  |  |- pubsub_create
+|  |  |- pubsub_items
+|  |  |- pubsub_publish
+|  |  |- pubsub_retract
+|  |  |- pubsub_subscribe
+|  |  |- pubsub_subscription
+|  |  |- pubsub_subscriptions
+|  |  `- pubsub_unsubscribe
+|  |- pubsub_owner
+|  |  |- pubsub_delete
+|  |  `- pubsub_purge
+|  `- query
+|     |- disco_info
+|     |- disco_items
+|     `- roster
+|- message
+|  `- pubsub_event
+`- presence
+   |- status
+   `- subscription
+
+error
+|- argument_error
+|- parse_error
+|- sasl_error
+|- sasl_unknown_mechanism
+|- stanza_error
+|- stream_error
+|- tls_failure
+`- unknown_response_error
+</code></pre>
+
+<h2>On the Command Line</h2>
+
+<p>Default usage is:</p>
+
+<pre><code>[blather_script] [options] node@domain.com/resource password [host] [port]
+</code></pre>
+
+<p>Command line options:</p>
+
+<pre><code>-D, --debug       Run in debug mode (you will see all XMPP communication)
+-d, --daemonize   Daemonize the process
+    --pid=[PID]   Write the PID to this file
+    --log=[LOG]   Write to the [LOG] file instead of stdout/stderr
+-h, --help        Show this message
+-v, --version     Show version
+</code></pre>
+
+<h2>Health warning</h2>
+
+<p>Some parts of Blather will allow you to do stupid things that don't conform to XMPP
+spec. You should exercise caution and read the relevant specifications (indicated in
+the preamble to most relevant classes).</p>
+
+<h2>Spec compliance</h2>
+
+<p>Blather provides support in one way or another for many XMPP specifications. Below is a list of specifications and the status of support for them in Blather. This list <em>may not be correct</em>. If the list indicates a lack of support for a specification you wish to use, you are encouraged to check that this is correct. Likewise, if you find an overstatement of Blather's spec compliance, please point this out. Also note that even without built-in support for a specification, you can still manually construct and parse stanzas alongside use of Blather's built-in helpers.</p>
+
+<table>
+<tr>
+<th>Specification</th>
+<th>Support</th>
+<th>Notes</th>
+</tr>
+<tr>
+<td>RFC 6120</td>
+<td>Full</td>
+<td></td>
+</tr>
+<tr>
+<td>RFC 6121</td>
+<td>Full</td>
+<td></td>
+</tr>
+<tr>
+<td>RFC 6122</td>
+<td>Full</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0001</td>
+<td>N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0002</td>
+<td>N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0004</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0009</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0012</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0013</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0016</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0019</td>
+<td>N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0020</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0027</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0030</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0033</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0045</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0047</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0048</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0049</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0050</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0053</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0054</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0055</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0059</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0060</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0065</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0066</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0068</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0070</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0071</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0072</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0076</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0077</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0079</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0080</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0082</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0083</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0084</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0085</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0092</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0095</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0096</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0100</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0106</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0107</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0108</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0114</td>
+<td>Full</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0115</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0118</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0122</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0124</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0126</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0127</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0128</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0130</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0131</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0132</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0133</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0134</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0136</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0137</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0138</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0141</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0143</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0144</td>
+<td>N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0145</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0146</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0147</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0148</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0149</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0153</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0155</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0156</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0157</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0158</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0160</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0163</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0166</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0167</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0169</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0170</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0171</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0172</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0174</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0175</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0176</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0177</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0178</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0182</td>
+<td>N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0183</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0184</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0185</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0191</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0198</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0199</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0201</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0202</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0203</td>
+<td>Partial</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0205</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0206</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0207</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0220</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0221</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0222</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0223</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0224</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0227</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0229</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0231</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0233</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0234</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0239</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0242</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0243</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0245</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0249</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0256</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0258</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0260</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0261</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0262</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0263</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0266</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0267</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0270</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0273</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0277</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0278</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0280</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0288</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0292</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0293</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0294</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0295</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0296</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0297</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0298</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0299</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0300</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0301</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0302</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0303</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0304</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0305</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0306</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0307</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0308</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0309</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0310</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0311</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>XEP-0312</td>
+<td>None</td>
+<td></td>
+</tr>
+</table><h1>Contributions</h1>
+
+<p>All contributions are welcome, even encouraged. However, contributions must be
+well tested. If you send me a branch name to merge that'll get my attention faster
+than a change set made directly on master.</p>
+
+<h1>Author</h1>
+
+<ul>
+<li><a href="http://github.com/sprsquish">Jeff Smick</a></li>
+<li><a href="https://github.com/adhearsion/blather/contributors">Other Contributors</a></li>
+</ul><h1>Copyright</h1>
+
+<p>Copyright (c) 2012 Adhearsion Foundation Inc. See LICENSE for details.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/adhearsion">adhearsion</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
