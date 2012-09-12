@@ -60,6 +60,9 @@ module Blather
   #     require 'blather/client/dsl'
   #     class Echo
   #       include Blather::DSL
+  #       def run
+  #         client.run
+  #       end
   #     end
   #
   #     echo = Echo.new
@@ -78,7 +81,7 @@ module Blather
   #       say m.from, "You sent: #{m.body}"
   #     end
   #
-  #     EM.run { echo.client.run }
+  #     EM.run { echo.run }
   module DSL
 
     autoload :PubSub, File.expand_path(File.join(File.dirname(__FILE__), *%w[dsl pubsub]))
