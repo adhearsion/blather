@@ -127,7 +127,7 @@ module Blather
     def send(stanza)
       data = stanza.respond_to?(:to_xml) ? stanza.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML) : stanza.to_s
       Blather.log "SENDING: (#{caller[1]}) #{stanza}"
-      send_data data
+      EM.next_tick { send_data data }
     end
 
     # Called by EM.connect to initialize stream variables
