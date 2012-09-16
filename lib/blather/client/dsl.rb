@@ -33,9 +33,6 @@ module Blather
   #     require 'blather/client/dsl'
   #     module Echo
   #       extend Blather::DSL
-  #       def self.run
-  #         client.run
-  #       end
   #
   #       when_ready { puts "Connected ! send messages to #{jid.stripped}." }
   #
@@ -53,6 +50,8 @@ module Blather
   #       end
   #     end
   #
+  #     Echo.setup 'foo@bar.com', 'foobar'
+  #
   #     EM.run { Echo.run }
   #
   # @example Create a class out of it
@@ -60,12 +59,10 @@ module Blather
   #     require 'blather/client/dsl'
   #     class Echo
   #       include Blather::DSL
-  #       def run
-  #         client.run
-  #       end
   #     end
   #
   #     echo = Echo.new
+  #     echo.setup 'foo@bar.com', 'foobar'
   #     echo.when_ready { puts "Connected ! send messages to #{jid.stripped}." }
   #
   #     echo.subscription :request? do |s|
@@ -82,6 +79,7 @@ module Blather
   #     end
   #
   #     EM.run { echo.run }
+  #
   module DSL
 
     autoload :PubSub, File.expand_path(File.join(File.dirname(__FILE__), *%w[dsl pubsub]))
@@ -129,6 +127,11 @@ module Blather
     # @param [Fixnum] (optional) connection_timeout the time to wait for connection to succeed before timing out
     def setup(jid, password, host = nil, port = nil, certs = nil, connection_timeout = nil)
       client.setup(jid, password, host, port, certs, connection_timeout)
+    end
+
+    # Connect to the server. Must be run in the EventMachine reactor
+    def run
+      client.run
     end
 
     # Shutdown the connection.
