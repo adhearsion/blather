@@ -1,4 +1,4 @@
-# Blather [ ![Build status](http://travis-ci.org/sprsquish/blather.png) ](http://travis-ci.org/sprsquish/blather)
+# Blather [ ![Build status](http://travis-ci.org/adhearsion/blather.png) ](http://travis-ci.org/adhearsion/blather)
 
 XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.com/) and [Nokogiri](http://nokogiri.org/).
 
@@ -10,7 +10,7 @@ XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.c
 
 ## Project Pages
 
-* [GitHub](https://github.com/sprsquish/blather)
+* [GitHub](https://github.com/adhearsion/blather)
 * [Gemcutter](http://gemcutter.org/gems/blather)
 * [API Documentation](http://rdoc.info/gems/blather/file/README.md)
 * [Google Group](http://groups.google.com/group/xmpp-blather)
@@ -406,8 +406,8 @@ than a change set made directly on master.
 # Author
 
 * [Jeff Smick](http://github.com/sprsquish)
-* [Other Contributors](https://github.com/sprsquish/blather/contributors)
+* [Other Contributors](https://github.com/adhearsion/blather/contributors)
 
 # Copyright
 
-Copyright (c) 2012 Jeff Smick. See LICENSE for details.
+Copyright (c) 2012 Adhearsion Foundation Inc. See LICENSE for details.
