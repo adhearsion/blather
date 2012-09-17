@@ -1,5 +1,11 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
 
+# [v0.8.1](https://github.com/adhearsion/blather/compare/v0.8.0...v0.8.1) - [2012-09-17](https://rubygems.org/gems/blather/versions/0.8.1)
+  * Project moved to the Adhearsion Foundation
+  * Fixes for EventMachine 1.0.x
+  * Simplify booting client using the DSL in the varying supported modes
+  * Documentation fixes
+
 # [v0.8.0](https://github.com/adhearsion/blather/compare/v0.7.1...v0.8.0) - [2012-07-09](https://rubygems.org/gems/blather/versions/0.8.0)
   * Feature(jmkeys): DSL methods for joining and sending messages to MUC rooms
   * Feature(jackhong): Inband registration support
