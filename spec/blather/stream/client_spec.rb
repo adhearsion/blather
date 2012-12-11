@@ -16,9 +16,12 @@ describe Blather::Stream::Client do
     @client.stubs(:post_init) unless @client.respond_to?(:post_init)
     @client.stubs(:jid=) unless @client.respond_to?(:jid=)
 
+    @client.stubs(:app_id).returns('12345') unless @client.respond_to?(:app_id)
+    @client.stubs(:access_token).returns('access_token') unless @client.respond_to?(:access_token)
+
     port = 50000 - rand(1000)
 
-    MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
+    MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with(&block)
     EventMachine::run {
       EM.add_timer(0.5) { EM.stop if EM.reactor_running? }
 
@@ -35,14 +38,14 @@ describe Blather::Stream::Client do
     client = mock()
     params = [client, 'n@d/r', 'pass', 'host', 1234]
     EM.expects(:connect).with do |*parms|
-      parms[0].should == 'host'
-      parms[1].should == 1234
-      parms[3].should == client
-      parms[5].should == 'pass'
-      parms[4].should == Blather::JID.new('n@d/r')
+      parms[0].should eq 'host'
+      parms[1].should eq 1234
+      parms[3].should eq client
+      parms[5].should eq 'pass'
+      parms[4].should eq Blather::JID.new('n@d/r')
     end
 
-    Blather::Stream::Client.start *params
+    Blather::Stream::Client.start(*params)
   end
 
   it 'attempts to find the SRV record if a host is not provided' do
@@ -55,11 +58,11 @@ describe Blather::Stream::Client do
 
     client = Class.new
     EM.expects(:connect).with do |*parms|
-      parms[0].should == 'd'
-      parms[1].should == 5222
-      parms[3].should == client
-      parms[5].should == 'pass'
-      parms[4].should == Blather::JID.new('n@d/r')
+      parms[0].should eq 'd'
+      parms[1].should eq 5222
+      parms[3].should eq client
+      parms[5].should eq 'pass'
+      parms[4].should eq Blather::JID.new('n@d/r')
     end
 
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
@@ -73,11 +76,11 @@ describe Blather::Stream::Client do
     client = Class.new
     EM.expects(:connect).with do |*parms|
       raise Blather::Stream::NoConnection if parms[0] == 'd'
-      parms[0].should == 'g'
-      parms[1].should == 1234
-      parms[3].should == client
-      parms[5].should == 'pass'
-      parms[4].should == Blather::JID.new('n@d/r')
+      parms[0].should eq 'g'
+      parms[1].should eq 1234
+      parms[3].should eq client
+      parms[5].should eq 'pass'
+      parms[4].should eq Blather::JID.new('n@d/r')
     end
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
   end
@@ -89,11 +92,11 @@ describe Blather::Stream::Client do
 
     client = Class.new
     EM.expects(:connect).with do |*parms|
-      parms[0].should == 'd'
-      parms[1].should == 5222
-      parms[3].should == client
-      parms[5].should == 'pass'
-      parms[4].should == Blather::JID.new('n@d/r')
+      parms[0].should eq 'd'
+      parms[1].should eq 5222
+      parms[3].should eq client
+      parms[5].should eq 'pass'
+      parms[4].should eq Blather::JID.new('n@d/r')
     end
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
   end
@@ -103,11 +106,11 @@ describe Blather::Stream::Client do
     client = Class.new
     params = [client, 'n@d/r', 'pass', nil, 5222]
     EM.expects(:connect).with do |*parms|
-      parms[0].should == 'd'
-      parms[1].should == 5222
-      parms[3].should == client
-      parms[5].should == 'pass'
-      parms[4].should == Blather::JID.new('n@d/r')
+      parms[0].should eq 'd'
+      parms[1].should eq 5222
+      parms[3].should eq client
+      parms[5].should eq 'pass'
+      parms[4].should eq Blather::JID.new('n@d/r')
     end
 
     Blather::Stream::Client.start client, 'n@d/r', 'pass'
@@ -155,9 +158,9 @@ describe Blather::Stream::Client do
 
       else
         EM.stop
-        @stream.stopped?.should == false
+        @stream.should_not be_stopped
         @stream.unbind
-        @stream.stopped?.should == true
+        @stream.should be_stopped
 
       end
     end
@@ -181,7 +184,7 @@ describe Blather::Stream::Client do
 
       when :started
         state = :negotiated
-        @stream.negotiating?.should == true
+        @stream.should be_negotiating
         server.send_data "<iq from='d' type='result' id='#{val[/id="([^"]+)"/,1]}' />"
         server.send_data "<message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
         true
@@ -211,7 +214,7 @@ describe Blather::Stream::Client do
 
       when :stopped
         EM.stop
-        @stream.stopped?.should == true
+        @stream.should be_stopped
         val.should == '</stream:stream>'
 
       else
@@ -225,9 +228,9 @@ describe Blather::Stream::Client do
   it 'sends client an error on stream:error' do
     @client = mock()
     @client.expects(:receive_data).with do |v|
-      v.name.should == :conflict
-      v.text.should == 'Already signed in'
-      v.to_s.should == "Stream Error (conflict): #{v.text}"
+      v.name.should eq :conflict
+      v.text.should eq 'Already signed in'
+      v.to_s.should eq "Stream Error (conflict): #{v.text}"
     end
 
     state = nil
@@ -358,6 +361,41 @@ describe Blather::Stream::Client do
       when :tls
         EM.stop
         val.should == "</stream:stream>"
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+  it 'connects via X-FACEBOOK-PLATFORM when asked' do
+    Time.any_instance.stubs(:tv_sec).returns(1331421930)
+    state = nil
+
+    mocked_server(4) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>X-FACEBOOK-PLATFORM</mechanism></mechanisms></stream:features>"
+        val.should match(/stream:stream/)
+
+      when :started
+        state = :auth_sent
+        # version=1&method=auth.xmpp_login&nonce=CBC935D7EAF8B936372BAE62F68895BF
+        server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>dmVyc2lvbj0xJm1ldGhvZD1hdXRoLnhtcHBfbG9naW4mbm9uY2U9Q0JDOTM1RDdFQUY4QjkzNjM3MkJBRTYyRjY4ODk1QkY=</challenge>"
+        val.should match(/auth.*X-FACEBOOK-PLATFORM/)
+
+      when :auth_sent
+        state = :response_sent
+        server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+        val.should eq('<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl">YWNjZXNzX3Rva2VuPWFjY2Vzc190b2tlbiZhcGlfa2V5PTEyMzQ1JmNhbGxfaWQ9MTMzMTQyMTkzMCZtZXRob2Q9YXV0aC54bXBwX2xvZ2luJm5vbmNlPUNCQzkzNUQ3RUFGOEI5MzYzNzJCQUU2MkY2ODg5NUJGJnY9MS4w</response>')
+
+      when :response_sent
+        EM.stop
+        state = :complete
+        val.should match(/stream:stream/)
 
       else
         EM.stop
