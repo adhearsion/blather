@@ -418,7 +418,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
       when :auth_sent
         EM.stop
@@ -446,7 +446,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>').to_xml
 
       when :auth_sent
         EM.stop
@@ -475,7 +475,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>').to_xml
 
       when :auth_sent
         EM.stop
@@ -604,7 +604,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
       when :auth_sent
         EM.stop
@@ -662,7 +662,7 @@ describe Blather::Stream::Client do
         when :started
           state = :auth_sent
           server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><#{error_type} /></failure>"
-          val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+          Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
         when :auth_sent
           EM.stop
@@ -695,7 +695,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<foo-bar />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
       when :auth_sent
         EM.stop
@@ -1001,6 +1001,7 @@ describe Blather::Stream::Client do
   end
 
   it 'sends stanzas to the wire ensuring "from" is the full JID if set' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
@@ -1012,6 +1013,7 @@ describe Blather::Stream::Client do
   end
 
   it 'sends stanzas to the wire leaving "from" nil if not set' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
@@ -1022,6 +1024,7 @@ describe Blather::Stream::Client do
   end
 
   it 'sends xml without formatting' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
@@ -1035,6 +1038,7 @@ describe Blather::Stream::Client do
   end
 
   it 'tries to register if initial authentication failed but in-band registration enabled' do
+    EM.expects(:next_tick).at_least(1).yields
     state = nil
     mocked_server(4) do |val, server|
       case state

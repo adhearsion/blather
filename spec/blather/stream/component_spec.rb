@@ -97,6 +97,7 @@ describe Blather::Stream::Component do
   end
 
   it 'sends stanzas to the wire ensuring "from" is set' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
