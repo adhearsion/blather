@@ -19,19 +19,21 @@ module Blather
     # store. If the certificate can be trusted, it's added to the store so
     # it can be used to trust other certs.
     def trusted?(pem)
-      if cert = OpenSSL::X509::Certificate.new(pem) rescue nil
+      if cert = OpenSSL::X509::Certificate.new(pem)
         @store.verify(cert).tap do |trusted|
-          @store.add_cert(cert) if trusted rescue nil
+          @store.add_cert(cert) if trusted
         end
       end
+    rescue OpenSSL::X509::CertificateError
+      nil
     end
 
     # Return true if the domain name matches one of the names in the
     # certificate. In other words, is the certificate provided to us really
     # for the domain to which we think we're connected?
     def domain?(pem, domain)
-      if cert = OpenSSL::X509::Certificate.new(pem) rescue nil
-        OpenSSL::SSL.verify_certificate_identity(cert, domain) rescue false
+      if cert = OpenSSL::X509::Certificate.new(pem)
+        OpenSSL::SSL.verify_certificate_identity(cert, domain)
       end
     end
 
