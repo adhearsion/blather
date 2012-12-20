@@ -41,15 +41,15 @@ module Blather
     # certificates are used to start the trust chain needed to validate certs
     # we receive from clients and servers.
     def certs
-      unless @certs
+      @certs ||= begin
         pattern = /-{5}BEGIN CERTIFICATE-{5}\n.*?-{5}END CERTIFICATE-{5}\n/m
-        dir = @cert_directory
-        certs = Dir[File.join(dir, '*.crt')].map {|f| File.read(f) }
-        certs = certs.map {|c| c.scan(pattern) }.flatten
-        certs.map! {|c| OpenSSL::X509::Certificate.new(c) }
-        @certs = certs.reject {|c| c.not_after < Time.now }
+        Dir[File.join(@cert_directory, '*.crt')]
+          .map {|f| File.read(f) }
+          .map {|c| c.scan(pattern) }
+          .flatten
+          .map {|c| OpenSSL::X509::Certificate.new(c) }
+          .reject {|c| c.not_after < Time.now }
       end
-      @certs
     end
   end
 end
