@@ -12,21 +12,15 @@ describe Blather::CertStore do
   end
 
   it 'can verify valid cert' do
-    @store.trusted?(@pem).tap do |trusted|
-      trusted.should == true
-    end
+    @store.trusted?(@pem).should == true
   end
 
   it 'can verify invalid cert' do
-    @store.trusted?(@pem.gsub("L", "a")).tap do |trusted|
-      trusted.should == nil
-    end
+    @store.trusted?(@pem.gsub("L", "a")).should == nil
   end
 
   it 'can verify without a cert store' do
     @store = Blather::CertStore.new("../")
-    @store.trusted?(@pem).tap do |trusted|
-      trusted.should == true
-    end
+    @store.trusted?(@pem).should == true
   end
 end
