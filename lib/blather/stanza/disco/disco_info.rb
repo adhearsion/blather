@@ -142,7 +142,7 @@ class Stanza
       # The Identity's xml_lang
       # @return [String]
       def xml_lang
-        read_attr "lang"
+        read_attr "xml:lang"
       end
 
       # Set the Identity's name

@@ -418,7 +418,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
       when :auth_sent
         EM.stop
@@ -446,7 +446,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>').to_xml
 
       when :auth_sent
         EM.stop
@@ -475,7 +475,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="ANONYMOUS"/>').to_xml
 
       when :auth_sent
         EM.stop
@@ -604,7 +604,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
       when :auth_sent
         EM.stop
@@ -662,7 +662,7 @@ describe Blather::Stream::Client do
         when :started
           state = :auth_sent
           server.send_data "<failure xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><#{error_type} /></failure>"
-          val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+          Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
         when :auth_sent
           EM.stop
@@ -695,7 +695,7 @@ describe Blather::Stream::Client do
       when :started
         state = :auth_sent
         server.send_data "<foo-bar />"
-        val.should ==('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>')
+        Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAG4AcGFzcw==</auth>').to_xml
 
       when :auth_sent
         EM.stop

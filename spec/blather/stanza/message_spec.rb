@@ -178,10 +178,11 @@ describe Blather::Stanza::Message do
   end
 
   it 'sets valid xhtml even if the input is not valid' do
+    pending "Nokogiri doesn't handle invalid HTML on JRuby" if jruby?
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml"
     msg.xhtml = xhtml
-    msg.xhtml_node.inner_html.strip.should ==("<some>xhtml</some>")
+    msg.xhtml_node.inner_html.strip.should == "<some>xhtml</some>"
   end
 
   it 'sets xhtml with more than one root node' do
@@ -200,7 +201,7 @@ describe Blather::Stanza::Message do
 
   it 'finds xhtml body when html wrapper has wrong namespace' do
     msg = Blather::XMPPNode.parse(ichat_message_xml)
-    msg.xhtml.should == "<span style=\"font-family: 'Arial';font-size: 12px;color: #262626;\">Hello</span>\n  <img alt=\"f5ad3a04d218d7160fa02415e02d41b3.jpg\" src=\"message-attachments:1\" width=\"30\" height=\"30\"></img>"
+    Nokogiri::XML(msg.xhtml).to_xml.should == Nokogiri::XML("<span style=\"font-family: 'Arial';font-size: 12px;color: #262626;\">Hello</span>\n  <img alt=\"f5ad3a04d218d7160fa02415e02d41b3.jpg\" src=\"message-attachments:1\" width=\"30\" height=\"30\"></img>").to_xml
   end
 
   it 'has a chat state setter' do
