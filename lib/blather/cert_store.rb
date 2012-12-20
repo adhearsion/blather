@@ -21,7 +21,10 @@ module Blather
     def trusted?(pem)
       if cert = OpenSSL::X509::Certificate.new(pem)
         @store.verify(cert).tap do |trusted|
-          @store.add_cert(cert) if trusted
+          begin
+            @store.add_cert(cert) if trusted
+          rescue OpenSSL::X509::StoreError
+          end
         end
       end
     rescue OpenSSL::X509::CertificateError
