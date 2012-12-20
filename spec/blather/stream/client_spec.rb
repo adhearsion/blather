@@ -1001,6 +1001,7 @@ describe Blather::Stream::Client do
   end
 
   it 'sends stanzas to the wire ensuring "from" is the full JID if set' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
@@ -1012,6 +1013,7 @@ describe Blather::Stream::Client do
   end
 
   it 'sends stanzas to the wire leaving "from" nil if not set' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
@@ -1022,6 +1024,7 @@ describe Blather::Stream::Client do
   end
 
   it 'sends xml without formatting' do
+    EM.expects(:next_tick).at_least(1).yields
     client = mock()
     client.stubs(:jid)
     client.stubs(:jid=)
@@ -1035,6 +1038,7 @@ describe Blather::Stream::Client do
   end
 
   it 'tries to register if initial authentication failed but in-band registration enabled' do
+    EM.expects(:next_tick).at_least(1).yields
     state = nil
     mocked_server(4) do |val, server|
       case state
