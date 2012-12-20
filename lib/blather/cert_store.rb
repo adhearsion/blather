@@ -6,9 +6,6 @@ module Blather
   # This uses the #{cert_directory}/*.crt files as the list of trusted root
   # CA certificates.
   class CertStore
-    @@certs = nil
-    @cert_directory = nil
-
     def initialize(cert_directory)
       @cert_directory = cert_directory
       @store = OpenSSL::X509::Store.new
@@ -44,15 +41,15 @@ module Blather
     # certificates are used to start the trust chain needed to validate certs
     # we receive from clients and servers.
     def certs
-      unless @@certs
+      unless @certs
         pattern = /-{5}BEGIN CERTIFICATE-{5}\n.*?-{5}END CERTIFICATE-{5}\n/m
         dir = @cert_directory
         certs = Dir[File.join(dir, '*.crt')].map {|f| File.read(f) }
         certs = certs.map {|c| c.scan(pattern) }.flatten
         certs.map! {|c| OpenSSL::X509::Certificate.new(c) }
-        @@certs = certs.reject {|c| c.not_after < Time.now }
+        @certs = certs.reject {|c| c.not_after < Time.now }
       end
-      @@certs
+      @certs
     end
   end
 end
