@@ -203,15 +203,14 @@ module Blather
     # @private
     def receive(node)
       Blather.log "RECEIVING (#{node.element_name}) #{node}"
-      @node = node
 
-      if @node.namespace && @node.namespace.prefix == 'stream'
-        case @node.element_name
+      if node.namespace && node.namespace.prefix == 'stream'
+        case node.element_name
         when 'stream'
           @state = :ready if @state == :stopped
           return
         when 'error'
-          handle_stream_error
+          handle_stream_error node
           return
         when 'end'
           stop
@@ -225,7 +224,7 @@ module Blather
           )
         end
       end
-      @receiver.receive_data @node.to_stanza
+      @receiver.receive_data node.to_stanza
     end
 
     # Ensure the JID gets attached to the client
@@ -246,8 +245,8 @@ module Blather
     end
 
     # @private
-    def handle_stream_error
-      @error = StreamError.import(@node)
+    def handle_stream_error(node)
+      @error = StreamError.import(node)
       stop
     end
 
