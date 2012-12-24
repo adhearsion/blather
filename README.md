@@ -11,7 +11,7 @@ XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.c
 ## Project Pages
 
 * [GitHub](https://github.com/adhearsion/blather)
-* [Gemcutter](http://gemcutter.org/gems/blather)
+* [Rubygems](http://rubygems.org/gems/blather)
 * [API Documentation](http://rdoc.info/gems/blather/file/README.md)
 * [Google Group](http://groups.google.com/group/xmpp-blather)
 
