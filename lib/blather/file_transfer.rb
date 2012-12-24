@@ -11,7 +11,7 @@ module Blather
 
     # Set this to true if you want SOCKS5 Bytestreams to attempt to use private network addresses
     attr_accessor :allow_private_ips
-    
+
     # Create a new FileTransfer
     #
     # @param [Blather::Stream] stream the stream the file transfer should use

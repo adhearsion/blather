@@ -97,7 +97,7 @@ module Blather
 
         def post_init
           self.succeed
-          
+
           class << self
             include @@handler
           end
