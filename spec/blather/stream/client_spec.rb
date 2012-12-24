@@ -608,26 +608,7 @@ describe Blather::Stream::Client do
       end
     end
   end
-=begin
-  it 'sends client an error when an unknown mechanism is sent' do
-    @client = mock()
-    @client.expects(:receive_data).with { |v| v.should be_kind_of(Blather::Stream::SASL::UnknownMechanism) }
-    started = false
-    mocked_server(2) do |val, server|
-      if !started
-        started = true
-        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
-        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>UNKNOWN</mechanism></mechanisms></stream:features>"
-        val.should match(/stream:stream/)
 
-      else
-        EM.stop
-        val.should match(/failure(.*)invalid\-mechanism/)
-
-      end
-    end
-  end
-=end
   %w[ aborted
       incorrect-encoding
       invalid-authzid

@@ -154,7 +154,6 @@ module Blather
         end
       end
       @connected = true
-#      @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
       start
     end
 
@@ -197,7 +196,6 @@ module Blather
       raise ConnectionFailed unless @connected
 
       @connect_timer.cancel if @connect_timer
-#      @keepalive.cancel
       @state = :stopped
       @client.receive_data @error if @error
       @client.unbind
