@@ -1,3 +1,6 @@
+require 'celluloid/io'
+require 'resolv'
+
 module Blather
 
   # # A pure XMPP stream.
@@ -45,9 +48,12 @@ module Blather
   #       end
   #     end
   #
-  #     client = Blather::Stream.start MyClient.new, "jid@domain/res", "pass"
+  #     client = Blather::Stream.new MyClient.new, "jid@domain/res", "pass"
+  #     client.run!
   #     client.write "[pure xml over the wire]"
-  class Stream < EventMachine::Connection
+  class Stream
+    include Celluloid::IO
+
     # Connection not found
     class NoConnection < RuntimeError; end
     class ConnectionFailed < RuntimeError; end
@@ -55,63 +61,34 @@ module Blather
 
     # @private
     STREAM_NS = 'http://etherx.jabber.org/streams'
-    attr_accessor :password
-    attr_reader :jid
+    attr_reader :jid, :password, :host, :port, :logger
 
-    # Start the stream between client and server
-    #
-    # @param [Object] client an object that will respond to #post_init,
-    # #unbind #receive_data
-    # @param [Blather::JID, #to_s] jid the jid to authenticate with
-    # @param [String] pass the password to authenticate with
-    # @param [String, nil] host the hostname or IP to connect to. Default is
-    # to use the domain on the JID
-    # @param [Fixnum, nil] port the port to connect on. Default is the XMPP
-    # default of 5222
-    # @param [String, nil] certs the trusted cert store in pem format to verify
-    # communication with the server is trusted.
-    # @param [Fixnum, nil] connect_timeout the number of seconds for which to wait for a successful connection
-    def self.start(client, jid, pass, host = nil, port = nil, certs_directory = nil, connect_timeout = nil)
-      jid = JID.new jid
-      port ||= 5222
-      if certs_directory
-        @store = CertStore.new(certs_directory)
-      end
-      if host
-        connect host, port, self, client, jid, pass, connect_timeout
-      else
-        require 'resolv'
-        srv = []
-        Resolv::DNS.open do |dns|
-          srv = dns.getresources(
-            "_xmpp-client._tcp.#{jid.domain}",
-            Resolv::DNS::Resource::IN::SRV
-          )
-        end
-
-        if srv.empty?
-          connect jid.domain, port, self, client, jid, pass, connect_timeout
-        else
-          srv.sort! do |a,b|
-            (a.priority != b.priority) ? (a.priority <=> b.priority) :
-                                         (b.weight <=> a.weight)
-          end
-
-          srv.detect do |r|
-            not connect(r.target.to_s, r.port, self, client, jid, pass, connect_timeout) === false
-          end
-        end
-      end
+    def self.start(*args)
+      self.new(*args).run!
     end
 
-    # Attempt a connection
-    # Stream will raise +NoConnection+ if it receives #unbind before #post_init
-    # this catches that and returns false prompting for another attempt
-    # @private
-    def self.connect(host, port, conn, client, jid, pass, connect_timeout = nil)
-      EM.connect host, port, conn, client, jid, pass, connect_timeout
-    rescue NoConnection
-      false
+    def initialize(client, jid, password, host = nil, port = nil, certs_directory = nil, connect_timeout = nil, logger = Logger)
+      @receiver = @client = client
+      self.jid = jid
+      @password, @host, @logger = password, host, logger
+      @port = port || 5222
+      @connect_timeout = connect_timeout || 180
+      @cert_store = CertStore.new(certs_directory) if certs_directory
+      @error = nil
+      logger.debug "Starting up..."
+    end
+
+    def run
+      @parser = Parser.new current_actor
+      @inited = true
+      connection_targets(jid).detect do |host, port|
+        attempt_connection host, port
+      end
+      connection_established
+      loop { receive_data @socket.readpartial(4096) }
+    rescue EOFError, IOError => e
+      logger.info "Client socket closed due to (#{e.class}) #{e.message}!"
+      terminate
     end
 
     [:started, :stopped, :ready, :negotiating].each do |state|
@@ -126,78 +103,23 @@ module Blather
     def send(stanza)
       data = stanza.respond_to?(:to_xml) ? stanza.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML) : stanza.to_s
       Blather.log "SENDING: (#{caller[1]}) #{stanza}"
-      EM.next_tick { send_data data }
+      send_data data
     end
 
-    # Called by EM.connect to initialize stream variables
+    # Ensure the JID gets attached to the client
     # @private
-    def initialize(client, jid, pass, connect_timeout = nil)
-      super()
-
-      @error = nil
-      @receiver = @client = client
-
-      self.jid = jid
-      @to = self.jid.domain
-      @password = pass
-      @connect_timeout = connect_timeout || 180
-
-      @parser = Parser.new self
+    def jid=(new_jid)
+      Blather.log "USING JID: #{new_jid}"
+      @jid = JID.new new_jid
     end
 
-    # Called when EM completes the connection to the server
-    # this kicks off the starttls/authorize/bind process
-    # @private
-    def connection_completed
-      if @connect_timeout
-        @connect_timer = EM::Timer.new @connect_timeout do
-          raise ConnectionTimeout, "Stream timed out after #{@connect_timeout} seconds." unless started?
-        end
-      end
-      @connected = true
-      start
-    end
+    def finalize
+      # raise NoConnection unless @inited
+      # raise ConnectionFailed unless @connected
 
-    # Called by EM with data from the wire
-    # @private
-    def receive_data(data)
-      @parser << data
-    rescue ParseError => e
-      @error = e
-      stop "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
-    end
-
-    # Called by EM to verify the peer certificate. If a certificate store directory
-    # has not been configured don't worry about peer verification. At least it is encrypted
-    # We Log the certificate so that you can add it to the trusted store easily if desired
-    # @private
-    def ssl_verify_peer(pem)
-      # EM is supposed to close the connection when this returns false,
-      # but it only does that for inbound connections, not when we
-      # make a connection to another server.
-      Blather.log "Checking SSL cert: #{pem}"
-      return true unless @store
-      @store.trusted?(pem).tap do |trusted|
-        close_connection unless trusted
-      end
-    end
-
-    # Called by EM after the connection has started
-    # @private
-    def post_init
-      @inited = true
-    end
-
-    # Called by EM when the connection is closed
-    # @private
-    def unbind
-      cleanup
-
-      raise NoConnection unless @inited
-      raise ConnectionFailed unless @connected
-
-      @state = :stopped
-      @client.receive_data @error if @error
+      # @connect_timer.cancel if @connect_timer
+      # @keepalive.cancel
+      # @state = :stopped
       @client.unbind
     end
 
@@ -217,7 +139,8 @@ module Blather
           @state = :ready if @state == :stopped
           return
         when 'error'
-          handle_stream_error node
+          @client.receive_data StreamError.import(node)
+          stop
           return
         when 'end'
           stop
@@ -226,22 +149,19 @@ module Blather
           @state = :negotiating
           @receiver = Features.new(
             self,
-            proc { ready! },
-            proc { |err| @error = err; stop }
+            proc { ready },
+            proc { |err|
+              @client.receive_data err
+              stop
+            }
           )
         end
       end
       @receiver.receive_data node.to_stanza
     end
 
-    # Ensure the JID gets attached to the client
-    # @private
-    def jid=(new_jid)
-      Blather.log "USING JID: #{new_jid}"
-      @jid = JID.new new_jid
-    end
+    private
 
-  protected
     # Stop the stream
     # @private
     def stop(error = nil)
@@ -252,17 +172,85 @@ module Blather
     end
 
     # @private
-    def handle_stream_error(node)
-      @error = StreamError.import(node)
-      stop
-    end
-
-    # @private
-    def ready!
+    def ready
       @state = :started
       @receiver = @client
       @client.post_init self, @jid
     end
+
+    def connection_targets(jid)
+      return [[host, port]] if host && port
+
+      srv = []
+      Resolv::DNS.open do |dns|
+        srv = dns.getresources(
+          "_xmpp-client._tcp.#{jid.domain}",
+          Resolv::DNS::Resource::IN::SRV
+        )
+      end
+
+      return [[jid.domain, port]] if srv.empty?
+
+      srv.sort! do |a,b|
+        (a.priority != b.priority) ? (a.priority <=> b.priority) :
+                                     (b.weight <=> a.weight)
+      end
+
+      srv.map { |r| [r.target.to_s, r.port] }
+    end
+
+    # Attempt a connection
+    # Stream will raise +NoConnection+ if it receives #unbind before #post_init
+    # this catches that and returns false prompting for another attempt
+    # @private
+    def attempt_connection(host, port)
+      logger.info "Attempting connection to #{host}:#{port}"
+      @socket = TCPSocket.from_ruby_socket ::TCPSocket.new(host, port)
+    rescue Errno::ECONNREFUSED, SocketError => e
+      logger.error "Connection failed due to #{e.class}. Trying the next option."
+      false
+    end
+
+    # This kicks off the starttls/authorize/bind process
+    # @private
+    def connection_established
+      # if @connect_timeout
+      #   @connect_timer = EM::Timer.new @connect_timeout do
+      #     raise ConnectionTimeout, "Stream timed out after #{@connect_timeout} seconds." unless started?
+      #   end
+      # end
+      # @connected = true
+      # @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
+      start
+    end
+
+    def send_data(data)
+      @socket.write data
+    end
+
+    # @private
+    def receive_data(data)
+      @parser << data
+    rescue ParseError => e
+      @client.receive_data e
+      send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
+      stop
+    end
+
+    # # Called by EM to verify the peer certificate. If a certificate store directory
+    # # has not been configured don't worry about peer verification. At least it is encrypted
+    # # We Log the certificate so that you can add it to the trusted store easily if desired
+    # # @private
+    # def ssl_verify_peer(pem)
+    #   # EM is supposed to close the connection when this returns false,
+    #   # but it only does that for inbound connections, not when we
+    #   # make a connection to another server.
+    #   Blather.log "Checking SSL cert: #{pem}"
+    #   return true if !@@store
+    #   @@store.trusted?(pem).tap do |trusted|
+    #     close_connection unless trusted
+    #   end
+    # end
   end  # Stream
 
 end  # Blather

@@ -9,6 +9,8 @@
   logger
   openssl
   girl_friday
+  celluloid
+  celluloid/io
 
   active_support/core_ext/class/attribute
   active_support/core_ext/object/blank

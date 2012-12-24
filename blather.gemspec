@@ -34,6 +34,8 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w{LICENSE README.md}
 
   s.add_dependency "eventmachine", [">= 1.0.0"]
+  s.add_dependency "celluloid", ["~> 0.12"]
+  s.add_dependency "celluloid-io", ["~> 0.12"]
   s.add_dependency "nokogiri", ["~> 1.5", ">= 1.5.6"]
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]

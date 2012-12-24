@@ -8,12 +8,12 @@ class Stream
     NAMESPACE = 'jabber:client'
 
     def start
-      send "<stream:stream to='#{@to}' xmlns='#{NAMESPACE}' xmlns:stream='#{STREAM_NS}' version='#{VERSION}' xml:lang='#{LANG}'>"
+      send "<stream:stream to='#{jid.domain}' xmlns='#{NAMESPACE}' xmlns:stream='#{STREAM_NS}' version='#{VERSION}' xml:lang='#{LANG}'>"
     end
 
     def send(stanza)
       stanza.from = self.jid if stanza.is_a?(Stanza) && !stanza.from.nil?
-      super stanza
+      super
     end
 
   end #Client

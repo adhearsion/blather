@@ -334,9 +334,9 @@ describe Blather::Client do
   end
 
   describe 'with a Component stream' do
+    let(:stream) { Blather::Stream::Component.new subject, 'foo.bar.com', 'abc123' }
+
     before do
-      class MockComponent < Blather::Stream::Component; def initialize(); end; end
-      stream = MockComponent.new('')
       stream.stubs(:send_data)
       subject.setup 'me.com', 'secret'
     end
@@ -350,9 +350,9 @@ describe Blather::Client do
   end
 
   describe 'with a Client stream' do
+    let(:stream) { Blather::Stream::Client.new subject, 'foo@bar.com', 'abc123' }
+
     before do
-      class MockClientStream < Blather::Stream::Client; def initialize(); end; end
-      stream = MockClientStream.new('')
       Blather::Stream::Client.stubs(:start).returns stream
       subject.setup('me@me.com', 'secret').run
     end
