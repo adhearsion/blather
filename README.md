@@ -1,4 +1,4 @@
-# Blather [ ![Build status](http://travis-ci.org/adhearsion/blather.png) ](http://travis-ci.org/adhearsion/blather)
+# Blather [![Build Status](https://travis-ci.org/adhearsion/blather.png?branch=develop)](https://travis-ci.org/adhearsion/blather)
 
 XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.com/) and [Nokogiri](http://nokogiri.org/).
 
