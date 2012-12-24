@@ -1,3 +1,4 @@
+language: ruby
 rvm:
   - 1.9.2
   - 1.9.3
@@ -6,3 +7,5 @@ rvm:
   - rbx-18mode
   - rbx-19mode
   - ruby-head
+notifications:
+  irc: "irc.freenode.org#adhearsion"
