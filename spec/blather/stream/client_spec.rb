@@ -11,6 +11,7 @@ describe Blather::Stream::Client do
       client.stubs(m) unless client.respond_to?(m)
     end
     client.stubs(:jid).returns jid
+    EM.stubs(:next_tick).yields
   end
 
   def mocked_server(times = nil, &block)
@@ -131,6 +132,7 @@ describe Blather::Stream::Client do
       val.should match(/stream:stream/)
       server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       server.send_data "<message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+      true
     end
   end
 
@@ -235,6 +237,7 @@ describe Blather::Stream::Client do
         state = :stopped
         server.send_data "<stream:error><conflict xmlns='urn:ietf:params:xml:ns:xmpp-streams' />"
         server.send_data "<text xmlns='urn:ietf:params:xml:ns:xmpp-streams'>Already signed in</text></stream:error>"
+        val.should match(/bind/)
 
       when :stopped
         EM.stop
@@ -760,6 +763,7 @@ describe Blather::Stream::Client do
 
         server.send_data "<iq type='result' id='#{doc.find_first('iq')['id']}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{jid}</jid></bind></iq>"
         server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        true
 
       when :complete
         EM.stop
@@ -791,6 +795,7 @@ describe Blather::Stream::Client do
         doc = parse_stanza val
         doc.xpath('/iq/bind_ns:bind/bind_ns:resource[.="r"]', :bind_ns => Blather::Stream::Resource::BIND_NS).should_not be_empty
         server.send_data "<iq type='error' id='#{doc.find_first('iq')['id']}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>r</resource></bind><error type='modify'><bad-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
+        true
 
       when :complete
         EM.stop
@@ -824,6 +829,7 @@ describe Blather::Stream::Client do
         doc = parse_stanza val
         doc.xpath('/iq/bind_ns:bind/bind_ns:resource[.="r"]', :bind_ns => Blather::Stream::Resource::BIND_NS).should_not be_empty
         server.send_data "<foo-bar />"
+        true
 
       when :complete
         EM.stop
@@ -855,6 +861,7 @@ describe Blather::Stream::Client do
         doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Blather::Stream::Session::SESSION_NS).should_not be_empty
         server.send_data "<iq from='d' type='result' id='#{doc.find_first('iq')['id']}' />"
         server.send_data "<stream:features><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind' /></stream:features>"
+        true
 
       when :completed
         EM.stop
@@ -887,6 +894,7 @@ describe Blather::Stream::Client do
         doc = parse_stanza val
         doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Blather::Stream::Session::SESSION_NS).should_not be_empty
         server.send_data "<iq from='d' type='error' id='#{doc.find_first('iq')['id']}'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/><error type='wait'><internal-server-error xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>"
+        true
 
       when :completed
         EM.stop
@@ -920,6 +928,7 @@ describe Blather::Stream::Client do
         doc = parse_stanza val
         doc.find('/iq[@type="set" and @to="d"]/sess_ns:session', :sess_ns => Blather::Stream::Session::SESSION_NS).should_not be_empty
         server.send_data '<foo-bar />'
+        true
 
       when :completed
         EM.stop
@@ -936,7 +945,7 @@ describe Blather::Stream::Client do
   it 'sends client an error and reply to the server on parse error' do
     client.expects(:receive_data).with do |v|
       v.should be_kind_of Blather::ParseError
-      v.message.should match(/generate\-parse\-error/)
+      v.message.should match(/match/)
     end
 
     state = nil
@@ -950,7 +959,9 @@ describe Blather::Stream::Client do
 
       when :started
         state = :parse_error
+        val.should match(/bind/)
         server.send_data "</generate-parse-error>"
+        true
 
       when :parse_error
         EM.stop
@@ -965,8 +976,6 @@ describe Blather::Stream::Client do
   end
 
   it 'sends stanzas to the wire ensuring "from" is the full JID if set' do
-    EM.expects(:next_tick).at_least(1).yields
-
     msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
     msg.from = 'node@jid.com'
     comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
@@ -975,8 +984,6 @@ describe Blather::Stream::Client do
   end
 
   it 'sends stanzas to the wire leaving "from" nil if not set' do
-    EM.expects(:next_tick).at_least(1).yields
-
     msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
     comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
     comp.expects(:send_data).with { |s| s.should_not match(/^<message[^>]*from=/); true }
@@ -984,8 +991,6 @@ describe Blather::Stream::Client do
   end
 
   it 'sends xml without formatting' do
-    EM.expects(:next_tick).at_least(1).yields
-
     msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
     msg.xhtml = '<i>xhtml</i> body'
 
@@ -995,8 +1000,6 @@ describe Blather::Stream::Client do
   end
 
   it 'tries to register if initial authentication failed but in-band registration enabled' do
-    EM.expects(:next_tick).at_least(1).yields
-
     state = nil
     mocked_server(4) do |val, server|
       case state

@@ -15,13 +15,15 @@ class Stream
       @namespaces = {}
       @namespace_definitions = []
       @parser = Nokogiri::XML::SAX::PushParser.new self
-      @parser.options = Nokogiri::XML::ParseOptions::DEFAULT_XML | Nokogiri::XML::ParseOptions::NOENT
+      @parser.options = Nokogiri::XML::ParseOptions::NOENT
     end
 
     def receive_data(string)
       Blather.log "PARSING: (#{string})" if @@debug
       @parser << string
       self
+    rescue Nokogiri::XML::SyntaxError => e
+      error e.message
     end
     alias_method :<<, :receive_data
 
