@@ -57,7 +57,6 @@ module Blather
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :password
     attr_reader :jid
-    @@store = nil
 
     # Start the stream between client and server
     #
@@ -76,7 +75,7 @@ module Blather
       jid = JID.new jid
       port ||= 5222
       if certs_directory
-        @@store = CertStore.new(certs_directory)
+        @store = CertStore.new(certs_directory)
       end
       if host
         connect host, port, self, client, jid, pass, connect_timeout
@@ -177,8 +176,8 @@ module Blather
       # but it only does that for inbound connections, not when we
       # make a connection to another server.
       Blather.log "Checking SSL cert: #{pem}"
-      return true if !@@store
-      @@store.trusted?(pem).tap do |trusted|
+      return true unless @store
+      @store.trusted?(pem).tap do |trusted|
         close_connection unless trusted
       end
     end
