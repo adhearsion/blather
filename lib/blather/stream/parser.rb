@@ -56,13 +56,6 @@ class Stream
       end
 
       deliver(node) if elem == 'stream'
-
-      # $stderr.puts "\n\n"
-      # $stderr.puts [elem, attrs, prefix, uri, namespaces].inspect
-      # $stderr.puts @namespaces.inspect
-      # $stderr.puts [@namespaces[[prefix, uri]].prefix, @namespaces[[prefix, uri]].href].inspect if @namespaces[[prefix, uri]]
-      # $stderr.puts node.inspect
-      # $stderr.puts node.document.to_s.gsub(/\n\s*/,'')
     end
 
     def end_element_namespace(elem, prefix, uri)
