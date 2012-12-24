@@ -162,8 +162,7 @@ module Blather
       @parser << data
     rescue ParseError => e
       @error = e
-      send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
-      stop
+      stop "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
     end
 
     # Called by EM to verify the peer certificate. If a certificate store directory
@@ -237,10 +236,10 @@ module Blather
   protected
     # Stop the stream
     # @private
-    def stop
+    def stop(error = nil)
       unless @state == :stopped
         @state = :stopped
-        send '</stream:stream>'
+        send "#{error}</stream:stream>"
       end
     end
 
