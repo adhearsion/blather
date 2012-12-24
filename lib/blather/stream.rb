@@ -160,7 +160,6 @@ module Blather
     # @private
     def receive_data(data)
       @parser << data
-
     rescue ParseError => e
       @error = e
       send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
