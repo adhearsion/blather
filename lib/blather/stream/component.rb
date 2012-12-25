@@ -23,14 +23,7 @@ class Stream
     end
 
     def start
-      start_stream = <<-STREAM
-        <stream:stream
-          to='#{@jid}'
-          xmlns='#{NAMESPACE}'
-          xmlns:stream='#{STREAM_NS}'
-        >
-      STREAM
-      send start_stream.gsub(/\s+/, ' ')
+      send "<stream:stream to='#{@jid}' xmlns='#{NAMESPACE}' xmlns:stream='#{STREAM_NS}'>"
     end
   end #Client
 
