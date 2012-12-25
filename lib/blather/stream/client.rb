@@ -8,7 +8,6 @@ class Stream
     NAMESPACE = 'jabber:client'
 
     def start
-      @parser = Parser.new self
       start_stream = <<-STREAM
         <stream:stream
           to='#{@to}'

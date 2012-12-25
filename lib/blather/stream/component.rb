@@ -23,7 +23,6 @@ class Stream
     end
 
     def start
-      @parser = Parser.new self
       start_stream = <<-STREAM
         <stream:stream
           to='#{@jid}'

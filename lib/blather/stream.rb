@@ -141,6 +141,8 @@ module Blather
       @to = self.jid.domain
       @password = pass
       @connect_timeout = connect_timeout || 180
+
+      @parser = Parser.new self
     end
 
     # Called when EM completes the connection to the server
