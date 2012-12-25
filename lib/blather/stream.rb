@@ -192,6 +192,8 @@ module Blather
       raise NoConnection unless @inited
       raise ConnectionFailed unless @connected
 
+      @parser.finish
+
       @connect_timer.cancel if @connect_timer
       @state = :stopped
       @client.receive_data @error if @error

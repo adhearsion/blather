@@ -86,6 +86,11 @@ class Stream
       raise ParseError.new(msg)
     end
 
+    def finish
+      @parser.finish
+    rescue ParseError, RuntimeError
+    end
+
   private
     def deliver(node)
       @current, @namespaces, @namespace_definitions = nil, {}, []
