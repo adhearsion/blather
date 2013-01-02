@@ -15,13 +15,15 @@ class Stream
       @namespaces = {}
       @namespace_definitions = []
       @parser = Nokogiri::XML::SAX::PushParser.new self
-      @parser.options = Nokogiri::XML::ParseOptions::DEFAULT_XML | Nokogiri::XML::ParseOptions::NOENT
+      @parser.options = Nokogiri::XML::ParseOptions::NOENT
     end
 
     def receive_data(string)
       Blather.log "PARSING: (#{string})" if @@debug
       @parser << string
       self
+    rescue Nokogiri::XML::SyntaxError => e
+      error e.message
     end
     alias_method :<<, :receive_data
 
@@ -54,13 +56,6 @@ class Stream
       end
 
       deliver(node) if elem == 'stream'
-
-      # $stderr.puts "\n\n"
-      # $stderr.puts [elem, attrs, prefix, uri, namespaces].inspect
-      # $stderr.puts @namespaces.inspect
-      # $stderr.puts [@namespaces[[prefix, uri]].prefix, @namespaces[[prefix, uri]].href].inspect if @namespaces[[prefix, uri]]
-      # $stderr.puts node.inspect
-      # $stderr.puts node.document.to_s.gsub(/\n\s*/,'')
     end
 
     def end_element_namespace(elem, prefix, uri)
@@ -89,6 +84,11 @@ class Stream
 
     def error(msg)
       raise ParseError.new(msg)
+    end
+
+    def finish
+      @parser.finish
+    rescue ParseError, RuntimeError
     end
 
   private

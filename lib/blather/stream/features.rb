@@ -13,9 +13,7 @@ class Stream
     end
 
     def initialize(stream, succeed, fail)
-      @stream = stream
-      @succeed = succeed
-      @fail = fail
+      @stream, @succeed, @fail = stream, succeed, fail
     end
 
     def receive_data(stanza)

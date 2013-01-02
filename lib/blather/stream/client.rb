@@ -8,17 +8,7 @@ class Stream
     NAMESPACE = 'jabber:client'
 
     def start
-      @parser = Parser.new self
-      start_stream = <<-STREAM
-        <stream:stream
-          to='#{@to}'
-          xmlns='#{NAMESPACE}'
-          xmlns:stream='#{STREAM_NS}'
-          version='#{VERSION}'
-          xml:lang='#{LANG}'
-        >
-      STREAM
-      send start_stream.gsub(/\s+/, ' ')
+      send "<stream:stream to='#{@to}' xmlns='#{NAMESPACE}' xmlns:stream='#{STREAM_NS}' version='#{VERSION}' xml:lang='#{LANG}'>"
     end
 
     def send(stanza)

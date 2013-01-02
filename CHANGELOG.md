@@ -1,5 +1,11 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
 
+# [v0.8.2](https://github.com/adhearsion/blather/compare/v0.8.1...v0.8.2) - [2013-01-02](https://rubygems.org/gems/blather/versions/0.8.2)
+  * Bugfix: General spec fixes
+  * Bugfix: Fixes for JRuby and Rubinius
+  * Bugfix: Ensure parsers are shut down correctly
+  * Update: Bump Nokogiri (1.5.6) and EventMachine (1.0.0) minimum versions
+
 # [v0.8.1](https://github.com/adhearsion/blather/compare/v0.8.0...v0.8.1) - [2012-09-17](https://rubygems.org/gems/blather/versions/0.8.1)
   * Project moved to the Adhearsion Foundation
   * Fixes for EventMachine 1.0.x

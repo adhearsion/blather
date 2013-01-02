@@ -57,7 +57,6 @@ module Blather
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :password
     attr_reader :jid
-    @@store = nil
 
     # Start the stream between client and server
     #
@@ -76,7 +75,7 @@ module Blather
       jid = JID.new jid
       port ||= 5222
       if certs_directory
-        @@store = CertStore.new(certs_directory)
+        @store = CertStore.new(certs_directory)
       end
       if host
         connect host, port, self, client, jid, pass, connect_timeout
@@ -142,6 +141,8 @@ module Blather
       @to = self.jid.domain
       @password = pass
       @connect_timeout = connect_timeout || 180
+
+      @parser = Parser.new self
     end
 
     # Called when EM completes the connection to the server
@@ -154,7 +155,6 @@ module Blather
         end
       end
       @connected = true
-#      @keepalive = EM::PeriodicTimer.new(60) { send_data ' ' }
       start
     end
 
@@ -162,11 +162,9 @@ module Blather
     # @private
     def receive_data(data)
       @parser << data
-
     rescue ParseError => e
       @error = e
-      send "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
-      stop
+      stop "<stream:error><xml-not-well-formed xmlns='#{StreamError::STREAM_ERR_NS}'/></stream:error>"
     end
 
     # Called by EM to verify the peer certificate. If a certificate store directory
@@ -178,8 +176,8 @@ module Blather
       # but it only does that for inbound connections, not when we
       # make a connection to another server.
       Blather.log "Checking SSL cert: #{pem}"
-      return true if !@@store
-      @@store.trusted?(pem).tap do |trusted|
+      return true unless @store
+      @store.trusted?(pem).tap do |trusted|
         close_connection unless trusted
       end
     end
@@ -193,29 +191,33 @@ module Blather
     # Called by EM when the connection is closed
     # @private
     def unbind
+      cleanup
+
       raise NoConnection unless @inited
       raise ConnectionFailed unless @connected
 
-      @connect_timer.cancel if @connect_timer
-#      @keepalive.cancel
       @state = :stopped
       @client.receive_data @error if @error
       @client.unbind
+    end
+
+    def cleanup
+      @parser.finish
+      @connect_timer.cancel if @connect_timer
     end
 
     # Called by the parser with parsed nodes
     # @private
     def receive(node)
       Blather.log "RECEIVING (#{node.element_name}) #{node}"
-      @node = node
 
-      if @node.namespace && @node.namespace.prefix == 'stream'
-        case @node.element_name
+      if node.namespace && node.namespace.prefix == 'stream'
+        case node.element_name
         when 'stream'
           @state = :ready if @state == :stopped
           return
         when 'error'
-          handle_stream_error
+          handle_stream_error node
           return
         when 'end'
           stop
@@ -229,7 +231,7 @@ module Blather
           )
         end
       end
-      @receiver.receive_data @node.to_stanza
+      @receiver.receive_data node.to_stanza
     end
 
     # Ensure the JID gets attached to the client
@@ -242,16 +244,16 @@ module Blather
   protected
     # Stop the stream
     # @private
-    def stop
+    def stop(error = nil)
       unless @state == :stopped
         @state = :stopped
-        send '</stream:stream>'
+        send "#{error}</stream:stream>"
       end
     end
 
     # @private
-    def handle_stream_error
-      @error = StreamError.import(@node)
+    def handle_stream_error(node)
+      @error = StreamError.import(node)
       stop
     end
 

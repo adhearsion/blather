@@ -1,33 +1,31 @@
 require 'spec_helper'
 
 describe Blather::Stream::Component do
-  class MockServer; end
-  module ServerMock
-    def receive_data(data)
-      @server ||= MockServer.new
-      @server.receive_data data, self
+  let(:client)      { mock 'Client' }
+  let(:server_port) { 50000 - rand(1000) }
+  let(:jid)         { 'comp.id' }
+
+  before do
+    [:unbind, :post_init, :jid=].each do |m|
+      client.stubs(m) unless client.respond_to?(m)
     end
+    client.stubs(:jid).returns jid
   end
 
   def mocked_server(times = nil, &block)
-    @client ||= mock()
-    @client.stubs(:unbind) unless @client.respond_to?(:unbind)
-    @client.stubs(:jid=) unless @client.respond_to?(:jid=)
-
-    port = 50000 - rand(1000)
-
     MockServer.any_instance.expects(:receive_data).send(*(times ? [:times, times] : [:at_least, 1])).with &block
     EventMachine::run {
       # Mocked server
-      EventMachine::start_server '127.0.0.1', port, ServerMock
+      EventMachine::start_server '127.0.0.1', server_port, ServerMock
 
       # Blather::Stream connection
-      EM.connect('127.0.0.1', port, Blather::Stream::Component, @client, @jid || 'comp.id', 'secret') { |c| @stream = c }
+      EM.connect('127.0.0.1', server_port, Blather::Stream::Component, client, jid, 'secret') { |c| @stream = c }
     }
   end
 
+  after { sleep 0.1; @stream.cleanup if @stream }
+
   it 'can be started' do
-    client = mock()
     params = [client, 'comp.id', 'secret', 'host', 1234]
     EM.expects(:connect).with do |*parms|
       parms[0] == 'host'    &&
@@ -58,12 +56,11 @@ describe Blather::Stream::Component do
   end
 
   it 'raises a NoConnection exception if the connection is unbound before it can be completed' do
-    @client = mock
     proc do
       EventMachine::run {
         EM.add_timer(0.5) { EM.stop if EM.reactor_running? }
 
-        Blather::Stream::Component.start @client, @jid || Blather::JID.new('n@d/r'), 'pass', '127.0.0.1', 50000 - rand(1000)
+        Blather::Stream::Component.start client, jid, 'pass', '127.0.0.1', 50000 - rand(1000)
       }
     end.should raise_error Blather::Stream::ConnectionFailed
   end
@@ -73,8 +70,8 @@ describe Blather::Stream::Component do
   end
 
   it 'sends stanzas to the client when the stream is ready' do
-    @client = mock(:post_init)
-    @client.expects(:receive_data).with do |n|
+    client.stubs :post_init
+    client.expects(:receive_data).with do |n|
       EM.stop
       n.kind_of? Blather::XMPPNode
     end
@@ -97,9 +94,8 @@ describe Blather::Stream::Component do
   end
 
   it 'sends stanzas to the wire ensuring "from" is set' do
-    client = mock()
-    client.stubs(:jid)
-    client.stubs(:jid=)
+    EM.expects(:next_tick).at_least(1).yields
+
     msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
     comp = Blather::Stream::Component.new nil, client, 'jid.com', 'pass'
     comp.expects(:send_data).with { |s| s.should match(/^<message[^>]*from="jid\.com"/) }

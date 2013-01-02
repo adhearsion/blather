@@ -13,7 +13,7 @@ class Stream
       end
 
       if node.document.find_first('/stream:stream[not(stream:error)]', :xmlns => NAMESPACE, :stream => STREAM_NS)
-        send("<handshake>#{Digest::SHA1.hexdigest(@node['id']+@password)}</handshake>")
+        send "<handshake>#{Digest::SHA1.hexdigest(node['id']+@password)}</handshake>"
       end
     end
 
@@ -23,15 +23,7 @@ class Stream
     end
 
     def start
-      @parser = Parser.new self
-      start_stream = <<-STREAM
-        <stream:stream
-          to='#{@jid}'
-          xmlns='#{NAMESPACE}'
-          xmlns:stream='#{STREAM_NS}'
-        >
-      STREAM
-      send start_stream.gsub(/\s+/, ' ')
+      send "<stream:stream to='#{@jid}' xmlns='#{NAMESPACE}' xmlns:stream='#{STREAM_NS}'>"
     end
   end #Client
 

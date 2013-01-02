@@ -16,6 +16,8 @@ describe Blather::Stream::Parser do
 
   subject { Blather::Stream::Parser.new client }
 
+  after { subject.finish }
+
   def process(*data)
     client.latch = CountDownLatch.new 1
     data.each { |d| subject.receive_data d }
