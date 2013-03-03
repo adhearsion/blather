@@ -200,7 +200,6 @@ module Blather
     end
 
     def cleanup
-      @parser.finish
       @connect_timer.cancel if @connect_timer
     end
 
