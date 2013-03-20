@@ -26,6 +26,11 @@ class Stream
       @parser = Parser.new self
       send "<stream:stream to='#{@jid}' xmlns='#{NAMESPACE}' xmlns:stream='#{STREAM_NS}'>"
     end
+
+    def cleanup
+      @parser.finish if @parser
+      super
+    end
   end #Client
 
 end #Stream

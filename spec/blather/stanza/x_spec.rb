@@ -139,7 +139,9 @@ end
 describe Blather::Stanza::X::Field do
   subject { Blather::Stanza::X::Field.new nil }
 
-  its(:namespace) { subject.href.should be == 'jabber:x:data' }
+  it "should have the namespace 'jabber:x:data'" do
+    subject.namespace.href.should be == 'jabber:x:data'
+  end
 
   it 'will auto-inherit nodes' do
     n = parse_stanza "<field type='text-single' var='music' label='Music from the time of Shakespeare' />"

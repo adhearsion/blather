@@ -17,6 +17,10 @@ class Stream
       super stanza
     end
 
+    def cleanup
+      @parser.finish if @parser
+      super
+    end
   end #Client
 
 end #Stream
