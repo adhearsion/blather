@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Only finish stream parser if there is one. This prevents crashes on failure to connect.
 
 # [v0.8.3](https://github.com/adhearsion/blather/compare/v0.8.2...v0.8.3) - [2013-03-03](https://rubygems.org/gems/blather/versions/0.8.3)
   * Bugfix: Strange issue causing total failure with 0.8.2 - https://github.com/adhearsion/blather/issues/108
