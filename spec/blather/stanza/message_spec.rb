@@ -81,42 +81,42 @@ describe Blather::Stanza::Message do
   it 'provides "attr_accessor" for body' do
     s = Blather::Stanza::Message.new
     s.body.should be_nil
-    s.find('body').should be_empty
+    s.xpath('body').should be_empty
 
     s.body = 'test message'
     s.body.should_not be_nil
-    s.find('body').should_not be_empty
+    s.xpath('body').should_not be_empty
   end
 
   it 'provides "attr_accessor" for subject' do
     s = Blather::Stanza::Message.new
     s.subject.should be_nil
-    s.find('subject').should be_empty
+    s.xpath('subject').should be_empty
 
     s.subject = 'test subject'
     s.subject.should_not be_nil
-    s.find('subject').should_not be_empty
+    s.xpath('subject').should_not be_empty
   end
 
   it 'provides "attr_accessor" for thread' do
     s = Blather::Stanza::Message.new
     s.thread.should be_nil
-    s.find('thread').should be_empty
+    s.xpath('thread').should be_empty
 
     s.thread = 1234
     s.thread.should_not be_nil
-    s.find('thread').should_not be_empty
+    s.xpath('thread').should_not be_empty
   end
 
   it 'can set a parent attribute for thread' do
     s = Blather::Stanza::Message.new
     s.thread.should be_nil
-    s.find('thread').should be_empty
+    s.xpath('thread').should be_empty
 
     s.thread = {4321 => 1234}
     s.thread.should == '1234'
     s.parent_thread.should == '4321'
-    s.find('thread[@parent="4321"]').should_not be_empty
+    s.xpath('thread[@parent="4321"]').should_not be_empty
   end
 
   it 'ensures type is one of Blather::Stanza::Message::VALID_TYPES' do
@@ -140,10 +140,10 @@ describe Blather::Stanza::Message do
       {:html_ns => Blather::Stanza::Message::HTML_NS}
     ]
     msg = Blather::Stanza::Message.new
-    msg.find_first(*search_args).should be_nil
+    msg.at_xpath(*search_args).should be_nil
 
     msg.xhtml_node
-    msg.find_first(*search_args).should_not be_nil
+    msg.at_xpath(*search_args).should_not be_nil
   end
 
   it 'ensures a body node exists when asked for xhtml_node' do
@@ -153,10 +153,10 @@ describe Blather::Stanza::Message do
       :body_ns => Blather::Stanza::Message::HTML_BODY_NS}
     ]
     msg = Blather::Stanza::Message.new
-    msg.find_first(*search_args).should be_nil
+    msg.at_xpath(*search_args).should be_nil
 
     msg.xhtml_node
-    msg.find_first(*search_args).should_not be_nil
+    msg.at_xpath(*search_args).should_not be_nil
   end
 
   it 'returns an existing node when asked for xhtml_node' do

@@ -22,14 +22,14 @@ class StanzaError < BlatherError
     original = node.copy
     original.remove_child 'error'
 
-    error_node = node.find_first '//*[local-name()="error"]'
+    error_node = node.at_xpath '//*[local-name()="error"]'
 
-    name = error_node.find_first('child::*[name()!="text"]').element_name
+    name = error_node.at_xpath('child::*[name()!="text"]').element_name
     type = error_node['type']
-    text = node.find_first 'descendant::*[name()="text"]'
+    text = node.at_xpath 'descendant::*[name()="text"]'
     text = text.content if text
 
-    extras = error_node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }
+    extras = error_node.xpath("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }
 
     self.new original, name, type, text, extras
   end

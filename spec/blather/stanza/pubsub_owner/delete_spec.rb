@@ -21,16 +21,16 @@ describe Blather::Stanza::PubSubOwner::Delete do
 
   it 'ensures an delete node is present on delete' do
     delete = Blather::Stanza::PubSubOwner::Delete.new
-    delete.find('//ns:pubsub/ns:delete', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
+    delete.xpath('//ns:pubsub/ns:delete', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
   end
 
   it 'ensures an delete node exists when calling #delete_node' do
     delete = Blather::Stanza::PubSubOwner::Delete.new
     delete.pubsub.remove_children :delete
-    delete.find('//ns:pubsub/ns:delete', :ns => Blather::Stanza::PubSubOwner.registered_ns).should be_empty
+    delete.xpath('//ns:pubsub/ns:delete', :ns => Blather::Stanza::PubSubOwner.registered_ns).should be_empty
 
     delete.delete_node.should_not be_nil
-    delete.find('//ns:pubsub/ns:delete', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
+    delete.xpath('//ns:pubsub/ns:delete', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
   end
 
   it 'defaults to a set node' do

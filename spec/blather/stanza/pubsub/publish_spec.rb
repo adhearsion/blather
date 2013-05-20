@@ -12,16 +12,16 @@ describe Blather::Stanza::PubSub::Publish do
 
   it 'ensures an publish node is present on create' do
     publish = Blather::Stanza::PubSub::Publish.new
-    publish.find('//ns:pubsub/ns:publish', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    publish.xpath('//ns:pubsub/ns:publish', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'ensures an publish node exists when calling #publish' do
     publish = Blather::Stanza::PubSub::Publish.new
     publish.pubsub.remove_children :publish
-    publish.find('//ns:pubsub/ns:publish', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    publish.xpath('//ns:pubsub/ns:publish', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
 
     publish.publish.should_not be_nil
-    publish.find('//ns:pubsub/ns:publish', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    publish.xpath('//ns:pubsub/ns:publish', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'defaults to a set node' do

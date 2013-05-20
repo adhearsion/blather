@@ -18,7 +18,7 @@ describe Blather::DSL::PubSub do
   it 'requests affiliations' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Affiliations
-      n.find('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -29,7 +29,7 @@ describe Blather::DSL::PubSub do
     host = 'another.host'
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Affiliations
-      n.find('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(host)
       n.type.should == :get
     end
@@ -39,7 +39,7 @@ describe Blather::DSL::PubSub do
   it 'requests subscriptions' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Subscriptions
-      n.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -50,7 +50,7 @@ describe Blather::DSL::PubSub do
     host = 'another.host'
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Subscriptions
-      n.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(host)
       n.type.should == :get
     end
@@ -60,7 +60,7 @@ describe Blather::DSL::PubSub do
   it 'requests nodes defaulting to "/"' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::DiscoItems
-      n.find("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -71,7 +71,7 @@ describe Blather::DSL::PubSub do
     host = 'another.host'
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::DiscoItems
-      n.find("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(host)
       n.type.should == :get
     end
@@ -81,7 +81,7 @@ describe Blather::DSL::PubSub do
   it 'requests nodes under a specified path' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::DiscoItems
-      n.find("/iq/ns:query[@node='/path/to/nodes']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:query[@node='/path/to/nodes']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -91,7 +91,7 @@ describe Blather::DSL::PubSub do
   it 'requests information on a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::DiscoInfo
-      n.find("/iq/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::DiscoInfo.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::DiscoInfo.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -101,7 +101,7 @@ describe Blather::DSL::PubSub do
   it 'requests all items from a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Items
-      n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -111,7 +111,7 @@ describe Blather::DSL::PubSub do
   it 'requests specific items from a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Items
-      n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node'][ns:item[@id='item1']][ns:item[@id='item2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:pubsub/ns:items[@node='/path/to/node'][ns:item[@id='item1']][ns:item[@id='item2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -121,7 +121,7 @@ describe Blather::DSL::PubSub do
   it 'requests some items from a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Items
-      n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node' and @max_items='2']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq/ns:pubsub/ns:items[@node='/path/to/node' and @max_items='2']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :get
     end
@@ -131,7 +131,7 @@ describe Blather::DSL::PubSub do
   it 'can publish items to a node with a hash' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Publish
-      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[@id='id1' and .='payload1'] and ns:item[@id='id2' and .='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[@id='id1' and .='payload1'] and ns:item[@id='id2' and .='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -141,7 +141,7 @@ describe Blather::DSL::PubSub do
   it 'can publish items to a node with an array' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Publish
-      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload1'] and ns:item[.='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload1'] and ns:item[.='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -151,7 +151,7 @@ describe Blather::DSL::PubSub do
   it 'can publish items to a node with a string' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Publish
-      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -161,7 +161,7 @@ describe Blather::DSL::PubSub do
   it 'can retract an item with an array' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Retract
-      n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1'] and ns:item[@id='id2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1'] and ns:item[@id='id2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -171,7 +171,7 @@ describe Blather::DSL::PubSub do
   it 'can retract an item with a string' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Retract
-      n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -181,7 +181,7 @@ describe Blather::DSL::PubSub do
   it 'can subscribe to a node with the default jid' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Subscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -191,7 +191,7 @@ describe Blather::DSL::PubSub do
   it 'can subscribe to a node with a specified jid as a string' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Subscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -201,7 +201,7 @@ describe Blather::DSL::PubSub do
   it 'can subscribe to a node with a specified jid as a Blather::JID' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Subscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -211,7 +211,7 @@ describe Blather::DSL::PubSub do
   it 'can unsubscribe to a node with the default jid' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -221,7 +221,7 @@ describe Blather::DSL::PubSub do
   it 'can unsubscribe to a node with a specified jid as a string' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -231,7 +231,7 @@ describe Blather::DSL::PubSub do
   it 'can unsubscribe to a node with a specified jid as a Blather::JID' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -241,7 +241,7 @@ describe Blather::DSL::PubSub do
   it 'can unsubscribe with a particular subscription id' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r' and @subid='subid']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r' and @subid='subid']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.subid.should == 'subid'
       n.type.should == :set
     end
@@ -251,7 +251,7 @@ describe Blather::DSL::PubSub do
   it 'can purge a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSubOwner::Purge
-      n.find("/iq[@type='set']/ns:pubsub/ns:purge[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:purge[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -261,7 +261,7 @@ describe Blather::DSL::PubSub do
   it 'can create a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Create
-      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end
@@ -280,7 +280,7 @@ describe Blather::DSL::PubSub do
     })
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSub::Create
-      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
       n.configure_node.should == pubsub_configure
@@ -291,7 +291,7 @@ describe Blather::DSL::PubSub do
   it 'can delete a node' do
     @client.expects(:write_with_handler).with do |n|
       n.should be_instance_of Blather::Stanza::PubSubOwner::Delete
-      n.find("/iq[@type='set']/ns:pubsub/ns:delete[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
+      n.xpath("/iq[@type='set']/ns:pubsub/ns:delete[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
       n.to.should == Blather::JID.new(@host)
       n.type.should == :set
     end

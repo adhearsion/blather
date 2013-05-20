@@ -36,7 +36,7 @@ class Iq
     #
     # @return [Balather::XMPPNode]
     def ping
-      p = find_first 'ns:ping', :ns => self.class.registered_ns
+      p = at_xpath 'ns:ping', :ns => self.class.registered_ns
 
       unless p
         (self << (p = XMPPNode.new('ping', self.document)))

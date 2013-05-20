@@ -12,7 +12,7 @@ class Stream
         super
       end
 
-      if node.document.find_first('/stream:stream[not(stream:error)]', :xmlns => NAMESPACE, :stream => STREAM_NS)
+      if node.document.at_xpath('/stream:stream[not(stream:error)]', :xmlns => NAMESPACE, :stream => STREAM_NS)
         send "<handshake>#{Digest::SHA1.hexdigest(node['id']+@password)}</handshake>"
       end
     end

@@ -22,21 +22,21 @@ describe Blather::Stanza::PubSub::Create do
 
   it 'ensures a create node is present on create' do
     create = Blather::Stanza::PubSub::Create.new
-    create.find('//ns:pubsub/ns:create', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    create.xpath('//ns:pubsub/ns:create', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'ensures a configure node is present on create' do
     create = Blather::Stanza::PubSub::Create.new
-    create.find('//ns:pubsub/ns:configure', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    create.xpath('//ns:pubsub/ns:configure', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'ensures a create node exists when calling #create_node' do
     create = Blather::Stanza::PubSub::Create.new
     create.pubsub.remove_children :create
-    create.find('//ns:pubsub/ns:create', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    create.xpath('//ns:pubsub/ns:create', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
 
     create.create_node.should_not be_nil
-    create.find('//ns:pubsub/ns:create', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    create.xpath('//ns:pubsub/ns:create', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'defaults to a set node' do

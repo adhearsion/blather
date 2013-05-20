@@ -85,7 +85,7 @@ class Presence
       #
       # @return [Blather::XMPPNode]
       def c
-        unless c = find_first('ns:c', :ns => C.registered_ns)
+        unless c = at_xpath('ns:c', :ns => C.registered_ns)
           self << (c = XMPPNode.new('c', self.document))
           c.namespace = self.class.registered_ns
         end

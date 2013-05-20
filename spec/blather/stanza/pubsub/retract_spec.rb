@@ -12,16 +12,16 @@ describe Blather::Stanza::PubSub::Retract do
 
   it 'ensures an retract node is present on create' do
     retract = Blather::Stanza::PubSub::Retract.new
-    retract.find('//ns:pubsub/ns:retract', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    retract.xpath('//ns:pubsub/ns:retract', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'ensures an retract node exists when calling #retract' do
     retract = Blather::Stanza::PubSub::Retract.new
     retract.pubsub.remove_children :retract
-    retract.find('//ns:pubsub/ns:retract', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    retract.xpath('//ns:pubsub/ns:retract', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
 
     retract.retract.should_not be_nil
-    retract.find('//ns:pubsub/ns:retract', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    retract.xpath('//ns:pubsub/ns:retract', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'defaults to a set node' do

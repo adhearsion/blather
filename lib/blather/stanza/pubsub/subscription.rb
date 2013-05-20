@@ -122,7 +122,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def subscription_node
-      unless subscription = pubsub.find_first('ns:subscription', :ns => self.class.registered_ns)
+      unless subscription = pubsub.at_xpath('ns:subscription', :ns => self.class.registered_ns)
         self.pubsub << (subscription = XMPPNode.new('subscription', self.document))
         subscription.namespace = self.pubsub.namespace
       end

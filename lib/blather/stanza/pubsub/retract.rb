@@ -44,7 +44,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def retract
-      unless retract = pubsub.find_first('ns:retract', :ns => self.class.registered_ns)
+      unless retract = pubsub.at_xpath('ns:retract', :ns => self.class.registered_ns)
         self.pubsub << (retract = XMPPNode.new('retract', self.document))
         retract.namespace = self.pubsub.namespace
       end
@@ -67,7 +67,7 @@ class PubSub
     #
     # @return [Array<String>]
     def retractions
-      retract.find('ns:item', :ns => self.class.registered_ns).map do |i|
+      retract.xpath('ns:item', :ns => self.class.registered_ns).map do |i|
         i[:id]
       end
     end

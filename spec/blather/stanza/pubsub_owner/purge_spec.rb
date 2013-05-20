@@ -21,16 +21,16 @@ describe Blather::Stanza::PubSubOwner::Purge do
 
   it 'ensures an purge node is present on create' do
     purge = Blather::Stanza::PubSubOwner::Purge.new
-    purge.find('//ns:pubsub/ns:purge', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
+    purge.xpath('//ns:pubsub/ns:purge', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
   end
 
   it 'ensures an purge node exists when calling #purge_node' do
     purge = Blather::Stanza::PubSubOwner::Purge.new
     purge.pubsub.remove_children :purge
-    purge.find('//ns:pubsub/ns:purge', :ns => Blather::Stanza::PubSubOwner.registered_ns).should be_empty
+    purge.xpath('//ns:pubsub/ns:purge', :ns => Blather::Stanza::PubSubOwner.registered_ns).should be_empty
 
     purge.purge_node.should_not be_nil
-    purge.find('//ns:pubsub/ns:purge', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
+    purge.xpath('//ns:pubsub/ns:purge', :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
   end
 
   it 'defaults to a set node' do

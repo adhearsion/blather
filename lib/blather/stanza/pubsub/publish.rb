@@ -66,7 +66,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def publish
-      unless publish = pubsub.find_first('ns:publish', :ns => self.class.registered_ns)
+      unless publish = pubsub.at_xpath('ns:publish', :ns => self.class.registered_ns)
         self.pubsub << (publish = XMPPNode.new('publish', self.document))
         publish.namespace = self.pubsub.namespace
       end
@@ -77,7 +77,7 @@ class PubSub
     #
     # @return [Array<Blather::Stanza::PubSub::PubSubItem>]
     def items
-      publish.find('ns:item', :ns => self.class.registered_ns).map do |i|
+      publish.xpath('ns:item', :ns => self.class.registered_ns).map do |i|
         PubSubItem.new(nil,nil,self.document).inherit i
       end
     end

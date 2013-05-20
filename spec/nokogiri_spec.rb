@@ -40,21 +40,8 @@ describe Nokogiri::XML::Node do
   end
 
   it 'allows symbols as the path in #xpath' do
-    subject.should respond_to :find
     doc.root = subject
     doc.xpath(:foo).first.should_not be_nil
     doc.xpath(:foo).first.should == doc.xpath('/foo').first
-  end
-
-  it 'aliases #xpath to #find' do
-    subject.should respond_to :find
-    doc.root = subject
-    subject.find('/foo').first.should_not be_nil
-  end
-
-  it 'has a helper function #find_first' do
-    subject.should respond_to :find
-    doc.root = subject
-    subject.find_first('/foo').should == subject.find('/foo').first
   end
 end

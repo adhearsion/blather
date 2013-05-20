@@ -29,7 +29,7 @@ class Stanza
     #
     # @return [Array<Blather::Stanza::DiscoItems::Item>]
     def items
-      query.find('//ns:item', :ns => self.class.registered_ns).map do |i|
+      query.xpath('//ns:item', :ns => self.class.registered_ns).map do |i|
         Item.new i
       end
     end
@@ -37,7 +37,7 @@ class Stanza
     # Add an array of items
     # @param items the array of items, passed directly to Item.new
     def items=(items)
-      query.find('//ns:item', :ns => self.class.registered_ns).each &:remove
+      query.xpath('//ns:item', :ns => self.class.registered_ns).each &:remove
       if items
         [items].flatten.each { |i| self.query << Item.new(i) }
       end

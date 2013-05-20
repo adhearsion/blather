@@ -19,16 +19,16 @@ describe Blather::Stanza::PubSub::Subscriptions do
 
   it 'ensures an subscriptions node is present on create' do
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    subscriptions.xpath('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'ensures an subscriptions node exists when calling #subscriptions' do
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new
     subscriptions.pubsub.remove_children :subscriptions
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    subscriptions.xpath('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
 
     subscriptions.subscriptions.should_not be_nil
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    subscriptions.xpath('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'defaults to a get node' do

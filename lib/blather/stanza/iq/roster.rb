@@ -37,7 +37,7 @@ class Iq
     #
     # @return [Array<Blather::Stanza::Iq::Roster::RosterItem>]
     def items
-      query.find('//ns:item', :ns => self.class.registered_ns).map do |i|
+      query.xpath('//ns:item', :ns => self.class.registered_ns).map do |i|
         RosterItem.new i
       end
     end
@@ -154,7 +154,7 @@ class Iq
       #
       # @return [Array<String>]
       def groups
-        find('child::*[local-name()="group"]').map { |g| g.content }
+        xpath('child::*[local-name()="group"]').map { |g| g.content }
       end
 
       # Set the roster item's groups

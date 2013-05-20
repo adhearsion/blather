@@ -20,16 +20,16 @@ describe Blather::Stanza::PubSub::Affiliations do
 
   it 'ensures an affiliations node is present on create' do
     affiliations = Blather::Stanza::PubSub::Affiliations.new
-    affiliations.find_first('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_nil
+    affiliations.at_xpath('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_nil
   end
 
   it 'ensures an affiliations node exists when calling #affiliations' do
     affiliations = Blather::Stanza::PubSub::Affiliations.new
     affiliations.pubsub.remove_children :affiliations
-    affiliations.find_first('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should be_nil
+    affiliations.at_xpath('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should be_nil
 
     affiliations.affiliations.should_not be_nil
-    affiliations.find_first('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_nil
+    affiliations.at_xpath('//ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_nil
   end
 
   it 'defaults to a get node' do

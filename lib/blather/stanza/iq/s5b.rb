@@ -32,14 +32,14 @@ class Iq
     #
     # @return [S5b::StreamHostUsed]
     def streamhost_used
-      StreamHostUsed.new query.find_first('.//ns:streamhost-used', :ns => self.class.registered_ns)
+      StreamHostUsed.new query.at_xpath('.//ns:streamhost-used', :ns => self.class.registered_ns)
     end
 
     # Set the used streamhost
     #
     # @param [Blather::JID, String, nil] jid the jid of the used streamhost
     def streamhost_used=(jid)
-      query.find('.//ns:streamhost-used', :ns => self.class.registered_ns).remove
+      query.xpath('.//ns:streamhost-used', :ns => self.class.registered_ns).remove
 
       if jid
         query << StreamHostUsed.new(jid)
@@ -50,7 +50,7 @@ class Iq
     #
     # @return [Array<S5b::StreamHost>]
     def streamhosts
-      query.find('.//ns:streamhost', :ns => self.class.registered_ns).map do |s|
+      query.xpath('.//ns:streamhost', :ns => self.class.registered_ns).map do |s|
         StreamHost.new s
       end
     end
@@ -59,7 +59,7 @@ class Iq
     #
     # @param streamhosts the array of streamhosts, passed directly to StreamHost.new
     def streamhosts=(streamhosts)
-      query.find('.//ns:streamhost', :ns => self.class.registered_ns).remove
+      query.xpath('.//ns:streamhost', :ns => self.class.registered_ns).remove
       if streamhosts
         [streamhosts].flatten.each { |s| self.query << StreamHost.new(s) }
       end

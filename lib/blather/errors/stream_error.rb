@@ -16,12 +16,12 @@ class StreamError < BlatherError
   #
   # @param [Blather::XMPPNode] node the importable node
   def self.import(node)
-    name = node.find_first('descendant::*[name()!="text"]').element_name
+    name = node.at_xpath('descendant::*[name()!="text"]').element_name
 
-    text = node.find_first 'descendant::*[name()="text"]'
+    text = node.at_xpath 'descendant::*[name()="text"]'
     text = text.content if text
 
-    extras = node.find("descendant::*[namespace-uri()!='#{STREAM_ERR_NS}']").map { |n| n }
+    extras = node.xpath("descendant::*[namespace-uri()!='#{STREAM_ERR_NS}']").map { |n| n }
 
     self.new name, text, extras
   end

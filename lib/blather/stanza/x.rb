@@ -39,7 +39,7 @@ class Stanza
     # @param [Blather::Stanza] parent the parent node to search under
     # @return [Blather::Stanza::X]
     def self.find_or_create(parent)
-      if found_x = parent.find_first('//ns:x', :ns => self.registered_ns)
+      if found_x = parent.at_xpath('//ns:x', :ns => self.registered_ns)
         x = self.new found_x
         found_x.remove
       else
@@ -67,7 +67,7 @@ class Stanza
     # List of field objects
     # @return [Blather::Stanza::X::Field]
     def fields
-      self.find('ns:field', :ns => self.class.registered_ns).map do |field|
+      self.xpath('ns:field', :ns => self.class.registered_ns).map do |field|
         Field.new(field)
       end
     end
@@ -301,9 +301,9 @@ class Stanza
       # @param [true, false]
       def required?
         !!if self.namespace
-          self.find_first 'ns:required', :ns => self.namespace.href
+          self.at_xpath 'ns:required', :ns => self.namespace.href
         else
-          self.find_first 'required'
+          self.at_xpath 'required'
         end
       end
 
@@ -322,9 +322,9 @@ class Stanza
       # @return [Blather::Stanza::X::Field::Option]
       def options
         if self.namespace
-          self.find('ns:option', :ns => self.namespace.href)
+          self.xpath('ns:option', :ns => self.namespace.href)
         else
-          self.find('option')
+          self.xpath('option')
         end.map { |f| Option.new(f) }
       end
 

@@ -15,7 +15,7 @@ class Stanza
     # @private
     def self.import(node)
       klass = nil
-      if pubsub = node.document.find_first('//ns:pubsub', :ns => self.registered_ns)
+      if pubsub = node.document.at_xpath('//ns:pubsub', :ns => self.registered_ns)
         pubsub.children.detect do |e|
           ns = e.namespace ? e.namespace.href : nil
           klass = class_from_registration(e.element_name, ns)
@@ -49,8 +49,8 @@ class Stanza
     #
     # @return [Blather::XMPPNode]
     def pubsub
-      p = find_first('ns:pubsub', :ns => self.class.registered_ns) ||
-          find_first('pubsub', :ns => self.class.registered_ns)
+      p = at_xpath('ns:pubsub', :ns => self.class.registered_ns) ||
+          at_xpath('pubsub', :ns => self.class.registered_ns)
 
       unless p
         self << (p = XMPPNode.new('pubsub', self.document))

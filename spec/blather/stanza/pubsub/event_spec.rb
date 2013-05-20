@@ -12,25 +12,25 @@ describe Blather::Stanza::PubSub::Event do
 
   it 'ensures a query node is present on create' do
     evt = Blather::Stanza::PubSub::Event.new
-    evt.find('ns:event', :ns => Blather::Stanza::PubSub::Event.registered_ns).should_not be_empty
+    evt.xpath('ns:event', :ns => Blather::Stanza::PubSub::Event.registered_ns).should_not be_empty
   end
 
   it 'ensures an event node exists when calling #event_node' do
     evt = Blather::Stanza::PubSub::Event.new
     evt.remove_children :event
-    evt.find('*[local-name()="event"]').should be_empty
+    evt.xpath('*[local-name()="event"]').should be_empty
 
     evt.event_node.should_not be_nil
-    evt.find('ns:event', :ns => Blather::Stanza::PubSub::Event.registered_ns).should_not be_empty
+    evt.xpath('ns:event', :ns => Blather::Stanza::PubSub::Event.registered_ns).should_not be_empty
   end
 
   it 'ensures an items node exists when calling #items_node' do
     evt = Blather::Stanza::PubSub::Event.new
     evt.remove_children :items
-    evt.find('*[local-name()="items"]').should be_empty
+    evt.xpath('*[local-name()="items"]').should be_empty
 
     evt.items_node.should_not be_nil
-    evt.find('ns:event/ns:items', :ns => Blather::Stanza::PubSub::Event.registered_ns).should_not be_empty
+    evt.xpath('ns:event/ns:items', :ns => Blather::Stanza::PubSub::Event.registered_ns).should_not be_empty
   end
 
   it 'knows the associated node name' do

@@ -29,7 +29,7 @@ class Stanza
 
     # List of identity objects
     def identities
-      query.find('//ns:identity', :ns => self.class.registered_ns).map do |i|
+      query.xpath('//ns:identity', :ns => self.class.registered_ns).map do |i|
         Identity.new i
       end
     end
@@ -37,7 +37,7 @@ class Stanza
     # Add an array of identities
     # @param identities the array of identities, passed directly to Identity.new
     def identities=(identities)
-      query.find('//ns:identity', :ns => self.class.registered_ns).each &:remove
+      query.xpath('//ns:identity', :ns => self.class.registered_ns).each &:remove
       if identities
         [identities].flatten.each { |i| self.query << Identity.new(i) }
       end
@@ -45,7 +45,7 @@ class Stanza
 
     # List of feature objects
     def features
-      query.find('//ns:feature', :ns => self.class.registered_ns).map do |f|
+      query.xpath('//ns:feature', :ns => self.class.registered_ns).map do |f|
         Feature.new f
       end
     end
@@ -53,7 +53,7 @@ class Stanza
     # Add an array of features
     # @param features the array of features, passed directly to Feature.new
     def features=(features)
-      query.find('//ns:feature', :ns => self.class.registered_ns).each &:remove
+      query.xpath('//ns:feature', :ns => self.class.registered_ns).each &:remove
       if features
         [features].flatten.each { |f| self.query << Feature.new(f) }
       end

@@ -113,7 +113,7 @@ describe Blather::Stanza::Iq::Command do
   it 'is constructed properly' do
     n = Blather::Stanza::Iq::Command.new :set, "node", :execute
     n.to = 'to@jid.com'
-    n.find("/iq[@to='to@jid.com' and @type='set' and @id='#{n.id}']/ns:command[@node='node' and @action='execute']", :ns => Blather::Stanza::Iq::Command.registered_ns).should_not be_empty
+    n.xpath("/iq[@to='to@jid.com' and @type='set' and @id='#{n.id}']/ns:command[@node='node' and @action='execute']", :ns => Blather::Stanza::Iq::Command.registered_ns).should_not be_empty
   end
 
   it 'has an action attribute' do

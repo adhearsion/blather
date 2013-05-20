@@ -42,7 +42,7 @@ class PubSub
     #
     # @return [Array<String>]
     def retractions
-      items_node.find('//ns:retract', :ns => self.class.registered_ns).map do |i|
+      items_node.xpath('//ns:retract', :ns => self.class.registered_ns).map do |i|
         i[:id]
       end
     end
@@ -58,7 +58,7 @@ class PubSub
     #
     # @return [Array<Blather::Stanza::PubSub::PubSubItem>]
     def items
-      items_node.find('//ns:item', :ns => self.class.registered_ns).map do |i|
+      items_node.xpath('//ns:item', :ns => self.class.registered_ns).map do |i|
         PubSubItem.new(nil,nil,self.document).inherit i
       end
     end
@@ -81,8 +81,8 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def event_node
-      node = find_first('//ns:event', :ns => self.class.registered_ns)
-      node = find_first('//event') unless node
+      node = at_xpath('//ns:event', :ns => self.class.registered_ns)
+      node = at_xpath('//event') unless node
       unless node
         (self << (node = XMPPNode.new('event', self.document)))
         node.namespace = self.class.registered_ns
@@ -94,7 +94,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def items_node
-      node = find_first('ns:event/ns:items', :ns => self.class.registered_ns)
+      node = at_xpath('ns:event/ns:items', :ns => self.class.registered_ns)
       unless node
         (self.event_node << (node = XMPPNode.new('items', self.document)))
         node.namespace = event_node.namespace
@@ -106,14 +106,14 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def purge_node
-      event_node.find_first('//ns:purge', :ns => self.class.registered_ns)
+      event_node.at_xpath('//ns:purge', :ns => self.class.registered_ns)
     end
 
     # Get the subscription IDs associated with this event
     #
     # @return [Array<String>]
     def subscription_ids
-      find('//ns:header[@name="SubID"]', :ns => SHIM_NS).map do |n|
+      xpath('//ns:header[@name="SubID"]', :ns => SHIM_NS).map do |n|
         n.content
       end
     end
@@ -129,7 +129,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def subscription_node
-      event_node.find_first('//ns:subscription', :ns => self.class.registered_ns)
+      event_node.at_xpath('//ns:subscription', :ns => self.class.registered_ns)
     end
     alias_method :subscription, :subscription_node
   end  # Event

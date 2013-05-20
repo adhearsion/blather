@@ -71,7 +71,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def unsubscribe
-      unless unsubscribe = pubsub.find_first('ns:unsubscribe', :ns => self.class.registered_ns)
+      unless unsubscribe = pubsub.at_xpath('ns:unsubscribe', :ns => self.class.registered_ns)
         self.pubsub << (unsubscribe = XMPPNode.new('unsubscribe', self.document))
         unsubscribe.namespace = self.pubsub.namespace
       end

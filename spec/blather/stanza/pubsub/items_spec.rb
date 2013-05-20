@@ -12,16 +12,16 @@ describe Blather::Stanza::PubSub::Items do
 
   it 'ensures an items node is present on create' do
     items = Blather::Stanza::PubSub::Items.new
-    items.find('//ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    items.xpath('//ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'ensures an items node exists when calling #items' do
     items = Blather::Stanza::PubSub::Items.new
     items.pubsub.remove_children :items
-    items.find('//ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    items.xpath('//ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
 
     items.items.should_not be_nil
-    items.find('//ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    items.xpath('//ns:pubsub/ns:items', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
   end
 
   it 'defaults to a get node' do
@@ -47,7 +47,7 @@ describe Blather::Stanza::PubSub::Items do
     node = 'princely_musings'
 
     items = Blather::Stanza::PubSub::Items.request host, node
-    items.find("//ns:items[@node=\"#{node}\"]", :ns => Blather::Stanza::PubSub.registered_ns).size.should == 1
+    items.xpath("//ns:items[@node=\"#{node}\"]", :ns => Blather::Stanza::PubSub.registered_ns).size.should == 1
     items.to.should == Blather::JID.new(host)
     items.node.should == node
   end
@@ -60,7 +60,7 @@ describe Blather::Stanza::PubSub::Items do
     items_xpath = items.map { |i| "@id=\"#{i}\"" } * ' or '
 
     items = Blather::Stanza::PubSub::Items.request host, node, items
-    items.find("//ns:items[@node=\"#{node}\"]/ns:item[#{items_xpath}]", :ns => Blather::Stanza::PubSub.registered_ns).size.should == 2
+    items.xpath("//ns:items[@node=\"#{node}\"]/ns:item[#{items_xpath}]", :ns => Blather::Stanza::PubSub.registered_ns).size.should == 2
     items.to.should == Blather::JID.new(host)
     items.node.should == node
   end
@@ -71,7 +71,7 @@ describe Blather::Stanza::PubSub::Items do
     max = 3
 
     items = Blather::Stanza::PubSub::Items.request host, node, nil, max
-    items.find("//ns:pubsub/ns:items[@node=\"#{node}\" and @max_items=\"#{max}\"]", :ns => Blather::Stanza::PubSub.registered_ns).size.should == 1
+    items.xpath("//ns:pubsub/ns:items[@node=\"#{node}\" and @max_items=\"#{max}\"]", :ns => Blather::Stanza::PubSub.registered_ns).size.should == 1
     items.to.should == Blather::JID.new(host)
     items.node.should == node
     items.max_items.should == max

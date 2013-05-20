@@ -45,7 +45,7 @@ describe Blather::Stanza::X do
 
   it 'is constructed properly' do
     n = Blather::Stanza::X.new :form
-    n.find("/ns:x[@type='form']", :ns => Blather::Stanza::X.registered_ns).should_not be_empty
+    n.xpath("/ns:x[@type='form']", :ns => Blather::Stanza::X.registered_ns).should_not be_empty
   end
 
   it 'has an action attribute' do

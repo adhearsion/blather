@@ -33,7 +33,7 @@ describe Blather::Stanza::Iq::DiscoItems do
   it 'is constructed properly' do
     n = Blather::Stanza::Iq::DiscoItems.new :get, '/path/to/node'
     n.to = 'to@jid.com'
-    n.find("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoItems.registered_ns).should_not be_empty
+    n.xpath("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoItems.registered_ns).should_not be_empty
   end
 
   it 'has a node attribute' do

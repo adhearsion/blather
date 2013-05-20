@@ -289,7 +289,7 @@ module Blather
 
     def call_handler(handler, guards, stanza)
       if guards.first.respond_to?(:to_str)
-        result = stanza.find(*guards)
+        result = stanza.xpath(*guards)
         handler.call(stanza, result) unless result.empty?
       else
         handler.call(stanza) unless guarded?(guards, stanza)

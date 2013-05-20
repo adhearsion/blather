@@ -33,7 +33,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def subscriptions
-      aff = pubsub.find_first('ns:subscriptions', ns: self.class.registered_ns)
+      aff = pubsub.at_xpath('ns:subscriptions', ns: self.class.registered_ns)
       unless aff
         (self.pubsub << (aff = XMPPNode.new('subscriptions', self.document)))
       end
@@ -65,7 +65,7 @@ class PubSub
     #
     # @return [Hash]
     def list
-      subscriptions.find('//ns:subscription', :ns => self.class.registered_ns).inject({}) do |hash, item|
+      subscriptions.xpath('//ns:subscription', :ns => self.class.registered_ns).inject({}) do |hash, item|
         hash[item[:subscription].to_sym] ||= []
         sub = {
           :node => item[:node],

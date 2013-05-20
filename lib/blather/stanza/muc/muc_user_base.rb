@@ -30,7 +30,7 @@ class MUC
     end
 
     def muc_user
-      unless muc_user = find_first('ns:x', :ns => MUC_USER_NAMESPACE)
+      unless muc_user = at_xpath('ns:x', :ns => MUC_USER_NAMESPACE)
         self << (muc_user = XMPPNode.new('x', self.document))
         muc_user.namespace = self.class.registered_ns
       end
@@ -45,7 +45,7 @@ class MUC
     end
 
     def find_password_node
-      muc_user.find_first 'ns:password', :ns => MUC_USER_NAMESPACE
+      muc_user.at_xpath 'ns:password', :ns => MUC_USER_NAMESPACE
     end
   end # MUCUserBase
 

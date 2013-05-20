@@ -93,7 +93,7 @@ class Iq
       #
       # @return [Vcard::Vcard]
       def self.find_or_create(parent)
-        if found_vcard = parent.find_first('//ns:vCard', :ns => VCARD_NS)
+        if found_vcard = parent.at_xpath('//ns:vCard', :ns => VCARD_NS)
           vcard = self.new found_vcard
           found_vcard.remove
         else
@@ -112,7 +112,7 @@ class Iq
       def [](name)
         name = name.split("/").map{|child| "ns:#{child}"}.join("/")
 
-        if elem = find_first(name, :ns => VCARD_NS)
+        if elem = at_xpath(name, :ns => VCARD_NS)
           elem.content
         else
           nil
@@ -130,7 +130,7 @@ class Iq
         parent = self
 
         name.split("/").each do |child|
-          elem = parent.find_first("ns:#{child}", :ns => VCARD_NS)
+          elem = parent.at_xpath("ns:#{child}", :ns => VCARD_NS)
           unless elem
             elem = XMPPNode.new(child, parent.document)
             parent << elem

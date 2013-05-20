@@ -277,12 +277,12 @@ class Stanza
     #
     # @return [XML::Node]
     def xhtml_node
-      unless h = find_first('ns:html', :ns => HTML_NS) || find_first('ns:html', :ns => HTML_BODY_NS)
+      unless h = at_xpath('ns:html', :ns => HTML_NS) || at_xpath('ns:html', :ns => HTML_BODY_NS)
         self << (h = XMPPNode.new('html', self.document))
         h.namespace = HTML_NS
       end
 
-      unless b = h.find_first('ns:body', :ns => HTML_BODY_NS)
+      unless b = h.at_xpath('ns:body', :ns => HTML_BODY_NS)
         b = XMPPNode.new('body', self.document)
         b.namespace = HTML_BODY_NS
         h << b
@@ -331,7 +331,7 @@ class Stanza
     #
     # @return [String, nil]
     def parent_thread
-      n = find_first('thread')
+      n = at_xpath('thread')
       n[:parent] if n
     end
 
@@ -346,7 +346,7 @@ class Stanza
     def thread=(thread)
       parent, thread = thread.to_a.flatten if thread.is_a?(Hash)
       set_content_for :thread, thread
-      find_first('thread')[:parent] = parent
+      at_xpath('thread')[:parent] = parent
     end
 
     # Returns the message's x:data form child
@@ -358,7 +358,7 @@ class Stanza
     #
     # @return [Symbol]
     def chat_state
-      if (elem = find_first('ns:*', :ns => CHAT_STATE_NS)) && VALID_CHAT_STATES.include?(name = elem.name.to_sym)
+      if (elem = at_xpath('ns:*', :ns => CHAT_STATE_NS)) && VALID_CHAT_STATES.include?(name = elem.name.to_sym)
         name
       end
     end
@@ -381,7 +381,7 @@ class Stanza
     end
 
     def delay
-      if d = find_first('ns:delay', :ns => "urn:xmpp:delay")
+      if d = at_xpath('ns:delay', :ns => "urn:xmpp:delay")
         Delay.new d
       end
     end

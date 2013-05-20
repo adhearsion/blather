@@ -28,9 +28,6 @@ module Nokogiri
         paths[0] = paths[0].to_s
         nokogiri_xpath *paths
       end
-
-      alias_method :find, :xpath
-      alias_method :find_first, :at_xpath
     end
   end
 end

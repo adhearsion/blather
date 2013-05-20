@@ -51,7 +51,7 @@ class Presence
       end
 
       def item
-        if item = muc_user.find_first('ns:item', :ns => MUCUser.registered_ns)
+        if item = muc_user.at_xpath('ns:item', :ns => MUCUser.registered_ns)
           Item.new item
         else
           muc_user << (item = Item.new nil, nil, nil, self.document)
@@ -60,7 +60,7 @@ class Presence
       end
 
       def status
-        muc_user.find('ns:status', :ns => MUCUser.registered_ns).map do |status|
+        muc_user.xpath('ns:status', :ns => MUCUser.registered_ns).map do |status|
           Status.new status
         end
       end

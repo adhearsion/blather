@@ -31,7 +31,7 @@ class Message
     end
 
     def find_invite_node
-      muc_user.find_first 'ns:invite', :ns => self.class.registered_ns
+      muc_user.at_xpath 'ns:invite', :ns => self.class.registered_ns
     end
 
     def decline
@@ -44,7 +44,7 @@ class Message
     end
 
     def find_decline_node
-      muc_user.find_first 'ns:decline', :ns => self.class.registered_ns
+      muc_user.at_xpath 'ns:decline', :ns => self.class.registered_ns
     end
 
     class InviteBase < XMPPNode
@@ -94,7 +94,7 @@ class Message
       end
 
       def reason_node
-        unless reason = find_first('ns:reason', :ns => MUCUser.registered_ns)
+        unless reason = at_xpath('ns:reason', :ns => MUCUser.registered_ns)
           self << (reason = XMPPNode.new('reason', self.document))
         end
         reason

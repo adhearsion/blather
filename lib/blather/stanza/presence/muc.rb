@@ -19,7 +19,7 @@ class Presence
       end
 
       def muc
-        unless muc = find_first('ns:x', :ns => MUC.registered_ns)
+        unless muc = at_xpath('ns:x', :ns => MUC.registered_ns)
           self << (muc = XMPPNode.new('x', self.document))
           muc.namespace = self.class.registered_ns
         end

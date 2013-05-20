@@ -29,7 +29,7 @@ describe 'Blather::StreamError' do
 
     e.name.should == :internal_server_error
     e.text.should == 'the message'
-    e.extras.should == err.find('descendant::*[name()="extra-error"]').map {|n|n}
+    e.extras.should == err.xpath('descendant::*[name()="extra-error"]').map {|n|n}
   end
 end
 

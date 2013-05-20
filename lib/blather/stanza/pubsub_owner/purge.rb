@@ -39,7 +39,7 @@ class PubSubOwner
     #
     # @return [Blather::XMPPNode]
     def purge_node
-      unless purge_node = pubsub.find_first('ns:purge', :ns => self.class.registered_ns)
+      unless purge_node = pubsub.at_xpath('ns:purge', :ns => self.class.registered_ns)
         self.pubsub << (purge_node = XMPPNode.new('purge', self.document))
         purge_node.namespace = self.pubsub.namespace
       end

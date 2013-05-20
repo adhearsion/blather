@@ -39,7 +39,7 @@ class PubSubOwner
     #
     # @return [Blather::XMPPNode]
     def delete_node
-      unless delete_node = pubsub.find_first('ns:delete', :ns => self.class.registered_ns)
+      unless delete_node = pubsub.at_xpath('ns:delete', :ns => self.class.registered_ns)
         self.pubsub << (delete_node = XMPPNode.new('delete', self.document))
         delete_node.namespace = self.pubsub.namespace
       end

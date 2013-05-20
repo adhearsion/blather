@@ -41,7 +41,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def create_node
-      unless create_node = pubsub.find_first('ns:create', :ns => self.class.registered_ns)
+      unless create_node = pubsub.at_xpath('ns:create', :ns => self.class.registered_ns)
         self.pubsub << (create_node = XMPPNode.new('create', self.document))
         create_node.namespace = self.pubsub.namespace
       end
@@ -52,7 +52,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def configure_node
-      unless configure_node = pubsub.find_first('ns:configure', :ns => self.class.registered_ns)
+      unless configure_node = pubsub.at_xpath('ns:configure', :ns => self.class.registered_ns)
         self.pubsub << (configure_node = XMPPNode.new('configure', self.document))
         configure_node.namespace = self.pubsub.namespace
       end

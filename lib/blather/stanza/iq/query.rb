@@ -35,9 +35,9 @@ class Iq
     # @return [Balather::XMPPNode]
     def query
       q = if self.class.registered_ns
-        find_first('query_ns:query', :query_ns => self.class.registered_ns)
+        at_xpath('query_ns:query', :query_ns => self.class.registered_ns)
       else
-        find_first('query')
+        at_xpath('query')
       end
 
       unless q

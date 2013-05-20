@@ -189,7 +189,7 @@ message [{:body => 'foo'}, {:body => 'baz'}]
 # XPath
 #   Runs the xpath query on the stanza and checks for results
 #   This guard type cannot be combined with other guards
-#   Equivalent to !stanza.find('/iq/ns:pubsub', :ns => 'pubsub:namespace').empty?
+#   Equivalent to !stanza.xpath('/iq/ns:pubsub', :ns => 'pubsub:namespace').empty?
 #   It also passes two arguments into the handler block: the stanza and the result
 #   of the xpath query.
 iq '/iq/ns:pubsub', :ns => 'pubsub:namespace' do |stanza, xpath_result|

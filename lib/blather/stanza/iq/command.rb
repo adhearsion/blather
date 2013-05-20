@@ -64,9 +64,9 @@ class Iq
     # @return [Blather::XMPPNode]
     def command
       c = if self.class.registered_ns
-        find_first('ns:command', :ns => self.class.registered_ns)
+        at_xpath('ns:command', :ns => self.class.registered_ns)
       else
-        find_first('command')
+        at_xpath('command')
       end
 
       unless c
@@ -212,7 +212,7 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def actions
-      unless a = self.command.find_first('ns:actions', :ns => self.class.registered_ns)
+      unless a = self.command.at_xpath('ns:actions', :ns => self.class.registered_ns)
         (self.command << (a = XMPPNode.new('actions', self.document)))
         a.namespace = self.command.namespace
       end
@@ -271,7 +271,7 @@ class Iq
     #
     # @return [Blather::XMPPNode]
     def note
-      unless n = self.command.find_first('ns:note', :ns => self.class.registered_ns)
+      unless n = self.command.at_xpath('ns:note', :ns => self.class.registered_ns)
         (self.command << (n = XMPPNode.new('note', self.document)))
         n.namespace = self.command.namespace
       end

@@ -44,7 +44,7 @@ describe Blather::Stanza::Iq::Vcard do
     query.vcard = new_vcard
 
     query.xpath('ns:vCard', :ns => 'vcard-temp').size.should == 1
-    query.find_first('ns:vCard/ns:NICKNAME', :ns => 'vcard-temp').content.should == 'Mercutio'
+    query.at_xpath('ns:vCard/ns:NICKNAME', :ns => 'vcard-temp').content.should == 'Mercutio'
   end
 end
 
@@ -52,16 +52,16 @@ describe Blather::Stanza::Iq::Vcard::Vcard do
   it 'can set vcard elements' do
     query = Blather::Stanza::Iq::Vcard.new :set
     query.vcard['NICKNAME'] = 'Romeo'
-    query.find_first('ns:vCard/ns:NICKNAME', :ns => 'vcard-temp').content.should == 'Romeo'
+    query.at_xpath('ns:vCard/ns:NICKNAME', :ns => 'vcard-temp').content.should == 'Romeo'
   end
 
   it 'can set deep vcard elements' do
     query = Blather::Stanza::Iq::Vcard.new :set
     query.vcard['PHOTO/TYPE'] = 'image/png'
     query.vcard['PHOTO/BINVAL'] = '===='
-    query.find_first('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.size.should == 2
-    query.find_first('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.element_name == 'TYPE' && n.content == 'image/png' }.should_not be_nil
-    query.find_first('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.element_name == 'BINVAL' && n.content == '====' }.should_not be_nil
+    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.size.should == 2
+    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.element_name == 'TYPE' && n.content == 'image/png' }.should_not be_nil
+    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.element_name == 'BINVAL' && n.content == '====' }.should_not be_nil
   end
 
   it 'can get vcard elements' do

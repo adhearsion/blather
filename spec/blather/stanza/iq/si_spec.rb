@@ -85,7 +85,7 @@ describe Blather::Stanza::Iq::Si::Si::File do
   it 'can be initialized with node' do
     node = Blather::XMPPNode.parse si_xml
 
-    file = Blather::Stanza::Iq::Si::Si::File.new node.find_first('.//ns:file', :ns => 'http://jabber.org/protocol/si/profile/file-transfer')
+    file = Blather::Stanza::Iq::Si::Si::File.new node.at_xpath('.//ns:file', :ns => 'http://jabber.org/protocol/si/profile/file-transfer')
     file.name.should == 'test.txt'
     file.size.should == 1022
   end

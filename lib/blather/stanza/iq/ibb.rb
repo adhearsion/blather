@@ -31,7 +31,7 @@ class Iq
       #
       # @return [Nokogiri::XML::Element]
       def open
-        find_first('ns:open', :ns => NS_IBB)
+        at_xpath('ns:open', :ns => NS_IBB)
       end
 
       # Get the sid of the file transfer
@@ -51,7 +51,7 @@ class Iq
       #
       # @return [Nokogiri::XML::Element]
       def data
-        find_first('ns:data', :ns => NS_IBB)
+        at_xpath('ns:data', :ns => NS_IBB)
       end
 
       # Get the sid of the file transfer
@@ -70,7 +70,7 @@ class Iq
       #
       # @return [Nokogiri::XML::Element]
       def close
-        find_first('ns:close', :ns => NS_IBB)
+        at_xpath('ns:close', :ns => NS_IBB)
       end
 
       # Get the sid of the file transfer

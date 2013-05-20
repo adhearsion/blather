@@ -35,7 +35,7 @@ class SASLError < BlatherError
   # @return [Symbol] a symbol representing the error name
   def name
     if @node
-      name = @node.find_first('ns:*', :ns => SASL_ERR_NS).element_name
+      name = @node.at_xpath('ns:*', :ns => SASL_ERR_NS).element_name
       name.gsub('-', '_').to_sym
     end
   end

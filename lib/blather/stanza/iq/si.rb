@@ -101,7 +101,7 @@ class Iq
       #
       # @return [Si::Si]
       def self.find_or_create(parent)
-        if found_si = parent.find_first('//ns:si', :ns => NS_SI)
+        if found_si = parent.at_xpath('//ns:si', :ns => NS_SI)
           si = self.new found_si
           found_si.remove
         else
@@ -190,7 +190,7 @@ class Iq
         #
         # @return [Si::Si::Feature]
         def self.find_or_create(parent)
-          if found_feature = parent.find_first('//ns:feature', :ns => self.registered_ns)
+          if found_feature = parent.at_xpath('//ns:feature', :ns => self.registered_ns)
             feature = self.new found_feature
             found_feature.remove
           else
@@ -237,7 +237,7 @@ class Iq
         #
         # @return [Si::Si::File]
         def self.find_or_create(parent)
-          if found_file = parent.find_first('//ns:file', :ns => self.registered_ns)
+          if found_file = parent.at_xpath('//ns:file', :ns => self.registered_ns)
             file = self.new found_file
             found_file.remove
           else
@@ -361,7 +361,7 @@ class Iq
         #
         # @return [Si::Si::File::Range]
         def self.find_or_create(parent)
-          if found_range = parent.find_first('//ns:range', :ns => self.registered_ns)
+          if found_range = parent.at_xpath('//ns:range', :ns => self.registered_ns)
             range = self.new found_range
             found_range.remove
           else
