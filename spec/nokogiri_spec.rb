@@ -26,10 +26,4 @@ describe Nokogiri::XML::Node do
     subject['foo'] = 'baz'
     subject['foo'].should == 'baz'
   end
-
-  it 'allows symbols as the path in #xpath' do
-    doc.root = subject
-    doc.xpath(:foo).first.should_not be_nil
-    doc.xpath(:foo).first.should == doc.xpath('/foo').first
-  end
 end

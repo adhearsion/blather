@@ -139,9 +139,9 @@ describe Blather::XMPPNode do
     n << described_class.new('bar', n.document)
     n << described_class.new('bar', n.document)
 
-    n.xpath(:bar).size.should == 2
+    n.xpath('bar').size.should == 2
     n.remove_child 'bar'
-    n.xpath(:bar).size.should == 1
+    n.xpath('bar').size.should == 1
   end
 
   it 'will remove a child with a specific xmlns' do
@@ -151,10 +151,10 @@ describe Blather::XMPPNode do
     c.namespace = 'foo:bar'
     n << c
 
-    n.xpath(:bar).size.should == 1
+    n.xpath('bar').size.should == 1
     n.xpath('//xmlns:bar', :xmlns => 'foo:bar').size.should == 1
     n.remove_child '//xmlns:bar', :xmlns => 'foo:bar'
-    n.xpath(:bar).size.should == 1
+    n.xpath('bar').size.should == 1
     n.xpath('//xmlns:bar', :xmlns => 'foo:bar').size.should == 0
   end
 
@@ -163,9 +163,9 @@ describe Blather::XMPPNode do
     n << described_class.new('bar')
     n << described_class.new('bar')
 
-    n.xpath(:bar).size.should == 2
+    n.xpath('bar').size.should == 2
     n.remove_children 'bar'
-    n.xpath(:bar).size.should == 0
+    n.xpath('bar').size.should == 0
   end
 
   it 'provides a copy mechanism' do

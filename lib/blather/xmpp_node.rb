@@ -179,7 +179,7 @@ module Blather
     # @param [String, nil] ns the namespace the node is in
     # @return [String, nil] the content of the node
     def content_from(name, ns = nil)
-      child = xpath(name, ns).first
+      child = xpath(name.to_s, ns).first
       child.content if child
     end
 
@@ -192,11 +192,11 @@ module Blather
     # @param [String, nil] content the content to set within the node
     def set_content_for(node, content = nil)
       if content
-        child = xpath(node).first
+        child = xpath(node.to_s).first
         self << (child = XMPPNode.new(node, self.document)) unless child
         child.content = content
       else
-        remove_child node
+        remove_child node.to_s
       end
     end
 

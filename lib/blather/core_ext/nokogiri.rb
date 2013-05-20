@@ -17,13 +17,6 @@ module Nokogiri
           attr_set name, value
         end
       end
-
-      alias_method :nokogiri_xpath, :xpath
-      # Override Nokogiri's #xpath method to add the ability to use symbols for lookup
-      def xpath(*paths)
-        paths[0] = paths[0].to_s
-        nokogiri_xpath *paths
-      end
     end
   end
 end

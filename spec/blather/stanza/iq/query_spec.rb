@@ -23,7 +23,7 @@ describe Blather::Stanza::Iq::Query do
 
   it 'ensures a query node exists when calling #query' do
     query = Blather::Stanza::Iq::Query.new
-    query.remove_child :query
+    query.remove_child 'query'
     query.xpath('query').should be_empty
 
     query.query.should_not be_nil
