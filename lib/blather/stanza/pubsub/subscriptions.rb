@@ -33,7 +33,7 @@ class PubSub
     #
     # @return [Blather::XMPPNode]
     def subscriptions
-      aff = pubsub.find_first('subscriptions', self.class.registered_ns)
+      aff = pubsub.find_first('ns:subscriptions', ns: self.class.registered_ns)
       unless aff
         (self.pubsub << (aff = XMPPNode.new('subscriptions', self.document)))
       end

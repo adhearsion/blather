@@ -36,7 +36,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "eventmachine", [">= 1.0.0"]
   s.add_dependency "nokogiri", ["~> 1.5", ">= 1.5.6"]
-  s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]
   s.add_dependency "girl_friday"
 

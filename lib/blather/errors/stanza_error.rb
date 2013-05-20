@@ -24,9 +24,9 @@ class StanzaError < BlatherError
 
     error_node = node.find_first '//*[local-name()="error"]'
 
-    name = error_node.find_first('child::*[name()!="text"]', STANZA_ERR_NS).element_name
+    name = error_node.find_first('child::*[name()!="text"]').element_name
     type = error_node['type']
-    text = node.find_first 'descendant::*[name()="text"]', STANZA_ERR_NS
+    text = node.find_first 'descendant::*[name()="text"]'
     text = text.content if text
 
     extras = error_node.find("descendant::*[name()!='text' and name()!='#{name}']").map { |n| n }

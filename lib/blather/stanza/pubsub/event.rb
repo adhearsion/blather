@@ -82,7 +82,7 @@ class PubSub
     # @return [Blather::XMPPNode]
     def event_node
       node = find_first('//ns:event', :ns => self.class.registered_ns)
-      node = find_first('//event', self.class.registered_ns) unless node
+      node = find_first('//event') unless node
       unless node
         (self << (node = XMPPNode.new('event', self.document)))
         node.namespace = self.class.registered_ns
