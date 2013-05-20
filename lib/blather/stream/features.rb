@@ -66,7 +66,7 @@ class Stream
     end
 
     def feature?(feature)
-      @features && @features.children.find { |v| v.element_name == feature.to_s }
+      @features && @features.children.find { |v| v.node_name == feature.to_s }
     end
   end
 

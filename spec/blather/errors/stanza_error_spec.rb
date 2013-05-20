@@ -73,7 +73,7 @@ describe Blather::StanzaError do
     it 'provides an extras attribute' do
       @err.should respond_to :extras
       @err.extras.should be_instance_of Array
-      @err.extras.first.element_name.should == 'extra-error'
+      @err.extras.first.node_name.should == 'extra-error'
     end
 
     it 'describes itself' do

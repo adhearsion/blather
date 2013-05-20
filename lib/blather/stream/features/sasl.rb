@@ -25,7 +25,7 @@ class Stream
 
     def receive_data(stanza)
       @node = stanza
-      case stanza.element_name
+      case stanza.node_name
       when 'mechanisms'
         available_mechanisms = stanza.children.map { |m| m.content.downcase }
         @mechanisms = MECHANISMS.select { |m| available_mechanisms.include? m }
@@ -35,8 +35,8 @@ class Stream
       when 'success'
         @stream.start
       else
-        if self.respond_to?(stanza.element_name)
-          self.__send__(stanza.element_name)
+        if self.respond_to?(stanza.node_name)
+          self.__send__(stanza.node_name)
         else
           fail! UnknownResponse.new(stanza)
         end

@@ -206,10 +206,10 @@ module Blather
     # Called by the parser with parsed nodes
     # @private
     def receive(node)
-      Blather.log "RECEIVING (#{node.element_name}) #{node}"
+      Blather.log "RECEIVING (#{node.node_name}) #{node}"
 
       if node.namespace && node.namespace.prefix == 'stream'
-        case node.element_name
+        case node.node_name
         when 'stream'
           @state = :ready if @state == :stopped
           return

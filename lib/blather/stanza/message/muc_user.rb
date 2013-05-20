@@ -48,8 +48,8 @@ class Message
     end
 
     class InviteBase < XMPPNode
-      def self.new(element_name, to = nil, from = nil, reason = nil, document = nil)
-        new_node = super element_name, document
+      def self.new(node_name, to = nil, from = nil, reason = nil, document = nil)
+        new_node = super node_name, document
 
         case to
         when self

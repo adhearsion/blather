@@ -7,18 +7,6 @@ describe Nokogiri::XML::Node do
 
   before { doc.root = subject }
 
-  it 'aliases #name to #element_name' do
-    subject.should respond_to :element_name
-    subject.element_name.should == subject.name
-  end
-
-  it 'aliases #name= to #element_name=' do
-    subject.should respond_to :element_name=
-    subject.element_name.should == subject.name
-    subject.element_name = 'bar'
-    subject.element_name.should == 'bar'
-  end
-
   it 'allows symbols as hash keys for attributes' do
     subject['foo'] = 'bar'
     subject['foo'].should == 'bar'

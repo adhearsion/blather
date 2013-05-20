@@ -28,6 +28,6 @@ describe 'Blather::UnknownResponse' do
 
   it 'holds on to a copy of the failure node' do
     @error.should respond_to :node
-    @error.node.element_name.should == 'foo-bar'
+    @error.node.node_name.should == 'foo-bar'
   end
 end

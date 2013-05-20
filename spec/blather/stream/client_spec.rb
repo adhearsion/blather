@@ -657,7 +657,7 @@ describe Blather::Stream::Client do
   it 'fails when an unknown node comes through during SASL negotiation' do
     client.expects(:receive_data).with do |n|
       n.should be_instance_of Blather::UnknownResponse
-      n.node.element_name.should == 'foo-bar'
+      n.node.node_name.should == 'foo-bar'
     end
 
     state = nil
@@ -814,7 +814,7 @@ describe Blather::Stream::Client do
   it 'will return an error if an unknown node comes through during resouce binding' do
     client.expects(:receive_data).with do |n|
       n.should be_instance_of Blather::UnknownResponse
-      n.node.element_name.should == 'foo-bar'
+      n.node.node_name.should == 'foo-bar'
     end
 
     state = nil
@@ -978,7 +978,7 @@ describe Blather::Stream::Client do
   it 'will return an error if an unknown node come through during session establishment' do
     client.expects(:receive_data).with do |n|
       n.should be_instance_of Blather::UnknownResponse
-      n.node.element_name.should == 'foo-bar'
+      n.node.node_name.should == 'foo-bar'
     end
 
     state = nil

@@ -14,7 +14,7 @@ class Stanza
     def self.import(node)
       klass = nil
       if pubsub = node.document.at_xpath('//ns:pubsub', :ns => self.registered_ns)
-        pubsub.children.each { |e| break if klass = class_from_registration(e.element_name, (e.namespace.href if e.namespace)) }
+        pubsub.children.each { |e| break if klass = class_from_registration(e.node_name, (e.namespace.href if e.namespace)) }
       end
       (klass || self).new(node[:type]).inherit(node)
     end

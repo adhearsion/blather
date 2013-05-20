@@ -11,7 +11,7 @@ class Stream
     register TLS_NS
 
     def receive_data(stanza)
-      case stanza.element_name
+      case stanza.node_name
       when 'starttls'
         @stream.send "<starttls xmlns='#{TLS_NS}'/>"
       when 'proceed'

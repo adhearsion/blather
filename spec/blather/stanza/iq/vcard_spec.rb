@@ -60,8 +60,8 @@ describe Blather::Stanza::Iq::Vcard::Vcard do
     query.vcard['PHOTO/TYPE'] = 'image/png'
     query.vcard['PHOTO/BINVAL'] = '===='
     query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.size.should == 2
-    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.element_name == 'TYPE' && n.content == 'image/png' }.should_not be_nil
-    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.element_name == 'BINVAL' && n.content == '====' }.should_not be_nil
+    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.node_name == 'TYPE' && n.content == 'image/png' }.should_not be_nil
+    query.at_xpath('ns:vCard/ns:PHOTO', :ns => 'vcard-temp').children.detect { |n| n.node_name == 'BINVAL' && n.content == '====' }.should_not be_nil
   end
 
   it 'can get vcard elements' do

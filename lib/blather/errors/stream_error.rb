@@ -16,7 +16,7 @@ class StreamError < BlatherError
   #
   # @param [Blather::XMPPNode] node the importable node
   def self.import(node)
-    name = node.at_xpath('descendant::*[name()!="text"]').element_name
+    name = node.at_xpath('descendant::*[name()!="text"]').node_name
 
     text = node.at_xpath 'descendant::*[name()="text"]'
     text = text.content if text

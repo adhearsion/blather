@@ -42,11 +42,11 @@ module Blather
     # @return the appropriate object based on the node name and namespace
     def self.import(node, *decorators)
       ns = (node.namespace.href if node.namespace)
-      klass = class_from_registration(node.element_name, ns)
+      klass = class_from_registration(node.node_name, ns)
       if klass && klass != self
         klass.import(node, *decorators)
       else
-        new(node.element_name).decorate(*decorators).inherit(node)
+        new(node.node_name).decorate(*decorators).inherit(node)
       end
     end
 

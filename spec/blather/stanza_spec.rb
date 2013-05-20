@@ -30,7 +30,7 @@ describe Blather::Stanza do
 
   it 'can import a node' do
     s = Blather::Stanza.import Blather::XMPPNode.new('foo')
-    s.element_name.should == 'foo'
+    s.node_name.should == 'foo'
   end
 
   it 'provides an #error? helper' do

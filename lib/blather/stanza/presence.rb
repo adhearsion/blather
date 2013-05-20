@@ -88,7 +88,7 @@ class Stanza
     def self.import(node, *decorators) # :nodoc:
       node.children.each do |e|
         ns = e.namespace ? e.namespace.href : nil
-        klass = class_from_registration e.element_name, ns
+        klass = class_from_registration e.node_name, ns
         decorators << klass if klass
       end
 
@@ -102,7 +102,7 @@ class Stanza
       super node, *decorators
     end
 
-    # Ensure element_name is "presence" for all subclasses
+    # Ensure node_name is "presence" for all subclasses
     def self.new(*args)
       super :presence
     end

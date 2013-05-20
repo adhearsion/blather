@@ -6,7 +6,7 @@ describe Blather::XMPPNode do
   it 'generates a node based on the registered_name' do
     foo = Class.new(Blather::XMPPNode)
     foo.registered_name = 'foo'
-    foo.new.element_name.should == 'foo'
+    foo.new.node_name.should == 'foo'
   end
 
   it 'sets the namespace on creation' do
@@ -49,7 +49,7 @@ describe Blather::XMPPNode do
   subject { described_class.new node_name }
 
   it 'generates a new node automatically setting the document' do
-    subject.element_name.should == 'foo'
+    subject.node_name.should == 'foo'
     subject.document.should_not == doc
   end
 
@@ -64,7 +64,7 @@ describe Blather::XMPPNode do
 
   it 'generates a new node with the given document' do
     n = described_class.new 'foo', doc
-    n.element_name.should == 'foo'
+    n.node_name.should == 'foo'
     n.document.should == doc
   end
 
@@ -172,7 +172,7 @@ describe Blather::XMPPNode do
     n = described_class.new 'foo'
     n2 = n.copy
     n2.object_id.should_not == n.object_id
-    n2.element_name.should == n.element_name
+    n2.node_name.should == n.node_name
   end
 
   it 'provides an inherit mechanism' do

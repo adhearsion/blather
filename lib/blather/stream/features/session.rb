@@ -13,7 +13,7 @@ class Stream
 
     def receive_data(stanza)
       @node = stanza
-      case stanza.element_name
+      case stanza.node_name
       when 'session'  then  session
       when 'iq'       then  check_response
       else                  fail!(UnknownResponse.new(stanza))

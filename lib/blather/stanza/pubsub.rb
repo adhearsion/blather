@@ -18,7 +18,7 @@ class Stanza
       if pubsub = node.document.at_xpath('//ns:pubsub', :ns => self.registered_ns)
         pubsub.children.detect do |e|
           ns = e.namespace ? e.namespace.href : nil
-          klass = class_from_registration(e.element_name, ns)
+          klass = class_from_registration(e.node_name, ns)
         end
       end
       (klass || self).new(node[:type]).inherit(node)

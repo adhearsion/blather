@@ -6,7 +6,7 @@ class Stream
     NAMESPACE = 'jabber:component:accept'
 
     def receive(node) # :nodoc:
-      if node.element_name == 'handshake'
+      if node.node_name == 'handshake'
         ready!
       else
         super

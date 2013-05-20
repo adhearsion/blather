@@ -63,7 +63,7 @@ class Stanza
       klass = nil
       node.children.detect do |e|
         ns = e.namespace ? e.namespace.href : nil
-        klass = class_from_registration(e.element_name, ns)
+        klass = class_from_registration(e.node_name, ns)
       end
 
       if klass && klass != self

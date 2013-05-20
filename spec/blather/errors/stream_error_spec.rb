@@ -54,7 +54,7 @@ describe 'Blather::StreamError when instantiated' do
     @err.should respond_to :extras
     @err.extras.should be_instance_of Array
     @err.extras.size.should == 1
-    @err.extras.first.element_name.should == 'extra-error'
+    @err.extras.first.node_name.should == 'extra-error'
   end
 
   it 'describes itself' do

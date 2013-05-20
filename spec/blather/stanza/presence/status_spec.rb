@@ -87,7 +87,7 @@ describe Blather::Stanza::Presence::Status do
     status.priority.should == 0
 
     status.priority = 10
-    status.children.detect { |n| n.element_name == 'priority' }.should_not be_nil
+    status.children.detect { |n| n.node_name == 'priority' }.should_not be_nil
     status.priority.should == 10
   end
 
@@ -96,7 +96,7 @@ describe Blather::Stanza::Presence::Status do
     status.message.should be_nil
 
     status.message = 'new message'
-    status.children.detect { |n| n.element_name == 'status' }.should_not be_nil
+    status.children.detect { |n| n.node_name == 'status' }.should_not be_nil
     status.message.should == 'new message'
   end
 

@@ -24,7 +24,7 @@ class StanzaError < BlatherError
 
     error_node = node.at_xpath '//*[local-name()="error"]'
 
-    name = error_node.at_xpath('child::*[name()!="text"]').element_name
+    name = error_node.at_xpath('child::*[name()!="text"]').node_name
     type = error_node['type']
     text = node.at_xpath 'descendant::*[name()="text"]'
     text = text.content if text
