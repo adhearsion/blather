@@ -90,8 +90,6 @@ describe Blather::XMPPNode do
     subject[:bar].should be_nil
     subject.write_attr :bar, '1.0', :to_i
     subject[:bar].should == '1'
-    subject.write_attr :bar, nil, :to_i
-    subject[:bar].should == nil
   end
 
   it 'provides a content reader' do

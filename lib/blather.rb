@@ -15,7 +15,6 @@
 
   blather/core_ext/eventmachine
   blather/core_ext/ipaddr
-  blather/core_ext/nokogiri
 
   blather/cert_store
   blather/errors

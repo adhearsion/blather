@@ -84,8 +84,11 @@ module Blather
       state, msg, to = state
 
       status = Stanza::Presence::Status.new state, msg
-      status.to = to
-      @status = status unless to
+      if to
+        status.to = to
+      else
+        @status = status
+      end
 
       write status
     end

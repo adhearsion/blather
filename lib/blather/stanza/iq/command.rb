@@ -53,7 +53,7 @@ class Iq
     # @return [self]
     def reply!(opts = {})
       super
-      self.action = nil
+      self.delete 'action'
       self
     end
 

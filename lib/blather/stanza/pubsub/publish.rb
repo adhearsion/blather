@@ -21,7 +21,8 @@ class PubSub
     # @param [#to_s] payload the payload to publish see {#payload=}
     def self.new(host = nil, node = nil, type = :set, payload = nil)
       new_node = super(type, host)
-      new_node.node = node
+      new_node.publish
+      new_node.node = node if node
       new_node.payload = payload if payload
       new_node
     end

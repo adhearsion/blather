@@ -93,12 +93,12 @@ class Stanza
           new_node.name = name[:name]
           new_node.type = name[:type]
           new_node.category = name[:category]
-          new_node.xml_lang = name[:xml_lang]
+          new_node.xml_lang = name[:xml_lang] if xml_lang
         else
           new_node.name = name
           new_node.type = type
           new_node.category = category
-          new_node.xml_lang = xml_lang
+          new_node.xml_lang = xml_lang if xml_lang
         end
         new_node
       end

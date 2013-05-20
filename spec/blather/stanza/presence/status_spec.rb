@@ -37,14 +37,12 @@ describe Blather::Stanza::Presence::Status do
     status.message.should == 'Say hello!'
   end
 
-  it 'ensures type is nil or :unavailable' do
+  it 'ensures type can be set to :unavailable' do
     status = Blather::Stanza::Presence::Status.new
     lambda { status.type = :invalid_type_name }.should raise_error(Blather::ArgumentError)
 
-    [nil, :unavailable].each do |valid_type|
-      status.type = valid_type
-      status.type.should == valid_type
-    end
+    status.type = :unavailable
+    status.type.should == :unavailable
   end
 
   it 'ensures state is one of Presence::Status::VALID_STATES' do

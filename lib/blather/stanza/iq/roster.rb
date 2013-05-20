@@ -85,11 +85,11 @@ class Iq
           new_node.ask = jid[:ask]
           new_node.groups = jid[:groups]
         else
-          new_node.jid = jid
-          new_node.name = name
-          new_node.subscription = subscription
-          new_node.ask = ask
-          new_node.groups = groups
+          new_node.jid = jid if jid
+          new_node.name = name if name
+          new_node.subscription = subscription if subscription
+          new_node.ask = ask if ask
+          new_node.groups = groups if groups
         end
         new_node
       end

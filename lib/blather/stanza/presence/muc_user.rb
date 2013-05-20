@@ -83,9 +83,9 @@ class Presence
           new_node.role = affiliation[:role]
           new_node.jid = affiliation[:jid]
         else
-          new_node.affiliation = affiliation
-          new_node.role = role
-          new_node.jid = jid
+          new_node.affiliation = affiliation if affiliation
+          new_node.role = role if role
+          new_node.jid = jid if jid
         end
         new_node
       end

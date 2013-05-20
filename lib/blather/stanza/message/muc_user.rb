@@ -62,9 +62,9 @@ class Message
           new_node.from = to[:from]
           new_node.reason = to[:reason]
         else
-          new_node.to = to
-          new_node.from = from
-          new_node.reason = reason
+          new_node.to = to if to
+          new_node.from = from if from
+          new_node.reason = reason if reason
         end
         new_node
       end

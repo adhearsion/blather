@@ -21,7 +21,8 @@ class PubSub
     # @param [Array<String>] retractions an array of ids to retract
     def self.new(host = nil, node = nil, type = :set, retractions = [])
       new_node = super(type, host)
-      new_node.node = node
+      new_node.retract
+      new_node.node = node if node
       new_node.retractions = retractions
       new_node
     end
