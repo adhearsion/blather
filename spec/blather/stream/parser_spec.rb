@@ -14,7 +14,7 @@ describe Blather::Stream::Parser do
     end.new
   end
 
-  subject { Blather::Stream::Parser.new client }
+  subject { described_class.new client }
 
   after { subject.finish }
 
@@ -96,8 +96,25 @@ describe Blather::Stream::Parser do
     ]
     process *data
     client.data.size.should == 1
-    Nokogiri::XML(client.data[0].to_s.gsub(/\n\s*/, '')).to_s.should == Nokogiri::XML(data.join).to_s
+    client.data[0].at_xpath('error')['type'].should == 'modify'
     client.data[0].xpath('//*[namespace-uri()="urn:ietf:params:xml:ns:xmpp-stanzas"]').size.should == 2
+  end
+
+  it 'gives each stanza its own document' do
+    data = [
+      '<stream>',
+        '<message>',
+          '<body>foo</body>',
+        '</message>',
+        '<message>',
+          '<body>bar</body>',
+        '</message>'
+    ]
+    process *data
+    client.data.size.should == 3
+    client.data[1].at_xpath('//body').content.should == 'foo'
+    client.data[2].at_xpath('//body').content.should == 'bar'
+    client.data[1].document.should_not == client.data[2].document
   end
 
   it 'handles not absolute namespaces' do

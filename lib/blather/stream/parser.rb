@@ -30,9 +30,8 @@ class Stream
     def start_element_namespace(elem, attrs, prefix, uri, namespaces)
       Blather.log "START ELEM: (#{{:elem => elem, :attrs => attrs, :prefix => prefix, :uri => uri, :ns => namespaces}.inspect})" if @@debug
 
-      args = [elem]
-      args << @current.document if @current
-      node = XMPPNode.new *args
+      document = @current ? @current.document : Nokogiri::XML::Document.new
+      node = Nokogiri::XML::Node.new elem, document
       node.document.root = node unless @current
 
       attrs.each do |attr|
@@ -62,8 +61,9 @@ class Stream
       Blather.log "END ELEM: #{{:elem => elem, :prefix => prefix, :uri => uri}.inspect}" if @@debug
 
       if elem == 'stream'
-        node = XMPPNode.new('end')
-        node.namespace = {prefix => uri}
+        node = Nokogiri::XML::Node.new('end', Nokogiri::XML::Document.new)
+        ns = node.add_namespace prefix, uri
+        node.namespace = ns
         deliver node
       elsif @current.parent != @current.document
         @namespace_definitions.pop
