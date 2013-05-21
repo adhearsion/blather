@@ -11,11 +11,9 @@ class Stream
 
     def initialize(receiver)
       @receiver = receiver
-      @current = nil
-      @namespaces = {}
-      @namespace_definitions = []
       @parser = Nokogiri::XML::SAX::PushParser.new self
       @parser.options = Nokogiri::XML::ParseOptions::NOENT
+      reset
     end
 
     def receive_data(string)
@@ -93,8 +91,12 @@ class Stream
 
   private
     def deliver(node)
-      @current, @namespaces, @namespace_definitions = nil, {}, []
+      reset
       @receiver.receive node
+    end
+
+    def reset
+      @current, @namespaces, @namespace_definitions = nil, {}, []
     end
   end #Parser
 
