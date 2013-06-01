@@ -26,12 +26,8 @@ class Stream
     end
 
     def next!
-      bind = @features.children.detect do |node|
-        node.name == 'bind' && node.namespace.href == 'urn:ietf:params:xml:ns:xmpp-bind'
-      end
-      session = @features.children.detect do |node|
-        node.name == 'session' && node.namespace.href == 'urn:ietf:params:xml:ns:xmpp-session'
-      end
+      bind = @features.at_xpath('ns:bind', ns: 'urn:ietf:params:xml:ns:xmpp-bind')
+      session = @features.at_xpath('ns:session', ns: 'urn:ietf:params:xml:ns:xmpp-session')
       if bind && session && @features.children.last != session
         @features.children.after session
       end
