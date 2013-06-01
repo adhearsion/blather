@@ -26,6 +26,16 @@ class Stream
     end
 
     def next!
+      bind = @features.children.detect do |node|
+        node.name == 'bind' && node.namespace.href == 'urn:ietf:params:xml:ns:xmpp-bind'
+      end
+      session = @features.children.detect do |node|
+        node.name == 'session' && node.namespace.href == 'urn:ietf:params:xml:ns:xmpp-session'
+      end
+      if bind && session && @features.children.last != session
+        @features.children.after session
+      end
+
       @idx = @idx ? @idx+1 : 0
       if stanza = @features.children[@idx]
         if stanza.namespaces['xmlns'] && (klass = self.class.from_namespace(stanza.namespaces['xmlns']))
