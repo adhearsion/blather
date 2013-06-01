@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Ensure that binding is always performed before session creation, regardless of the order of elements in the feature set provided by the server. This was causing incompatability with Tigase.
 
 # [v0.8.4](https://github.com/adhearsion/blather/compare/v0.8.3...v0.8.4) - [2013-03-20](https://rubygems.org/gems/blather/versions/0.8.4)
   * Bugfix: Only finish stream parser if there is one. This prevents crashes on failure to connect.
