@@ -26,6 +26,12 @@ class Stream
     end
 
     def next!
+      bind = @features.at_xpath('ns:bind', ns: 'urn:ietf:params:xml:ns:xmpp-bind')
+      session = @features.at_xpath('ns:session', ns: 'urn:ietf:params:xml:ns:xmpp-session')
+      if bind && session && @features.children.last != session
+        @features.children.after session
+      end
+
       @idx = @idx ? @idx+1 : 0
       if stanza = @features.children[@idx]
         if stanza.namespaces['xmlns'] && (klass = self.class.from_namespace(stanza.namespaces['xmlns']))
