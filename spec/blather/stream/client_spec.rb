@@ -877,6 +877,41 @@ describe Blather::Stream::Client do
     end
   end
 
+  it 'will establish a session only after a bind' do
+    # fixes #95 client auth issue w/ Tigase: handles random order of stream:features items, f.e. <session> before <bind>
+    # thx @pmashchak
+
+    state = nil
+    mocked_server(3) do |val, server|
+      case state
+      when nil
+        state = :started
+        server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
+        server.send_data "<stream:features><session xmlns='urn:ietf:params:xml:ns:xmpp-session' /><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/></stream:features>"
+        val.should match(/stream:stream/)
+
+      when :started
+        state = :complete
+        doc = parse_stanza val
+        doc.find('/iq[@type="set"]/bind_ns:bind', :bind_ns => Blather::Stream::Resource::BIND_NS).should_not be_empty
+        server.send_data "<iq type='result' id='#{doc.find_first('iq')['id']}'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><jid>#{client.jid}</jid></bind></iq>"
+        true
+
+      when :complete
+        doc = parse_stanza val
+        doc.find('/iq[@type="set"]/sess_ns:session', :sess_ns => Blather::Stream::Session::SESSION_NS).should_not be_empty
+        EM.stop
+        true
+
+      else
+        EM.stop
+        false
+
+      end
+    end
+  end
+
+
   it 'will return an error if session establishment errors out' do
     client.expects(:receive_data).with do |n|
       n.name.should == :internal_server_error
