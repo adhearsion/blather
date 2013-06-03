@@ -242,159 +242,159 @@ the preamble to most relevant classes).
 
 Blather provides support in one way or another for many XMPP specifications. Below is a list of specifications and the status of support for them in Blather. This list *may not be correct*. If the list indicates a lack of support for a specification you wish to use, you are encouraged to check that this is correct. Likewise, if you find an overstatement of Blather's spec compliance, please point this out. Also note that even without built-in support for a specification, you can still manually construct and parse stanzas alongside use of Blather's built-in helpers.
 
-Specification | Support | Notes
-------------- | ------- | -----
-RFC 6120      | Full    |
-RFC 6121      | Full    |
-RFC 6122      | Full    |
-XEP-0001      | N/A     |
-XEP-0002      | N/A     |
-XEP-0004      | Partial |
-XEP-0009      | None    |
-XEP-0012      | None    |
-XEP-0013      | None    |
-XEP-0016      | None    |
-XEP-0019      | N/A     |
-XEP-0020      | Partial |
-XEP-0027      | None    |
-XEP-0030      | Partial |
-XEP-0033      | None    |
-XEP-0045      | Partial |
-XEP-0047      | None    |
-XEP-0048      | None    |
-XEP-0049      | None    |
-XEP-0050      | Partial |
-XEP-0053      | None    |
-XEP-0054      | None    |
-XEP-0055      | None    |
-XEP-0059      | None    |
-XEP-0060      | Partial |
-XEP-0065      | None    |
-XEP-0066      | None    |
-XEP-0068      | None    |
-XEP-0070      | None    |
-XEP-0071      | Partial |
-XEP-0072      | None    |
-XEP-0076      | None    |
-XEP-0077      | None    |
-XEP-0079      | None    |
-XEP-0080      | None    |
-XEP-0082      | None    |
-XEP-0083      | None    |
-XEP-0084      | None    |
-XEP-0085      | Partial |
-XEP-0092      | None    |
-XEP-0095      | Partial |
-XEP-0096      | Partial |
-XEP-0100      | None    |
-XEP-0106      | None    |
-XEP-0107      | None    |
-XEP-0108      | None    |
-XEP-0114      | Full    |
-XEP-0115      | Partial |
-XEP-0118      | None    |
-XEP-0122      | None    |
-XEP-0124      | None    |
-XEP-0126      | None    |
-XEP-0127      | None    |
-XEP-0128      | None    |
-XEP-0130      | None    |
-XEP-0131      | None    |
-XEP-0132      | None    |
-XEP-0133      | None    |
-XEP-0134      | None    |
-XEP-0136      | None    |
-XEP-0137      | None    |
-XEP-0138      | None    |
-XEP-0141      | None    |
-XEP-0143      | None    |
-XEP-0144      | N/A     |
-XEP-0145      | None    |
-XEP-0146      | None    |
-XEP-0147      | None    |
-XEP-0148      | None    |
-XEP-0149      | None    |
-XEP-0153      | None    |
-XEP-0155      | None    |
-XEP-0156      | None    |
-XEP-0157      | None    |
-XEP-0158      | None    |
-XEP-0160      | None    |
-XEP-0163      | Partial |
-XEP-0166      | None    |
-XEP-0167      | None    |
-XEP-0169      | None    |
-XEP-0170      | None    |
-XEP-0171      | None    |
-XEP-0172      | None    |
-XEP-0174      | None    |
-XEP-0175      | None    |
-XEP-0176      | None    |
-XEP-0177      | None    |
-XEP-0178      | None    |
-XEP-0182      | N/A     |
-XEP-0183      | None    |
-XEP-0184      | None    |
-XEP-0185      | None    |
-XEP-0191      | None    |
-XEP-0198      | None    |
-XEP-0199      | Partial |
-XEP-0201      | None    |
-XEP-0202      | None    |
-XEP-0203      | Partial |
-XEP-0205      | None    |
-XEP-0206      | None    |
-XEP-0207      | None    |
-XEP-0220      | None    |
-XEP-0221      | None    |
-XEP-0222      | None    |
-XEP-0223      | None    |
-XEP-0224      | None    |
-XEP-0227      | None    |
-XEP-0229      | None    |
-XEP-0231      | None    |
-XEP-0233      | None    |
-XEP-0234      | None    |
-XEP-0239      | None    |
-XEP-0242      | None    |
-XEP-0243      | None    |
-XEP-0245      | None    |
-XEP-0249      | None    |
-XEP-0256      | None    |
-XEP-0258      | None    |
-XEP-0260      | None    |
-XEP-0261      | None    |
-XEP-0262      | None    |
-XEP-0263      | None    |
-XEP-0266      | None    |
-XEP-0267      | None    |
-XEP-0270      | None    |
-XEP-0273      | None    |
-XEP-0277      | None    |
-XEP-0278      | None    |
-XEP-0280      | None    |
-XEP-0288      | None    |
-XEP-0292      | None    |
-XEP-0293      | None    |
-XEP-0294      | None    |
-XEP-0295      | None    |
-XEP-0296      | None    |
-XEP-0297      | None    |
-XEP-0298      | None    |
-XEP-0299      | None    |
-XEP-0300      | None    |
-XEP-0301      | None    |
-XEP-0302      | None    |
-XEP-0303      | None    |
-XEP-0304      | None    |
-XEP-0305      | None    |
-XEP-0306      | None    |
-XEP-0307      | None    |
-XEP-0308      | None    |
-XEP-0309      | None    |
-XEP-0310      | None    |
-XEP-0311      | None    |
-XEP-0312      | None    |
+Specification                                        | Support | Name | Notes
+---------------------------------------------------- | ------- | ---- | -----
+[RFC 6120](http://tools.ietf.org/html/rfc6120)       | Full    | XMPP: Core |
+[RFC 6121](http://tools.ietf.org/html/rfc6121)       | Full    | XMPP: Instant Messaging and Presence |
+[RFC 6122](http://tools.ietf.org/html/rfc6122)       | Full    | XMPP: Address Format |
+[XEP-0001](http://xmpp.org/extensions/xep-0001.html) | N/A     | XMPP Extension Protocols |
+[XEP-0002](http://xmpp.org/extensions/xep-0002.html) | N/A     | Special Interest Groups (SIGs) |
+[XEP-0004](http://xmpp.org/extensions/xep-0004.html) | Partial | Data Forms |
+[XEP-0009](http://xmpp.org/extensions/xep-0009.html) | None    | Jabber-RPC |
+[XEP-0012](http://xmpp.org/extensions/xep-0012.html) | None    | Last Activity |
+[XEP-0013](http://xmpp.org/extensions/xep-0013.html) | None    | Flexible Offline Message Retrieval |
+[XEP-0016](http://xmpp.org/extensions/xep-0016.html) | None    | Privacy Lists |
+[XEP-0019](http://xmpp.org/extensions/xep-0019.html) | N/A     | Streamlining the SIGs |
+[XEP-0020](http://xmpp.org/extensions/xep-0020.html) | Partial | Feature Negotiation |
+[XEP-0027](http://xmpp.org/extensions/xep-0027.html) | None    | Current Jabber OpenPGP Usage |
+[XEP-0030](http://xmpp.org/extensions/xep-0030.html) | Partial | Service Discovery |
+[XEP-0033](http://xmpp.org/extensions/xep-0033.html) | None    | Extended Stanza Addressing |
+[XEP-0045](http://xmpp.org/extensions/xep-0045.html) | Partial | Multi-User Chat |
+[XEP-0047](http://xmpp.org/extensions/xep-0047.html) | None    | In-Band Bytestreams |
+[XEP-0048](http://xmpp.org/extensions/xep-0048.html) | None    | Bookmarks |
+[XEP-0049](http://xmpp.org/extensions/xep-0049.html) | None    | Private XML Storage |
+[XEP-0050](http://xmpp.org/extensions/xep-0050.html) | Partial | Ad-Hoc Commands |
+[XEP-0053](http://xmpp.org/extensions/xep-0053.html) | None    | XMPP Registrar Function |
+[XEP-0054](http://xmpp.org/extensions/xep-0054.html) | None    | vcard-temp |
+[XEP-0055](http://xmpp.org/extensions/xep-0055.html) | None    | Jabber Search |
+[XEP-0059](http://xmpp.org/extensions/xep-0059.html) | None    | Result Set Management |
+[XEP-0060](http://xmpp.org/extensions/xep-0060.html) | Partial | Publish-Subscribe |
+[XEP-0065](http://xmpp.org/extensions/xep-0065.html) | None    | SOCKS5 Bytestreams |
+[XEP-0066](http://xmpp.org/extensions/xep-0066.html) | None    | Out of Band Data |
+[XEP-0068](http://xmpp.org/extensions/xep-0068.html) | None    | Field Standardization for Data Forms |
+[XEP-0070](http://xmpp.org/extensions/xep-0070.html) | None    | Verifying HTTP Requests via XMPP |
+[XEP-0071](http://xmpp.org/extensions/xep-0071.html) | Partial | XHTML-IM |
+[XEP-0072](http://xmpp.org/extensions/xep-0072.html) | None    | SOAP Over XMPP |
+[XEP-0076](http://xmpp.org/extensions/xep-0076.html) | None    | Malicious Stanzas |
+[XEP-0077](http://xmpp.org/extensions/xep-0077.html) | None    | In-Band Registration |
+[XEP-0079](http://xmpp.org/extensions/xep-0079.html) | None    | Advanced Message Processing |
+[XEP-0080](http://xmpp.org/extensions/xep-0080.html) | None    | User Location |
+[XEP-0082](http://xmpp.org/extensions/xep-0082.html) | None    | XMPP Date and Time Profiles |
+[XEP-0083](http://xmpp.org/extensions/xep-0083.html) | None    | Nested Roster Groups |
+[XEP-0084](http://xmpp.org/extensions/xep-0084.html) | None    | User Avatar |
+[XEP-0085](http://xmpp.org/extensions/xep-0085.html) | Partial | Chat State Notifications |
+[XEP-0092](http://xmpp.org/extensions/xep-0092.html) | None    | Software Version |
+[XEP-0095](http://xmpp.org/extensions/xep-0095.html) | Partial | Stream Initiation |
+[XEP-0096](http://xmpp.org/extensions/xep-0096.html) | Partial | SI File Transfer |
+[XEP-0100](http://xmpp.org/extensions/xep-0100.html) | None    | Gateway Interaction |
+[XEP-0106](http://xmpp.org/extensions/xep-0106.html) | None    | JID Escaping |
+[XEP-0107](http://xmpp.org/extensions/xep-0107.html) | None    | User Mood |
+[XEP-0108](http://xmpp.org/extensions/xep-0108.html) | None    | User Activity |
+[XEP-0114](http://xmpp.org/extensions/xep-0114.html) | Full    | Jabber Component Protocol |
+[XEP-0115](http://xmpp.org/extensions/xep-0115.html) | Partial | Entity Capabilities |
+[XEP-0118](http://xmpp.org/extensions/xep-0118.html) | None    | User Tune |
+[XEP-0122](http://xmpp.org/extensions/xep-0122.html) | None    | Data Forms Validation |
+[XEP-0124](http://xmpp.org/extensions/xep-0124.html) | None    | Bidirectional-streams Over Synchronous HTTP (BOSH) |
+[XEP-0126](http://xmpp.org/extensions/xep-0126.html) | None    | Invisibility |
+[XEP-0127](http://xmpp.org/extensions/xep-0127.html) | None    | Common Alerting Protocol (CAP) Over XMPP |
+[XEP-0128](http://xmpp.org/extensions/xep-0128.html) | None    | Service Discovery Extensions |
+[XEP-0130](http://xmpp.org/extensions/xep-0130.html) | None    | Waiting Lists |
+[XEP-0131](http://xmpp.org/extensions/xep-0131.html) | None    | Stanza Headers and Internet Metadata |
+[XEP-0132](http://xmpp.org/extensions/xep-0132.html) | None    | Presence Obtained via Kinesthetic Excitation (POKE) |
+[XEP-0133](http://xmpp.org/extensions/xep-0133.html) | None    | Service Administration |
+[XEP-0134](http://xmpp.org/extensions/xep-0134.html) | None    | XMPP Design Guidelines |
+[XEP-0136](http://xmpp.org/extensions/xep-0136.html) | None    | Message Archiving |
+[XEP-0137](http://xmpp.org/extensions/xep-0137.html) | None    | Publishing Stream Initiation Requests |
+[XEP-0138](http://xmpp.org/extensions/xep-0138.html) | None    | Stream Compression |
+[XEP-0141](http://xmpp.org/extensions/xep-0141.html) | None    | Data Forms Layout |
+[XEP-0143](http://xmpp.org/extensions/xep-0143.html) | None    | Guidelines for Authors of XMPP Extension Protocols |
+[XEP-0144](http://xmpp.org/extensions/xep-0144.html) | N/A     | Roster Item Exchange |
+[XEP-0145](http://xmpp.org/extensions/xep-0145.html) | None    | Annotations |
+[XEP-0146](http://xmpp.org/extensions/xep-0146.html) | None    | Remote Controlling Clients |
+[XEP-0147](http://xmpp.org/extensions/xep-0147.html) | None    | XMPP URI Scheme Query Components |
+[XEP-0148](http://xmpp.org/extensions/xep-0148.html) | None    | Instant Messaging Intelligence Quotient (IM IQ) |
+[XEP-0149](http://xmpp.org/extensions/xep-0149.html) | None    | Time Periods |
+[XEP-0153](http://xmpp.org/extensions/xep-0153.html) | None    | vCard-Based Avatars |
+[XEP-0155](http://xmpp.org/extensions/xep-0155.html) | None    | Stanza Session Negotiation |
+[XEP-0156](http://xmpp.org/extensions/xep-0156.html) | None    | Discovering Alternative XMPP Connection Methods |
+[XEP-0157](http://xmpp.org/extensions/xep-0157.html) | None    | Contact Addresses for XMPP Services |
+[XEP-0158](http://xmpp.org/extensions/xep-0158.html) | None    | CAPTCHA Forms |
+[XEP-0160](http://xmpp.org/extensions/xep-0160.html) | None    | Best Practices for Handling Offline Messages |
+[XEP-0163](http://xmpp.org/extensions/xep-0163.html) | Partial | Personal Eventing Protocol |
+[XEP-0166](http://xmpp.org/extensions/xep-0166.html) | None    | Jingle |
+[XEP-0167](http://xmpp.org/extensions/xep-0167.html) | None    | Jingle RTP Sessions |
+[XEP-0169](http://xmpp.org/extensions/xep-0169.html) | None    | Twas The Night Before Christmas (Jabber Version) |
+[XEP-0170](http://xmpp.org/extensions/xep-0170.html) | None    | Recommended Order of Stream Feature Negotiation |
+[XEP-0171](http://xmpp.org/extensions/xep-0171.html) | None    | Language Translation |
+[XEP-0172](http://xmpp.org/extensions/xep-0172.html) | None    | User Nickname |
+[XEP-0174](http://xmpp.org/extensions/xep-0174.html) | None    | Serverless Messaging |
+[XEP-0175](http://xmpp.org/extensions/xep-0175.html) | None    | Best Practices for Use of SASL ANONYMOUS |
+[XEP-0176](http://xmpp.org/extensions/xep-0176.html) | None    | Jingle ICE-UDP Transport Method |
+[XEP-0177](http://xmpp.org/extensions/xep-0177.html) | None    | Jingle Raw UDP Transport Method |
+[XEP-0178](http://xmpp.org/extensions/xep-0178.html) | None    | Best Practices for Use of SASL EXTERNAL with Certificates |
+[XEP-0182](http://xmpp.org/extensions/xep-0182.html) | N/A     | Application-Specific Error Conditions |
+[XEP-0183](http://xmpp.org/extensions/xep-0183.html) | None    | Jingle Telepathy Transport |
+[XEP-0184](http://xmpp.org/extensions/xep-0184.html) | None    | Message Delivery Receipts |
+[XEP-0185](http://xmpp.org/extensions/xep-0185.html) | None    | Dialback Key Generation and Validation |
+[XEP-0191](http://xmpp.org/extensions/xep-0191.html) | None    | Blocking Command|
+[XEP-0198](http://xmpp.org/extensions/xep-0198.html) | None    | Stream Management |
+[XEP-0199](http://xmpp.org/extensions/xep-0199.html) | Partial | XMPP Ping |
+[XEP-0201](http://xmpp.org/extensions/xep-0201.html) | None    | Best Practices for Message Threads |
+[XEP-0202](http://xmpp.org/extensions/xep-0202.html) | None    | Entity Time |
+[XEP-0203](http://xmpp.org/extensions/xep-0203.html) | Partial | Delayed Delivery |
+[XEP-0205](http://xmpp.org/extensions/xep-0205.html) | None    | Best Practices to Discourage Denial of Service Attacks |
+[XEP-0206](http://xmpp.org/extensions/xep-0206.html) | None    | XMPP Over BOSH |
+[XEP-0207](http://xmpp.org/extensions/xep-0207.html) | None    | XMPP Eventing via Pubsub |
+[XEP-0220](http://xmpp.org/extensions/xep-0220.html) | None    | Server Dialback |
+[XEP-0221](http://xmpp.org/extensions/xep-0221.html) | None    | Data Forms Media Element |
+[XEP-0222](http://xmpp.org/extensions/xep-0222.html) | None    | Persistent Storage of Public Data via PubSub |
+[XEP-0223](http://xmpp.org/extensions/xep-0223.html) | None    | Persistent Storage of Private Data via PubSub |
+[XEP-0224](http://xmpp.org/extensions/xep-0224.html) | None    | Attention |
+[XEP-0227](http://xmpp.org/extensions/xep-0227.html) | None    | Portable Import/Export Format for XMPP-IM Servers |
+[XEP-0229](http://xmpp.org/extensions/xep-0229.html) | None    | Stream Compression with LZW |
+[XEP-0231](http://xmpp.org/extensions/xep-0231.html) | None    | Bits of Binary |
+[XEP-0233](http://xmpp.org/extensions/xep-0233.html) | None    | Domain-Based Service Names in XMPP SASL Negotiation |
+[XEP-0234](http://xmpp.org/extensions/xep-0234.html) | None    | Jingle File Transfer |
+[XEP-0239](http://xmpp.org/extensions/xep-0239.html) | None    | Binary XMPP |
+[XEP-0242](http://xmpp.org/extensions/xep-0242.html) | None    | XMPP Client Compliance 2009 |
+[XEP-0243](http://xmpp.org/extensions/xep-0243.html) | None    | XMPP Server Compliance 2009 |
+[XEP-0245](http://xmpp.org/extensions/xep-0245.html) | None    | The /me Command |
+[XEP-0249](http://xmpp.org/extensions/xep-0249.html) | None    | Direct MUC Invitations |
+[XEP-0256](http://xmpp.org/extensions/xep-0256.html) | None    | Last Activity in Presence |
+[XEP-0258](http://xmpp.org/extensions/xep-0258.html) | None    | Security Labels in XMPP |
+[XEP-0260](http://xmpp.org/extensions/xep-0260.html) | None    | Jingle SOCKS5 Bytestreams Transport Method |
+[XEP-0261](http://xmpp.org/extensions/xep-0261.html) | None    | Jingle In-Band Bytestreams Transport Method |
+[XEP-0262](http://xmpp.org/extensions/xep-0262.html) | None    | Use of ZRTP in Jingle RTP Sessions |
+[XEP-0263](http://xmpp.org/extensions/xep-0263.html) | None    | ECO-XMPP |
+[XEP-0266](http://xmpp.org/extensions/xep-0266.html) | None    | Codecs for Jingle Audio |
+[XEP-0267](http://xmpp.org/extensions/xep-0267.html) | None    | Server Buddies |
+[XEP-0270](http://xmpp.org/extensions/xep-0270.html) | None    | XMPP Compliance Suites 2010 |
+[XEP-0273](http://xmpp.org/extensions/xep-0273.html) | None    | Stanza Interception and Filtering Technology (SIFT) |
+[XEP-0277](http://xmpp.org/extensions/xep-0277.html) | None    | Microblogging over XMPP |
+[XEP-0278](http://xmpp.org/extensions/xep-0278.html) | None    | Jingle Relay Nodes |
+[XEP-0280](http://xmpp.org/extensions/xep-0280.html) | None    | Message Carbons |
+[XEP-0288](http://xmpp.org/extensions/xep-0288.html) | None    | Bidirectional Server-to-Server Connections |
+[XEP-0292](http://xmpp.org/extensions/xep-0292.html) | None    | vCard4 Over XMPP |
+[XEP-0293](http://xmpp.org/extensions/xep-0293.html) | None    | Jingle RTP Feedback Negotiation |
+[XEP-0294](http://xmpp.org/extensions/xep-0294.html) | None    | Jingle RTP Header Extensions Negotiation |
+[XEP-0295](http://xmpp.org/extensions/xep-0295.html) | None    | JSON Encodings for XMPP |
+[XEP-0296](http://xmpp.org/extensions/xep-0296.html) | None    | Best Practices for Resource Locking |
+[XEP-0297](http://xmpp.org/extensions/xep-0297.html) | None    | Stanza Forwarding |
+[XEP-0298](http://xmpp.org/extensions/xep-0298.html) | None    | Delivering Conference Information to Jingle Participants (Coin) |
+[XEP-0299](http://xmpp.org/extensions/xep-0299.html) | None    | Codecs for Jingle Video |
+[XEP-0300](http://xmpp.org/extensions/xep-0300.html) | None    | Use of Cryptographic Hash Functions in XMPP |
+[XEP-0301](http://xmpp.org/extensions/xep-0301.html) | None    | In-Band Real Time Text |
+[XEP-0302](http://xmpp.org/extensions/xep-0302.html) | None    | XMPP Compliance Suites 2012 |
+[XEP-0303](http://xmpp.org/extensions/xep-0303.html) | None    | Commenting |
+[XEP-0304](http://xmpp.org/extensions/xep-0304.html) | None    | Whitespace Keepalive Negotiation |
+[XEP-0305](http://xmpp.org/extensions/xep-0305.html) | None    | XMPP Quickstart |
+[XEP-0306](http://xmpp.org/extensions/xep-0306.html) | None    | Extensible Status Conditions for Multi-User Chat |
+[XEP-0307](http://xmpp.org/extensions/xep-0307.html) | None    | Unique Room Names for Multi-User Chat |
+[XEP-0308](http://xmpp.org/extensions/xep-0308.html) | None    | Last Message Correction |
+[XEP-0309](http://xmpp.org/extensions/xep-0309.html) | None    | Service Directories |
+[XEP-0310](http://xmpp.org/extensions/xep-0310.html) | None    | Presence State Annotations |
+[XEP-0311](http://xmpp.org/extensions/xep-0311.html) | None    | MUC Fast Reconnect |
+[XEP-0312](http://xmpp.org/extensions/xep-0312.html) | None    | PubSub Since |
 
 
 # Contributions
