@@ -29,7 +29,7 @@ class Stream
       bind = @features.at_xpath('ns:bind', ns: 'urn:ietf:params:xml:ns:xmpp-bind')
       session = @features.at_xpath('ns:session', ns: 'urn:ietf:params:xml:ns:xmpp-session')
       if bind && session && @features.children.last != session
-        @features.children.after session
+        bind.after session
       end
 
       @idx = @idx ? @idx+1 : 0

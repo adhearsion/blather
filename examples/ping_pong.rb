@@ -6,9 +6,9 @@ module Ping
   extend Blather::DSL
   def self.run; client.run; end
 
-  setup 'echo@jabber.local/ping', 'echo'
+  setup 'ping@your.jabber.server', 'password'
 
-  status :from => Blather::JID.new('echo@jabber.local/pong') do |s|
+  status :from => /pong@your\.jabber\.server/ do |s|
     puts "serve!"
     say s.from, 'ping'
   end
@@ -23,7 +23,7 @@ module Pong
   extend Blather::DSL
   def self.run; client.run; end
 
-  setup 'echo@jabber.local/pong', 'echo'
+  setup 'pong@your.jabber.server', 'password'
   message :chat?, :body => 'ping' do |m|
     puts "pong!"
     say m.from, 'pong'

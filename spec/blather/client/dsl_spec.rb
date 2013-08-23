@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'blather/client/dsl'
 
+include Blather::DSL
+
 describe Blather::DSL do
   before do
     @client = Blather::Client.new
@@ -262,5 +264,20 @@ describe Blather::DSL do
     @client.stubs(:jid).returns jid
     @dsl.pubsub.should be_instance_of Blather::DSL::PubSub
     @dsl.pubsub.host.should == jid.domain
+  end
+
+  context "included in a class which defines methods which collide with handler names" do
+    class CollisionTarget
+      include Blather::DSL
+
+      def presence
+        :ghostly
+      end
+    end
+
+    it "should override the handlers" do
+      target = CollisionTarget.new
+      target.presence.should be :ghostly
+    end
   end
 end

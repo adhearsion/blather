@@ -85,8 +85,11 @@ module Blather
     autoload :PubSub, File.expand_path(File.join(File.dirname(__FILE__), *%w[dsl pubsub]))
 
     def self.append_features(o)
+      # Generate a method for every stanza handler that exists.
       Blather::Stanza.handler_list.each do |handler_name|
-        o.__send__ :remove_method, handler_name if !o.is_a?(Class) && o.method_defined?(handler_name)
+        o.__send__ :define_method, handler_name do |*args, &callback|
+          handle handler_name, *args, &callback
+        end
       end
       super
     end
@@ -306,15 +309,6 @@ module Blather
         client.write r
       end
       client.write client.caps.c
-    end
-
-    # Generate a method for every stanza handler that exists.
-    Blather::Stanza.handler_list.each do |handler_name|
-      module_eval <<-METHOD, __FILE__, __LINE__
-        def #{handler_name}(*args, &callback)
-          handle :#{handler_name}, *args, &callback
-        end
-      METHOD
     end
   end  # DSL
 end  # Blather
