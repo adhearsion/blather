@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Ensure that session creation always comes immediately after binding. Fixes incompatibility with ejabberd.
 
 # [v0.8.5](https://github.com/adhearsion/blather/compare/v0.8.4...v0.8.5) - [2013-06-01](https://rubygems.org/gems/blather/versions/0.8.5)
   * Bugfix: Ensure that binding is always performed before session creation, regardless of the order of elements in the feature set provided by the server. This was causing incompatability with Tigase.
