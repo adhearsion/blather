@@ -83,6 +83,7 @@ describe Blather::Client do
 
   it 'writes to the connection the closes when #close is called' do
     stream.expects(:close_connection_after_writing)
+    EM.stubs(:next_tick).yields
     subject.setup 'me.com', 'secret'
     subject.post_init stream, Blather::JID.new('me.com')
     subject.close
