@@ -1,4 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+
+# [v0.8.6](https://github.com/adhearsion/blather/compare/v0.8.5...v0.8.6) - [2013-08-23](https://rubygems.org/gems/blather/versions/0.8.6)
   * Bugfix: Ensure that session creation always comes immediately after binding. Fixes incompatibility with ejabberd.
   * Bugfix: Close streams on next EM tick to avoid hanging.
   * Bugfix: Ensure handler methods are available even when including the DSL in Object
