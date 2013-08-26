@@ -123,7 +123,7 @@ describe Blather::Stanza::Presence do
     s.handler_hierarchy.should include(Blather::Stanza::Presence::Status.registered_name.to_sym)
   end
 
-  it 'handle message with nested X element without throwing exception uninitialized constant Blather::Stanza::X::InstanceMethods'
+  it 'handle message with nested X element without throwing exception uninitialized constant Blather::Stanza::X::InstanceMethods' do
     string = <<-XML
       <presence from="me@gmx.net/GMX MultiMessenger" to="receiver@gmail.com/480E24CF" lang="de">
         <show>away</show>
@@ -146,4 +146,5 @@ describe Blather::Stanza::Presence do
       </presence>
     XML
     Blather::Stanza::Presence.parse string
+  end
 end
