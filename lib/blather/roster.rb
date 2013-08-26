@@ -47,7 +47,7 @@ module Blather
     # @param [true, false] send send the update over the wire
     # @see Blather::JID
     def push(elem, send = true)
-      jid = elem.respond_to?(:jid) ? elem.jid : JID.new(elem)
+      jid = elem.respond_to?(:jid) && elem.jid ? elem.jid : JID.new(elem)
       @items[key(jid)] = node = RosterItem.new(elem)
 
       @stream.write(node.to_stanza(:set)) if send
