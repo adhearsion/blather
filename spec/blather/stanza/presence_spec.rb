@@ -123,7 +123,7 @@ describe Blather::Stanza::Presence do
     s.handler_hierarchy.should include(Blather::Stanza::Presence::Status.registered_name.to_sym)
   end
 
-  it 'handle message with nested X element without throwing exception uninitialized constant Blather::Stanza::X::InstanceMethods' do
+  it "handle stanzas with nested elements that don't have a decorator module or are not stanzas" do
     string = <<-XML
       <presence from="me@gmx.net/GMX MultiMessenger" to="receiver@gmail.com/480E24CF" lang="de">
         <show>away</show>
@@ -145,6 +145,7 @@ describe Blather::Stanza::Presence do
         <x xmlns="jabber:x:delay" stamp="20130826T22:18:41"/>
       </presence>
     XML
-    Blather::Stanza::Presence.parse string
+    s = Blather::Stanza::Presence.parse string
+    s.should be_a Blather::Stanza::Presence
   end
 end

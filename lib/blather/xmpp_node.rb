@@ -69,7 +69,11 @@ module Blather
     end
 
     def self.decorator_modules
-      [self::InstanceMethods]
+      if self.const_defined?(:InstanceMethods)
+        [self::InstanceMethods]
+      else
+        []
+      end
     end
 
     def decorate(*decorators)
@@ -78,7 +82,7 @@ module Blather
           extend mod
         end
 
-        @handler_hierarchy.unshift decorator.handler_hierarchy.first
+        @handler_hierarchy.unshift decorator.handler_hierarchy.first if decorator.respond_to?(:handler_hierarchy)
       end
       self
     end
