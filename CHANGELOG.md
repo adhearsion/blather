@@ -1,5 +1,14 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
 
+# [v0.8.7](https://github.com/adhearsion/blather/compare/v0.8.6...v0.8.7) - [2013-08-26](https://rubygems.org/gems/blather/versions/0.8.7)
+  * Bugfix: Handle stanzas with nested elements that don't have a decorator module or are not stanzas
+  * Bugfix: Fix the roster which was broken by the DSL being included in Object
+
+# [v0.8.6](https://github.com/adhearsion/blather/compare/v0.8.5...v0.8.6) - [2013-08-23](https://rubygems.org/gems/blather/versions/0.8.6)
+  * Bugfix: Ensure that session creation always comes immediately after binding. Fixes incompatibility with ejabberd.
+  * Bugfix: Close streams on next EM tick to avoid hanging.
+  * Bugfix: Ensure handler methods are available even when including the DSL in Object
+
 # [v0.8.5](https://github.com/adhearsion/blather/compare/v0.8.4...v0.8.5) - [2013-06-01](https://rubygems.org/gems/blather/versions/0.8.5)
   * Bugfix: Ensure that binding is always performed before session creation, regardless of the order of elements in the feature set provided by the server. This was causing incompatability with Tigase.
 

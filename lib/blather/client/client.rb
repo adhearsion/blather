@@ -168,7 +168,7 @@ module Blather
 
     # Close the connection
     def close
-      self.stream.close_connection_after_writing
+      EM.next_tick { self.stream.close_connection_after_writing }
     end
 
     # @private
