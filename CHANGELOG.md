@@ -1,5 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
   * Bugfix: Warn about local file transfers being disabled by default
+  * Bugfix: Ensure that file transfers are accepted instantly. See https://groups.google.com/forum/#!topic/xmpp-blather/LMl6pR9qHfA
 
 # [v0.8.7](https://github.com/adhearsion/blather/compare/v0.8.6...v0.8.7) - [2013-08-26](https://rubygems.org/gems/blather/versions/0.8.7)
   * Bugfix: Handle stanzas with nested elements that don't have a decorator module or are not stanzas
