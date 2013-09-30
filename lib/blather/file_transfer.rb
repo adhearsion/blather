@@ -21,6 +21,8 @@ module Blather
       @allow_s5b = true
       @allow_ibb = true
 
+      Blather.logger.debug "File transfers on the local network are ignored by default. Set #allow_private_ips = true if you need local network file transfers."
+
       @iq = iq
     end
 
@@ -41,7 +43,7 @@ module Blather
           transfer = Blather::FileTransfer::S5b.new(@stream, iq)
           transfer.allow_ibb_fallback = true if @allow_ibb
           transfer.allow_private_ips = true if @allow_private_ips
-          transfer.accept(handler, *params)
+          EM.next_tick { transfer.accept(handler, *params) }
           true
         end
 
@@ -51,7 +53,7 @@ module Blather
 
         @stream.register_handler :ibb_open, :from => @iq.from do |iq|
           transfer = Blather::FileTransfer::Ibb.new(@stream, iq)
-          transfer.accept(handler, *params)
+          EM.next_tick { transfer.accept(handler, *params) }
           true
         end
 
