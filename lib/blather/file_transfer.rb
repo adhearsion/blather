@@ -41,7 +41,7 @@ module Blather
           transfer = Blather::FileTransfer::S5b.new(@stream, iq)
           transfer.allow_ibb_fallback = true if @allow_ibb
           transfer.allow_private_ips = true if @allow_private_ips
-          transfer.accept(handler, *params)
+          EM.next_tick { transfer.accept(handler, *params) }
           true
         end
 
@@ -51,7 +51,7 @@ module Blather
 
         @stream.register_handler :ibb_open, :from => @iq.from do |iq|
           transfer = Blather::FileTransfer::Ibb.new(@stream, iq)
-          transfer.accept(handler, *params)
+          EM.next_tick { transfer.accept(handler, *params) }
           true
         end
 
