@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://adhearsion.com/blather"
   s.summary     = %q{Simpler XMPP built for speed}
   s.description = %q{An XMPP DSL for Ruby written on top of EventMachine and Nokogiri}
+  s.license     = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
