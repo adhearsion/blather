@@ -1,3 +1,3 @@
 module Blather
-  VERSION = '0.8.8'
+  VERSION = '1.0.0'
 end
