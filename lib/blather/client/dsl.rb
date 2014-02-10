@@ -94,6 +94,18 @@ module Blather
       super
     end
 
+    def self.extended(o)
+      # Generate a method for every stanza handler that exists.
+      Blather::Stanza.handler_list.each do |handler_name|
+        module_eval <<-METHOD, __FILE__, __LINE__
+          def #{handler_name}(*args, &callback)
+            handle :#{handler_name}, *args, &callback
+          end
+        METHOD
+      end
+      super
+    end
+
     # The actual client connection
     #
     # @return [Blather::Client]

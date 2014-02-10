@@ -26,7 +26,6 @@ XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.c
 Blather comes with a DSL that makes writing XMPP bots quick and easy. See the examples directory for more advanced examples.
 
 ```ruby
-require 'rubygems'
 require 'blather/client'
 
 setup 'echo@jabber.local', 'echo'
@@ -40,6 +39,49 @@ end
 message :chat?, :body do |m|
   write_to_stream m.reply
 end
+```
+
+The above example is for a standalone script, and [can be run as a command line program](https://github.com/adhearsion/blather#on-the-command-line). If you wish to integrate Blather into an existing application, you will need to avoid `blather/client` and instead do something like this:
+
+```ruby
+require 'blather/client/dsl'
+
+module App
+  extend Blather::DSL
+
+  def self.run
+    EM.run { client.run }
+  end
+
+  setup 'echo@jabber.local', 'echo'
+
+  # Auto approve subscription requests
+  subscription :request? do |s|
+    write_to_stream s.approve!
+  end
+
+  # Echo back what was said
+  message :chat?, :body do |m|
+    write_to_stream m.reply
+  end
+end
+
+trap(:INT) { EM.stop }
+trap(:TERM) { EM.stop }
+
+App.run
+```
+
+If you need to ensure that Blather does not block the rest of your application, run the reactor in a new thread:
+
+```ruby
+Thread.new { App.run }
+```
+
+You can additionally send messages like so:
+
+```ruby
+App.say 'foo@bar.com', 'Hello there!'
 ```
 
 ## Handlers

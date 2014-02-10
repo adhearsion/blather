@@ -1,8 +1,6 @@
 require 'spec_helper'
 require 'blather/client/dsl'
 
-include Blather::DSL
-
 describe Blather::DSL do
   before do
     @client = Blather::Client.new
@@ -264,6 +262,22 @@ describe Blather::DSL do
     @client.stubs(:jid).returns jid
     @dsl.pubsub.should be_instance_of Blather::DSL::PubSub
     @dsl.pubsub.host.should == jid.domain
+  end
+
+  context "extending a module" do
+    let(:test_module) do
+      Module.new do
+        extend Blather::DSL
+      end
+    end
+
+    Blather::Stanza.handler_list.each do |handler_method|
+      it "provides a helper method for #{handler_method}" do
+        guards = [:chat?, {:body => 'exit'}]
+        @client.expects(:register_handler).with handler_method, *guards
+        test_module.__send__(handler_method, *guards)
+      end
+    end
   end
 
   context "included in a class which defines methods which collide with handler names" do

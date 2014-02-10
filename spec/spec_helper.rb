@@ -14,3 +14,7 @@ end
 def parse_stanza(xml)
   Nokogiri::XML.parse xml
 end
+
+def jruby?
+  RUBY_PLATFORM =~ /java/
+end
