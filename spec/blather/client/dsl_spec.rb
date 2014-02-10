@@ -1,8 +1,6 @@
 require 'spec_helper'
 require 'blather/client/dsl'
 
-include Blather::DSL
-
 describe Blather::DSL do
   before do
     @client = Blather::Client.new

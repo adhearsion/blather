@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Fix the DSL module-extended API that was broken by 8327184acc57c20daeaebb975729ff70207eab67
 
 # [v0.8.8](https://github.com/adhearsion/blather/compare/v0.8.7...v0.8.8) - [2013-09-30](https://rubygems.org/gems/blather/versions/0.8.8)
   * Bugfix: Warn about local file transfers being disabled by default
