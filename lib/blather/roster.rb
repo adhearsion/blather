@@ -106,7 +106,7 @@ module Blather
   private
     # Creates a stripped jid
     def self.key(jid)
-      JID.new(jid).stripped.to_s
+      JID.new(jid).stripped.to_s.downcase
     end
 
     # Instance method to wrap around the class method
