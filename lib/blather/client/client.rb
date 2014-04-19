@@ -59,9 +59,11 @@ module Blather
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
 
-      @handler_queue = GirlFriday::WorkQueue.new :handle_stanza, :size => 5 do |stanza|
-        handle_data stanza
-      end
+      @handler_queue = EM::Queue.new
+      @handler_queue.pop(cb=proc{ |stanza|
+        handles stanza
+        @handler_queue.pop cb
+      })      
 
       setup_initial_handlers
     end
