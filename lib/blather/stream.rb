@@ -149,7 +149,7 @@ module Blather
     def connection_completed
       if @connect_timeout
         @connect_timer = EM::Timer.new @connect_timeout do
-          raise ConnectionTimeout, "Stream timed out after #{@connect_timeout} seconds." unless started?
+          close_connection unless started?
         end
       end
       @connected = true
@@ -190,9 +190,6 @@ module Blather
     # @private
     def unbind
       cleanup
-
-      raise NoConnection unless @inited
-      raise ConnectionFailed unless @connected
 
       @state = :stopped
       @client.receive_data @error if @error
