@@ -10,7 +10,7 @@ module MUC
   end
 
   message :groupchat?, :body do |m|
-    unless m.delay || m.from == 'your_username'
+    unless m.delay || m.from == jid.stripped
       echo = Blather::Stanza::Message.new
       echo.to = room
       echo.body = m.body
@@ -19,8 +19,5 @@ module MUC
     end
   end
 end
-
-username = 'chat_username'
-password = 'chat_password'
-MUC.setup username, password
+MUC.setup 'username', 'password'
 EM.run { MUC.run }
