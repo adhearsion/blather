@@ -10,7 +10,7 @@ module MUC
   end
 
   message :groupchat?, :body do |m|
-    unless m.delay || m.from == 'your_username' 
+    unless m.delay || m.from == 'your_username'
       echo = Blather::Stanza::Message.new
       echo.to = room
       echo.body = m.body
