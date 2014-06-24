@@ -3,7 +3,7 @@ require 'blather/client/dsl'
 module MUC
   extend Blather::DSL
   when_ready do
-    room = 'hipchat_room'
+    room = 'room_name'
     nickname = 'NickName'
     puts "Connected ! send messages to #{jid.stripped}."
     join room, nickname
