@@ -180,7 +180,7 @@ module Blather
 
     # @private
     def unbind
-      call_handler_for(:disconnected, nil) || (EM.reactor_running? && EM.stop)
+      call_handler_for(:disconnected, nil)
     end
 
     # @private
