@@ -168,7 +168,11 @@ module Blather
 
     # Close the connection
     def close
-      EM.next_tick { self.stream.close_connection_after_writing }
+      EM.next_tick {
+        handler_queue.shutdown if handler_queue
+        @handler_queue = nil
+        self.stream.close_connection_after_writing
+      }
     end
 
     # @private
