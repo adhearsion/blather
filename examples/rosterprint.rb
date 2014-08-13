@@ -6,7 +6,7 @@ require 'rubygems'
 require 'blather/client'
 
 when_ready do
-  roster.grouped.each do |group, items|
+  my_roster.grouped.each do |group, items|
     puts "#{'*'*3} #{group || 'Ungrouped'} #{'*'*3}"
     items.each { |item| puts "- #{item.name} (#{item.jid})" }
     puts
