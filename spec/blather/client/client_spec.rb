@@ -121,12 +121,57 @@ describe Blather::Client do
     end
   end
 
-  it 'writes to the connection the closes when #close is called' do
-    stream.expects(:close_connection_after_writing)
-    EM.stubs(:next_tick).yields
-    subject.setup 'me.com', 'secret'
-    subject.post_init stream, Blather::JID.new('me.com')
-    subject.close
+  describe '#close' do
+    before do
+      EM.stubs(:next_tick).yields
+      subject.setup 'me.com', 'secret'
+    end
+
+    context "without a setup stream" do
+      it "does not close the connection" do
+        stream.expects(:close_connection_after_writing).never
+        subject.close
+      end
+    end
+
+    context "when a stream is setup" do
+      let(:stream_stopped) { false }
+      before do
+        subject.post_init stream, Blather::JID.new('me.com')
+        stream.stubs(:stopped? => stream_stopped)
+      end
+
+      context "when the stream is stopped" do
+        let(:stream_stopped) { true }
+
+        it "does not close the connection, since it's already closed" do
+          stream.expects(:close_connection_after_writing).never
+        end
+      end
+
+      it 'writes to the connection the closes when #close is called' do
+        stream.expects(:close_connection_after_writing)
+        subject.close
+      end
+
+      it 'shuts down the workqueue' do
+        stream.stubs(:close_connection_after_writing)
+        subject.handler_queue.expects(:shutdown)
+        subject.close
+      end
+
+      it 'forces the work queue to be re-created when referenced' do
+        stream.stubs(:close_connection_after_writing)
+        subject.close
+
+        fake_queue = stub('GirlFriday::WorkQueue')
+        GirlFriday::WorkQueue.expects(:new)
+        .with(:handle_stanza, :size => subject.queue_size)
+          .returns(fake_queue)
+
+        subject.handler_queue.should == fake_queue
+      end
+    end
   end
 
   it 'shuts down EM when #unbind is called if it is running' do
