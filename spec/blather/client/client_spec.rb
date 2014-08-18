@@ -32,34 +32,74 @@ describe Blather::Client do
     subject.caps.should be_kind_of Blather::Stanza::Capabilities
   end
 
-  it 'can be setup' do
-    subject.should respond_to :setup
-    subject.setup('me@me.com', 'pass').should == subject
-  end
+  describe '#setup' do
+    it 'can be setup' do
+      subject.should respond_to :setup
+      subject.setup('me@me.com', 'pass').should == subject
+    end
 
-  it 'knows if it has been setup' do
-    subject.should respond_to :setup?
-    subject.should_not be_setup
-    subject.setup 'me@me.com', 'pass'
-    subject.should be_setup
-  end
+    it 'knows if it has been setup' do
+      subject.should respond_to :setup?
+      subject.should_not be_setup
+      subject.setup 'me@me.com', 'pass'
+      subject.should be_setup
+    end
 
-  it 'cannot be run before being setup' do
-    lambda { subject.run }.should raise_error RuntimeError
-  end
+    it 'cannot be run before being setup' do
+      lambda { subject.run }.should raise_error RuntimeError
+    end
 
-  it 'starts up a Component connection when setup without a node' do
-    setup = 'pubsub.jabber.local', 'secret'
-    subject.setup *setup
-    Blather::Stream::Component.expects(:start).with subject, *setup + [nil, nil, nil, nil]
-    subject.run
-  end
+    it 'starts up a Component connection when setup without a node' do
+      setup = 'pubsub.jabber.local', 'secret'
+      subject.setup *setup
+      Blather::Stream::Component.expects(:start).with subject, *setup + [nil, nil, nil, nil]
+      subject.run
+    end
 
-  it 'starts up a Client connection when setup with a node' do
-    setup = 'test@jabber.local', 'secret'
-    subject.setup *setup
-    Blather::Stream::Client.expects(:start).with subject, *setup + [nil, nil, nil, nil]
-    subject.run
+    it 'starts up a Client connection when setup with a node' do
+      setup = 'test@jabber.local', 'secret'
+      subject.setup *setup
+      Blather::Stream::Client.expects(:start).with subject, *setup + [nil, nil, nil, nil]
+      subject.run
+    end
+
+    context "setting queue size" do
+      let(:jid)        { 'test@jabber.local' }
+      let(:password)   { 'secret' }
+      let(:queue_size) { 3 }
+
+      subject { Blather::Client.setup(jid, password, nil, nil, nil, nil, :workqueue_count => queue_size) }
+
+      it 'sets the queue size on the client' do
+        subject.queue_size.should == queue_size
+      end
+
+      describe 'receiving data' do
+        let(:stanza) { Blather::Stanza::Iq.new }
+
+        context 'when the queue size is 0' do
+          let(:queue_size) { 0 }
+
+          it "has no handler queue" do
+            subject.handler_queue.should be_nil
+          end
+
+          it 'handles the data immediately' do
+            subject.expects(:handle_data).with(stanza)
+            subject.receive_data stanza
+          end
+        end
+
+        context 'when the queue size is non-zero' do
+          let(:queue_size) { 4 }
+
+          it 'enqueues the data on the handler queue' do
+            subject.handler_queue.expects(:<<).with(stanza)
+            subject.receive_data stanza
+          end
+        end
+      end
+    end
   end
 
   it 'knows if it is disconnected' do
