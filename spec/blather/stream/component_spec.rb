@@ -23,8 +23,6 @@ describe Blather::Stream::Component do
     }
   end
 
-  after { sleep 0.1; @stream.cleanup if @stream }
-
   it 'can be started' do
     params = [client, 'comp.id', 'secret', 'host', 1234]
     EM.expects(:connect).with do |*parms|

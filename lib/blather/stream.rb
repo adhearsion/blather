@@ -189,18 +189,15 @@ module Blather
     # Called by EM when the connection is closed
     # @private
     def unbind
-      cleanup
-
       raise NoConnection unless @inited
       raise ConnectionFailed unless @connected
 
+      @parser.finish
+
+      @connect_timer.cancel if @connect_timer
       @state = :stopped
       @client.receive_data @error if @error
       @client.unbind
-    end
-
-    def cleanup
-      @connect_timer.cancel if @connect_timer
     end
 
     # Called by the parser with parsed nodes
