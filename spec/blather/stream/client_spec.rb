@@ -132,6 +132,7 @@ describe Blather::Stream::Client do
       val.should match(/stream:stream/)
       server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
       server.send_data "<message to='a@b/c' from='d@e/f' type='chat' xml:lang='en'><body>Message!</body></message>"
+      server.send_data "</stream:stream>"
       true
     end
   end
