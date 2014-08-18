@@ -8,7 +8,11 @@ RSpec.configure do |config|
   config.filter_run :focus => true
   config.run_all_when_everything_filtered = true
 
-  config.before(:each) { GirlFriday::WorkQueue.immediate! }
+  config.before(:each) do
+    GirlFriday::WorkQueue.immediate!
+    Blather::Stream::Parser.debug = true
+    Blather.logger = Logger.new($stdout).tap { |logger| logger.level = Logger::DEBUG }
+  end
 end
 
 def parse_stanza(xml)
