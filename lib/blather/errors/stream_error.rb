@@ -69,8 +69,8 @@ class StreamError < BlatherError
   # Convert the object to a proper node then convert it to a string
   #
   # @return [String]
-  def to_xml
-    to_node.to_s
+  def to_xml(opts={})
+    to_node.to_xml(opts)
   end
 
   # @private

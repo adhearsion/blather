@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: make to_xml method for errors accept formatting options to prevent exception when used with client.write
 
 # [v1.0.0](https://github.com/adhearsion/blather/compare/v0.8.8...v1.0.0) - [2014-02-10](https://rubygems.org/gems/blather/versions/1.0.0)
   * Stable API promise

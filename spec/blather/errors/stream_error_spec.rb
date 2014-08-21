@@ -72,6 +72,15 @@ describe 'Blather::StreamError when instantiated' do
     doc.xpath("//err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => Blather::StreamError::STREAM_ERR_NS).should_not be_empty
     doc.xpath("//err_ns:extra-error[.='Blather Error']", :err_ns => 'blather:stream:error').should_not be_empty
   end
+
+
+  describe '#to_xml' do
+    it 'accepts optional formatting options' do
+      # without spaces
+      string = @err.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML)
+      expect(string).to eq "<stream:error xmlns:stream=\"http://etherx.jabber.org/streams\"><internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/><text xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\">the server has experienced a misconfiguration</text><extra-error xmlns=\"blather:stream:error\">Blather Error</extra-error></stream:error>"
+    end
+  end
 end
 
 describe 'Each XMPP stream error type' do
