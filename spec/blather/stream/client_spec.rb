@@ -1056,6 +1056,21 @@ describe Blather::Stream::Client do
     comp.send msg
   end
 
+  it 'sends stanza errors to the wire correctly' do
+    stanza = Blather::Stanza::Iq.new :set, 'foo@bar.com', '123'
+    error = Blather::StanzaError.new(stanza, 'registration-required', :cancel)
+    comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
+    comp.expects(:send_data).with { |s| s.should match(/<error type=\"cancel\"><registration-required/); true }
+    comp.send error
+  end
+
+  it 'sends stream errors to the wire correctly' do
+    error = Blather::StreamError.new('foo-error')
+    comp = Blather::Stream::Client.new nil, client, 'node@jid.com/resource', 'pass'
+    comp.expects(:send_data).with { |s| s.should match(/<stream:error xmlns:stream=\"http:\/\/etherx.jabber.org\/streams\"><foo-error/); true }
+    comp.send error
+  end
+
   it 'sends xml without formatting' do
     msg = Blather::Stanza::Message.new 'to@jid.com', 'body'
     msg.xhtml = '<i>xhtml</i> body'
