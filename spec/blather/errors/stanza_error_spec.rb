@@ -94,6 +94,14 @@ describe Blather::StanzaError do
       doc.xpath("/message/error/err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => Blather::StanzaError::STANZA_ERR_NS).should_not be_empty
       doc.xpath("/message/error/extra_ns:extra-error[.='Blather Error']", :extra_ns => 'blather:stanza:error').should_not be_empty
     end
+
+    describe '#to_xml' do
+      it 'accepts optional formatting options' do
+        # without spaces
+        string = @err.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::AS_XML)
+        expect(string).to eq '<message type="error" from="error@jabber.local"><body>test message</body><error type="cancel"><internal-server-error xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/><text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">the server has experienced a misconfiguration</text><extra-error xmlns="blather:stanza:error">Blather Error</extra-error></error></message>'
+      end
+    end
   end
 
   describe 'each XMPP stanza error type' do
