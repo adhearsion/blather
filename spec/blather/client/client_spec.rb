@@ -461,6 +461,27 @@ describe Blather::Client do
       subject.register_handler(:ready) { ready.call }
       subject.post_init stream, Blather::JID.new('n@d/r')
     end
+
+    it 'gracefully handles service unavailability upon requesting the roster' do
+      result_roster = Blather::Stanza::Iq.parse <<-XML
+        <iq type="error" to="n@d/r">
+          <error type="cancel">
+            <service-unavailable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+          </error>
+        </iq>
+      XML
+
+      stream.stubs(:send).with do |s|
+        result_roster.id = s.id
+        subject.receive_data result_roster
+        true
+      end
+
+      ready = mock
+      ready.expects(:call)
+      subject.register_handler(:ready) { ready.call }
+      subject.post_init stream, Blather::JID.new('n@d/r')
+    end
   end
 
   describe 'filters' do
