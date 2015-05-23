@@ -277,7 +277,7 @@ module Blather
 
     def client_post_init
       write_with_handler Stanza::Iq::Roster.new do |node|
-        roster.process node
+        roster.process(node) unless node.error?
         write @status
         ready!
       end

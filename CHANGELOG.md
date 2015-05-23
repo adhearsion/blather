@@ -1,5 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
   * Bugfix: Allow sending errors to the wire directly with correct formatting (previously raised)
+  * Bugfix: Don't pass service unavailable response to be processed as roster in client_post_init
 
 # [v1.0.0](https://github.com/adhearsion/blather/compare/v0.8.8...v1.0.0) - [2014-02-10](https://rubygems.org/gems/blather/versions/1.0.0)
   * Stable API promise
