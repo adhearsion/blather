@@ -52,14 +52,14 @@ describe Blather::Client do
     it 'starts up a Component connection when setup without a node' do
       setup = 'pubsub.jabber.local', 'secret'
       subject.setup *setup
-      Blather::Stream::Component.expects(:start).with subject, *setup + [nil, nil, nil, nil, nil]
+      Blather::Stream::Component.expects(:start).with subject, *setup + [nil, nil, nil, nil, {}]
       subject.run
     end
 
     it 'starts up a Client connection when setup with a node' do
       setup = 'test@jabber.local', 'secret'
       subject.setup *setup
-      Blather::Stream::Client.expects(:start).with subject, *setup + [nil, nil, nil, nil, nil]
+      Blather::Stream::Client.expects(:start).with subject, *setup + [nil, nil, nil, nil, {}]
       subject.run
     end
 

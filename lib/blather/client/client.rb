@@ -221,7 +221,7 @@ module Blather
       @setup << port
       @setup << certs
       @setup << connect_timeout
-      @setup << options[:authcid]
+      @setup << options
       @queue_size = options[:workqueue_count] || 5
       self
     end
