@@ -141,7 +141,7 @@ module Blather
     # @param [Fixnum, String] (optional) port the port to connect on
     # @param [Fixnum] (optional) connection_timeout the time to wait for connection to succeed before timing out
     # @param [Hash] (optional) options
-    def setup(jid, password, host = nil, port = nil, certs = nil, connection_timeout = nil, options = nil)
+    def setup(jid, password, host = nil, port = nil, certs = nil, connection_timeout = nil, options = {})
       client.setup(jid, password, host, port, certs, connection_timeout, options)
     end
 
