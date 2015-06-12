@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Expose alternative authentication ID when setting up a client
 
 # [v1.1.0](https://github.com/adhearsion/blather/compare/v1.0.0...v1.1.0) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.0)
   * Feature: Permit an alternative authentication ID when connection. Used to support [MojoAuth](http://mojoauth.mojolingo.com/) and similar schemes.

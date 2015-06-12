@@ -45,6 +45,7 @@ module Blather
     # domain
     # @param [Fixnum, String] port the port to connect to.
     # @param [Hash] options a list of options to create the client with
+    # @option options [String] :authcid A custom authcid for advanced authentication scenarios
     # @option options [Number] :workqueue_count (5) the number of threads used to process incoming XMPP messages.
     #   If this parameter is specified with 0, no background threads are used;
     #   instead stanzas are handled in the same process that the Client is running in.
@@ -220,6 +221,7 @@ module Blather
       @setup << port
       @setup << certs
       @setup << connect_timeout
+      @setup << options[:authcid]
       @queue_size = options[:workqueue_count] || 5
       self
     end
