@@ -34,7 +34,8 @@ module Blather
   class Client
     attr_reader :jid,
                 :roster,
-                :caps
+                :caps,
+                :queue_size
 
     # Create a new client and set it up
     #
@@ -43,11 +44,16 @@ module Blather
     # @param [String] host if this isn't set it'll be resolved off the JID's
     # domain
     # @param [Fixnum, String] port the port to connect to.
+    # @param [Hash] options a list of options to create the client with
+    # @option options [Number] :workqueue_count (5) the number of threads used to process incoming XMPP messages.
+    #   If this parameter is specified with 0, no background threads are used;
+    #   instead stanzas are handled in the same process that the Client is running in.
     #
     # @return [Blather::Client]
-    def self.setup(jid, password, host = nil, port = nil, certs = nil, connect_timeout = nil)
-      self.new.setup(jid, password, host, port, certs, connect_timeout)
+    def self.setup(jid, password, host = nil, port = nil, certs = nil, connect_timeout = nil, options = {})
+      self.new.setup(jid, password, host, port, certs, connect_timeout, options)
     end
+
 
     def initialize  # @private
       @state = :initializing
@@ -58,10 +64,7 @@ module Blather
       @filters = {:before => [], :after => []}
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
-
-      @handler_queue = GirlFriday::WorkQueue.new :handle_stanza, :size => 5 do |stanza|
-        handle_data stanza
-      end
+      @queue_size = 5
 
       setup_initial_handlers
     end
@@ -168,7 +171,11 @@ module Blather
 
     # Close the connection
     def close
-      EM.next_tick { self.stream.close_connection_after_writing }
+      EM.next_tick {
+        handler_queue.shutdown if handler_queue
+        @handler_queue = nil
+        self.stream.close_connection_after_writing if connected?
+      }
     end
 
     # @private
@@ -185,7 +192,11 @@ module Blather
 
     # @private
     def receive_data(stanza)
-      @handler_queue << stanza
+      if handler_queue
+        handler_queue << stanza
+      else
+        handle_data stanza
+      end
     end
 
     def handle_data(stanza)
@@ -202,14 +213,23 @@ module Blather
     end
 
     # @private
-    def setup(jid, password, host = nil, port = nil, certs = nil, connect_timeout = nil)
+    def setup(jid, password, host = nil, port = nil, certs = nil, connect_timeout = nil, options = {})
       @jid = JID.new(jid)
       @setup = [@jid, password]
       @setup << host
       @setup << port
       @setup << certs
       @setup << connect_timeout
+      @queue_size = options[:workqueue_count] || 5
       self
+    end
+
+    # @private
+    def handler_queue
+      return if queue_size == 0
+      @handler_queue ||= GirlFriday::WorkQueue.new :handle_stanza, :size => queue_size do |stanza|
+        handle_data stanza
+      end
     end
 
     protected
@@ -257,7 +277,7 @@ module Blather
 
     def client_post_init
       write_with_handler Stanza::Iq::Roster.new do |node|
-        roster.process node
+        roster.process(node) unless node.error?
         write @status
         ready!
       end

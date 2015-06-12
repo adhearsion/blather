@@ -6,10 +6,6 @@ describe Blather do
     it "should return a Logger instance" do
       Blather.logger.should be_instance_of Logger
     end
-
-    it "should config log level to info by default" do
-      Blather.logger.level.should == 1
-    end
   end
 
   describe "while using the log method" do

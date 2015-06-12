@@ -10,7 +10,7 @@ describe Blather::CertStore do
   end
 
   it 'can verify valid cert' do
-    subject.trusted?(cert).should be_true
+    subject.trusted?(cert).should be true
   end
 
   it 'can verify invalid cert' do
@@ -19,6 +19,6 @@ describe Blather::CertStore do
 
   it 'cannot verify when the cert authority is not trusted' do
     @store = Blather::CertStore.new("../")
-    @store.trusted?(cert).should be_false
+    @store.trusted?(cert).should be false
   end
 end

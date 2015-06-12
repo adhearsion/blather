@@ -1,4 +1,11 @@
-# Blather [![Build Status](https://travis-ci.org/adhearsion/blather.png?branch=develop)](https://travis-ci.org/adhearsion/blather)
+# Blather
+
+[![Gem Version](https://badge.fury.io/rb/blather.png)](https://rubygems.org/gems/blather)
+[![Build Status](https://secure.travis-ci.org/adhearsion/blather.png?branch=develop)](http://travis-ci.org/adhearsion/blather)
+[![Dependency Status](https://gemnasium.com/adhearsion/blather.png?travis)](https://gemnasium.com/adhearsion/blather)
+[![Code Climate](https://codeclimate.com/github/adhearsion/blather.png)](https://codeclimate.com/github/adhearsion/blather)
+[![Coverage Status](https://coveralls.io/repos/adhearsion/blather/badge.png?branch=develop)](https://coveralls.io/r/adhearsion/blather)
+[![Inline docs](http://inch-ci.org/github/adhearsion/blather.png?branch=develop)](http://inch-ci.org/github/adhearsion/blather)
 
 XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.com/) and [Nokogiri](http://nokogiri.org/).
 

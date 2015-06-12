@@ -21,7 +21,7 @@ describe Blather::Stream::Parser do
   def process(*data)
     client.latch = CountDownLatch.new 1
     data.each { |d| subject.receive_data d }
-    client.latch.wait(2).should be_true
+    client.latch.wait(2).should be true
   end
 
   def check_parse(data)
