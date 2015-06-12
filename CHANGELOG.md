@@ -1,4 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+
+# [v1.1.3](https://github.com/adhearsion/blather/compare/v1.1.2...v1.1.3) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.3)
   * Bugfix: Expose alternative authentication ID in DSL (correct default)
 
 # [v1.1.2](https://github.com/adhearsion/blather/compare/v1.1.1...v1.1.2) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.2)
