@@ -19,30 +19,30 @@ describe Blather::DSL do
 
   it 'allows host to be nil in setup' do
     args = ['jid', 'pass']
-    @client.expects(:setup).with *(args + [nil, nil, nil, nil])
+    @client.expects(:setup).with *(args + [nil, nil, nil, nil, nil])
     @dsl.setup *args
   end
 
   it 'allows port to be nil in setup' do
     args = ['jid', 'pass', 'host']
-    @client.expects(:setup).with *(args + [nil, nil, nil])
+    @client.expects(:setup).with *(args + [nil, nil, nil, nil])
     @dsl.setup *args
   end
 
   it 'allows certs to be nil in setup' do
     args = ['jid', 'pass', 'host', 'port']
-    @client.expects(:setup).with *(args + [nil, nil])
+    @client.expects(:setup).with *(args + [nil, nil, nil])
     @dsl.setup *args
   end
 
   it 'accepts certs in setup' do
     args = ['jid', 'pass', 'host', 'port', 'certs']
-    @client.expects(:setup).with *(args + [nil])
+    @client.expects(:setup).with *(args + [nil, nil])
     @dsl.setup *args
   end
 
   it 'accepts connection timeout in setup' do
-    args = ['jid', 'pass', 'host', 'port', 'certs', 30]
+    args = ['jid', 'pass', 'host', 'port', 'certs', 30, nil]
     @client.expects(:setup).with *args
     @dsl.setup *args
   end
