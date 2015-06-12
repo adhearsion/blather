@@ -1,5 +1,8 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+
+# [v1.1.4](https://github.com/adhearsion/blather/compare/v1.1.4...v1.1.4) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.4)
   * Bugfix: Typo in passing through connection options
+  * Today was a very dark day. I am ashamed of myself.
 
 # [v1.1.3](https://github.com/adhearsion/blather/compare/v1.1.2...v1.1.3) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.3)
   * Bugfix: Expose alternative authentication ID in DSL (correct default)
