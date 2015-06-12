@@ -1,4 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+
+# [v1.1.1](https://github.com/adhearsion/blather/compare/v1.1.0...v1.1.1) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.1)
   * Bugfix: Expose alternative authentication ID when setting up a client
 
 # [v1.1.0](https://github.com/adhearsion/blather/compare/v1.0.0...v1.1.0) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.0)
