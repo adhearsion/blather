@@ -20,6 +20,7 @@ class Stream
       super
       @jid = @stream.jid
       @pass = @stream.password
+      @authcid = @stream.authcid
       @mechanisms = []
     end
 
@@ -145,7 +146,7 @@ class Stream
           @response = {
             :nonce        => @nonce,
             :charset      => 'utf-8',
-            :username     => @jid.node,
+            :username     => @authcid,
             :realm        => @realm || @jid.domain,
             :cnonce       => h(Time.new.to_f.to_s),
             :nc           => '00000001',
@@ -174,7 +175,7 @@ class Stream
     # @private
     module Plain
       def authenticate
-        @stream.send auth_node('PLAIN', b64("#{@jid.stripped}\x00#{@jid.node}\x00#{@pass}"))
+        @stream.send auth_node('PLAIN', b64("#{@jid.stripped}\x00#{@authcid}\x00#{@pass}"))
       end
     end #Plain
 

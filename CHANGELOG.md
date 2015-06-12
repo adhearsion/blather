@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Feature: Permit an alternative authentication ID when connection. Used to support [MojoAuth](http://mojoauth.mojolingo.com/) and similar schemes.
   * Bugfix: Allow sending errors to the wire directly with correct formatting (previously raised)
   * Bugfix: Don't pass service unavailable response to be processed as roster in client_post_init
 

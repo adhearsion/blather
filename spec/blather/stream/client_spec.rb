@@ -5,6 +5,7 @@ describe Blather::Stream::Client do
   let(:client)      { mock 'Client' }
   let(:server_port) { 50000 - rand(1000) }
   let(:jid)         { Blather::JID.new 'n@d/r' }
+  let(:authcid)     { nil }
 
   before do
     [:unbind, :post_init, :jid=].each do |m|
@@ -23,7 +24,7 @@ describe Blather::Stream::Client do
       EventMachine::start_server '127.0.0.1', server_port, ServerMock
 
       # Blather::Stream connection
-      EM.connect('127.0.0.1', server_port, Blather::Stream::Client, client, jid, 'pass') { |c| @stream = c }
+      EM.connect('127.0.0.1', server_port, Blather::Stream::Client, client, jid, 'pass', nil, authcid) { |c| @stream = c }
     }
   end
 
@@ -425,6 +426,76 @@ describe Blather::Stream::Client do
         EM.stop
         false
 
+      end
+    end
+  end
+
+  context "with an alternative authcid specified" do
+    let(:authcid) { 'doo' }
+
+    it 'connects via SASL MD5 when asked' do
+      Time.any_instance.stubs(:to_f).returns(1.1)
+
+      state = nil
+      mocked_server(5) do |val, server|
+        case state
+        when nil
+          state = :started
+          server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>DIGEST-MD5</mechanism></mechanisms></stream:features>"
+          val.should match(/stream:stream/)
+
+        when :started
+          state = :auth_sent
+          server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>cmVhbG09InNvbWVyZWFsbSIsbm9uY2U9Ik9BNk1HOXRFUUdtMmhoIixxb3A9ImF1dGgiLGNoYXJzZXQ9dXRmLTgsYWxnb3JpdGhtPW1kNS1zZXNzCg==</challenge>"
+          val.should match(/auth.*DIGEST\-MD5/)
+
+        when :auth_sent
+          state = :response1_sent
+          server.send_data "<challenge xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>cnNwYXV0aD1lYTQwZjYwMzM1YzQyN2I1NTI3Yjg0ZGJhYmNkZmZmZAo=</challenge>"
+          val.should ==('<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl">bm9uY2U9Ik9BNk1HOXRFUUdtMmhoIixjaGFyc2V0PXV0Zi04LHVzZXJuYW1lPSJkb28iLHJlYWxtPSJzb21lcmVhbG0iLGNub25jZT0iNzc3ZDQ1YmJiY2RmNTBkNDljNDJjNzBhZDdhY2Y1ZmUiLG5jPTAwMDAwMDAxLHFvcD1hdXRoLGRpZ2VzdC11cmk9InhtcHAvZCIscmVzcG9uc2U9YzBhMzQ4MDkyOWJmMDFiMWUyODc0NTE1YWQ5ZjNlYzE=</response>')
+
+        when :response1_sent
+          state = :response2_sent
+          server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+          val.should match(%r{<response xmlns="urn:ietf:params:xml:ns:xmpp-sasl"\s?/>})
+
+        when :response2_sent
+          EM.stop
+          state = :complete
+          val.should match(/stream:stream/)
+
+        else
+          EM.stop
+          false
+
+        end
+      end
+    end
+
+    it 'will connect via SSL PLAIN when asked' do
+      state = nil
+      mocked_server(3) do |val, server|
+        case state
+        when nil
+          state = :started
+          server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'><stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>PLAIN</mechanism></mechanisms></stream:features>"
+          val.should match(/stream:stream/)
+
+        when :started
+          state = :auth_sent
+          server.send_data "<success xmlns='urn:ietf:params:xml:ns:xmpp-sasl' />"
+          Nokogiri::XML(val).to_xml.should == Nokogiri::XML('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">bkBkAGRvbwBwYXNz</auth>').to_xml
+
+        when :auth_sent
+          EM.stop
+          state = :complete
+          val.should match(/stream:stream/)
+
+        else
+          EM.stop
+          false
+
+        end
       end
     end
   end

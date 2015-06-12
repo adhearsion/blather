@@ -56,7 +56,7 @@ module Blather
     # @private
     STREAM_NS = 'http://etherx.jabber.org/streams'
     attr_accessor :password
-    attr_reader :jid
+    attr_reader :jid, :authcid
 
     # Start the stream between client and server
     #
@@ -71,14 +71,17 @@ module Blather
     # @param [String, nil] certs the trusted cert store in pem format to verify
     # communication with the server is trusted.
     # @param [Fixnum, nil] connect_timeout the number of seconds for which to wait for a successful connection
-    def self.start(client, jid, pass, host = nil, port = nil, certs_directory = nil, connect_timeout = nil)
+    # @param [Hash] opts options for modifying the connection
+    # @options opts [String] :authcid The authentication ID, which defaults to the node part of the specified JID
+    def self.start(client, jid, pass, host = nil, port = nil, certs_directory = nil, connect_timeout = nil, opts = {})
       jid = JID.new jid
       port ||= 5222
       if certs_directory
         @store = CertStore.new(certs_directory)
       end
+      authcid = opts[:authcid]
       if host
-        connect host, port, self, client, jid, pass, connect_timeout
+        connect host, port, self, client, jid, pass, connect_timeout, authcid
       else
         require 'resolv'
         srv = []
@@ -90,7 +93,7 @@ module Blather
         end
 
         if srv.empty?
-          connect jid.domain, port, self, client, jid, pass, connect_timeout
+          connect jid.domain, port, self, client, jid, pass, connect_timeout, authcid
         else
           srv.sort! do |a,b|
             (a.priority != b.priority) ? (a.priority <=> b.priority) :
@@ -98,7 +101,7 @@ module Blather
           end
 
           srv.detect do |r|
-            not connect(r.target.to_s, r.port, self, client, jid, pass, connect_timeout) === false
+            not connect(r.target.to_s, r.port, self, client, jid, pass, connect_timeout, authcid) === false
           end
         end
       end
@@ -108,8 +111,8 @@ module Blather
     # Stream will raise +NoConnection+ if it receives #unbind before #post_init
     # this catches that and returns false prompting for another attempt
     # @private
-    def self.connect(host, port, conn, client, jid, pass, connect_timeout = nil)
-      EM.connect host, port, conn, client, jid, pass, connect_timeout
+    def self.connect(host, port, conn, client, jid, pass, connect_timeout, authcid)
+      EM.connect host, port, conn, client, jid, pass, connect_timeout, authcid
     rescue NoConnection
       false
     end
@@ -131,7 +134,7 @@ module Blather
 
     # Called by EM.connect to initialize stream variables
     # @private
-    def initialize(client, jid, pass, connect_timeout = nil)
+    def initialize(client, jid, pass, connect_timeout = nil, authcid = nil)
       super()
 
       @error = nil
@@ -141,6 +144,7 @@ module Blather
       @to = self.jid.domain
       @password = pass
       @connect_timeout = connect_timeout || 180
+      @authcid = authcid || self.jid.node
     end
 
     # Called when EM completes the connection to the server
