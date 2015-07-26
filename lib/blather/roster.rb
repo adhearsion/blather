@@ -9,7 +9,7 @@ module Blather
     #
     # @param [Blather::Stream] stream the stream the roster should use to
     # update roster entries
-    # @param [Blather::Stanza::Roster] stanza a roster stanza used to preload
+    # @param [Blather::Stanza::Iq::Roster] stanza a roster stanza used to preload
     # the roster
     # @return [Blather::Roster]
     def initialize(stream, stanza = nil)
@@ -21,7 +21,7 @@ module Blather
     # Process any incoming stanzas and either adds or removes the
     # corresponding RosterItem
     #
-    # @param [Blather::Stanza::Roster] stanza a roster stanza
+    # @param [Blather::Stanza::Iq::Roster] stanza a roster stanza
     def process(stanza)
       stanza.items.each do |i|
         case i.subscription
