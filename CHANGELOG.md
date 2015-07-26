@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Properly sort resources with the same priority but different status
 
 # [v1.1.4](https://github.com/adhearsion/blather/compare/v1.1.4...v1.1.4) - [2015-06-12](https://rubygems.org/gems/blather/versions/1.1.4)
   * Bugfix: Typo in passing through connection options

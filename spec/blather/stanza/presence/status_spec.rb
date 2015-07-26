@@ -118,6 +118,20 @@ describe Blather::Stanza::Presence::Status do
     (status1 <=> status2).should == 0
   end
 
+  it 'must should sort by status if priorities are equal' do
+    jid = Blather::JID.new 'a@b/c'
+
+    status1 = Blather::Stanza::Presence::Status.new :away
+    status1.from = jid
+
+    status2 = Blather::Stanza::Presence::Status.new :available
+    status2.from = jid
+
+    status1.priority = status2.priority = 1
+    (status1 <=> status2).should == -1
+    (status2 <=> status1).should == 1
+  end
+
   it 'raises an argument error if compared to a status with a different Blather::JID' do
     status1 = Blather::Stanza::Presence::Status.new
     status1.from = 'a@b/c'

@@ -76,8 +76,12 @@ class Presence
   # @handler :status
   class Status < Presence
     # @private
+    # The spec requires only the following 4 states
     VALID_STATES = [:away, :chat, :dnd, :xa].freeze
     VALID_TYPES = [:unavailable].freeze
+
+    # ...but this is the sorted list of possible states
+    POSSIBLE_STATES = [:unavailable, :dnd, :xa, :away, :available, :chat].freeze
 
     include Comparable
 
@@ -200,7 +204,11 @@ class Presence
         end
 
         if (self.type.nil? && o.type.nil?) || (!self.type.nil? && !o.type.nil?)
-          self.priority <=> o.priority
+          if self.priority == o.priority
+            POSSIBLE_STATES.index(self.state) <=> POSSIBLE_STATES.index(o.state)
+          else
+            self.priority <=> o.priority
+          end
         elsif self.type.nil? && !o.type.nil?
           1
         elsif !self.type.nil? && o.type.nil?
