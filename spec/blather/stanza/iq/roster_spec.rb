@@ -3,7 +3,7 @@ require 'spec_helper'
 def roster_xml
 <<-XML
 <iq to='juliet@example.com/balcony' type='result' id='roster_1'>
-  <query xmlns='jabber:iq:roster'>
+  <query xmlns='jabber:iq:roster' ver='3bb607aa4fa0bc9e'>
     <item jid='romeo@example.net'
           name='Romeo'
           subscription='both'>
@@ -37,6 +37,12 @@ describe Blather::Stanza::Iq::Roster do
 
   it 'can be created with #import' do
     Blather::XMPPNode.parse(roster_xml).should be_instance_of Blather::Stanza::Iq::Roster
+  end
+
+  it 'retrieves version' do
+    n = parse_stanza roster_xml
+    r = Blather::Stanza::Iq::Roster.new.inherit n.root
+    expect(r.version).to eq '3bb607aa4fa0bc9e'
   end
 end
 
