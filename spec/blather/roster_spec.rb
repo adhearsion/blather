@@ -6,14 +6,15 @@ describe Blather::Roster do
     @stream.stubs(:write)
 
     @stanza = mock()
-    items = []; 4.times { |n| items << Blather::JID.new("n@d/#{n}r") }
+    items = 4.times.map { |n| Blather::Stanza::Iq::Roster::RosterItem.new(jid: "n@d/#{n}r") }
     @stanza.stubs(:items).returns(items)
+    @stanza.stubs(:version).returns('24d091d0dcfab1b3')
 
     @roster = Blather::Roster.new(@stream, @stanza)
   end
 
   it 'initializes with items' do
-    @roster.items.map { |_,i| i.jid.to_s }.should == (@stanza.items.map { |i| i.stripped.to_s }.uniq)
+    @roster.items.map { |_,i| i.jid.to_s }.should == (@stanza.items.map { |i| i.jid.stripped.to_s }.uniq)
   end
 
   it 'processes @stanzas with remove requests' do
@@ -103,5 +104,9 @@ describe Blather::Roster do
       'group2' => [item1],
       'group3' => [item2]
     })
+  end
+
+  it 'has a version' do
+    expect(@roster.version).to eq @stanza.version
   end
 end
