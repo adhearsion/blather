@@ -46,7 +46,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mocha", ["~> 0.9"]
   s.add_development_dependency "guard-rspec"
   s.add_development_dependency "yard", ["~> 0.6"]
-  s.add_development_dependency "jruby-openssl", ["~> 0.7"] if jruby?
   s.add_development_dependency "bluecloth" unless jruby? || rbx?
   s.add_development_dependency "countdownlatch"
   s.add_development_dependency 'rb-fsevent', ['~> 0.9']
