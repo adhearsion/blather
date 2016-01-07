@@ -8,6 +8,7 @@ rvm:
   - ruby-head
 matrix:
   allow_failures:
+    - rvm: jruby
     - rvm: ruby-head
     - rvm: rbx-2.1.1
 before_install:
