@@ -72,6 +72,8 @@ class Stanza
     # @param [XML::Document, nil] document the document the node should be
     # attached to. This should be the document of the parent PubSub node.
     def self.new(id = nil, payload = nil, document = nil)
+      return id if id.class == self
+
       new_node = super 'item', document
       new_node.id = id
       new_node.payload = payload if payload

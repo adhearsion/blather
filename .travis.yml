@@ -11,5 +11,7 @@ matrix:
     - rvm: jruby
     - rvm: ruby-head
     - rvm: rbx-2.1.1
+before_install:
+  - gem install bundler
 notifications:
   irc: "irc.freenode.org#adhearsion"
