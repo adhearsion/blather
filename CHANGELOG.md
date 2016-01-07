@@ -1,4 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+
+# [v1.2.0](https://github.com/adhearsion/blather/compare/v1.1.4...v1.2.0) - [2016-01-07](https://rubygems.org/gems/blather/versions/1.2.0)
   * Bugfix: Properly sort resources with the same priority but different status
   * Bugfix: Lock to Nokogiri <= 1.6.1 because new versions are more broken than old ones
   * Bugfix: Avoid repeatedly parsing nodes which are already parsed
