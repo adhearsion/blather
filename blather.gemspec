@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w{LICENSE README.md}
 
   s.add_dependency "eventmachine", [">= 1.0.0"]
-  s.add_dependency "nokogiri", ["~> 1.5", ">= 1.5.6"]
+  s.add_dependency "nokogiri", ["~> 1.5", ">= 1.5.6", "<= 1.6.1"]
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]
   s.add_dependency "girl_friday"
@@ -46,7 +46,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mocha", ["~> 0.9"]
   s.add_development_dependency "guard-rspec"
   s.add_development_dependency "yard", ["~> 0.6"]
-  s.add_development_dependency "jruby-openssl", ["~> 0.7"] if jruby?
   s.add_development_dependency "bluecloth" unless jruby? || rbx?
   s.add_development_dependency "countdownlatch"
   s.add_development_dependency 'rb-fsevent', ['~> 0.9']

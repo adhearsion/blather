@@ -42,6 +42,13 @@ class Iq
       end
     end
 
+    # The provided roster version if available
+    #
+    # @return [String]
+    def version
+      query[:ver]
+    end
+
     # # RosterItem Fragment
     #
     # Individual roster items.

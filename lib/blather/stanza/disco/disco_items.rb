@@ -62,6 +62,8 @@ class Stanza
       #   @param [#to_s] node the node the item is attached to
       #   @param [#to_s] name the name of the Item
       def self.new(jid, node = nil, name = nil)
+        return jid if jid.class == self
+
         new_node = super :item
 
         case jid

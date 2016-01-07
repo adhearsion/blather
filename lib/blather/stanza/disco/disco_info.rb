@@ -84,6 +84,8 @@ class Stanza
       #   @param [String, nil] type the type of the Identity
       #   @param [String, nil] category the category of the Identity
       def self.new(name, type = nil, category = nil, xml_lang = nil)
+        return name if name.class == self
+
         new_node = super :identity
 
         case name
@@ -170,6 +172,8 @@ class Stanza
       #   @param [String] var a the Feautre's var
       # @return [DiscoInfo::Feature]
       def self.new(var)
+        return var if var.class == self
+
         new_node = super :feature
         case var
         when Nokogiri::XML::Node
