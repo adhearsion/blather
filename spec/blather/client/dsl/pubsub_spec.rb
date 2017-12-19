@@ -12,15 +12,15 @@ describe Blather::DSL::PubSub do
 
   it 'raises an error when trying to send a stanza without a host' do
     @pubsub.host = nil
-    proc { @pubsub.affiliations }.should raise_error RuntimeError
+    expect { @pubsub.affiliations }.to raise_error RuntimeError
   end
 
   it 'requests affiliations' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Affiliations
-      n.find('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Affiliations
+      expect(n.find('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.affiliations
   end
@@ -28,20 +28,20 @@ describe Blather::DSL::PubSub do
   it 'requests affiliations from a specified host' do
     host = 'another.host'
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Affiliations
-      n.find('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Affiliations
+      expect(n.find('//ns:pubsub/ns:affiliations', :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.affiliations host
   end
 
   it 'requests subscriptions' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Subscriptions
-      n.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Subscriptions
+      expect(n.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.subscriptions
   end
@@ -49,20 +49,20 @@ describe Blather::DSL::PubSub do
   it 'requests subscriptions from a specified host' do
     host = 'another.host'
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Subscriptions
-      n.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Subscriptions
+      expect(n.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.subscriptions host
   end
 
   it 'requests nodes defaulting to "/"' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::DiscoItems
-      n.find("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::DiscoItems
+      expect(n.find("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.nodes nil
   end
@@ -70,200 +70,200 @@ describe Blather::DSL::PubSub do
   it 'requests nodes from a specified host' do
     host = 'another.host'
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::DiscoItems
-      n.find("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::DiscoItems
+      expect(n.find("/iq/ns:query[@node='/']", :ns => Blather::Stanza::DiscoItems.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.nodes nil, host
   end
 
   it 'requests nodes under a specified path' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::DiscoItems
-      n.find("/iq/ns:query[@node='/path/to/nodes']", :ns => Blather::Stanza::DiscoItems.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::DiscoItems
+      expect(n.find("/iq/ns:query[@node='/path/to/nodes']", :ns => Blather::Stanza::DiscoItems.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.nodes '/path/to/nodes'
   end
 
   it 'requests information on a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::DiscoInfo
-      n.find("/iq/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::DiscoInfo.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::DiscoInfo
+      expect(n.find("/iq/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::DiscoInfo.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.node '/path/to/node'
   end
 
   it 'requests all items from a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Items
-      n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Items
+      expect(n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.items '/path/to/node'
   end
 
   it 'requests specific items from a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Items
-      n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node'][ns:item[@id='item1']][ns:item[@id='item2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Items
+      expect(n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node'][ns:item[@id='item1']][ns:item[@id='item2']]", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.items '/path/to/node', %w[item1 item2]
   end
 
   it 'requests some items from a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Items
-      n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node' and @max_items='2']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :get
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Items
+      expect(n.find("/iq/ns:pubsub/ns:items[@node='/path/to/node' and @max_items='2']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:get)
     end
     @pubsub.items '/path/to/node', nil, 2
   end
 
   it 'can publish items to a node with a hash' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Publish
-      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[@id='id1' and .='payload1'] and ns:item[@id='id2' and .='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Publish
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[@id='id1' and .='payload1'] and ns:item[@id='id2' and .='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.publish '/path/to/node', {'id1' => 'payload1', 'id2' => 'payload2'}
   end
 
   it 'can publish items to a node with an array' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Publish
-      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload1'] and ns:item[.='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Publish
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload1'] and ns:item[.='payload2']]", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.publish '/path/to/node', %w[payload1 payload2]
   end
 
   it 'can publish items to a node with a string' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Publish
-      n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Publish
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:publish[@node='/path/to/node' and ns:item[.='payload']]", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.publish '/path/to/node', 'payload'
   end
 
   it 'can retract an item with an array' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Retract
-      n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1'] and ns:item[@id='id2']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Retract
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1'] and ns:item[@id='id2']]", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.retract '/path/to/node', %w[id1 id2]
   end
 
   it 'can retract an item with a string' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Retract
-      n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1']]", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Retract
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:retract[@node='/path/to/node' and ns:item[@id='id1']]", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.retract '/path/to/node', 'id1'
   end
 
   it 'can subscribe to a node with the default jid' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Subscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Subscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.subscribe '/path/to/node'
   end
 
   it 'can subscribe to a node with a specified jid as a string' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Subscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Subscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.subscribe '/path/to/node', 'jid@d/r'
   end
 
   it 'can subscribe to a node with a specified jid as a Blather::JID' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Subscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Subscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:subscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.subscribe '/path/to/node', Blather::JID.new('jid@d/r')
   end
 
   it 'can unsubscribe to a node with the default jid' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='#{@client.jid.stripped}']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.unsubscribe '/path/to/node'
   end
 
   it 'can unsubscribe to a node with a specified jid as a string' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.unsubscribe '/path/to/node', 'jid@d/r'
   end
 
   it 'can unsubscribe to a node with a specified jid as a Blather::JID' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.unsubscribe '/path/to/node', Blather::JID.new('jid@d/r')
   end
 
   it 'can unsubscribe with a particular subscription id' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Unsubscribe
-      n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r' and @subid='subid']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.subid.should == 'subid'
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Unsubscribe
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:unsubscribe[@node='/path/to/node' and @jid='jid@d/r' and @subid='subid']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.subid).to eq('subid')
+      expect(n.type).to eq(:set)
     end
     @pubsub.unsubscribe '/path/to/node', 'jid@d/r', 'subid'
   end
 
   it 'can purge a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSubOwner::Purge
-      n.find("/iq[@type='set']/ns:pubsub/ns:purge[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSubOwner::Purge
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:purge[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.purge '/path/to/node'
   end
 
   it 'can create a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Create
-      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Create
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.create '/path/to/node'
   end
@@ -279,21 +279,21 @@ describe Blather::DSL::PubSub do
         { :var => "pubsub#publish_model", :value => "open" }]
     })
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSub::Create
-      n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
-      n.configure_node.should == pubsub_configure
+      expect(n).to be_instance_of Blather::Stanza::PubSub::Create
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:create[@node='/path/to/node']", :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
+      expect(n.configure_node).to eq(pubsub_configure)
     end
     @pubsub.create '/path/to/node', nil, pubsub_configure
   end
 
   it 'can delete a node' do
     @client.expects(:write_with_handler).with do |n|
-      n.should be_instance_of Blather::Stanza::PubSubOwner::Delete
-      n.find("/iq[@type='set']/ns:pubsub/ns:delete[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns).should_not be_empty
-      n.to.should == Blather::JID.new(@host)
-      n.type.should == :set
+      expect(n).to be_instance_of Blather::Stanza::PubSubOwner::Delete
+      expect(n.find("/iq[@type='set']/ns:pubsub/ns:delete[@node='/path/to/node']", :ns => Blather::Stanza::PubSubOwner.registered_ns)).not_to be_empty
+      expect(n.to).to eq(Blather::JID.new(@host))
+      expect(n.type).to eq(:set)
     end
     @pubsub.delete '/path/to/node'
   end
@@ -309,7 +309,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   it 'returns a list of affiliations when requesting affiliations' do
     affiliations = Blather::XMPPNode.parse(affiliations_xml)
     response = mock()
-    response.expects(:call).with { |n| n.should == affiliations.list }
+    response.expects(:call).with { |n| expect(n).to eq(affiliations.list) }
     @client.stubs(:write).with do |n|
       affiliations.id = n.id
       @client.receive_data affiliations
@@ -321,7 +321,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   it 'returns a list of subscriptions when requesting subscriptions' do
     subscriptions = Blather::XMPPNode.parse(subscriptions_xml)
     response = mock()
-    response.expects(:call).with { |n| n.should == subscriptions.list }
+    response.expects(:call).with { |n| expect(n).to eq(subscriptions.list) }
     @client.stubs(:write).with do |n|
       subscriptions.id = n.id
       @client.receive_data subscriptions
@@ -347,7 +347,7 @@ describe 'Blather::DSL::PubSub callbacks' do
     </iq>
     NODES
     response = mock()
-    response.expects(:call).with { |n| n.should == nodes.items }
+    response.expects(:call).with { |n| expect(n).to eq(nodes.items) }
     @client.stubs(:write).with do |n|
       nodes.id = n.id
       @client.receive_data nodes
@@ -369,7 +369,7 @@ describe 'Blather::DSL::PubSub callbacks' do
     </iq>
     NODES
     response = mock()
-    response.expects(:call).with { |n| n.should == node }
+    response.expects(:call).with { |n| expect(n).to eq(node) }
     @client.stubs(:write).with do |n|
       node.id = n.id
       @client.receive_data node
@@ -381,7 +381,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   it 'returns a set of items when requesting items' do
     items = Blather::XMPPNode.parse(items_all_nodes_xml)
     response = mock()
-    response.expects(:call).with { |n| n.map{|i|i.to_s}.should == items.items.map{|i|i.to_s} }
+    response.expects(:call).with { |n| expect(n.map{|i|i.to_s}).to eq(items.items.map{|i|i.to_s}) }
     @client.stubs(:write).with do |n|
       items.id = n.id
       @client.receive_data items
@@ -393,7 +393,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   it 'returns aa subscription node when subscribing' do
     subscription = Blather::XMPPNode.parse(subscription_xml)
     response = mock()
-    response.expects(:call).with { |n| n.should == subscription }
+    response.expects(:call).with { |n| expect(n).to eq(subscription) }
     @client.stubs(:write).with do |n|
       subscription.id = n.id
       @client.receive_data subscription
@@ -405,7 +405,7 @@ describe 'Blather::DSL::PubSub callbacks' do
   it 'returns aa unsubscribe node when unsubscribing' do
     unsubscribe = Blather::XMPPNode.parse(unsubscribe_xml)
     response = mock()
-    response.expects(:call).with { |n| n.should == unsubscribe }
+    response.expects(:call).with { |n| expect(n).to eq(unsubscribe) }
     @client.stubs(:write).with do |n|
       unsubscribe.id = n.id
       @client.receive_data unsubscribe
@@ -428,7 +428,7 @@ describe 'Blather::DSL::PubSub callbacks' do
     </iq>
     NODE
     response = mock()
-    response.expects(:call).with { |n| n.should == result }
+    response.expects(:call).with { |n| expect(n).to eq(result) }
     @client.stubs(:write).with do |n|
       result.id = n.id
       @client.receive_data result
@@ -449,7 +449,7 @@ describe 'Blather::DSL::PubSub callbacks' do
     </iq>
     NODE
     response = mock()
-    response.expects(:call).with { |n| n.should == result }
+    response.expects(:call).with { |n| expect(n).to eq(result) }
     @client.stubs(:write).with do |n|
       result.id = n.id
       @client.receive_data result
@@ -465,7 +465,7 @@ describe 'Blather::DSL::PubSub callbacks' do
         id='purge1'/>
     NODE
     response = mock()
-    response.expects(:call).with { |n| n.should == result }
+    response.expects(:call).with { |n| expect(n).to eq(result) }
     @client.stubs(:write).with do |n|
       result.id = n.id
       @client.receive_data result
@@ -481,7 +481,7 @@ describe 'Blather::DSL::PubSub callbacks' do
         id='delete1'/>
     NODE
     response = mock()
-    response.expects(:call).with { |n| n.should == result }
+    response.expects(:call).with { |n| expect(n).to eq(result) }
     @client.stubs(:write).with do |n|
       result.id = n.id
       @client.receive_data result

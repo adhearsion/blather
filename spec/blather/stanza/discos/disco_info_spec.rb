@@ -21,60 +21,60 @@ end
 
 describe Blather::Stanza::Iq::DiscoInfo do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:query, 'http://jabber.org/protocol/disco#info').should == Blather::Stanza::Iq::DiscoInfo
+    expect(Blather::XMPPNode.class_from_registration(:query, 'http://jabber.org/protocol/disco#info')).to eq(Blather::Stanza::Iq::DiscoInfo)
   end
 
   it 'must be importable' do
-    Blather::XMPPNode.parse(disco_info_xml).should be_instance_of Blather::Stanza::Iq::DiscoInfo
+    expect(Blather::XMPPNode.parse(disco_info_xml)).to be_instance_of Blather::Stanza::Iq::DiscoInfo
   end
 
   it 'has a node attribute' do
     n = Blather::Stanza::Iq::DiscoInfo.new nil, 'music', [], []
-    n.node.should == 'music'
+    expect(n.node).to eq('music')
     n.node = :foo
-    n.node.should == 'foo'
+    expect(n.node).to eq('foo')
   end
 
   it 'inherits a list of identities' do
     n = parse_stanza disco_info_xml
     r = Blather::Stanza::Iq::DiscoInfo.new.inherit n.root
-    r.identities.size.should == 1
-    r.identities.map { |i| i.class }.uniq.should == [Blather::Stanza::Iq::DiscoInfo::Identity]
+    expect(r.identities.size).to eq(1)
+    expect(r.identities.map { |i| i.class }.uniq).to eq([Blather::Stanza::Iq::DiscoInfo::Identity])
   end
 
   it 'inherits a list of features' do
     n = parse_stanza disco_info_xml
     r = Blather::Stanza::Iq::DiscoInfo.new.inherit n.root
-    r.features.size.should == 2
-    r.features.map { |i| i.class }.uniq.should == [Blather::Stanza::Iq::DiscoInfo::Feature]
+    expect(r.features.size).to eq(2)
+    expect(r.features.map { |i| i.class }.uniq).to eq([Blather::Stanza::Iq::DiscoInfo::Feature])
   end
 
   it 'is constructed properly' do
     n = Blather::Stanza::Iq::DiscoInfo.new :get, '/path/to/node'
     n.to = 'to@jid.com'
-    n.find("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoInfo.registered_ns).should_not be_empty
+    expect(n.find("/iq[@to='to@jid.com' and @type='get' and @id='#{n.id}']/ns:query[@node='/path/to/node']", :ns => Blather::Stanza::Iq::DiscoInfo.registered_ns)).not_to be_empty
   end
 
   it 'allows adding of identities' do
     di = Blather::Stanza::Iq::DiscoInfo.new
-    di.identities.size.should == 0
+    expect(di.identities.size).to eq(0)
     di.identities = [{:name => 'name', :type => 'type', :category => 'category'}]
-    di.identities.size.should == 1
+    expect(di.identities.size).to eq(1)
     di.identities += [Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
-    di.identities.size.should == 2
+    expect(di.identities.size).to eq(2)
     di.identities = nil
-    di.identities.size.should == 0
+    expect(di.identities.size).to eq(0)
   end
 
   it 'allows adding of features' do
     di = Blather::Stanza::Iq::DiscoInfo.new
-    di.features.size.should == 0
+    expect(di.features.size).to eq(0)
     di.features = ["feature1"]
-    di.features.size.should == 1
+    expect(di.features.size).to eq(1)
     di.features += [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
-    di.features.size.should == 2
+    expect(di.features.size).to eq(2)
     di.features = nil
-    di.features.size.should == 0
+    expect(di.features.size).to eq(0)
   end
 
 end
@@ -90,8 +90,8 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
                 Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name1 type1 category1])]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, ids
-    di.identities.size.should == 2
-    di.identities.each { |i| control.include?(i).should == true }
+    expect(di.identities.size).to eq(2)
+    di.identities.each { |i| expect(control.include?(i)).to eq(true) }
   end
 
   it 'takes a list of Identity objects as identities' do
@@ -99,24 +99,24 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
                 Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name1 type1 category1])]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, control
-    di.identities.size.should == 2
-    di.identities.each { |i| control.include?(i).should == true }
+    expect(di.identities.size).to eq(2)
+    di.identities.each { |i| expect(control.include?(i)).to eq(true) }
   end
 
   it 'takes a single hash as identity' do
     control = [Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, {:name => 'name', :type => 'type', :category => 'category'}
-    di.identities.size.should == 1
-    di.identities.each { |i| control.include?(i).should == true }
+    expect(di.identities.size).to eq(1)
+    di.identities.each { |i| expect(control.include?(i)).to eq(true) }
   end
 
   it 'takes a single identity object as identity' do
     control = [Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type category])]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, control.first
-    di.identities.size.should == 1
-    di.identities.each { |i| control.include?(i).should == true }
+    expect(di.identities.size).to eq(1)
+    di.identities.each { |i| expect(control.include?(i)).to eq(true) }
   end
 
   it 'takes a mix of hashes and identity objects as identities' do
@@ -129,8 +129,8 @@ describe 'Blather::Stanza::Iq::DiscoInfo identities' do
                 Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name1 type1 category1])]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, ids
-    di.identities.size.should == 2
-    di.identities.each { |i| control.include?(i).should == true }
+    expect(di.identities.size).to eq(2)
+    di.identities.each { |i| expect(control.include?(i)).to eq(true) }
   end
 end
 
@@ -140,8 +140,8 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
     control = features.map { |f| Blather::Stanza::Iq::DiscoInfo::Feature.new f }
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, [], features
-    di.features.size.should == 3
-    di.features.each { |f| control.include?(f).should == true }
+    expect(di.features.size).to eq(3)
+    di.features.each { |f| expect(control.include?(f)).to eq(true) }
   end
 
   it 'takes a list of features as Feature objects' do
@@ -149,24 +149,24 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
     control = features.map { |f| Blather::Stanza::Iq::DiscoInfo::Feature.new f }
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, [], control
-    di.features.size.should == 3
-    di.features.each { |f| control.include?(f).should == true }
+    expect(di.features.size).to eq(3)
+    di.features.each { |f| expect(control.include?(f)).to eq(true) }
   end
 
   it 'takes a single string' do
     control = [Blather::Stanza::Iq::DiscoInfo::Feature.new('feature1')]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, [], 'feature1'
-    di.features.size.should == 1
-    di.features.each { |f| control.include?(f).should == true }
+    expect(di.features.size).to eq(1)
+    di.features.each { |f| expect(control.include?(f)).to eq(true) }
   end
 
   it 'takes a single Feature object' do
     control = [Blather::Stanza::Iq::DiscoInfo::Feature.new('feature1')]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, [], control.first
-    di.features.size.should == 1
-    di.features.each { |f| control.include?(f).should == true }
+    expect(di.features.size).to eq(1)
+    di.features.each { |f| expect(control.include?(f)).to eq(true) }
   end
 
   it 'takes a mixed list of features as Feature objects and strings' do
@@ -175,8 +175,8 @@ describe 'Blather::Stanza::Iq::DiscoInfo features' do
     features[1] = control[1]
 
     di = Blather::Stanza::Iq::DiscoInfo.new nil, nil, [], features
-    di.features.size.should == 3
-    di.features.each { |f| control.include?(f).should == true }
+    expect(di.features.size).to eq(3)
+    di.features.each { |f| expect(control.include?(f)).to eq(true) }
   end
 end
 
@@ -184,44 +184,44 @@ describe Blather::Stanza::Iq::DiscoInfo::Identity do
   it 'will auto-inherit nodes' do
     n = parse_stanza "<identity name='Personal Events' type='pep' category='pubsub' node='publish' xml:lang='en' />"
     i = Blather::Stanza::Iq::DiscoInfo::Identity.new n.root
-    i.name.should == 'Personal Events'
-    i.type.should == :pep
-    i.category.should == :pubsub
-    i.xml_lang.should == 'en'
+    expect(i.name).to eq('Personal Events')
+    expect(i.type).to eq(:pep)
+    expect(i.category).to eq(:pubsub)
+    expect(i.xml_lang).to eq('en')
   end
 
   it 'has a category attribute' do
     n = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-    n.category.should == :cat
+    expect(n.category).to eq(:cat)
     n.category = :foo
-    n.category.should == :foo
+    expect(n.category).to eq(:foo)
   end
 
   it 'has a type attribute' do
     n = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-    n.type.should == :type
+    expect(n.type).to eq(:type)
     n.type = :foo
-    n.type.should == :foo
+    expect(n.type).to eq(:foo)
   end
 
   it 'has a name attribute' do
     n = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-    n.name.should == 'name'
+    expect(n.name).to eq('name')
     n.name = :foo
-    n.name.should == 'foo'
+    expect(n.name).to eq('foo')
   end
 
   it 'has an xml:lang attribute' do
     n = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat en])
-    n.xml_lang.should == 'en'
+    expect(n.xml_lang).to eq('en')
     n.xml_lang = 'de'
-    n.xml_lang.should == 'de'
+    expect(n.xml_lang).to eq('de')
   end
 
   it 'can determine equality' do
     a = Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-    a.should == Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat])
-    a.should_not equal Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[not-name not-type not-cat])
+    expect(a).to eq(Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[name type cat]))
+    expect(a).not_to equal Blather::Stanza::Iq::DiscoInfo::Identity.new(*%w[not-name not-type not-cat])
   end
 end
 
@@ -229,19 +229,19 @@ describe Blather::Stanza::Iq::DiscoInfo::Feature do
   it 'will auto-inherit nodes' do
     n = parse_stanza "<feature var='ipv6' />"
     i = Blather::Stanza::Iq::DiscoInfo::Feature.new n.root
-    i.var.should == 'ipv6'
+    expect(i.var).to eq('ipv6')
   end
 
   it 'has a var attribute' do
     n = Blather::Stanza::Iq::DiscoInfo::Feature.new 'var'
-    n.var.should == 'var'
+    expect(n.var).to eq('var')
     n.var = :foo
-    n.var.should == 'foo'
+    expect(n.var).to eq('foo')
   end
 
   it 'can determine equality' do
     a = Blather::Stanza::Iq::DiscoInfo::Feature.new('var')
-    a.should == Blather::Stanza::Iq::DiscoInfo::Feature.new('var')
-    a.should_not equal Blather::Stanza::Iq::DiscoInfo::Feature.new('not-var')
+    expect(a).to eq(Blather::Stanza::Iq::DiscoInfo::Feature.new('var'))
+    expect(a).not_to equal Blather::Stanza::Iq::DiscoInfo::Feature.new('not-var')
   end
 end
