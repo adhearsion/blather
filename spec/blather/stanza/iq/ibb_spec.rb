@@ -44,81 +44,81 @@ end
 
 describe Blather::Stanza::Iq::Ibb::Open do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:open, 'http://jabber.org/protocol/ibb').should == Blather::Stanza::Iq::Ibb::Open
+    expect(Blather::XMPPNode.class_from_registration(:open, 'http://jabber.org/protocol/ibb')).to eq(Blather::Stanza::Iq::Ibb::Open)
   end
 
   it 'can be imported' do
     node = Blather::XMPPNode.parse ibb_open_xml
-    node.should be_instance_of Blather::Stanza::Iq::Ibb::Open
+    expect(node).to be_instance_of Blather::Stanza::Iq::Ibb::Open
   end
 
   it 'has open node' do
     node = Blather::XMPPNode.parse ibb_open_xml
-    node.open.should be_kind_of Nokogiri::XML::Element
+    expect(node.open).to be_kind_of Nokogiri::XML::Element
   end
 
   it 'can get sid' do
     node = Blather::XMPPNode.parse ibb_open_xml
-    node.sid.should == 'i781hf64'
+    expect(node.sid).to eq('i781hf64')
   end
 
   it 'deleted open node on reply' do
     node = Blather::XMPPNode.parse ibb_open_xml
     reply = node.reply
-    reply.open.should be_nil
+    expect(reply.open).to be_nil
   end
 end
 
 describe Blather::Stanza::Iq::Ibb::Data do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:data, 'http://jabber.org/protocol/ibb').should == Blather::Stanza::Iq::Ibb::Data
+    expect(Blather::XMPPNode.class_from_registration(:data, 'http://jabber.org/protocol/ibb')).to eq(Blather::Stanza::Iq::Ibb::Data)
   end
 
   it 'can be imported' do
     node = Blather::XMPPNode.parse ibb_data_xml
-    node.should be_instance_of Blather::Stanza::Iq::Ibb::Data
+    expect(node).to be_instance_of Blather::Stanza::Iq::Ibb::Data
   end
 
   it 'has data node' do
     node = Blather::XMPPNode.parse ibb_data_xml
-    node.data.should be_kind_of Nokogiri::XML::Element
+    expect(node.data).to be_kind_of Nokogiri::XML::Element
   end
 
   it 'can get sid' do
     node = Blather::XMPPNode.parse ibb_data_xml
-    node.sid.should == 'i781hf64'
+    expect(node.sid).to eq('i781hf64')
   end
 
   it 'deleted data node on reply' do
     node = Blather::XMPPNode.parse ibb_data_xml
     reply = node.reply
-    reply.data.should be_nil
+    expect(reply.data).to be_nil
   end
 end
 
 describe Blather::Stanza::Iq::Ibb::Close do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:close, 'http://jabber.org/protocol/ibb').should == Blather::Stanza::Iq::Ibb::Close
+    expect(Blather::XMPPNode.class_from_registration(:close, 'http://jabber.org/protocol/ibb')).to eq(Blather::Stanza::Iq::Ibb::Close)
   end
 
   it 'can be imported' do
     node = Blather::XMPPNode.parse ibb_close_xml
-    node.should be_instance_of Blather::Stanza::Iq::Ibb::Close
+    expect(node).to be_instance_of Blather::Stanza::Iq::Ibb::Close
   end
 
   it 'has close node' do
     node = Blather::XMPPNode.parse ibb_close_xml
-    node.close.should be_kind_of Nokogiri::XML::Element
+    expect(node.close).to be_kind_of Nokogiri::XML::Element
   end
 
   it 'can get sid' do
     node = Blather::XMPPNode.parse ibb_close_xml
-    node.sid.should == 'i781hf64'
+    expect(node.sid).to eq('i781hf64')
   end
 
   it 'deleted close node on reply' do
     node = Blather::XMPPNode.parse ibb_close_xml
     reply = node.reply
-    reply.close.should be_nil
+    expect(reply.close).to be_nil
   end
 end

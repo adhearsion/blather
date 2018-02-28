@@ -4,7 +4,7 @@ describe Blather do
 
   describe "while accessing to Logger object" do
     it "should return a Logger instance" do
-      Blather.logger.should be_instance_of Logger
+      expect(Blather.logger).to be_instance_of Logger
     end
   end
 
