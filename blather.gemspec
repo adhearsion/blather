@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = %w{--charset=UTF-8}
   s.extra_rdoc_files = %w{LICENSE README.md}
 
-  s.add_dependency "eventmachine", [">= 1.0.0"]
+  s.add_dependency "eventmachine", ["~> 1.0.9"] # https://github.com/eventmachine/eventmachine/issues/670
   s.add_dependency "nokogiri", ["~> 1.5", ">= 1.5.6", "<= 1.6.1"]
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]
