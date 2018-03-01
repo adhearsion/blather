@@ -94,7 +94,7 @@ describe Blather::Client do
           let(:queue_size) { 4 }
 
           it 'enqueues the data on the handler queue' do
-            subject.handler_queue.expects(:<<).with(stanza)
+            subject.handler_queue.expects(:perform_async).with(stanza)
             subject.receive_data stanza
           end
         end
@@ -158,16 +158,21 @@ describe Blather::Client do
         stream.stubs(:close_connection_after_writing)
         subject.handler_queue.expects(:shutdown)
         subject.close
+        subject.instance_variable_get(:@handler_queue).should be_nil
       end
 
       it 'forces the work queue to be re-created when referenced' do
         stream.stubs(:close_connection_after_writing)
         subject.close
 
-        fake_queue = stub('GirlFriday::WorkQueue')
-        GirlFriday::WorkQueue.expects(:new)
-        .with(:handle_stanza, :size => subject.queue_size)
+        fake_queue = stub('Blather::Client::Job subclass')
+        Class.expects(:new)
+          .with(Blather::Client::Job)
           .returns(fake_queue)
+        fake_queue.expects(:client=)
+          .with(subject)
+        fake_queue.expects(:workers)
+          .with(subject.queue_size)
 
         expect(subject.handler_queue).to eq(fake_queue)
       end

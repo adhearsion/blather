@@ -3,6 +3,7 @@
   * Bugfix: Fix unsafe threaded use of @tmp_handlers in Blather::Client
   * Feature: Bump RSpec to 3.x and convert specs with Transpec
   * Feature: Bump Mocha version to 1.x
+  * Feature: Switch from girl_friday to sucker_punch
 
 # [v1.2.0](https://github.com/adhearsion/blather/compare/v1.1.4...v1.2.0) - [2016-01-07](https://rubygems.org/gems/blather/versions/1.2.0)
   * Bugfix: Properly sort resources with the same priority but different status

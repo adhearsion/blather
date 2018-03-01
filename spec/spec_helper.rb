@@ -1,5 +1,6 @@
 require 'blather'
 require 'countdownlatch'
+require 'sucker_punch/testing/inline'
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
@@ -9,7 +10,6 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.before(:each) do
-    GirlFriday::WorkQueue.immediate!
     Blather::Stream::Parser.debug = true
     Blather.logger = Logger.new($stdout).tap { |logger| logger.level = Logger::DEBUG }
   end

@@ -32,6 +32,21 @@ module Blather
   #     end
   #
   class Client
+    class Job
+      include SuckerPunch::Job
+      class_attribute :client
+
+      def perform(stanza)
+        client.handle_data stanza
+      end
+
+      def self.shutdown
+        SuckerPunch::Queue.all.each do |queue|
+          queue.shutdown if queue.name == to_s
+        end
+      end
+    end
+
     attr_reader :jid,
                 :roster,
                 :caps,
@@ -197,7 +212,7 @@ module Blather
     # @private
     def receive_data(stanza)
       if handler_queue
-        handler_queue << stanza
+        handler_queue.perform_async stanza
       else
         handle_data stanza
       end
@@ -232,9 +247,11 @@ module Blather
     # @private
     def handler_queue
       return if queue_size == 0
-      @handler_queue ||= GirlFriday::WorkQueue.new :handle_stanza, :size => queue_size do |stanza|
-        handle_data stanza
-      end
+      return @handler_queue if @handler_queue
+      @handler_queue = Class.new(Job)
+      @handler_queue.client = self
+      @handler_queue.workers queue_size
+      return @handler_queue
     end
 
     protected
