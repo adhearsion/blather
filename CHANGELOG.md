@@ -1,5 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
   * Bugfix: Pin back EventMachine to ~> 1.0.9 due to ongoing segfault issue
+  * Bugfix: Fix unsafe threaded use of @tmp_handlers in Blather::Client
   * Feature: Bump RSpec to 3.x and convert specs with Transpec
   * Feature: Bump Mocha version to 1.x
 
