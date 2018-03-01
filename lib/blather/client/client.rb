@@ -62,6 +62,7 @@ module Blather
       @status = Stanza::Presence::Status.new
       @handlers = {}
       @tmp_handlers = {}
+      @tmp_handlers_mutex = Mutex.new
       @filters = {:before => [], :after => []}
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
@@ -124,7 +125,9 @@ module Blather
     # @param [#to_s] id the ID of the stanza that should be handled
     # @yield [Blather::Stanza] stanza the incomming stanza
     def register_tmp_handler(id, &handler)
-      @tmp_handlers[id.to_s] = handler
+      @tmp_handlers_mutex.synchronize do
+        @tmp_handlers[id.to_s] = handler
+      end
     end
 
     # Clear handlers with given guards
@@ -293,7 +296,11 @@ module Blather
     end
 
     def handle_stanza(stanza)
-      if handler = @tmp_handlers.delete(stanza.id)
+      handler = @tmp_handlers_mutex.synchronize do
+        @tmp_handlers.delete(stanza.id)
+      end
+
+      if handler
         handler.call stanza
       else
         stanza.handler_hierarchy.each do |type|
