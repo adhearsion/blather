@@ -1,16 +1,16 @@
 language: ruby
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
-  - jruby
-  - rbx-2.1.1
+  - 2.3.7
+  - 2.4.4
+  - jruby-9.1.17.0
+  - rbx-3.105
   - ruby-head
+jdk:
+  - openjdk8 # for jruby
 matrix:
   allow_failures:
-    - rvm: jruby
     - rvm: ruby-head
-    - rvm: rbx-2.1.1
+    - rvm: rbx-3.105
 before_install:
   - gem install bundler
 notifications:
