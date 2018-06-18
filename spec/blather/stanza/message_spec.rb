@@ -178,7 +178,6 @@ describe Blather::Stanza::Message do
   end
 
   it 'sets valid xhtml even if the input is not valid' do
-    pending "Nokogiri doesn't handle invalid HTML on JRuby" if jruby?
     msg = Blather::Stanza::Message.new
     xhtml = "<some>xhtml"
     msg.xhtml = xhtml

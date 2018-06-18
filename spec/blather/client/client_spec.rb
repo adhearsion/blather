@@ -158,7 +158,7 @@ describe Blather::Client do
         stream.stubs(:close_connection_after_writing)
         subject.handler_queue.expects(:shutdown)
         subject.close
-        subject.instance_variable_get(:@handler_queue).should be_nil
+        expect(instance_variable_get(:@handler_queue)).to be_nil
       end
 
       it 'forces the work queue to be re-created when referenced' do

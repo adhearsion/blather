@@ -14,7 +14,7 @@ describe Blather::CertStore do
   end
 
   it 'can verify invalid cert' do
-    expect(subject.trusted?(cert[0..(cert.length/2)])).to be_nil
+    expect(subject.trusted?('foo bar baz')).to be_nil
   end
 
   it 'cannot verify when the cert authority is not trusted' do
