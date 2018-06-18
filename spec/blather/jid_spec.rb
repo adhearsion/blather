@@ -3,85 +3,85 @@ require 'spec_helper'
 describe Blather::JID do
   it 'does nothing if creaded from Blather::JID' do
     jid = Blather::JID.new 'n@d/r'
-    Blather::JID.new(jid).object_id.should == jid.object_id
+    expect(Blather::JID.new(jid).object_id).to eq(jid.object_id)
   end
 
   it 'creates a new Blather::JID from (n,d,r)' do
     jid = Blather::JID.new('n', 'd', 'r')
-    jid.node.should == 'n'
-    jid.domain.should == 'd'
-    jid.resource.should == 'r'
+    expect(jid.node).to eq('n')
+    expect(jid.domain).to eq('d')
+    expect(jid.resource).to eq('r')
   end
 
   it 'creates a new Blather::JID from (n,d)' do
     jid = Blather::JID.new('n', 'd')
-    jid.node.should == 'n'
-    jid.domain.should == 'd'
+    expect(jid.node).to eq('n')
+    expect(jid.domain).to eq('d')
   end
 
   it 'creates a new Blather::JID from (n@d)' do
     jid = Blather::JID.new('n@d')
-    jid.node.should == 'n'
-    jid.domain.should == 'd'
+    expect(jid.node).to eq('n')
+    expect(jid.domain).to eq('d')
   end
 
   it 'creates a new Blather::JID from (n@d/r)' do
     jid = Blather::JID.new('n@d/r')
-    jid.node.should == 'n'
-    jid.domain.should == 'd'
-    jid.resource.should == 'r'
+    expect(jid.node).to eq('n')
+    expect(jid.domain).to eq('d')
+    expect(jid.resource).to eq('r')
   end
 
   it 'requires at least a node' do
-    proc { Blather::JID.new }.should raise_error ::ArgumentError
+    expect { Blather::JID.new }.to raise_error ::ArgumentError
   end
 
   it 'ensures length of node is no more than 1023 characters' do
-    proc { Blather::JID.new('n'*1024) }.should raise_error Blather::ArgumentError
+    expect { Blather::JID.new('n'*1024) }.to raise_error Blather::ArgumentError
   end
 
   it 'ensures length of domain is no more than 1023 characters' do
-    proc { Blather::JID.new('n', 'd'*1024) }.should raise_error Blather::ArgumentError
+    expect { Blather::JID.new('n', 'd'*1024) }.to raise_error Blather::ArgumentError
   end
 
   it 'ensures length of resource is no more than 1023 characters' do
-    proc { Blather::JID.new('n', 'd', 'r'*1024) }.should raise_error Blather::ArgumentError
+    expect { Blather::JID.new('n', 'd', 'r'*1024) }.to raise_error Blather::ArgumentError
   end
 
   it 'compares Blather::JIDs' do
-    (Blather::JID.new('a@b/c') <=> Blather::JID.new('d@e/f')).should == -1
-    (Blather::JID.new('a@b/c') <=> Blather::JID.new('a@b/c')).should == 0
-    (Blather::JID.new('d@e/f') <=> Blather::JID.new('a@b/c')).should == 1
+    expect(Blather::JID.new('a@b/c') <=> Blather::JID.new('d@e/f')).to eq(-1)
+    expect(Blather::JID.new('a@b/c') <=> Blather::JID.new('a@b/c')).to eq(0)
+    expect(Blather::JID.new('d@e/f') <=> Blather::JID.new('a@b/c')).to eq(1)
   end
 
   it 'checks for equality' do
-    (Blather::JID.new('n@d/r') == Blather::JID.new('n@d/r')).should == true
-    Blather::JID.new('n@d/r').eql?(Blather::JID.new('n@d/r')).should == true
+    expect(Blather::JID.new('n@d/r') == Blather::JID.new('n@d/r')).to eq(true)
+    expect(Blather::JID.new('n@d/r').eql?(Blather::JID.new('n@d/r'))).to eq(true)
   end
 
   it 'will strip' do
     jid = Blather::JID.new('n@d/r')
-    jid.stripped.should == Blather::JID.new('n@d')
-    jid.should == Blather::JID.new('n@d/r')
+    expect(jid.stripped).to eq(Blather::JID.new('n@d'))
+    expect(jid).to eq(Blather::JID.new('n@d/r'))
   end
 
   it 'will strip itself' do
     jid = Blather::JID.new('n@d/r')
     jid.strip!
-    jid.should == Blather::JID.new('n@d')
+    expect(jid).to eq(Blather::JID.new('n@d'))
   end
 
   it 'has a string representation' do
-    Blather::JID.new('n@d/r').to_s.should == 'n@d/r'
-    Blather::JID.new('n', 'd', 'r').to_s.should == 'n@d/r'
-    Blather::JID.new('n', 'd').to_s.should == 'n@d'
+    expect(Blather::JID.new('n@d/r').to_s).to eq('n@d/r')
+    expect(Blather::JID.new('n', 'd', 'r').to_s).to eq('n@d/r')
+    expect(Blather::JID.new('n', 'd').to_s).to eq('n@d')
   end
 
   it 'provides a #stripped? helper' do
     jid = Blather::JID.new 'a@b/c'
-    jid.should respond_to :stripped?
-    jid.stripped?.should_not equal true
+    expect(jid).to respond_to :stripped?
+    expect(jid.stripped?).not_to equal true
     jid.strip!
-    jid.stripped?.should == true
+    expect(jid.stripped?).to eq(true)
   end
 end

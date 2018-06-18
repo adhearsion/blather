@@ -8,7 +8,7 @@
   digest/sha1
   logger
   openssl
-  girl_friday
+  sucker_punch
 
   active_support/core_ext/class/attribute
   active_support/core_ext/object/blank

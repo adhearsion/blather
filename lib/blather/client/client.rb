@@ -32,6 +32,21 @@ module Blather
   #     end
   #
   class Client
+    class Job
+      include SuckerPunch::Job
+      class_attribute :client
+
+      def perform(stanza)
+        client.handle_data stanza
+      end
+
+      def self.shutdown
+        SuckerPunch::Queue.all.each do |queue|
+          queue.shutdown if queue.name == to_s
+        end
+      end
+    end
+
     attr_reader :jid,
                 :roster,
                 :caps,
@@ -62,6 +77,7 @@ module Blather
       @status = Stanza::Presence::Status.new
       @handlers = {}
       @tmp_handlers = {}
+      @tmp_handlers_mutex = Mutex.new
       @filters = {:before => [], :after => []}
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
@@ -124,7 +140,9 @@ module Blather
     # @param [#to_s] id the ID of the stanza that should be handled
     # @yield [Blather::Stanza] stanza the incomming stanza
     def register_tmp_handler(id, &handler)
-      @tmp_handlers[id.to_s] = handler
+      @tmp_handlers_mutex.synchronize do
+        @tmp_handlers[id.to_s] = handler
+      end
     end
 
     # Clear handlers with given guards
@@ -194,7 +212,7 @@ module Blather
     # @private
     def receive_data(stanza)
       if handler_queue
-        handler_queue << stanza
+        handler_queue.perform_async stanza
       else
         handle_data stanza
       end
@@ -229,9 +247,11 @@ module Blather
     # @private
     def handler_queue
       return if queue_size == 0
-      @handler_queue ||= GirlFriday::WorkQueue.new :handle_stanza, :size => queue_size do |stanza|
-        handle_data stanza
-      end
+      return @handler_queue if @handler_queue
+      @handler_queue = Class.new(Job)
+      @handler_queue.client = self
+      @handler_queue.workers queue_size
+      return @handler_queue
     end
 
     protected
@@ -293,7 +313,11 @@ module Blather
     end
 
     def handle_stanza(stanza)
-      if handler = @tmp_handlers.delete(stanza.id)
+      handler = @tmp_handlers_mutex.synchronize do
+        @tmp_handlers.delete(stanza.id)
+      end
+
+      if handler
         handler.call stanza
       else
         stanza.handler_hierarchy.each do |type|

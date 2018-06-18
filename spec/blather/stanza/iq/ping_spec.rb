@@ -10,26 +10,26 @@ end
 
 describe Blather::Stanza::Iq::Ping do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:ping, 'urn:xmpp:ping').should == Blather::Stanza::Iq::Ping
+    expect(Blather::XMPPNode.class_from_registration(:ping, 'urn:xmpp:ping')).to eq(Blather::Stanza::Iq::Ping)
   end
 
   it 'can be imported' do
     node = Blather::XMPPNode.parse ping_xml
-    node.should be_instance_of Blather::Stanza::Iq::Ping
+    expect(node).to be_instance_of Blather::Stanza::Iq::Ping
   end
 
   it 'ensures a ping node is present on create' do
     iq = Blather::Stanza::Iq::Ping.new
-    iq.xpath('ns:ping', :ns => 'urn:xmpp:ping').should_not be_empty
+    expect(iq.xpath('ns:ping', :ns => 'urn:xmpp:ping')).not_to be_empty
   end
 
   it 'ensures a ping node exists when calling #ping' do
     iq = Blather::Stanza::Iq::Ping.new
     iq.ping.remove
-    iq.xpath('ns:ping', :ns => 'urn:xmpp:ping').should be_empty
+    expect(iq.xpath('ns:ping', :ns => 'urn:xmpp:ping')).to be_empty
 
-    iq.ping.should_not be_nil
-    iq.xpath('ns:ping', :ns => 'urn:xmpp:ping').should_not be_empty
+    expect(iq.ping).not_to be_nil
+    expect(iq.xpath('ns:ping', :ns => 'urn:xmpp:ping')).not_to be_empty
   end
 
   it 'responds with an empty IQ' do
@@ -39,7 +39,7 @@ describe Blather::Stanza::Iq::Ping do
       pong.from = 'one@example.com'
     end
     reply = ping.reply
-    reply.should == expected_pong
-    reply.children.count.should == 0
+    expect(reply).to eq(expected_pong)
+    expect(reply.children.count).to eq(0)
   end
 end

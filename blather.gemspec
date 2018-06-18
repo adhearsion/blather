@@ -34,18 +34,18 @@ Gem::Specification.new do |s|
   s.rdoc_options = %w{--charset=UTF-8}
   s.extra_rdoc_files = %w{LICENSE README.md}
 
-  s.add_dependency "eventmachine", [">= 1.0.0"]
-  s.add_dependency "nokogiri", ["~> 1.5", ">= 1.5.6", "<= 1.6.1"]
+  s.add_dependency "eventmachine", ["~> 1.2", ">= 1.2.6"]
+  s.add_dependency "nokogiri", ["~> 1.8", ">= 1.8.3"]
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]
-  s.add_dependency "girl_friday"
+  s.add_dependency "sucker_punch", ["~> 2.0"]
 
   s.add_development_dependency "bundler", ["~> 1.0"]
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", ["~> 2.7"]
-  s.add_development_dependency "mocha", ["~> 0.9"]
+  s.add_development_dependency "rspec", ["~> 3.0"]
+  s.add_development_dependency "mocha", ["~> 1.0"]
   s.add_development_dependency "guard-rspec"
-  s.add_development_dependency "yard", ["~> 0.6"]
+  s.add_development_dependency "yard", ["~> 0.9.11"]
   s.add_development_dependency "bluecloth" unless jruby? || rbx?
   s.add_development_dependency "countdownlatch"
   s.add_development_dependency 'rb-fsevent', ['~> 0.9']

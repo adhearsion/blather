@@ -23,35 +23,35 @@ end
 
 describe Blather::Stanza::Iq::S5b do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:query, 'http://jabber.org/protocol/bytestreams').should == Blather::Stanza::Iq::S5b
+    expect(Blather::XMPPNode.class_from_registration(:query, 'http://jabber.org/protocol/bytestreams')).to eq(Blather::Stanza::Iq::S5b)
   end
 
   it 'can be imported' do
     node = Blather::XMPPNode.parse s5b_open_xml
-    node.should be_instance_of Blather::Stanza::Iq::S5b
+    expect(node).to be_instance_of Blather::Stanza::Iq::S5b
   end
 
   it 'can get sid' do
     node = Blather::XMPPNode.parse s5b_open_xml
-    node.sid.should == 'vxf9n471bn46'
+    expect(node.sid).to eq('vxf9n471bn46')
   end
 
   it 'can get streamhosts' do
     node = Blather::XMPPNode.parse s5b_open_xml
-    node.streamhosts.size.should == 2
+    expect(node.streamhosts.size).to eq(2)
   end
 
   it 'can set streamhosts' do
     node = Blather::Stanza::Iq::S5b.new
     node.streamhosts += [{:jid => 'test@example.com/foo', :host => '192.168.5.1', :port => 123}]
-    node.streamhosts.size.should == 1
+    expect(node.streamhosts.size).to eq(1)
     node.streamhosts += [Blather::Stanza::Iq::S5b::StreamHost.new('test2@example.com/foo', '192.168.5.2', 123)]
-    node.streamhosts.size.should == 2
+    expect(node.streamhosts.size).to eq(2)
   end
 
   it 'can get and set streamhost-used' do
     node = Blather::Stanza::Iq::S5b.new
     node.streamhost_used = 'used@example.com/foo'
-    node.streamhost_used.jid.to_s.should == 'used@example.com/foo'
+    expect(node.streamhost_used.jid.to_s).to eq('used@example.com/foo')
   end
 end

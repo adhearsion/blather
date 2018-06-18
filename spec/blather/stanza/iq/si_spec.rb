@@ -27,27 +27,27 @@ end
 
 describe Blather::Stanza::Iq::Si do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:si, 'http://jabber.org/protocol/si').should == Blather::Stanza::Iq::Si
+    expect(Blather::XMPPNode.class_from_registration(:si, 'http://jabber.org/protocol/si')).to eq(Blather::Stanza::Iq::Si)
   end
 
   it 'can be imported' do
     node = Blather::XMPPNode.parse si_xml
-    node.should be_instance_of Blather::Stanza::Iq::Si
-    node.si.should be_instance_of Blather::Stanza::Iq::Si::Si
+    expect(node).to be_instance_of Blather::Stanza::Iq::Si
+    expect(node.si).to be_instance_of Blather::Stanza::Iq::Si::Si
   end
 
   it 'ensures a si node is present on create' do
     iq = Blather::Stanza::Iq::Si.new
-    iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si').should_not be_empty
+    expect(iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si')).not_to be_empty
   end
 
   it 'ensures a si node exists when calling #si' do
     iq = Blather::Stanza::Iq::Si.new
     iq.si.remove
-    iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si').should be_empty
+    expect(iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si')).to be_empty
 
-    iq.si.should_not be_nil
-    iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si').should_not be_empty
+    expect(iq.si).not_to be_nil
+    expect(iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si')).not_to be_empty
   end
 
   it 'ensures a si node is replaced when calling #si=' do
@@ -58,8 +58,8 @@ describe Blather::Stanza::Iq::Si do
 
     iq.si = new_si
 
-    iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si').size.should == 1
-    iq.si.id.should == 'a1'
+    expect(iq.xpath('ns:si', :ns => 'http://jabber.org/protocol/si').size).to eq(1)
+    expect(iq.si.id).to eq('a1')
   end
 end
 
@@ -69,30 +69,30 @@ describe Blather::Stanza::Iq::Si::Si do
     si.id = 'a1'
     si.mime_type = 'text/plain'
     si.profile = 'http://jabber.org/protocol/si/profile/file-transfer'
-    si.id.should == 'a1'
-    si.mime_type.should == 'text/plain'
-    si.profile.should == 'http://jabber.org/protocol/si/profile/file-transfer'
+    expect(si.id).to eq('a1')
+    expect(si.mime_type).to eq('text/plain')
+    expect(si.profile).to eq('http://jabber.org/protocol/si/profile/file-transfer')
   end
 end
 
 describe Blather::Stanza::Iq::Si::Si::File do
   it 'can be initialized with name and size' do
     file = Blather::Stanza::Iq::Si::Si::File.new('test.txt', 123)
-    file.name.should == 'test.txt'
-    file.size.should == 123
+    expect(file.name).to eq('test.txt')
+    expect(file.size).to eq(123)
   end
 
   it 'can be initialized with node' do
     node = Blather::XMPPNode.parse si_xml
 
     file = Blather::Stanza::Iq::Si::Si::File.new node.find_first('.//ns:file', :ns => 'http://jabber.org/protocol/si/profile/file-transfer')
-    file.name.should == 'test.txt'
-    file.size.should == 1022
+    expect(file.name).to eq('test.txt')
+    expect(file.size).to eq(1022)
   end
 
   it 'can set and get description' do
     file = Blather::Stanza::Iq::Si::Si::File.new('test.txt', 123)
     file.desc = 'This is a test. If this were a real file...'
-    file.desc.should == 'This is a test. If this were a real file...'
+    expect(file.desc).to eq('This is a test. If this were a real file...')
   end
 end

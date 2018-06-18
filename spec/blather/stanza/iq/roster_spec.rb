@@ -26,17 +26,17 @@ end
 
 describe Blather::Stanza::Iq::Roster do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:query, 'jabber:iq:roster').should == Blather::Stanza::Iq::Roster
+    expect(Blather::XMPPNode.class_from_registration(:query, 'jabber:iq:roster')).to eq(Blather::Stanza::Iq::Roster)
   end
 
   it 'ensures newly inherited items are RosterItem objects' do
     n = parse_stanza roster_xml
     r = Blather::Stanza::Iq::Roster.new.inherit n.root
-    r.items.map { |i| i.class }.uniq.should == [Blather::Stanza::Iq::Roster::RosterItem]
+    expect(r.items.map { |i| i.class }.uniq).to eq([Blather::Stanza::Iq::Roster::RosterItem])
   end
 
   it 'can be created with #import' do
-    Blather::XMPPNode.parse(roster_xml).should be_instance_of Blather::Stanza::Iq::Roster
+    expect(Blather::XMPPNode.parse(roster_xml)).to be_instance_of Blather::Stanza::Iq::Roster
   end
 
   it 'retrieves version' do
@@ -49,22 +49,22 @@ end
 describe Blather::Stanza::Iq::Roster::RosterItem do
   it 'can be initialized with just a Blather::JID' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new 'n@d/r'
-    i.jid.should == Blather::JID.new('n@d/r').stripped
+    expect(i.jid).to eq(Blather::JID.new('n@d/r').stripped)
   end
 
   it 'can be initialized with a name' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new nil, 'foobar'
-    i.name.should == 'foobar'
+    expect(i.name).to eq('foobar')
   end
 
   it 'can be initialized with a subscription' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new nil, nil, :both
-    i.subscription.should == :both
+    expect(i.subscription).to eq(:both)
   end
 
   it 'can be initialized with ask (subscription sub-type)' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new nil, nil, nil, :subscribe
-    i.ask.should == :subscribe
+    expect(i.ask).to eq(:subscribe)
   end
 
   it 'can be initailized with a hash' do
@@ -73,10 +73,10 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
                 :subscription => :both,
                 :ask          => :subscribe }
     i = Blather::Stanza::Iq::Roster::RosterItem.new control
-    i.jid.should == Blather::JID.new(control[:jid]).stripped
-    i.name.should == control[:name]
-    i.subscription.should == control[:subscription]
-    i.ask.should == control[:ask]
+    expect(i.jid).to eq(Blather::JID.new(control[:jid]).stripped)
+    expect(i.name).to eq(control[:name])
+    expect(i.subscription).to eq(control[:subscription])
+    expect(i.ask).to eq(control[:ask])
   end
 
   it 'inherits a node when initialized with one' do
@@ -85,61 +85,61 @@ describe Blather::Stanza::Iq::Roster::RosterItem do
     n[:subscription] = 'both'
 
     i = Blather::Stanza::Iq::Roster::RosterItem.new n
-    i.jid.should == Blather::JID.new('n@d/r')
-    i.subscription.should == :both
+    expect(i.jid).to eq(Blather::JID.new('n@d/r'))
+    expect(i.subscription).to eq(:both)
   end
 
   it 'has a #groups helper that gives an array of groups' do
     n = parse_stanza "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
     i = Blather::Stanza::Iq::Roster::RosterItem.new n.root
-    i.should respond_to :groups
-    i.groups.sort.should == %w[bar baz foo]
+    expect(i).to respond_to :groups
+    expect(i.groups.sort).to eq(%w[bar baz foo])
   end
 
   it 'has a helper to set the groups' do
     n = parse_stanza "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
     i = Blather::Stanza::Iq::Roster::RosterItem.new n.root
-    i.should respond_to :groups=
-    i.groups.sort.should == %w[bar baz foo]
+    expect(i).to respond_to :groups=
+    expect(i.groups.sort).to eq(%w[bar baz foo])
     i.groups = %w[a b c]
-    i.groups.sort.should == %w[a b c]
+    expect(i.groups.sort).to eq(%w[a b c])
   end
 
   it 'can be easily converted into a proper stanza' do
     xml = "<item jid='romeo@example.net' subscription='both'><group>foo</group><group>bar</group><group>baz</group></item>"
     n = parse_stanza xml
     i = Blather::Stanza::Iq::Roster::RosterItem.new n.root
-    i.should respond_to :to_stanza
+    expect(i).to respond_to :to_stanza
     s = i.to_stanza
-    s.should be_kind_of Blather::Stanza::Iq::Roster
-    s.items.first.jid.should == Blather::JID.new('romeo@example.net')
-    s.items.first.groups.sort.should == %w[bar baz foo]
+    expect(s).to be_kind_of Blather::Stanza::Iq::Roster
+    expect(s.items.first.jid).to eq(Blather::JID.new('romeo@example.net'))
+    expect(s.items.first.groups.sort).to eq(%w[bar baz foo])
   end
 
   it 'has an "attr_accessor" for jid' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new
-    i.should respond_to :jid
-    i.jid.should be_nil
-    i.should respond_to :jid=
+    expect(i).to respond_to :jid
+    expect(i.jid).to be_nil
+    expect(i).to respond_to :jid=
     i.jid = 'n@d/r'
-    i.jid.should == Blather::JID.new('n@d/r').stripped
+    expect(i.jid).to eq(Blather::JID.new('n@d/r').stripped)
   end
 
   it 'has a name attribute' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new
     i.name = 'name'
-    i.name.should == 'name'
+    expect(i.name).to eq('name')
   end
 
   it 'has a subscription attribute' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new
     i.subscription = :both
-    i.subscription.should == :both
+    expect(i.subscription).to eq(:both)
   end
 
   it 'has an ask attribute' do
     i = Blather::Stanza::Iq::Roster::RosterItem.new
     i.ask = :subscribe
-    i.ask.should == :subscribe
+    expect(i.ask).to eq(:subscribe)
   end
 end

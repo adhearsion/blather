@@ -10,59 +10,59 @@ end
 
 describe Blather::Stanza::PubSub::Subscriptions do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:subscriptions, 'http://jabber.org/protocol/pubsub').should == Blather::Stanza::PubSub::Subscriptions
+    expect(Blather::XMPPNode.class_from_registration(:subscriptions, 'http://jabber.org/protocol/pubsub')).to eq(Blather::Stanza::PubSub::Subscriptions)
   end
 
   it 'can be imported' do
-    Blather::XMPPNode.parse(subscriptions_xml).should be_instance_of Blather::Stanza::PubSub::Subscriptions
+    expect(Blather::XMPPNode.parse(subscriptions_xml)).to be_instance_of Blather::Stanza::PubSub::Subscriptions
   end
 
   it 'ensures an subscriptions node is present on create' do
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    expect(subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
   end
 
   it 'ensures an subscriptions node exists when calling #subscriptions' do
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new
     subscriptions.pubsub.remove_children :subscriptions
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    expect(subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns)).to be_empty
 
-    subscriptions.subscriptions.should_not be_nil
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should_not be_empty
+    expect(subscriptions.subscriptions).not_to be_nil
+    expect(subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns)).not_to be_empty
   end
 
   it 'ensures the subscriptions node is not duplicated when calling #subscriptions' do
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new
     subscriptions.pubsub.remove_children :subscriptions
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).should be_empty
+    expect(subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns)).to be_empty
 
     5.times { subscriptions.subscriptions }
-    subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).count.should eq(1)
+    expect(subscriptions.find('//ns:pubsub/ns:subscriptions', :ns => Blather::Stanza::PubSub.registered_ns).count).to eq(1)
   end
 
   it 'defaults to a get node' do
     aff = Blather::Stanza::PubSub::Subscriptions.new
-    aff.type.should == :get
+    expect(aff.type).to eq(:get)
   end
 
   it 'sets the host if requested' do
     aff = Blather::Stanza::PubSub::Subscriptions.new :get, 'pubsub.jabber.local'
-    aff.to.should == Blather::JID.new('pubsub.jabber.local')
+    expect(aff.to).to eq(Blather::JID.new('pubsub.jabber.local'))
   end
 
   it 'can import a subscriptions result node' do
     node = parse_stanza(subscriptions_xml).root
 
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new.inherit node
-    subscriptions.size.should == 4
-    subscriptions.list.should == control_subscriptions
+    expect(subscriptions.size).to eq(4)
+    expect(subscriptions.list).to eq(control_subscriptions)
   end
 
   it 'will iterate over each subscription' do
     node = parse_stanza(subscriptions_xml).root
     subscriptions = Blather::Stanza::PubSub::Subscriptions.new.inherit node
     subscriptions.each do |type, nodes|
-      nodes.should == control_subscriptions[type]
+      expect(nodes).to eq(control_subscriptions[type])
     end
   end
 end

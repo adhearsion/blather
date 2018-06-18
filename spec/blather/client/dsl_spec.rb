@@ -109,7 +109,7 @@ describe Blather::DSL do
   it 'provides a << style writer that provides chaining' do
     stanza = Blather::Stanza::Iq.new
     @client.expects(:write).with stanza
-    (@dsl << stanza).should == @dsl
+    expect(@dsl << stanza).to eq(@dsl)
   end
 
   it 'provides a writer' do
@@ -173,7 +173,7 @@ describe Blather::DSL do
   end
 
   it 'provides a caps set helper' do
-    @dsl.should respond_to :set_caps
+    expect(@dsl).to respond_to :set_caps
     node = 'http://code.google.com/p/exodus'
     identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
     features = %w{
@@ -183,13 +183,13 @@ describe Blather::DSL do
                   http://jabber.org/protocol/muc
                 }
     @dsl.set_caps node, identities, features
-    @client.caps.node.should == "#{node}##{@client.caps.ver}"
-    @client.caps.identities.should == identities
-    @client.caps.features.map{ |f| f.var }.should == features
+    expect(@client.caps.node).to eq("#{node}##{@client.caps.ver}")
+    expect(@client.caps.identities).to eq(identities)
+    expect(@client.caps.features.map{ |f| f.var }).to eq(features)
   end
 
   it 'provides a caps send helper' do
-    @dsl.should respond_to :send_caps
+    expect(@dsl).to respond_to :send_caps
     @client.caps.node = 'http://code.google.com/p/exodus'
     @client.caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
     @client.caps.features = %w{
@@ -260,8 +260,8 @@ describe Blather::DSL do
   it 'has a pubsub helper set to the jid domain' do
     jid = Blather::JID.new('jid@domain/resource')
     @client.stubs(:jid).returns jid
-    @dsl.pubsub.should be_instance_of Blather::DSL::PubSub
-    @dsl.pubsub.host.should == jid.domain
+    expect(@dsl.pubsub).to be_instance_of Blather::DSL::PubSub
+    expect(@dsl.pubsub.host).to eq(jid.domain)
   end
 
   context "extending a module" do
@@ -291,7 +291,7 @@ describe Blather::DSL do
 
     it "should override the handlers" do
       target = CollisionTarget.new
-      target.presence.should be :ghostly
+      expect(target.presence).to be :ghostly
     end
   end
 end

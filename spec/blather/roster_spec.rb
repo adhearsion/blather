@@ -14,31 +14,31 @@ describe Blather::Roster do
   end
 
   it 'initializes with items' do
-    @roster.items.map { |_,i| i.jid.to_s }.should == (@stanza.items.map { |i| i.jid.stripped.to_s }.uniq)
+    expect(@roster.items.map { |_,i| i.jid.to_s }).to eq(@stanza.items.map { |i| i.jid.stripped.to_s }.uniq)
   end
 
   it 'processes @stanzas with remove requests' do
     s = @roster['n@d/0r']
     s.subscription = :remove
-    proc { @roster.process(s.to_stanza) }.should change(@roster, :length).by -1
+    expect { @roster.process(s.to_stanza) }.to change(@roster, :length).by -1
   end
 
   it 'processes @stanzas with add requests' do
     s = Blather::Stanza::Iq::Roster::RosterItem.new('a@b/c').to_stanza
-    proc { @roster.process(s) }.should change(@roster, :length).by 1
+    expect { @roster.process(s) }.to change(@roster, :length).by 1
   end
 
   it 'allows a jid to be pushed' do
     jid = 'a@b/c'
-    proc { @roster.push(jid) }.should change(@roster, :length).by 1
-    @roster[jid].should_not be_nil
+    expect { @roster.push(jid) }.to change(@roster, :length).by 1
+    expect(@roster[jid]).not_to be_nil
   end
 
   it 'allows an item to be pushed' do
     jid = 'a@b/c'
     item = Blather::RosterItem.new(Blather::JID.new(jid))
-    proc { @roster.push(item) }.should change(@roster, :length).by 1
-    @roster[jid].should_not be_nil
+    expect { @roster.push(item) }.to change(@roster, :length).by 1
+    expect(@roster[jid]).not_to be_nil
   end
 
   it 'aliases #<< to #push and returns self to allow for chaining' do
@@ -46,9 +46,9 @@ describe Blather::Roster do
     item = Blather::RosterItem.new(Blather::JID.new(jid))
     jid2 = 'd@e/f'
     item2 = Blather::RosterItem.new(Blather::JID.new(jid2))
-    proc { @roster << item << item2 }.should change(@roster, :length).by 2
-    @roster[jid].should_not be_nil
-    @roster[jid2].should_not be_nil
+    expect { @roster << item << item2 }.to change(@roster, :length).by 2
+    expect(@roster[jid]).not_to be_nil
+    expect(@roster[jid2]).not_to be_nil
   end
 
   it 'sends a @roster addition over the wire' do
@@ -58,7 +58,7 @@ describe Blather::Roster do
   end
 
   it 'removes a Blather::JID' do
-    proc { @roster.delete 'n@d' }.should change(@roster, :length).by -1
+    expect { @roster.delete 'n@d' }.to change(@roster, :length).by -1
   end
 
   it 'sends a @roster removal over the wire' do
@@ -69,26 +69,26 @@ describe Blather::Roster do
 
   it 'returns an item through []' do
     item = @roster['n@d']
-    item.should be_kind_of Blather::RosterItem
-    item.jid.should == Blather::JID.new('n@d')
+    expect(item).to be_kind_of Blather::RosterItem
+    expect(item.jid).to eq(Blather::JID.new('n@d'))
   end
 
   it 'responds to #each' do
-    @roster.should respond_to :each
+    expect(@roster).to respond_to :each
   end
 
   it 'cycles through all the items using #each' do
-    @roster.map { |i| i }.sort.should ==(@roster.items.values.sort)
+    expect(@roster.map { |i| i }.sort).to eq(@roster.items.values.sort)
   end
 
   it 'yields RosterItems from #each' do
-    @roster.map { |i| i.should be_kind_of Blather::RosterItem }
+    @roster.map { |i| expect(i).to be_kind_of Blather::RosterItem }
   end
 
   it 'returns a duplicate of items through #items' do
     items = @roster.items
     items.delete 'n@d'
-    items.should_not equal @roster.items
+    expect(items).not_to equal @roster.items
   end
 
   it 'will group roster items' do
@@ -99,7 +99,7 @@ describe Blather::Roster do
     item2.groups = ['group1', 'group3']
     @roster << item1 << item2
 
-    @roster.grouped.should ==({
+    expect(@roster.grouped).to eq({
       'group1' => [item1, item2],
       'group2' => [item1],
       'group3' => [item2]

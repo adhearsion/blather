@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Blather::Stanza::Iq::Query do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:query, nil).should == Blather::Stanza::Iq::Query
+    expect(Blather::XMPPNode.class_from_registration(:query, nil)).to eq(Blather::Stanza::Iq::Query)
   end
 
   it 'can be imported' do
@@ -13,52 +13,52 @@ describe Blather::Stanza::Iq::Query do
         </query>
       </iq>
     XML
-    Blather::XMPPNode.parse(string).should be_instance_of Blather::Stanza::Iq::Query
+    expect(Blather::XMPPNode.parse(string)).to be_instance_of Blather::Stanza::Iq::Query
   end
 
   it 'ensures a query node is present on create' do
     query = Blather::Stanza::Iq::Query.new
-    query.xpath('query').should_not be_empty
+    expect(query.xpath('query')).not_to be_empty
   end
 
   it 'ensures a query node exists when calling #query' do
     query = Blather::Stanza::Iq::Query.new
     query.remove_child :query
-    query.xpath('query').should be_empty
+    expect(query.xpath('query')).to be_empty
 
-    query.query.should_not be_nil
-    query.xpath('query').should_not be_empty
+    expect(query.query).not_to be_nil
+    expect(query.xpath('query')).not_to be_empty
   end
 
   [:get, :set, :result, :error].each do |type|
     it "can be set as \"#{type}\"" do
       query = Blather::Stanza::Iq::Query.new type
-      query.type.should == type
+      expect(query.type).to eq(type)
     end
   end
 
   it 'sets type to "result" on reply' do
     query = Blather::Stanza::Iq::Query.new
-    query.type.should == :get
-    reply = query.reply.type.should == :result
+    expect(query.type).to eq(:get)
+    reply = expect(query.reply.type).to eq(:result)
   end
 
   it 'sets type to "result" on reply!' do
     query = Blather::Stanza::Iq::Query.new
-    query.type.should == :get
+    expect(query.type).to eq(:get)
     query.reply!
-    query.type.should == :result
+    expect(query.type).to eq(:result)
   end
 
   it 'can be registered under a namespace' do
     class QueryNs < Blather::Stanza::Iq::Query; register :query_ns, nil, 'query:ns'; end
-    Blather::XMPPNode.class_from_registration(:query, 'query:ns').should == QueryNs
+    expect(Blather::XMPPNode.class_from_registration(:query, 'query:ns')).to eq(QueryNs)
     query_ns = QueryNs.new
-    query_ns.xpath('query').should be_empty
-    query_ns.xpath('ns:query', :ns => 'query:ns').size.should == 1
+    expect(query_ns.xpath('query')).to be_empty
+    expect(query_ns.xpath('ns:query', :ns => 'query:ns').size).to eq(1)
 
     query_ns.query
     query_ns.query
-    query_ns.xpath('ns:query', :ns => 'query:ns').size.should == 1
+    expect(query_ns.xpath('ns:query', :ns => 'query:ns').size).to eq(1)
   end
 end

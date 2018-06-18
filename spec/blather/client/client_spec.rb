@@ -11,42 +11,42 @@ describe Blather::Client do
 
   it 'provides a Blather::JID reader' do
     subject.post_init stream, jid
-    subject.should respond_to :jid
-    subject.jid.should == jid
+    expect(subject).to respond_to :jid
+    expect(subject.jid).to eq(jid)
   end
 
   it 'provides a reader for the roster' do
-    subject.should respond_to :roster
-    subject.roster.should be_kind_of Blather::Roster
+    expect(subject).to respond_to :roster
+    expect(subject.roster).to be_kind_of Blather::Roster
   end
 
   it 'provides a status reader' do
     subject.post_init stream, jid
-    subject.should respond_to :status
+    expect(subject).to respond_to :status
     subject.status = :away
-    subject.status.should == :away
+    expect(subject.status).to eq(:away)
   end
 
   it 'should have a caps handler' do
-    subject.should respond_to :caps
-    subject.caps.should be_kind_of Blather::Stanza::Capabilities
+    expect(subject).to respond_to :caps
+    expect(subject.caps).to be_kind_of Blather::Stanza::Capabilities
   end
 
   describe '#setup' do
     it 'can be setup' do
-      subject.should respond_to :setup
-      subject.setup('me@me.com', 'pass').should == subject
+      expect(subject).to respond_to :setup
+      expect(subject.setup('me@me.com', 'pass')).to eq(subject)
     end
 
     it 'knows if it has been setup' do
-      subject.should respond_to :setup?
-      subject.should_not be_setup
+      expect(subject).to respond_to :setup?
+      expect(subject).not_to be_setup
       subject.setup 'me@me.com', 'pass'
-      subject.should be_setup
+      expect(subject).to be_setup
     end
 
     it 'cannot be run before being setup' do
-      lambda { subject.run }.should raise_error RuntimeError
+      expect { subject.run }.to raise_error RuntimeError
     end
 
     it 'starts up a Component connection when setup without a node' do
@@ -71,7 +71,7 @@ describe Blather::Client do
       subject { Blather::Client.setup(jid, password, nil, nil, nil, nil, :workqueue_count => queue_size) }
 
       it 'sets the queue size on the client' do
-        subject.queue_size.should == queue_size
+        expect(subject.queue_size).to eq(queue_size)
       end
 
       describe 'receiving data' do
@@ -81,7 +81,7 @@ describe Blather::Client do
           let(:queue_size) { 0 }
 
           it "has no handler queue" do
-            subject.handler_queue.should be_nil
+            expect(subject.handler_queue).to be_nil
           end
 
           it 'handles the data immediately' do
@@ -94,7 +94,7 @@ describe Blather::Client do
           let(:queue_size) { 4 }
 
           it 'enqueues the data on the handler queue' do
-            subject.handler_queue.expects(:<<).with(stanza)
+            subject.handler_queue.expects(:perform_async).with(stanza)
             subject.receive_data stanza
           end
         end
@@ -103,21 +103,21 @@ describe Blather::Client do
   end
 
   it 'knows if it is disconnected' do
-    subject.should respond_to :connected?
-    subject.should_not be_connected
+    expect(subject).to respond_to :connected?
+    expect(subject).not_to be_connected
   end
 
   it 'knows if it is connected' do
     stream.expects(:stopped?).returns false
     subject.setup 'me.com', 'secret'
     subject.post_init stream, Blather::JID.new('me.com')
-    subject.should be_connected
+    expect(subject).to be_connected
   end
 
   describe 'if it has been setup but not connected yet' do
     it 'should consider itself disconnected' do
       subject.setup 'me.com', 'secret'
-      subject.should_not be_connected
+      expect(subject).not_to be_connected
     end
   end
 
@@ -158,18 +158,23 @@ describe Blather::Client do
         stream.stubs(:close_connection_after_writing)
         subject.handler_queue.expects(:shutdown)
         subject.close
+        expect(instance_variable_get(:@handler_queue)).to be_nil
       end
 
       it 'forces the work queue to be re-created when referenced' do
         stream.stubs(:close_connection_after_writing)
         subject.close
 
-        fake_queue = stub('GirlFriday::WorkQueue')
-        GirlFriday::WorkQueue.expects(:new)
-        .with(:handle_stanza, :size => subject.queue_size)
+        fake_queue = stub('Blather::Client::Job subclass')
+        Class.expects(:new)
+          .with(Blather::Client::Job)
           .returns(fake_queue)
+        fake_queue.expects(:client=)
+          .with(subject)
+        fake_queue.expects(:workers)
+          .with(subject.queue_size)
 
-        subject.handler_queue.should == fake_queue
+        expect(subject.handler_queue).to eq(fake_queue)
       end
     end
   end
@@ -235,7 +240,7 @@ describe Blather::Client do
     response.expects(:call)
     subject.expects(:write).with do |s|
       subject.receive_data stanza
-      s.should == stanza
+      expect(s).to eq(stanza)
     end
     subject.write_with_handler(stanza) { |_| response.call }
   end
@@ -317,24 +322,24 @@ describe Blather::Client do
 
     it 'updates the state when not sending to a Blather::JID' do
       stream.stubs(:write)
-      subject.status.should_not equal :away
+      expect(subject.status).not_to equal :away
       subject.status = :away, 'message'
-      subject.status.should == :away
+      expect(subject.status).to eq(:away)
     end
 
     it 'does not update the state when sending to a Blather::JID' do
       stream.stubs(:write)
-      subject.status.should_not equal :away
+      expect(subject.status).not_to equal :away
       subject.status = :away, 'message', 'me@me.com'
-      subject.status.should_not equal :away
+      expect(subject.status).not_to equal :away
     end
 
     it 'writes the new status to the stream' do
       Blather::Stanza::Presence::Status.stubs(:next_id).returns 0
       status = [:away, 'message']
       stream.expects(:send).with do |s|
-        s.should be_kind_of Blather::Stanza::Presence::Status
-        s.to_s.should == Blather::Stanza::Presence::Status.new(*status).to_s
+        expect(s).to be_kind_of Blather::Stanza::Presence::Status
+        expect(s.to_s).to eq(Blather::Stanza::Presence::Status.new(*status).to_s)
       end
       subject.status = status
     end
@@ -343,7 +348,7 @@ describe Blather::Client do
   describe 'default handlers' do
     it 're-raises errors' do
       err = Blather::BlatherError.new
-      lambda { subject.receive_data err }.should raise_error Blather::BlatherError
+      expect { subject.receive_data err }.to raise_error Blather::BlatherError
     end
 
     # it 'responds to iq:get with a "service-unavailable" error' do
@@ -370,7 +375,7 @@ describe Blather::Client do
     it 'responds to s2c pings with a pong' do
       ping = Blather::Stanza::Iq::Ping.new :get
       pong = ping.reply
-      subject.expects(:write).with { |n| n.to_s.should == pong.to_s }
+      subject.expects(:write).with { |n| expect(n.to_s).to eq(pong.to_s) }
       subject.receive_data ping
     end
 
@@ -444,7 +449,7 @@ describe Blather::Client do
     end
 
     it 'sends a request for the roster when post_init is called' do
-      stream.expects(:send).with { |stanza| stanza.should be_kind_of Blather::Stanza::Iq::Roster }
+      stream.expects(:send).with { |stanza| expect(stanza).to be_kind_of Blather::Stanza::Iq::Roster }
       subject.post_init stream, Blather::JID.new('n@d/r')
     end
 
@@ -486,7 +491,7 @@ describe Blather::Client do
 
   describe 'filters' do
     it 'raises an error when an invalid filter type is registered' do
-      lambda { subject.register_filter(:invalid) {} }.should raise_error RuntimeError
+      expect { subject.register_filter(:invalid) {} }.to raise_error RuntimeError
     end
 
     it 'can be guarded' do
@@ -510,11 +515,11 @@ describe Blather::Client do
     it 'runs them in order' do
       stanza = Blather::Stanza::Iq.new
       count = 0
-      subject.register_filter(:before) { |_| count.should == 0; count = 1 }
-      subject.register_filter(:before) { |_| count.should == 1; count = 2 }
-      subject.register_handler(:iq) { |_| count.should == 2; count = 3 }
-      subject.register_filter(:after) { |_| count.should == 3; count = 4 }
-      subject.register_filter(:after) { |_| count.should == 4 }
+      subject.register_filter(:before) { |_| expect(count).to eq(0); count = 1 }
+      subject.register_filter(:before) { |_| expect(count).to eq(1); count = 2 }
+      subject.register_handler(:iq) { |_| expect(count).to eq(2); count = 3 }
+      subject.register_filter(:after) { |_| expect(count).to eq(3); count = 4 }
+      subject.register_filter(:after) { |_| expect(count).to eq(4) }
       subject.receive_data stanza
     end
 
@@ -659,9 +664,9 @@ describe Blather::Client do
 
     it 'can be an xpath and will send the result to the handler' do
       response.expects(:call).with do |stanza, xpath|
-        xpath.should be_instance_of Nokogiri::XML::NodeSet
-        xpath.should_not be_empty
-        stanza.should == stanza
+        expect(xpath).to be_instance_of Nokogiri::XML::NodeSet
+        expect(xpath).not_to be_empty
+        expect(stanza).to eq(stanza)
       end
       subject.register_handler(:iq, "/iq[@id='#{stanza.id}']") { |stanza, xpath| response.call stanza, xpath }
       subject.receive_data stanza
@@ -670,16 +675,16 @@ describe Blather::Client do
     it 'can be an xpath with namespaces and will send the result to the handler' do
       stanza = Blather::Stanza.parse('<message><foo xmlns="http://bar.com"></message>')
       response.expects(:call).with do |stanza, xpath|
-        xpath.should be_instance_of Nokogiri::XML::NodeSet
-        xpath.should_not be_empty
-        stanza.should == stanza
+        expect(xpath).to be_instance_of Nokogiri::XML::NodeSet
+        expect(xpath).not_to be_empty
+        expect(stanza).to eq(stanza)
       end
       subject.register_handler(:message, "/message/bar:foo", :bar => 'http://bar.com') { |stanza, xpath| response.call stanza, xpath }
       subject.receive_data stanza
     end
 
     it 'raises an error when a bad guard is tried' do
-      lambda { subject.register_handler(:iq, 0) {} }.should raise_error RuntimeError
+      expect { subject.register_handler(:iq, 0) {} }.to raise_error RuntimeError
     end
   end
 
@@ -687,51 +692,51 @@ describe Blather::Client do
     let(:caps) { subject.caps }
 
     it 'must be of type result' do
-      caps.should respond_to :type
-      caps.type.should == :result
+      expect(caps).to respond_to :type
+      expect(caps.type).to eq(:result)
     end
 
     it 'can have a client node set' do
-      caps.should respond_to :node=
+      expect(caps).to respond_to :node=
       caps.node = "somenode"
     end
 
     it 'provides a client node reader' do
-      caps.should respond_to :node
+      expect(caps).to respond_to :node
       caps.node = "somenode"
-      caps.node.should == "somenode##{caps.ver}"
+      expect(caps.node).to eq("somenode##{caps.ver}")
     end
 
     it 'can have identities set' do
-      caps.should respond_to :identities=
+      expect(caps).to respond_to :identities=
       caps.identities = [{:name => "name", :type => "type", :category => "cat"}]
     end
 
     it 'provides an identities reader' do
-      caps.should respond_to :identities
+      expect(caps).to respond_to :identities
       caps.identities = [{:name => "name", :type => "type", :category => "cat"}]
-      caps.identities.should == [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => "name", :type => "type", :category => "cat"})]
+      expect(caps.identities).to eq([Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => "name", :type => "type", :category => "cat"})])
     end
 
     it 'can have features set' do
-      caps.should respond_to :features=
-      caps.features.size.should == 0
+      expect(caps).to respond_to :features=
+      expect(caps.features.size).to eq(0)
       caps.features = ["feature1"]
-      caps.features.size.should == 1
+      expect(caps.features.size).to eq(1)
       caps.features += [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
-      caps.features.size.should == 2
+      expect(caps.features.size).to eq(2)
       caps.features = nil
-      caps.features.size.should == 0
+      expect(caps.features.size).to eq(0)
     end
 
     it 'provides a features reader' do
-      caps.should respond_to :features
+      expect(caps).to respond_to :features
       caps.features = %w{feature1 feature2}
-      caps.features.should == [Blather::Stanza::Iq::DiscoInfo::Feature.new("feature1"), Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")]
+      expect(caps.features).to eq([Blather::Stanza::Iq::DiscoInfo::Feature.new("feature1"), Blather::Stanza::Iq::DiscoInfo::Feature.new("feature2")])
     end
 
     it 'provides a client ver reader' do
-      caps.should respond_to :ver
+      expect(caps).to respond_to :ver
       caps.node = 'http://code.google.com/p/exodus'
       caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
       caps.features = %w{
@@ -740,12 +745,12 @@ describe Blather::Client do
                             http://jabber.org/protocol/disco#items
                             http://jabber.org/protocol/muc
                           }
-      caps.ver.should == 'QgayPKawpkPSDYmwT/WM94uAlu0='
-      caps.node.should == "http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0="
+      expect(caps.ver).to eq('QgayPKawpkPSDYmwT/WM94uAlu0=')
+      expect(caps.node).to eq("http://code.google.com/p/exodus#QgayPKawpkPSDYmwT/WM94uAlu0=")
     end
 
     it 'can construct caps presence correctly' do
-      caps.should respond_to :c
+      expect(caps).to respond_to :c
       caps.node = 'http://code.google.com/p/exodus'
       caps.identities = [Blather::Stanza::Iq::DiscoInfo::Identity.new({:name => 'Exodus 0.9.1', :type => 'pc', :category => 'client'})]
       caps.features = %w{
@@ -754,7 +759,7 @@ describe Blather::Client do
                             http://jabber.org/protocol/disco#items
                             http://jabber.org/protocol/muc
                           }
-      Nokogiri::XML(caps.c.to_xml).to_s.should == Nokogiri::XML("<presence><c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/></presence>").to_s
+      expect(Nokogiri::XML(caps.c.to_xml).to_s).to eq(Nokogiri::XML("<presence><c xmlns=\"http://jabber.org/protocol/caps\" hash=\"sha-1\" node=\"http://code.google.com/p/exodus\" ver=\"QgayPKawpkPSDYmwT/WM94uAlu0=\"/></presence>").to_s)
     end
   end
 end

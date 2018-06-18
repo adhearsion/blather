@@ -1,5 +1,13 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
 
+# [v2.0.0](https://github.com/adhearsion/blather/compare/v1.2.0...v2.0.0) - [2018-06-18](https://rubygems.org/gems/blather/versions/2.0.0)
+  * Bugfix: Require EventMachine >= 1.2.6 to avoid segfault issue
+  * Bugfix: Fix unsafe threaded use of @tmp_handlers in Blather::Client
+  * Feature: Bump RSpec to 3.x and convert specs with Transpec
+  * Feature: Bump Mocha version to 1.x
+  * Feature: Switch from girl_friday to sucker_punch
+  * Feature: Unlock Nokogiri to allow >=1.8.3 now that issues are fixed upstream
+
 # [v1.2.0](https://github.com/adhearsion/blather/compare/v1.1.4...v1.2.0) - [2016-01-07](https://rubygems.org/gems/blather/versions/1.2.0)
   * Bugfix: Properly sort resources with the same priority but different status
   * Bugfix: Lock to Nokogiri <= 1.6.1 because new versions are more broken than old ones

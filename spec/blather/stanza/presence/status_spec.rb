@@ -2,15 +2,15 @@ require 'spec_helper'
 
 describe Blather::Stanza::Presence::Status do
   it 'registers itself' do
-    Blather::XMPPNode.class_from_registration(:status, nil).should == Blather::Stanza::Presence::Status
+    expect(Blather::XMPPNode.class_from_registration(:status, nil)).to eq(Blather::Stanza::Presence::Status)
   end
 
   it 'must be importable as unavailable' do
-    Blather::XMPPNode.parse('<presence type="unavailable"/>').should be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
+    expect(Blather::XMPPNode.parse('<presence type="unavailable"/>')).to be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
   end
 
   it 'must be importable as nil' do
-    Blather::XMPPNode.parse('<presence/>').should be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
+    expect(Blather::XMPPNode.parse('<presence/>')).to be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
   end
 
   it 'must be importable with show, status and priority children' do
@@ -21,83 +21,83 @@ describe Blather::Stanza::Presence::Status do
         <priority>10</priority>
       </presence>
     XML
-    n.should be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
-    n.state.should == :chat
-    n.message.should == 'Talk to me!'
-    n.priority.should == 10
+    expect(n).to be_kind_of Blather::Stanza::Presence::Status::InstanceMethods
+    expect(n.state).to eq(:chat)
+    expect(n.message).to eq('Talk to me!')
+    expect(n.priority).to eq(10)
   end
 
   it 'can set state on creation' do
     status = Blather::Stanza::Presence::Status.new :away
-    status.state.should == :away
+    expect(status.state).to eq(:away)
   end
 
   it 'can set a message on creation' do
     status = Blather::Stanza::Presence::Status.new nil, 'Say hello!'
-    status.message.should == 'Say hello!'
+    expect(status.message).to eq('Say hello!')
   end
 
   it 'ensures type is nil or :unavailable' do
     status = Blather::Stanza::Presence::Status.new
-    lambda { status.type = :invalid_type_name }.should raise_error(Blather::ArgumentError)
+    expect { status.type = :invalid_type_name }.to raise_error(Blather::ArgumentError)
 
     [nil, :unavailable].each do |valid_type|
       status.type = valid_type
-      status.type.should == valid_type
+      expect(status.type).to eq(valid_type)
     end
   end
 
   it 'ensures state is one of Presence::Status::VALID_STATES' do
     status = Blather::Stanza::Presence::Status.new
-    lambda { status.state = :invalid_type_name }.should raise_error(Blather::ArgumentError)
+    expect { status.state = :invalid_type_name }.to raise_error(Blather::ArgumentError)
 
     Blather::Stanza::Presence::Status::VALID_STATES.each do |valid_state|
       status.state = valid_state
-      status.state.should == valid_state
+      expect(status.state).to eq(valid_state)
     end
   end
 
   it 'returns :available if state is nil' do
-    Blather::Stanza::Presence::Status.new.state.should == :available
+    expect(Blather::Stanza::Presence::Status.new.state).to eq(:available)
   end
 
   it 'returns :available if <show/> is blank' do
     status = Blather::XMPPNode.parse(<<-NODE)
       <presence><show/></presence>
     NODE
-    status.state.should == :available
+    expect(status.state).to eq(:available)
   end
 
   it 'returns :unavailable if type is :unavailable' do
     status = Blather::Stanza::Presence::Status.new
     status.type = :unavailable
-    status.state.should == :unavailable
+    expect(status.state).to eq(:unavailable)
   end
 
   it 'ensures priority is not greater than 127' do
-    lambda { Blather::Stanza::Presence::Status.new.priority = 128 }.should raise_error(Blather::ArgumentError)
+    expect { Blather::Stanza::Presence::Status.new.priority = 128 }.to raise_error(Blather::ArgumentError)
   end
 
   it 'ensures priority is not less than -128' do
-    lambda { Blather::Stanza::Presence::Status.new.priority = -129 }.should raise_error(Blather::ArgumentError)
+    expect { Blather::Stanza::Presence::Status.new.priority = -129 }.to raise_error(Blather::ArgumentError)
   end
 
   it 'has "attr_accessor" for priority' do
     status = Blather::Stanza::Presence::Status.new
-    status.priority.should == 0
+    expect(status.priority).to eq(0)
 
     status.priority = 10
-    status.children.detect { |n| n.element_name == 'priority' }.should_not be_nil
-    status.priority.should == 10
+    expect(status.children.detect { |n| n.element_name == 'priority' }).not_to be_nil
+    expect(status.priority).to eq(10)
   end
 
   it 'has "attr_accessor" for message' do
     status = Blather::Stanza::Presence::Status.new
-    status.message.should be_nil
+    expect(status.message).to be_nil
 
     status.message = 'new message'
-    status.children.detect { |n| n.element_name == 'status' }.should_not be_nil
-    status.message.should == 'new message'
+    expect(status.children.detect { |n| n.element_name == 'status' }).not_to be_nil
+    expect(status.message).to eq('new message')
   end
 
   it 'must be comparable by priority' do
@@ -111,11 +111,11 @@ describe Blather::Stanza::Presence::Status do
 
     status1.priority = 1
     status2.priority = -1
-    (status1 <=> status2).should == 1
-    (status2 <=> status1).should == -1
+    expect(status1 <=> status2).to eq(1)
+    expect(status2 <=> status1).to eq(-1)
 
     status2.priority = 1
-    (status1 <=> status2).should == 0
+    expect(status1 <=> status2).to eq(0)
   end
 
   it 'must should sort by status if priorities are equal' do
@@ -128,8 +128,8 @@ describe Blather::Stanza::Presence::Status do
     status2.from = jid
 
     status1.priority = status2.priority = 1
-    (status1 <=> status2).should == -1
-    (status2 <=> status1).should == 1
+    expect(status1 <=> status2).to eq(-1)
+    expect(status2 <=> status1).to eq(1)
   end
 
   it 'raises an argument error if compared to a status with a different Blather::JID' do
@@ -139,20 +139,20 @@ describe Blather::Stanza::Presence::Status do
     status2 = Blather::Stanza::Presence::Status.new
     status2.from = 'd@e/f'
 
-    lambda { status1 <=> status2 }.should raise_error(Blather::ArgumentError)
+    expect { status1 <=> status2 }.to raise_error(Blather::ArgumentError)
   end
 
   ([:available] + Blather::Stanza::Presence::Status::VALID_STATES).each do |valid_state|
     it "provides a helper (#{valid_state}?) for state #{valid_state}" do
-      Blather::Stanza::Presence::Status.new.should respond_to :"#{valid_state}?"
+      expect(Blather::Stanza::Presence::Status.new).to respond_to :"#{valid_state}?"
     end
 
     it "returns true on call to (#{valid_state}?) if state == #{valid_state}" do
       method = "#{valid_state}?".to_sym
       stat = Blather::Stanza::Presence::Status.new
       stat.state = valid_state
-      stat.should respond_to method
-      stat.__send__(method).should == true
+      expect(stat).to respond_to method
+      expect(stat.__send__(method)).to eq(true)
     end
   end
 end

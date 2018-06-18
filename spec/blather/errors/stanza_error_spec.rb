@@ -24,20 +24,20 @@ end
 
 describe Blather::StanzaError do
   it 'can import a node' do
-    Blather::StanzaError.should respond_to :import
+    expect(Blather::StanzaError).to respond_to :import
     e = Blather::StanzaError.import stanza_error_node
-    e.should be_kind_of Blather::StanzaError
+    expect(e).to be_kind_of Blather::StanzaError
   end
 
   describe 'valid types' do
     before { @original = Blather::Stanza::Message.new 'error@jabber.local', 'test message', :error }
 
     it 'ensures type is one of Stanza::Message::VALID_TYPES' do
-      lambda { Blather::StanzaError.new @original, :gone, :invalid_type_name }.should raise_error(Blather::ArgumentError)
+      expect { Blather::StanzaError.new @original, :gone, :invalid_type_name }.to raise_error(Blather::ArgumentError)
 
       Blather::StanzaError::VALID_TYPES.each do |valid_type|
         msg = Blather::StanzaError.new @original, :gone, valid_type
-        msg.type.should == valid_type
+        expect(msg.type).to eq(valid_type)
       end
     end
   end
@@ -51,48 +51,48 @@ describe Blather::StanzaError do
     end
 
     it 'provides a type attribute' do
-      @err.should respond_to :type
-      @err.type.should == @type.to_sym
+      expect(@err).to respond_to :type
+      expect(@err.type).to eq(@type.to_sym)
     end
 
     it 'provides a name attribute' do
-      @err.should respond_to :name
-      @err.name.should == @err_name.gsub('-','_').to_sym
+      expect(@err).to respond_to :name
+      expect(@err.name).to eq(@err_name.gsub('-','_').to_sym)
     end
 
     it 'provides a text attribute' do
-      @err.should respond_to :text
-      @err.text.should == @msg
+      expect(@err).to respond_to :text
+      expect(@err.text).to eq(@msg)
     end
 
     it 'provides a reader to the original node' do
-      @err.should respond_to :original
-      @err.original.should be_instance_of Blather::Stanza::Message
+      expect(@err).to respond_to :original
+      expect(@err.original).to be_instance_of Blather::Stanza::Message
     end
 
     it 'provides an extras attribute' do
-      @err.should respond_to :extras
-      @err.extras.should be_instance_of Array
-      @err.extras.first.element_name.should == 'extra-error'
+      expect(@err).to respond_to :extras
+      expect(@err.extras).to be_instance_of Array
+      expect(@err.extras.first.element_name).to eq('extra-error')
     end
 
     it 'describes itself' do
-      @err.to_s.should match(/#{@err_name}/)
-      @err.to_s.should match(/#{@msg}/)
+      expect(@err.to_s).to match(/#{@err_name}/)
+      expect(@err.to_s).to match(/#{@msg}/)
 
-      @err.inspect.should match(/#{@err_name}/)
-      @err.inspect.should match(/#{@msg}/)
+      expect(@err.inspect).to match(/#{@err_name}/)
+      expect(@err.inspect).to match(/#{@msg}/)
     end
 
     it 'can be turned into xml' do
-      @err.should respond_to :to_xml
+      expect(@err).to respond_to :to_xml
       doc = parse_stanza @err.to_xml
 
-      doc.xpath("/message[@from='error@jabber.local' and @type='error']").should_not be_empty
-      doc.xpath("/message/error").should_not be_empty
-      doc.xpath("/message/error/err_ns:internal-server-error", :err_ns => Blather::StanzaError::STANZA_ERR_NS).should_not be_empty
-      doc.xpath("/message/error/err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => Blather::StanzaError::STANZA_ERR_NS).should_not be_empty
-      doc.xpath("/message/error/extra_ns:extra-error[.='Blather Error']", :extra_ns => 'blather:stanza:error').should_not be_empty
+      expect(doc.xpath("/message[@from='error@jabber.local' and @type='error']")).not_to be_empty
+      expect(doc.xpath("/message/error")).not_to be_empty
+      expect(doc.xpath("/message/error/err_ns:internal-server-error", :err_ns => Blather::StanzaError::STANZA_ERR_NS)).not_to be_empty
+      expect(doc.xpath("/message/error/err_ns:text[.='the server has experienced a misconfiguration']", :err_ns => Blather::StanzaError::STANZA_ERR_NS)).not_to be_empty
+      expect(doc.xpath("/message/error/extra_ns:extra-error[.='Blather Error']", :extra_ns => 'blather:stanza:error')).not_to be_empty
     end
   end
 
@@ -122,7 +122,7 @@ describe Blather::StanzaError do
       ].each do |error_type|
         it "handles the name for #{error_type}" do
           e = Blather::StanzaError.import stanza_error_node(:cancel, error_type)
-          e.name.should == error_type.gsub('-','_').to_sym
+          expect(e.name).to eq(error_type.gsub('-','_').to_sym)
         end
       end
   end
