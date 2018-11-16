@@ -106,6 +106,19 @@ describe Blather::Stream::Parser do
     end.not_to raise_error
   end
 
+  it 'handles namespace prefixed attributes' do
+    data = [
+      '<message type="error" id="another-id">',
+      '<body xmlns:ns1="http://example.com" ns1:test="value" />',
+      '</message>'
+    ]
+    expect do
+      process *data
+    end.not_to raise_error
+    expect(Nokogiri::XML(client.data[0].to_s.gsub(/\n\s*/, '')).to_s).to eq(Nokogiri::XML(data.join).to_s)
+    expect(client.data[0].children[0].attributes["test"].namespace.href).to eq("http://example.com")
+  end
+
   it 'responds with stream:stream as a separate response' do
     process '<stream:stream xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams" to="example.com" version="1.0">',
       '<foo/>'
