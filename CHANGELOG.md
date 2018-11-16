@@ -3,6 +3,7 @@
   * Feature: Blather::Stanza::X::Field values can be arrays to support multiple-valued fields
   * Feature: Add Blather::Stanza::Iq::IBR to implement XEP-0077 In-Band Registration
   * Bugfix: Starttls when offered by server; including when the unsecured stream features start with a <method>
+  * Bugfix: Parser does not drop attribute namespaces
 
 # [v2.0.0](https://github.com/adhearsion/blather/compare/v1.2.0...v2.0.0) - [2018-06-18](https://rubygems.org/gems/blather/versions/2.0.0)
   * Bugfix: Require EventMachine >= 1.2.6 to avoid segfault issue
