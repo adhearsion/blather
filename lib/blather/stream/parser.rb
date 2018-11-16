@@ -47,7 +47,7 @@ class Stream
       node.namespace = @namespaces[[prefix, uri]]
 
       attrs.each do |attr|
-        node[[attr.prefix,attr.localname].select{|x|x}.join(":")] = attr.value
+        node["#{attr.prefix + ':' if attr.prefix}#{attr.localname}"] = attr.value
       end
 
       unless @receiver.stopped?
