@@ -282,7 +282,7 @@ describe Blather::Stream::Client do
       when nil
         state = :started
         server.send_data "<?xml version='1.0'?><stream:stream xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>"
-        server.send_data "<stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
+        server.send_data "<stream:features><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>SCRAM-SHA-1</mechanism></mechanisms><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls' /></stream:features>"
         expect(val).to match(/stream:stream/)
 
       when :started
