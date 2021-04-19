@@ -321,14 +321,14 @@ class Iq
 
     # Get the text of the command's note
     def note_text
-      content_from :note
+      command.content_from('ns:note', ns: self.class.registered_ns)
     end
 
     # Set the command's note text
     #
     # @param [String] note_text the command's new note text
     def note_text=(note_text)
-      set_content_for :note, note_text
+      note.content = note_text
     end
 
     # Returns the command's x:data form child
