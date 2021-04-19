@@ -328,7 +328,7 @@ class Iq
     #
     # @param [String] note_text the command's new note text
     def note_text=(note_text)
-      set_content_for :note, note_text
+      note.content = note_text
     end
 
     # Returns the command's x:data form child
