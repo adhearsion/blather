@@ -56,6 +56,7 @@ class Iq
       super
       self.action = nil
       self.command.children.remove
+      new_sessionid! if !sessionid
       self
     end
 
