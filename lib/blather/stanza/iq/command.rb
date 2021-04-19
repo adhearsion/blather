@@ -52,8 +52,10 @@ class Iq
     #
     # @return [self]
     def reply!(opts = {})
+      opts = {:remove_children => false}.merge opts
       super
       self.action = nil
+      self.command.children.remove
       self
     end
 
