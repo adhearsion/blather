@@ -1,7 +1,10 @@
 require 'optparse'
-require File.join(File.dirname(__FILE__), *%w[client dsl])
 
-include Blather::DSL
+if !defined?(Blather::DSL)
+  require File.join(File.dirname(__FILE__), *%w[client dsl])
+
+  include Blather::DSL
+end
 
 options = {}
 optparse = OptionParser.new do |opts|
@@ -62,7 +65,7 @@ at_exit do
     client.setup(*ARGV)
   end
 
-  def run(options)
+  def at_exit_run(options)
     $stdin.reopen "/dev/null"
 
     if options[:log]
@@ -84,12 +87,12 @@ at_exit do
       Process.setsid
       exit if fork
       File.open(options[:pid], 'w') { |f| f << Process.pid } if options[:pid]
-      run options
+      at_exit_run options
       FileUtils.rm(options[:pid]) if options[:pid]
     end
     ::Process.detach pid
     exit
   else
-    run options
+    at_exit_run options
   end
 end
