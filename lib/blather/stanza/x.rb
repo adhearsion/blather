@@ -39,7 +39,7 @@ class Stanza
     # @param [Blather::Stanza] parent the parent node to search under
     # @return [Blather::Stanza::X]
     def self.find_or_create(parent)
-      if found_x = parent.find_first('//ns:x', :ns => self.registered_ns)
+      if found_x = parent.find_first('ns:x', :ns => self.registered_ns)
         x = self.new found_x
         found_x.remove
       else
