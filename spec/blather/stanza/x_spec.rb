@@ -199,6 +199,13 @@ describe Blather::Stanza::X::Field do
     expect(n.value).to eq('book2')
   end
 
+  it 'allows multiple values' do
+    n = Blather::Stanza::X::Field.new 'subject', 'list-multi', 'Music from the time of Shakespeare'
+    expect(n.value).to eq(nil)
+    n.value = ['book<&1>', 'book2']
+    expect(n.value).to eq(['book<&1>', 'book2'])
+  end
+
   it 'allows setting options' do
     di = Blather::Stanza::X::Field.new nil
     expect(di.options.size).to eq(0)
