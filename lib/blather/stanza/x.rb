@@ -254,11 +254,13 @@ class Stanza
       #
       # @param [String]
       def value
-        if self.namespace
-          content_from 'ns:value', :ns => self.namespace.href
+        children = if self.namespace
+          xpath('ns:value', ns: self.namespace.href)
         else
-          content_from :value
+          xpath(:value)
         end
+        return children.first&.content if children.length < 2
+        children.map(&:content)
       end
 
       # Set the field's value
@@ -266,10 +268,11 @@ class Stanza
       # @param [String] value the field's value
       def value=(value)
         self.remove_children :value
-        if value
+        return unless value
+        Array(value).each do |val|
           self << (v = XMPPNode.new(:value))
           v.namespace = self.namespace
-          v << value
+          v << val
         end
       end
 
