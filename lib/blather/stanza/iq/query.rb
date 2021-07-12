@@ -14,7 +14,7 @@ class Iq
     # Overrides the parent method to ensure a query node is created
     #
     # @see Blather::Stanza::Iq.new
-    def self.new(type = nil)
+    def self.new(*)
       node = super
       node.query
       node

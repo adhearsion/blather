@@ -52,8 +52,11 @@ class Iq
     #
     # @return [self]
     def reply!(opts = {})
+      opts = {:remove_children => false}.merge opts
       super
       self.action = nil
+      self.command.children.remove
+      new_sessionid! if !sessionid
       self
     end
 
@@ -325,7 +328,7 @@ class Iq
     #
     # @param [String] note_text the command's new note text
     def note_text=(note_text)
-      set_content_for :note, note_text
+      note.content = note_text
     end
 
     # Returns the command's x:data form child
