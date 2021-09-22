@@ -131,7 +131,7 @@ class Stanza
       if instructions
         self << (i = XMPPNode.new(:instructions, self.document))
         i.namespace = self.namespace
-        i << instructions
+        i.content = instructions
       end
     end
 
@@ -150,7 +150,7 @@ class Stanza
       if title
         self << (t = XMPPNode.new(:title))
         t.namespace = self.namespace
-        t << title
+        t.content = title
       end
     end
 

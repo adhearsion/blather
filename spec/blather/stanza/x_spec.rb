@@ -64,6 +64,13 @@ describe Blather::Stanza::X do
     expect(n.title).to eq("goodbye")
   end
 
+  it 'escapes title properly' do
+    n = Blather::Stanza::X.new :form
+    expect(n.title).to eq(nil)
+    n.title = "<a&a>"
+    expect(n.title).to eq("<a&a>")
+  end
+
   it 'has an instructions attribute' do
     n = Blather::Stanza::X.new :form
     expect(n.instructions).to eq(nil)
@@ -71,6 +78,13 @@ describe Blather::Stanza::X do
     expect(n.instructions).to eq("Please fill in this form")
     n.instructions = "goodbye"
     expect(n.instructions).to eq("goodbye")
+  end
+
+  it 'escapes instructions properly' do
+    n = Blather::Stanza::X.new :form
+    expect(n.instructions).to eq(nil)
+    n.instructions = "<a&a>"
+    expect(n.instructions).to eq("<a&a>")
   end
 
   it 'inherits a list of fields' do
