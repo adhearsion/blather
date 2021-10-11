@@ -66,7 +66,7 @@ at_exit do
   end
 
   def at_exit_run(options)
-    $stdin.reopen "/dev/null"
+    $stdin.reopen("/dev/null") if options[:daemonize] && $stdin.tty?
 
     if options[:log]
       log = File.new(options[:log], 'a')
