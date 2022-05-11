@@ -35,6 +35,7 @@
   blather/stanza/iq/ibb
   blather/stanza/iq/ping
   blather/stanza/iq/query
+  blather/stanza/iq/ibr
   blather/stanza/iq/roster
   blather/stanza/iq/s5b
   blather/stanza/iq/si
