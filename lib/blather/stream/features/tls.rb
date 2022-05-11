@@ -17,7 +17,6 @@ class Stream
       when 'proceed'
         @stream.start_tls(:verify_peer => true)
         @stream.start
-#        succeed!
       else
         fail! TLSFailure.new
       end

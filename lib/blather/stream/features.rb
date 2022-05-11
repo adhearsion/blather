@@ -27,9 +27,9 @@ class Stream
 
     def next!
       if starttls = @features.at_xpath("tls:starttls",{"tls" => "urn:ietf:params:xml:ns:xmpp-tls"})
-       @feature = TLS.new(@stream, nil, @fail)
-       @feature.receive_data(starttls)
-       return
+        @feature = TLS.new(@stream, nil, @fail)
+        @feature.receive_data(starttls)
+        return
       end
 
       bind = @features.at_xpath('ns:bind', ns: 'urn:ietf:params:xml:ns:xmpp-bind')
