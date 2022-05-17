@@ -184,6 +184,7 @@ describe Blather::Stanza::Iq::Command do
     expect(n.note_text).to eq(nil)
     n.note_text = "Some text"
     expect(n.note_text).to eq("Some text")
+    expect(n.note.content).to eq("Some text")
   end
 
   it 'makes a form child available' do

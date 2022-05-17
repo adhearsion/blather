@@ -1,4 +1,6 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * Bugfix: Blather::Stanza::X#find_or_create only looks at immediate children of parent now
+  * Feature: Blather::Stanza::X::Field values can be arrays to support multiple-valued fields
   * Feature: Add Blather::Stanza::Iq::IBR to implement XEP-0077 In-Band Registration
   * Bugfix: Starttls when offered by server; including when the unsecured stream features start with a <method>
 

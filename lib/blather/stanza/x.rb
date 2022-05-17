@@ -39,7 +39,7 @@ class Stanza
     # @param [Blather::Stanza] parent the parent node to search under
     # @return [Blather::Stanza::X]
     def self.find_or_create(parent)
-      if found_x = parent.find_first('//ns:x', :ns => self.registered_ns)
+      if found_x = parent.find_first('ns:x', :ns => self.registered_ns)
         x = self.new found_x
         found_x.remove
       else
@@ -131,7 +131,7 @@ class Stanza
       if instructions
         self << (i = XMPPNode.new(:instructions, self.document))
         i.namespace = self.namespace
-        i << instructions
+        i.content = instructions
       end
     end
 
@@ -150,7 +150,7 @@ class Stanza
       if title
         self << (t = XMPPNode.new(:title))
         t.namespace = self.namespace
-        t << title
+        t.content = title
       end
     end
 
@@ -254,22 +254,25 @@ class Stanza
       #
       # @param [String]
       def value
-        if self.namespace
-          content_from 'ns:value', :ns => self.namespace.href
+        children = if self.namespace
+          xpath('ns:value', ns: self.namespace.href)
         else
-          content_from :value
+          xpath(:value)
         end
+        return children.first&.content if children.length < 2
+        children.map(&:content)
       end
 
       # Set the field's value
       #
-      # @param [String] value the field's value
+      # @param [String, Array] one or more values for the field
       def value=(value)
         self.remove_children :value
-        if value
+        return unless value
+        Array(value).each do |val|
           self << (v = XMPPNode.new(:value))
           v.namespace = self.namespace
-          v << value
+          v.content = val
         end
       end
 
