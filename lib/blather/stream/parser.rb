@@ -35,10 +35,6 @@ class Stream
       node = XMPPNode.new *args
       node.document.root = node unless @current
 
-      attrs.each do |attr|
-        node[attr.localname] = attr.value
-      end
-
       ns_keys = namespaces.map { |pre, href| pre }
       namespaces.delete_if { |pre, href| NS_TO_IGNORE.include? href }
       @namespace_definitions.push []
@@ -49,6 +45,10 @@ class Stream
       end
       @namespaces[[prefix, uri]] ||= node.add_namespace(prefix, uri) if prefix && !ns_keys.include?(prefix)
       node.namespace = @namespaces[[prefix, uri]]
+
+      attrs.each do |attr|
+        node["#{attr.prefix + ':' if attr.prefix}#{attr.localname}"] = attr.value
+      end
 
       unless @receiver.stopped?
         @current << node if @current
