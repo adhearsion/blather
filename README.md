@@ -325,7 +325,7 @@ Specification                                        | Support | Name | Notes
 [XEP-0071](http://xmpp.org/extensions/xep-0071.html) | Partial | XHTML-IM |
 [XEP-0072](http://xmpp.org/extensions/xep-0072.html) | None    | SOAP Over XMPP |
 [XEP-0076](http://xmpp.org/extensions/xep-0076.html) | None    | Malicious Stanzas |
-[XEP-0077](http://xmpp.org/extensions/xep-0077.html) | None    | In-Band Registration |
+[XEP-0077](http://xmpp.org/extensions/xep-0077.html) | Full    | In-Band Registration |
 [XEP-0079](http://xmpp.org/extensions/xep-0079.html) | None    | Advanced Message Processing |
 [XEP-0080](http://xmpp.org/extensions/xep-0080.html) | None    | User Location |
 [XEP-0082](http://xmpp.org/extensions/xep-0082.html) | None    | XMPP Date and Time Profiles |
