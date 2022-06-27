@@ -32,25 +32,9 @@ module Blather
   #     end
   #
   class Client
-    class Job
-      include SuckerPunch::Job
-      class_attribute :client
-
-      def perform(stanza)
-        client.handle_data stanza
-      end
-
-      def self.shutdown
-        SuckerPunch::Queue.all.each do |queue|
-          queue.shutdown if queue.name == to_s
-        end
-      end
-    end
-
     attr_reader :jid,
                 :roster,
-                :caps,
-                :queue_size
+                :caps
 
     # Create a new client and set it up
     #
@@ -61,9 +45,7 @@ module Blather
     # @param [Fixnum, String] port the port to connect to.
     # @param [Hash] options a list of options to create the client with
     # @option options [String] :authcid A custom authcid for advanced authentication scenarios
-    # @option options [Number] :workqueue_count (5) the number of threads used to process incoming XMPP messages.
-    #   If this parameter is specified with 0, no background threads are used;
-    #   instead stanzas are handled in the same process that the Client is running in.
+    # @option options [Boolean] :async false (default) to run handlers in a threadpool, true if they are EM-aware
     #
     # @return [Blather::Client]
     def self.setup(jid, password, host = nil, port = nil, certs = nil, connect_timeout = nil, options = {})
@@ -81,7 +63,7 @@ module Blather
       @filters = {:before => [], :after => []}
       @roster = Roster.new self
       @caps = Stanza::Capabilities.new
-      @queue_size = 5
+      @defer = ->(&blk) { blk.call }
 
       setup_initial_handlers
     end
@@ -191,8 +173,6 @@ module Blather
     # Close the connection
     def close
       EM.next_tick {
-        handler_queue.shutdown if handler_queue
-        @handler_queue = nil
         self.stream.close_connection_after_writing if connected?
       }
     end
@@ -211,11 +191,7 @@ module Blather
 
     # @private
     def receive_data(stanza)
-      if handler_queue
-        handler_queue.perform_async stanza
-      else
-        handle_data stanza
-      end
+      @defer.call { handle_data stanza }
     end
 
     def handle_data(stanza)
@@ -240,18 +216,8 @@ module Blather
       @setup << certs
       @setup << connect_timeout
       @setup << options
-      @queue_size = options[:workqueue_count] || 5
+      @defer = ->(&blk) { EM.schedule { EM.defer(&blk) } } unless options[:async]
       self
-    end
-
-    # @private
-    def handler_queue
-      return if queue_size == 0
-      return @handler_queue if @handler_queue
-      @handler_queue = Class.new(Job)
-      @handler_queue.client = self
-      @handler_queue.workers queue_size
-      return @handler_queue
     end
 
     protected

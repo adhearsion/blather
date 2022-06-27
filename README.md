@@ -9,6 +9,8 @@
 
 XMPP DSL (and more) for Ruby written on [EventMachine](http://rubyeventmachine.com/) and [Nokogiri](http://nokogiri.org/).
 
+`develop` branch contains breaking changes scheduled for release in v3.0.0
+
 ## Features
 
 * evented architecture

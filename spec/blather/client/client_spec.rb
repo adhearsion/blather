@@ -63,38 +63,32 @@ describe Blather::Client do
       subject.run
     end
 
-    context "setting queue size" do
+    context "setting async" do
       let(:jid)        { 'test@jabber.local' }
       let(:password)   { 'secret' }
-      let(:queue_size) { 3 }
+      let(:async) { false }
 
-      subject { Blather::Client.setup(jid, password, nil, nil, nil, nil, :workqueue_count => queue_size) }
-
-      it 'sets the queue size on the client' do
-        expect(subject.queue_size).to eq(queue_size)
-      end
+      subject { Blather::Client.setup(jid, password, nil, nil, nil, nil, async: async) }
 
       describe 'receiving data' do
         let(:stanza) { Blather::Stanza::Iq.new }
 
-        context 'when the queue size is 0' do
-          let(:queue_size) { 0 }
-
-          it "has no handler queue" do
-            expect(subject.handler_queue).to be_nil
-          end
+        context 'when async is true' do
+          let(:async) { true }
 
           it 'handles the data immediately' do
+            EM.stubs(:defer) { raise 'should not defer' }
             subject.expects(:handle_data).with(stanza)
             subject.receive_data stanza
           end
         end
 
-        context 'when the queue size is non-zero' do
-          let(:queue_size) { 4 }
+        context 'when async is false' do
+          let(:async) { false }
 
           it 'enqueues the data on the handler queue' do
-            subject.handler_queue.expects(:perform_async).with(stanza)
+            EM.expects(:defer).yields
+            subject.expects(:handle_data).with(stanza)
             subject.receive_data stanza
           end
         end
@@ -152,29 +146,6 @@ describe Blather::Client do
       it 'writes to the connection the closes when #close is called' do
         stream.expects(:close_connection_after_writing)
         subject.close
-      end
-
-      it 'shuts down the workqueue' do
-        stream.stubs(:close_connection_after_writing)
-        subject.handler_queue.expects(:shutdown)
-        subject.close
-        expect(instance_variable_get(:@handler_queue)).to be_nil
-      end
-
-      it 'forces the work queue to be re-created when referenced' do
-        stream.stubs(:close_connection_after_writing)
-        subject.close
-
-        fake_queue = stub('Blather::Client::Job subclass')
-        Class.expects(:new)
-          .with(Blather::Client::Job)
-          .returns(fake_queue)
-        fake_queue.expects(:client=)
-          .with(subject)
-        fake_queue.expects(:workers)
-          .with(subject.queue_size)
-
-        expect(subject.handler_queue).to eq(fake_queue)
       end
     end
   end
