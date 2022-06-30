@@ -162,28 +162,34 @@ describe Blather::Client do
     subject.unbind
   end
 
-  it 'calls the :disconnected handler with #unbind is called' do
-    EM.expects(:reactor_running?).returns false
+  it 'does not call EM.stop on #unbind if there is a handler' do
+    EM.expects(:reactor_running?).never
+    EM.expects(:stop).never
     disconnected = mock
     disconnected.expects(:call)
     subject.register_handler(:disconnected) { disconnected.call }
     subject.unbind
   end
 
-  it 'does not call EM.stop on #unbind if a handler returns positive' do
-    EM.expects(:reactor_running?).never
-    EM.expects(:stop).never
-    disconnected = mock
-    disconnected.expects(:call).returns true
-    subject.register_handler(:disconnected) { disconnected.call }
-    subject.unbind
-  end
-
-  it 'calls EM.stop on #unbind if a handler returns negative' do
+  it 'calls EM.stop on #unbind if there is no handler' do
     EM.expects(:reactor_running?).returns true
     EM.expects(:stop)
     disconnected = mock
-    disconnected.expects(:call).returns false
+    subject.unbind
+  end
+
+  it 'does not call EM.stop on #unbind if the reactor is not running' do
+    EM.expects(:reactor_running?).returns false
+    EM.expects(:stop).never
+    disconnected = mock
+    subject.unbind
+  end
+
+  it 'calls EM.stop on #unbind if a handler calls pass' do
+    EM.expects(:reactor_running?).returns true
+    EM.expects(:stop)
+    disconnected = mock
+    disconnected.expects(:call).throws :pass
     subject.register_handler(:disconnected) { disconnected.call }
     subject.unbind
   end
