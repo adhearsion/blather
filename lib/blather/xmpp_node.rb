@@ -31,7 +31,10 @@ module Blather
     # @param [String, nil] xmlns the namespace the node belongs to
     # @return [Class, nil] the class appropriate for the name/ns combination
     def self.class_from_registration(name, ns = nil)
-      @@registrations[[name.to_s, ns]]
+      reg = @@registrations[[name.to_s, ns]]
+      return @@registrations[[name.to_s, nil]] if !reg && ["jabber:client", "jabber:component:accept"].include?(ns)
+
+      reg
     end
 
     # Import an XML::Node to the appropriate class
@@ -85,6 +88,15 @@ module Blather
         @handler_hierarchy.unshift decorator.handler_hierarchy.first if decorator.respond_to?(:handler_hierarchy)
       end
       self
+    end
+
+    def content_from(name, ns = nil)
+      content = super
+      if !content && !ns
+        return super("ns:#{name}", ns: "jabber:client") || super("ns:#{name}", ns: "jabber:component:accept")
+      end
+
+      content
     end
 
     # Turn the object into a proper stanza
