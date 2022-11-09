@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * No default chat state on new messages, if you want one you need to set it
   * Breaking change (for release in v3.0.0): Blather::Client uses EM.defer instead of sucker_punch for threadpool, or else no threads when passed async: true
   * Bugfix: Blather::Stanza::X#find_or_create only looks at immediate children of parent now
   * Feature: Blather::Stanza::X::Field values can be arrays to support multiple-valued fields
