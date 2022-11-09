@@ -39,7 +39,6 @@ Gem::Specification.new do |s|
   s.add_dependency "niceogiri", ["~> 1.0"]
   s.add_dependency "activesupport", [">= 2.3.11"]
 
-  s.add_development_dependency "bundler", ["~> 1.0"]
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", ["~> 3.0"]
   s.add_development_dependency "mocha", ["~> 1.0"]
