@@ -201,7 +201,6 @@ class Stanza
       node.to = to
       node.type = type
       node.body = body
-      node.chat_state = :active if [:chat, :groupchat].include?(type)
       node
     end
 
