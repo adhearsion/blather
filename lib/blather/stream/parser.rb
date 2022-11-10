@@ -3,8 +3,6 @@ class Stream
 
   # @private
   class Parser < Nokogiri::XML::SAX::Document
-    NS_TO_IGNORE = %w[jabber:client jabber:component:accept]
-
     @@debug = false
     def self.debug; @@debug; end
     def self.debug=(debug); @@debug = debug; end
@@ -36,7 +34,6 @@ class Stream
       node.document.root = node unless @current
 
       ns_keys = namespaces.map { |pre, href| pre }
-      namespaces.delete_if { |pre, href| NS_TO_IGNORE.include? href }
       @namespace_definitions.push []
       namespaces.each do |pre, href|
         next if @namespace_definitions.flatten.include?(@namespaces[[pre, href]])

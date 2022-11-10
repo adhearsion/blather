@@ -1,4 +1,5 @@
 # [develop](https://github.com/adhearsion/blather/compare/master...develop)
+  * jabber:client and jabber:component:accept namespaces are no longer erased when parsing, so if you manually select nodes assuming there will be no namespace for these, you need to update
   * Breaking change (for release in v3.0.0): Falsy handler return value no longer causes passing to the next handler. Use `pass` explicitly for that.
   * Breaking change (for release in v3.0.0): Blather::Client uses EM.defer instead of sucker_punch for threadpool, or else no threads when passed async: true
   * Bugfix: Blather::Stanza::X#find_or_create only looks at immediate children of parent now
