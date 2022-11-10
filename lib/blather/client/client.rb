@@ -250,11 +250,11 @@ module Blather
 
       register_handler :status do |status|
         roster[status.from].status = status if roster[status.from]
-        nil
+        throw :pass
       end
 
       register_handler :roster do |node|
-        roster.process node
+        throw :pass unless roster.process node
       end
     end
 
@@ -295,16 +295,23 @@ module Blather
     def call_handler_for(type, stanza)
       return unless handler = @handlers[type]
       handler.find do |guards, handler|
-        catch(:pass) { call_handler handler, guards, stanza }
+        catch(:pass) do
+          call_handler(handler, guards, stanza)
+          true
+        end
       end
     end
 
     def call_handler(handler, guards, stanza)
       if guards.first.respond_to?(:to_str)
-        result = stanza.find(*guards)
-        handler.call(stanza, result) unless result.empty?
+        found = stanza.find(*guards)
+        throw :pass if found.empty?
+
+        handler.call(stanza, found)
       else
-        handler.call(stanza) unless guarded?(guards, stanza)
+        throw :pass if guarded?(guards, stanza)
+
+        handler.call(stanza)
       end
     end
 
