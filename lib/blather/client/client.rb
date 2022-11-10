@@ -195,11 +195,23 @@ module Blather
     end
 
     def handle_data(stanza)
-      catch(:halt) do
-        run_filters :before, stanza
-        handle_stanza stanza
-        run_filters :after, stanza
-      end
+      df = EM::DefaultDeferrable.new
+
+      Fiber.new {
+        begin
+          catch(:halt) do
+            run_filters :before, stanza
+            handle_stanza stanza
+            run_filters :after, stanza
+          end
+          df.succeed
+        rescue => e
+          df.fail(e) # Fail in case anyone is listening
+          raise e # But still raise so it's not a silent failure
+        end
+      }.resume
+
+      df
     end
 
     # @private
@@ -303,7 +315,7 @@ module Blather
     end
 
     def call_handler(handler, guards, stanza)
-      if guards.first.respond_to?(:to_str)
+      result = if guards.first.respond_to?(:to_str)
         found = stanza.find(*guards)
         throw :pass if found.empty?
 
@@ -313,6 +325,27 @@ module Blather
 
         handler.call(stanza)
       end
+
+      return result unless result.is_a?(EM::Deferrable)
+
+      unless EM.reactor_thread == Thread.current
+        raise "Cannot sync EM::Deferrable across threads. " \
+              "Did you forget to setup with async: true?"
+      end
+
+      fiber = Fiber.current
+      EM.next_tick do
+        result.callback(&fiber.method(:resume))
+        result.errback do |e|
+          if e.is_a?(Exception)
+            fiber.raise(e)
+          else
+            fiber.raise(e.to_s)
+          end
+        end
+      end
+
+      Fiber.yield
     end
 
     # If any of the guards returns FALSE this returns true
