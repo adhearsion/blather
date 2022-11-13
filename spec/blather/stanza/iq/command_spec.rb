@@ -139,7 +139,7 @@ describe Blather::Stanza::Iq::Command do
     n = Blather::Stanza::Iq::Command.new
     expect(n.sessionid).to eq(nil)
     n.sessionid = "somerandomstring"
-    expect(n.sessionid).to eq(Digest::SHA1.hexdigest("somerandomstring"))
+    expect(n.sessionid).to eq("somerandomstring")
   end
 
   it 'has a sessionid? attribute' do
