@@ -1,3 +1,5 @@
+require "securerandom"
+
 module Blather
 
   # # Base XMPP Stanza
@@ -52,7 +54,7 @@ module Blather
     # @return [String] a new unique ID
     def self.next_id
       @@last_id += 1
-      'blather%04x' % @@last_id
+      "#{SecureRandom.uuid}blather%04x" % @@last_id
     end
 
     # Check if the stanza is an error stanza
