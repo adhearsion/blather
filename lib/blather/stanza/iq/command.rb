@@ -111,7 +111,7 @@ class Iq
     #
     # @param [String, nil] sessionid the new sessionid
     def sessionid=(sessionid)
-      command[:sessionid] = Digest::SHA1.hexdigest(sessionid)
+      command[:sessionid] = sessionid
     end
 
     # Generate a new session ID (SHA-1 hash)
