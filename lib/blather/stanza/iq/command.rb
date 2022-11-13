@@ -1,3 +1,5 @@
+require "securerandom"
+
 module Blather
 class Stanza
 class Iq
@@ -116,7 +118,7 @@ class Iq
 
     # Generate a new session ID (SHA-1 hash)
     def new_sessionid!
-      self.sessionid = "commandsession-#{id}"
+      self.sessionid = "#{id}/#{SecureRandom.uuid}"
     end
 
     # Get the action of the command
