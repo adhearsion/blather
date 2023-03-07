@@ -11,6 +11,8 @@ module Blather
     @@last_id = 0
     # @private
     @@handler_list = []
+    # @private
+    @@id_base = SecureRandom.hex(8)
 
     class_attribute :handler_hierarchy
     attr_writer :handler_hierarchy
@@ -52,7 +54,7 @@ module Blather
     # @return [String] a new unique ID
     def self.next_id
       @@last_id += 1
-      'blather%04x' % @@last_id
+      '%s%04x' % [@@id_base, @@last_id]
     end
 
     # Check if the stanza is an error stanza
